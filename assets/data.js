@@ -1,7 +1,7 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol"];
+window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol","gpt56terra"];
 window.PAIR_NOTES={};
 window.WORKS=[
  {
@@ -484,7 +484,7 @@ window.WORKS=[
   "file": "models/GPT5.6TerraUltra.html",
   "model": "GPT-5.6 Terra Ultra",
   "group": "A",
-  "pair": null,
+  "pair": "gpt56terra",
   "featured": false,
   "tech": "Canvas2D",
   "bytes": 62404,
@@ -500,7 +500,7 @@ window.WORKS=[
    "moons"
   ],
   "weight": "light",
-  "shot": null,
+  "shot": "assets/shots/GPT5.6TerraUltra.jpg",
   "jsErrors": 0,
   "note": null,
   "issue": null,
@@ -514,7 +514,7 @@ window.WORKS=[
   "file": "models/GPT5.6TerraUltra-TasksAssignedByOpus5.html",
   "model": "GPT-5.6 Terra Ultra",
   "group": "B",
-  "pair": null,
+  "pair": "gpt56terra",
   "featured": false,
   "tech": "WebGL2",
   "bytes": 94766,
