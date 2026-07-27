@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>任务说明书 · 太阳系模型对比</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <div class="brand">一句话 <em>VS</em> 一份文档</div>
+  <div class="links">
+    <a href="index.html">← 回到首页</a>
+    <a href="index.html#pairs">同模型对照</a>
+    <a href="index.html#gallery">全部作品</a>
+  </div>
+</div></nav>
+<div class="doc">
+  <div class="note-box" style="margin-bottom:34px">
+    <p><strong>这份文档是什么</strong></p>
+    <p>下面就是「文档组」的模型实际拿到的全部内容。它由 <b>Claude Opus 5</b> 在完成自己那版实现之后，
+       从<b>自身的实现过程</b>反推整理而成——包括数据表、算法公式、渲染管线设计，
+       以及第 7 节那 15 条<b>实际踩过的坑</b>。</p>
+    <p>正因为如此，文档组本质上是在做一道<b>已知答案的命题作文</b>。
+       这也是为什么本站强调：它能说明「详细文档能极大提升产出质量」，
+       但不能用来给模型能力排序。</p>
+  </div>
+  <div class="toc">
+    <div class="kicker" style="margin-bottom:8px">目录</div>
+    <a href="#s1">0. 目标</a><a href="#s2">1. 硬性约束</a><a href="#s3">2. 天文数据（照抄，不要自己编）</a><a href="#s11">3. 核心算法</a><a href="#s19">4. 渲染架构</a><a href="#s24">5. 程序化天体表面</a><a href="#s35">6. 交互与界面</a><a href="#s36">7. 必须避开的坑</a><a href="#s52">8. 验收标准</a><a href="#s56">9. 建议的实施顺序</a><a href="#s57">附：一个容易被忽略的整体建议</a>
+  </div>
+  <h1>任务说明：太阳系实时运动模型（单 HTML 文件）</h1>
+<blockquote>本文件是一份<strong>实现规格书</strong>。数据表和公式请照抄，不要自己回忆或推测数值。 渲染代码、着色器、UI 代码由你自己编写。 第 7 节「必须避开的坑」请在动手前完整读一遍——里面每一条都是实际会遇到的问题。</blockquote>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s1">0. 目标</h2>
+<p>做一个太阳系的实时运动模型，<strong>单个 HTML 文件</strong>，双击用浏览器打开即可运行。</p>
+<p>两条核心要求：</p>
+<ol><li><strong>尽可能真实</strong>——天体位置必须由真实轨道根数实时计算得出，不能是预设动画或近似圆周运动。尺寸和距离的比例可以压缩（否则同屏看不见），但角位置、轨道相位、周期、偏心率、倾角必须是真的。</li><li><strong>视觉效果拉满</strong>——这不是一个示意图，是一个应该让人愿意盯着看的东西。</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s2">1. 硬性约束</h2>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>要求</th></tr></thead><tbody><tr><td>文件数</td><td>1 个 <code>.html</code>，CSS 和 JS 全部内联</td></tr><tr><td>外部依赖</td><td><strong>零</strong>。不允许 <code>&lt;script src&gt;</code>、CDN、<code>import</code>、外部图片/字体/纹理</td></tr><tr><td>离线</td><td>断网必须能完整运行</td></tr><tr><td>图形 API</td><td>WebGL2（原生，不使用 Three.js 等库）</td></tr><tr><td>目标帧率</td><td>1080p 下 60 fps</td></tr><tr><td>界面语言</td><td>中文</td></tr></tbody></table></div>
+<p><strong>关于「不使用 Three.js」</strong>：这意味着矩阵库、球体网格生成、相机控制、帧缓冲管理都要自己写。如果允许用库，那 600 KB 的库内联进来会让文件体积失控，且泛光管线、环系互投影这类东西反正要写自定义着色器。</p>
+<p><strong>纹理来源</strong>：不允许外部图片，所以所有天体表面必须用<strong>程序化噪声在片元着色器里现场生成</strong>。这是本任务的主要难点之一。</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s3">2. 天文数据（照抄，不要自己编）</h2>
+<h3 id="s4">2.1 行星轨道根数（NASA/JPL《主要行星近似位置》）</h3>
+<p>六个根数 + 每儒略世纪的变化率。标称有效区间 <strong>1800–2050 年</strong>。</p>
+<p>单位：<code>a</code> 用 AU，其余用度。</p>
+<div class="tablewrap"><table><thead><tr><th>天体</th><th>a</th><th>e</th><th>I</th><th>L</th><th>ϖ (近日点黄经)</th><th>Ω (升交点黄经)</th></tr></thead><tbody><tr><td>水星</td><td>0.38709927</td><td>0.20563593</td><td>7.00497902</td><td>252.25032350</td><td>77.45779628</td><td>48.33076593</td></tr><tr><td>金星</td><td>0.72333566</td><td>0.00677672</td><td>3.39467605</td><td>181.97909950</td><td>131.60246718</td><td>76.67984255</td></tr><tr><td>地球</td><td>1.00000261</td><td>0.01671123</td><td>−0.00001531</td><td>100.46457166</td><td>102.93768193</td><td>0.0</td></tr><tr><td>火星</td><td>1.52371034</td><td>0.09339410</td><td>1.84969142</td><td>−4.55343205</td><td>−23.94362959</td><td>49.55953891</td></tr><tr><td>木星</td><td>5.20288700</td><td>0.04838624</td><td>1.30439695</td><td>34.39644051</td><td>14.72847983</td><td>100.47390909</td></tr><tr><td>土星</td><td>9.53667594</td><td>0.05386179</td><td>2.48599187</td><td>49.95424423</td><td>92.59887831</td><td>113.66242448</td></tr><tr><td>天王星</td><td>19.18916464</td><td>0.04725744</td><td>0.77263783</td><td>313.23810451</td><td>170.95427630</td><td>74.01692503</td></tr><tr><td>海王星</td><td>30.06992276</td><td>0.00859048</td><td>1.77004347</td><td>−55.12002969</td><td>44.96476227</td><td>131.78422574</td></tr><tr><td>冥王星</td><td>39.48211675</td><td>0.24882730</td><td>17.14001206</td><td>238.92903833</td><td>224.06891629</td><td>110.30393684</td></tr></tbody></table></div>
+<p>变化率（每儒略世纪，即每 36525 天）：</p>
+<div class="tablewrap"><table><thead><tr><th>天体</th><th>da/dt</th><th>de/dt</th><th>dI/dt</th><th>dL/dt</th><th>dϖ/dt</th><th>dΩ/dt</th></tr></thead><tbody><tr><td>水星</td><td>0.00000037</td><td>0.00001906</td><td>−0.00594749</td><td>149472.67411175</td><td>0.16047689</td><td>−0.12534081</td></tr><tr><td>金星</td><td>0.00000390</td><td>−0.00004107</td><td>−0.00078890</td><td>58517.81538729</td><td>0.00268329</td><td>−0.27769418</td></tr><tr><td>地球</td><td>0.00000562</td><td>−0.00004392</td><td>−0.01294668</td><td>35999.37244981</td><td>0.32327364</td><td>0.0</td></tr><tr><td>火星</td><td>0.00001847</td><td>0.00007882</td><td>−0.00813131</td><td>19140.30268499</td><td>0.44441088</td><td>−0.29257343</td></tr><tr><td>木星</td><td>−0.00011607</td><td>−0.00013253</td><td>−0.00183714</td><td>3034.74612775</td><td>0.21252668</td><td>0.20469106</td></tr><tr><td>土星</td><td>−0.00125060</td><td>−0.00050991</td><td>0.00193609</td><td>1222.49362201</td><td>−0.41897216</td><td>−0.28867794</td></tr><tr><td>天王星</td><td>−0.00196176</td><td>−0.00004397</td><td>−0.00242939</td><td>428.48202785</td><td>0.40805281</td><td>0.04240589</td></tr><tr><td>海王星</td><td>0.00026291</td><td>0.00005105</td><td>0.00035372</td><td>218.45945325</td><td>−0.32241464</td><td>−0.00508664</td></tr><tr><td>冥王星</td><td>−0.00031596</td><td>0.00005170</td><td>0.00004818</td><td>145.20780515</td><td>−0.04062942</td><td>−0.01183482</td></tr></tbody></table></div>
+<blockquote>地球那一行严格说是「地月质心」。差别在视觉上不可见，直接当地球用。</blockquote>
+<h3 id="s5">2.2 自转周期与转轴倾角</h3>
+<p><code>rotH</code> = 自转周期（小时），负值表示逆行自转。</p>
+<p><code>tilt</code> = 自转轴与<strong>黄道北极</strong>的夹角（度）。<code>poleLon</code> = 自转轴在黄道面上的投影所指的黄经（度）。</p>
+<blockquote>注意：教科书上写的「转轴倾角」是相对<strong>自身轨道面</strong>的，这里给的是相对<strong>黄道面</strong>的，两者差几度。渲染要用下表的值（因为世界坐标系是黄道系），信息面板展示可以用教科书值。 这些是由 IAU 极点赤经赤纬换算过来的，直接抄。</blockquote>
+<div class="tablewrap"><table><thead><tr><th>天体</th><th>tilt（对黄道）</th><th>poleLon</th><th>rotH</th><th>教科书倾角（对自身轨道）</th></tr></thead><tbody><tr><td>水星</td><td>7.0</td><td>318.4</td><td>1407.6</td><td>0.03°</td></tr><tr><td>金星</td><td>177.4</td><td>211.2</td><td>−5832.5</td><td>177.4°</td></tr><tr><td>地球</td><td>23.44</td><td>90.0</td><td>23.9345</td><td>23.44°</td></tr><tr><td>火星</td><td>26.76</td><td>352.9</td><td>24.6229</td><td>25.19°</td></tr><tr><td>木星</td><td>2.25</td><td>247.8</td><td>9.925</td><td>3.13°</td></tr><tr><td>土星</td><td>28.06</td><td>79.5</td><td>10.656</td><td>26.73°</td></tr><tr><td>天王星</td><td>97.77</td><td>77.7</td><td>−17.24</td><td>97.77°</td></tr><tr><td>海王星</td><td>28.02</td><td>319.3</td><td>16.11</td><td>28.32°</td></tr><tr><td>冥王星</td><td>112.8</td><td>137.4</td><td>−153.29</td><td>119.6°</td></tr></tbody></table></div>
+<p>自转轴在<strong>黄道直角坐标</strong>下的方向向量：</p>
+<pre><code>axis_ecl = ( sin(tilt)·cos(poleLon),  sin(tilt)·sin(poleLon),  cos(tilt) )</code></pre>
+<p>自转轴必须在<strong>惯性系中固定</strong>（不随公转改变方向）——这样土星环的张角才会随土星公转周期（29.5 年）自然地开合，天王星才会真的「躺着滚」。</p>
+<h3 id="s6">2.3 行星物理参数（用于信息面板与显示半径）</h3>
+<div class="tablewrap"><table><thead><tr><th>天体</th><th>半径 (km)</th><th>质量 (kg)</th><th>公转周期</th><th>卫星数</th><th>表面/云顶温度</th></tr></thead><tbody><tr><td>太阳</td><td>696,340</td><td>1.989×10³⁰</td><td>—</td><td>—</td><td>5,772 K</td></tr><tr><td>水星</td><td>2,439.7</td><td>3.30×10²³</td><td>87.97 天</td><td>0</td><td>−173 ~ 427 ℃</td></tr><tr><td>金星</td><td>6,051.8</td><td>4.87×10²⁴</td><td>224.70 天</td><td>0</td><td>464 ℃</td></tr><tr><td>地球</td><td>6,371.0</td><td>5.972×10²⁴</td><td>365.256 天</td><td>1</td><td>−89 ~ 57 ℃</td></tr><tr><td>火星</td><td>3,389.5</td><td>6.42×10²³</td><td>686.98 天</td><td>2</td><td>−143 ~ 35 ℃</td></tr><tr><td>木星</td><td>69,911</td><td>1.898×10²⁷</td><td>11.86 年</td><td>95</td><td>−108 ℃</td></tr><tr><td>土星</td><td>58,232</td><td>5.683×10²⁶</td><td>29.46 年</td><td>274</td><td>−139 ℃</td></tr><tr><td>天王星</td><td>25,362</td><td>8.68×10²⁵</td><td>84.01 年</td><td>28</td><td>−195 ℃</td></tr><tr><td>海王星</td><td>24,622</td><td>1.024×10²⁶</td><td>164.8 年</td><td>16</td><td>−201 ℃</td></tr><tr><td>冥王星</td><td>1,188.3</td><td>1.303×10²²</td><td>247.9 年</td><td>5</td><td>−233 ~ −223 ℃</td></tr></tbody></table></div>
+<p>信息面板还建议展示：轨道偏心率、轨道倾角、转轴倾角、大气成分、以及一段 2–3 句的科普文字。</p>
+<h3 id="s7">2.4 卫星</h3>
+<p>轨道用<strong>真实周期</strong>的匀速圆周运动即可（不必解开普勒方程），但周期必须真实——这样木卫一/二/三的 1:2:4 轨道共振会自然浮现。</p>
+<div class="tablewrap"><table><thead><tr><th>卫星</th><th>母行星</th><th>半径 (km)</th><th>轨道半径 (km)</th><th>周期 (天)</th><th>轨道倾角</th><th>参考面</th></tr></thead><tbody><tr><td>月球</td><td>地球</td><td>1,737.4</td><td>384,400</td><td>27.32166</td><td>5.145°</td><td><strong>黄道面</strong></td></tr><tr><td>木卫一 Io</td><td>木星</td><td>1,821.6</td><td>421,700</td><td>1.769138</td><td>0.05°</td><td>母行星赤道面</td></tr><tr><td>木卫二 Europa</td><td>木星</td><td>1,560.8</td><td>671,034</td><td>3.551181</td><td>0.47°</td><td>母行星赤道面</td></tr><tr><td>木卫三 Ganymede</td><td>木星</td><td>2,634.1</td><td>1,070,412</td><td>7.154553</td><td>0.20°</td><td>母行星赤道面</td></tr><tr><td>木卫四 Callisto</td><td>木星</td><td>2,410.3</td><td>1,882,709</td><td>16.6890</td><td>0.19°</td><td>母行星赤道面</td></tr><tr><td>土卫六 Titan</td><td>土星</td><td>2,574.7</td><td>1,221,870</td><td>15.945</td><td>0.35°</td><td>母行星赤道面</td></tr><tr><td>海卫一 Triton</td><td>海王星</td><td>1,353.4</td><td>354,759</td><td><strong>−5.876854</strong></td><td>156.9°</td><td>母行星赤道面</td></tr><tr><td>冥卫一 Charon</td><td>冥王星</td><td>606</td><td>19,591</td><td>6.3872</td><td>0.08°</td><td>母行星赤道面</td></tr></tbody></table></div>
+<ul><li>月球的参考面是<strong>黄道面</strong>（倾角 5.145° 是对黄道说的），其余卫星用母行星的<strong>赤道面</strong>。这是真实情况，别统一。</li><li>海卫一周期为负 = 逆行公转，必须体现出来。</li></ul>
+<h3 id="s8">2.5 哈雷彗星 1P/Halley</h3>
+<div class="tablewrap"><table><thead><tr><th>参数</th><th>值</th></tr></thead><tbody><tr><td>a</td><td>17.834 AU</td></tr><tr><td>e</td><td>0.96714</td></tr><tr><td>I</td><td>162.26°（逆行）</td></tr><tr><td>ω（近日点幅角）</td><td>111.33°</td></tr><tr><td>Ω（升交点黄经）</td><td>58.42°</td></tr><tr><td>过近日点时刻 Tp</td><td>JD 2446470.96（1986-02-09）</td></tr><tr><td>周期</td><td>75.32 年 = 27512.6 天</td></tr></tbody></table></div>
+<p>平近点角直接由过近日点时刻算：<code>M = 2π·(JD − Tp) / P_days</code>。</p>
+<h3 id="s9">2.6 小行星带 / 柯伊伯带（程序化生成）</h3>
+<p>用<strong>顶点着色器</strong>为每个小天体解开普勒方程（每个粒子存 a, e, I, Ω, ω, M₀, n, size 八个浮点数），CPU 只在初始化时生成一次。数量建议：主带 9000，希尔达族 900，特洛伊群 2000，柯伊伯带 6000。</p>
+<p><strong>主带</strong>：a ∈ [2.06, 3.28] AU，用<strong>拒绝采样</strong>挖出柯克伍德空隙（这是真实存在的共振空隙，做出来非常加分）：</p>
+<div class="tablewrap"><table><thead><tr><th>空隙位置 (AU)</th><th>宽度 σ</th><th>挖除强度</th></tr></thead><tbody><tr><td>2.502（3:1）</td><td>0.022</td><td>0.93</td></tr><tr><td>2.825（5:2）</td><td>0.016</td><td>0.85</td></tr><tr><td>2.958（7:3）</td><td>0.012</td><td>0.70</td></tr><tr><td>3.279（2:1）</td><td>0.020</td><td>0.90</td></tr><tr><td>2.065</td><td>0.010</td><td>0.60</td></tr></tbody></table></div>
+<p>保留概率 = <code>Π(1 − 强度·exp(−((a−位置)/σ)²))</code>，再乘一个以 2.72 AU 为中心、σ=0.55 的整体密度包络。 偏心率 e ~ 半正态，均值约 0.14，上限 0.34；倾角 I ~ 半正态，均值约 8°。</p>
+<p><strong>希尔达族</strong>：a ≈ 3.90 ± 0.09 AU，e ∈ [0.10, 0.30]。</p>
+<p><strong>木星特洛伊群</strong>：这是最出彩的一个。a ≈ 5.202，但<strong>平近点角必须锁在木星前后 60°</strong>：</p>
+<pre><code>M₀ = L_木星(J2000) ± 60° + 高斯扰动(σ≈26°)     // L_木星(J2000) = 34.396°
+n  = 木星的平均运动（不要用自己的 a 去算 n，否则几十年后就散开了）</code></pre>
+<p>这样 L4/L5 两团会永远跟着木星跑。</p>
+<p><strong>柯伊伯带</strong>：22% 冥族（a ≈ 39.45 ± 0.55，与海王星 3:2 共振），64% 经典带（a ∈ [42.5, 47.7]，e &lt; 0.11，I 均值 7°），14% 离散盘（a ∈ [48, 80]，e ∈ [0.15, 0.5]，I 均值 22°）。</p>
+<p><strong>渲染</strong>：<code>gl.POINTS</code>，点大小随距离衰减并 clamp 到 [0.75, 4.5] 像素，加法混合，亮度乘一个随日心距衰减的因子（远的更暗）。</p>
+<h3 id="s10">2.7 环系</h3>
+<p>用<strong>径向密度函数</strong> <code>ringDensity(r)</code> 描述，r 以母行星半径为单位。这是把光学厚度直接建模，而不是贴图。</p>
+<p><strong>土星</strong>（1.235 – 2.34 母行星半径）：</p>
+<div class="tablewrap"><table><thead><tr><th>结构</th><th>范围</th><th>光学厚度 τ</th></tr></thead><tbody><tr><td>C 环</td><td>1.235 – 1.53</td><td>0.11</td></tr><tr><td>B 环</td><td>1.525 – 1.95</td><td>1.20</td></tr><tr><td>卡西尼缝</td><td>1.95 – 2.03</td><td>把上面结果削掉 87%</td></tr><tr><td>A 环</td><td>2.025 – 2.27</td><td>0.58</td></tr><tr><td>恩克缝</td><td>2.214（σ≈0.0045）</td><td>削掉 92%</td></tr><tr><td>基勒缝</td><td>2.265（σ≈0.0018）</td><td>削掉 80%</td></tr><tr><td>F 环</td><td>2.324（σ≈0.0055）</td><td>+0.30</td></tr></tbody></table></div>
+<p>最后整体乘一个高频噪声 <code>0.70 + 0.60·fbm(r·230)</code> 制造细密的环纹。</p>
+<p><strong>天王星</strong>：一组极窄的暗环，用窄高斯叠加。环带几何体建议做到 1.60 – 2.00，实际的环位于其中：ε 环在 <strong>1.951</strong>（τ≈0.55，σ≈0.0055），另外 6 条在 1.909 / 1.863 / 1.823 / 1.786 / 1.751 / 1.690，τ 从 0.20 递减到 0.07，σ 都在 0.0015–0.0025。颜色接近炭黑（真实反照率仅 0.03）。 （真实天王星有 13 条已知环，取其中主要的 7 条即可。）</p>
+<p><strong>木星</strong>：极稀薄的尘埃环，1.40 – 1.81，τ ≈ 0.016。<strong>必须做得非常淡</strong>，原因见第 7.4 节。</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s11">3. 核心算法</h2>
+<h3 id="s12">3.1 时间</h3>
+<pre><code>JD = unix_ms / 86400000 + 2440587.5
+T  = (JD − 2451545.0) / 36525          // 儒略世纪数，J2000 起算</code></pre>
+<h3 id="s13">3.2 开普勒方程</h3>
+<p>给定平近点角 M 和偏心率 e，求偏近点角 E，解 <code>E − e·sin(E) = M</code>：</p>
+<pre><code>先把 M 归一化到 [−π, π]
+初值：E = M + e·sin(M)·(1 + e·cos(M))
+牛顿迭代 8~10 次：E −= (E − e·sin(E) − M) / (1 − e·cos(E))
+收敛判据 |ΔE| &lt; 1e-13</code></pre>
+<p>对 e &lt; 0.97 的轨道（包括哈雷彗星）这个初值 3~5 次就收敛了。</p>
+<h3 id="s14">3.3 轨道根数 → 黄道直角坐标</h3>
+<pre><code>1. 按 T 更新六个根数：a = a₀ + (da/dt)·T，其余同理
+2. 近日点幅角  ω = ϖ − Ω
+   平近点角    M = L − ϖ         （归一化到 [−π, π]）
+3. 解开普勒方程得 E
+4. 轨道平面内坐标：
+   x' = a·(cos E − e)
+   y' = a·√(1 − e²)·sin E
+5. 旋转到黄道坐标：
+   x = (cosω·cosΩ − sinω·sinΩ·cosI)·x' + (−sinω·cosΩ − cosω·sinΩ·cosI)·y'
+   y = (cosω·sinΩ + sinω·cosΩ·cosI)·x' + (−sinω·sinΩ + cosω·cosΩ·cosI)·y'
+   z = (sinω·sinI)·x'              + (cosω·sinI)·y'</code></pre>
+<h3 id="s15">3.4 坐标系映射</h3>
+<p>黄道坐标是 z 轴朝黄北极的右手系；WebGL 习惯 y 轴朝上。映射：</p>
+<pre><code>world = ( x_ecl,  z_ecl,  −y_ecl )</code></pre>
+<p>（这个映射保持右手性。）</p>
+<p><strong>银河背景定向</strong>：银北极在黄道坐标下约为 (−0.8678, 0.4972, 0.0003)（已是 world 坐标）。用它定向银河带，星空和黄道面的相对姿态就是真的。</p>
+<h3 id="s16">3.5 显示比例压缩</h3>
+<p>海王星在 30 AU、水星在 0.39 AU，线性比例下内行星是一个点。用<strong>径向幂律压缩</strong>：</p>
+<pre><code>r_display = SCALE · r_AU ^ COMPRESS        // 建议 SCALE = 34，COMPRESS = 0.62
+方向不变，只压缩径向距离</code></pre>
+<p><strong>关键性质</strong>：幂律只改径向距离，<strong>角位置完全不变</strong>，所以行星的黄经、相对位置关系、合冲关系仍然精确。这一点要在 UI 里说明。</p>
+<p>天体显示半径同样用幂律放大：</p>
+<pre><code>R_display = 0.72 · (radius_km / 6371) ^ 0.42        // 太阳单独给 4.6</code></pre>
+<p><strong>必须提供一个「真实距离比例」开关</strong>，把 COMPRESS 在 0.62 ↔ 1.0 之间做<strong>动画过渡</strong>（约 0.4 秒）。切到 1.0 时内行星塌成一团、小行星带变成一条密集环带——这个对比非常有说服力，是整个作品的一个亮点。注意过渡期间轨道曲线要逐帧重建。</p>
+<h3 id="s17">3.6 自转</h3>
+<p>模型矩阵 = <code>平移(世界位置) × 以自转轴为 Y 的正交基 × 绕 Y 旋转(自转相位) × 缩放(显示半径)</code>。</p>
+<p>构造正交基：以 <code>axis</code> 为 Y 列，任取一个不平行的参考向量叉乘得到 X 列，再叉乘得到 Z 列。</p>
+<p><strong>自转相位必须限速</strong>（详见 7.11）：</p>
+<pre><code>每帧 Δphase = clamp(2π·Δt_days / 自转周期_天,  −0.22,  +0.22)</code></pre>
+<h3 id="s18">3.7 卫星位置</h3>
+<pre><code>θ = 2π·(JD − J2000)/周期 + 初始相位
+局部坐标 = (cos θ · d, 0, sin θ · d)，再绕 X 轴倾斜 inc
+然后：
+  参考面 = 黄道 → 直接加到母行星世界坐标上
+  参考面 = 赤道 → 先用母行星的自转轴正交基变换，再加上去</code></pre>
+<p><strong>显示距离</strong>（有坑，见 7.6）：</p>
+<pre><code>a₀ = 该行星最内层卫星的真实轨道半径
+基准 = max( 2.35,  环外缘 + 最内层卫星显示半径/母行星显示半径 + 0.55 )   // 单位：母行星半径
+d = 母行星显示半径 × 基准 × (a_moon / a₀) ^ 0.55</code></pre>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s19">4. 渲染架构</h2>
+<h3 id="s20">4.1 管线总览</h3>
+<pre><code>[MSAA 帧缓冲 RGBA16F + DEPTH24]
+   1. 背景星云         深度测试关、深度写关
+   2. 恒星点           深度测试关、加法混合
+   3. 太阳球体         深度测试开、深度写开、背面剔除
+   4. 行星/卫星球体    同上
+   5. 轨道缎带         深度测试开、深度写关、加法混合
+   6. 小行星带         同上
+   7. 大气壳层         同上
+   8. 环系             深度测试开、深度写关、正常 alpha 混合、不剔除
+   9. 彗尾 + 彗发      加法混合
+  10. 日冕             加法混合
+        ↓ blitFramebuffer 解析 MSAA
+[场景纹理 RGBA16F]
+        ↓ 亮度阈值提取 + 6 级降采样（13-tap）
+        ↓ 6 级升采样（3×3 tent，用加法混合累加，见 7.3）
+[泛光纹理]
+        ↓
+[合成：色散 → 加泛光 → 镜头眩光 → 曝光 → ACES 色调映射 → gamma → 暗角 → 颗粒]
+[默认帧缓冲]</code></pre>
+<p>需要 <code>EXT_color_buffer_float</code> 扩展做 HDR。拿不到就退回 RGBA8 并降低泛光阈值。</p>
+<p>MSAA 用 <code>renderbufferStorageMultisample</code> + <code>blitFramebuffer</code>，4×。如果 <code>checkFramebufferStatus</code> 不完整要能优雅退回非 MSAA 路径。</p>
+<h3 id="s21">4.2 各 Pass 要点</h3>
+<p><strong>背景</strong>：全屏三角形，由逆 VP 矩阵反算视线方向。用 3D fbm 噪声画银河带（<code>exp(−(视线·银北极)²·24)</code> 作为带型），叠一层暗尘埃。<strong>深空底色必须极暗</strong>（线性值约 0.002），否则整个画面发灰（见 7.7）。</p>
+<p><strong>恒星</strong>：约 11000 个点。方向用拒绝采样向银道面聚集；亮度用 <code>pow(random, 3.6)</code>（大量暗星、少量亮星）；颜色从一个 7 档色温调色板按真实光谱型比例采样（M 型偏橙 → B 型偏蓝）。放在 <code>相机位置 + 方向×4000</code> 处，深度测试关。加轻微闪烁。</p>
+<p><strong>太阳</strong>：见 5.1。</p>
+<p><strong>日冕</strong>：面向相机的billboard 四边形，加法混合，深度测试开（这样行星经过时会正确遮挡）。画两层：内层 3.1 倍太阳半径、外层 9 倍。用极角上的 fbm 制造放射状冕流。</p>
+<p><strong>轨道缎带</strong>：不要用 <code>gl.LINES</code>（线宽在多数实现里锁死 1px 且不能抗锯齿）。用 <strong>triangle strip 在屏幕空间展宽</strong>：每个采样点发两个顶点（side = ±1），顶点着色器里把切线投影到屏幕空间、取法向、按像素宽度偏移。片元着色器按 <code>1−|side|</code> 做柔边。</p>
+<p>透明度沿轨道做梯度：在天体当前位置最亮，沿运动反方向拖尾衰减（<code>alpha = 基底 + 峰值·pow(max(0, 1−d·k), 3.2)</code>，d 是环绕参数上的落后量）。这个「彗尾式」轨道比均匀亮度的椭圆好看得多。</p>
+<p><strong>彗尾</strong>：两条。离子尾笔直指向反日方向、偏蓝；尘埃尾更宽、沿速度反方向弯曲滞后、偏暖黄。长度和亮度按 <code>(3/r_AU)²</code> 缩放，r &gt; 6.5 AU 就不画。做成绕尾轴朝相机的 billboard 缎带，CPU 每帧重建（几十个顶点，开销可忽略）。</p>
+<h3 id="s22">4.3 后期处理</h3>
+<ul><li><strong>泛光</strong>：软膝阈值提取（阈值 ≈ 1.25，膝宽 ≈ 0.6），13-tap 降采样 6 级，3×3 tent 升采样累加，最终按 0.34 的强度加回。</li><li><strong>色调映射</strong>：ACES 近似（Narkowicz 版本），之后 gamma 2.2。</li><li><strong>镜头眩光</strong>：需要太阳的屏幕坐标和一个可见度因子。可见度在 CPU 上算：太阳是否在相机前方、是否被行星遮挡（把每个行星投影到屏幕，比较屏幕距离与视半径、并比较深度）。眩光包含：核心辉光、6 道星芒、水平变形光条、3~4 个沿「太阳→屏幕中心」连线分布的鬼影光斑。<strong>整体强度要克制</strong>，见 7.8。</li><li>另加轻微色散（RGB 三通道按到中心的距离微量错开采样）、暗角、动态颗粒。</li></ul>
+<h3 id="s23">4.4 深度精度</h3>
+<p>场景尺度跨度极大（行星半径 0.5，海王星轨道 274，真实比例下 1020）。用<strong>动态近远平面</strong>：</p>
+<pre><code>near = max(0.012, 相机到目标距离 × 0.0035)
+far  = max(相机到目标距离 × 14, 4200)</code></pre>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s24">5. 程序化天体表面</h2>
+<p>所有表面在<strong>物体空间</strong>用归一化位置 <code>p = normalize(物体空间坐标)</code> 采样噪声——这样纹理会随模型矩阵一起自转，不会「浮」在表面上。</p>
+<p>需要的噪声工具：<code>hash13</code> / <code>hash33</code>、3D 值噪声、fbm（每个倍频之间乘一个旋转矩阵避免轴向对齐）、Worley（F1）、<strong>Worley 双距离（F1, F2）</strong>。</p>
+<p><strong>凹凸映射</strong>：不要为了求梯度重复计算高度函数三次。用屏幕空间导数一次搞定：</p>
+<pre><code>vec3 dpx = dFdx(worldPos), dpy = dFdy(worldPos);
+float dhx = dFdx(height), dhy = dFdy(height);
+vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
+float det = dot(dpx, r1);
+vec3 grad = (r1*dhx + r2*dhy) / det;
+N = normalize(N − 强度 * grad);</code></pre>
+<h3 id="s25">5.1 太阳</h3>
+<ul><li><strong>米粒组织</strong>：用 Worley 的 <strong>F2−F1</strong> 画胞界暗网（见 7.9），两个频率叠加（约 76 和 31）。</li><li><strong>超米粒组织</strong>：低频 fbm（频率约 6.5）做大尺度亮度起伏。</li><li><strong>黑子</strong>：低频 fbm 的高端阈值，分<strong>本影</strong>和<strong>半影</strong>两级。阈值要设得高（只有约 5% 面积出现），否则整个半球都变暗。黑子除了压低色温，还要单独乘一个变暗系数，否则本影会呈现橙色而不是暗褐色。</li><li><strong>临边昏暗</strong>：<code>limb = 0.24 + 0.76·pow(max(dot(N,V),0), 0.38)</code>。要<strong>同时作用于亮度和色温</strong>——边缘应该更暗且更红，而不只是更暗。</li><li>最终颜色走一条 5 档色带（深红 → 橙 → 黄 → 白黄 → 白），整体亮度约 2.0（HDR 线性值），让泛光把它托起来。</li><li>表面缓慢流动（噪声坐标随时间平移）。</li></ul>
+<h3 id="s26">5.2 岩质天体（水星、月球、木卫四、冥卫一）</h3>
+<p><strong>撞击坑函数</strong>（这是关键，普通的 Worley 阈值只会得到一堆等大的黑点）：</p>
+<pre><code>在 Worley 循环里同时记录最近特征点的距离 d1 和该胞的随机数 id
+每个胞独立的坑半径：rad = 0.13 + 0.22·frac(id·7.31)
+t = d1 / rad
+碗状凹陷：bowl = (t &lt; 1) ? −(1 − t²) : 0
+环形坑缘：rim  = exp(−((t−1)/0.26)²)
+高度 = (bowl·0.90 + rim·0.50) · 深度 · 存在标志
+反照率调制 = (bowl·0.55 + rim·0.32) · 存在标志       // 坑底暗、坑缘亮
+存在标志 = step(id, 0.74) · smoothstep(0.60, 0.40, d1)    // 后一项见 7.5</code></pre>
+<p>叠加 4 个倍频（频率约 5 / 12 / 28 / 62，深度约 1.0 / 0.52 / 0.26 / 0.13）得到真实的坑径分布。</p>
+<p><strong>月球</strong>额外加：月海（低频 fbm 阈值出的暗色玄武岩平原，海内部坑更少更平）、以及亮色辐射纹。</p>
+<h3 id="s27">5.3 地球</h3>
+<ul><li><strong>海陆</strong>：7 倍频 fbm 作高度场，海平面阈值取 <strong>0.552</strong>（fbm 均值是 0.5，取 0.5 会得到 50% 陆地；真实海洋占 71%）。</li><li><strong>海洋</strong>：深浅两色按高度插值，近岸加一条青绿色浅滩带。<strong>镜面高光</strong>：Blinn-Phong，光泽度约 420（太低会糊成一大团白斑），只在无云的海面上。</li><li><strong>陆地</strong>：按第二层噪声分绿地/沙漠，高海拔转岩灰，高纬度转冰白。</li><li><strong>云</strong>：独立的 fbm 层，随时间做<strong>随纬度变化的纬向漂移</strong>（低纬快、高纬慢）；云量按纬度调制（赤道辐合带和中纬多云、副热带少云）。</li><li><strong>夜面灯光</strong>：在陆地上、无云、且 <code>dot(N,L) &lt; 0</code> 的区域，用高频噪声的高次幂做点状暖黄色自发光。</li><li><strong>凹凸只在陆地上加</strong>，海面加了会把镜面高光打碎。</li></ul>
+<h3 id="s28">5.4 金星</h3>
+<p>只有厚云，看不见地表。中高频 fbm 做涡旋状条纹，随纬度做扭曲，色调乳黄到米白，反照率很高（0.75）。</p>
+<h3 id="s29">5.5 火星</h3>
+<ul><li>基础色用<strong>低反照率的红棕</strong>——真实反照率仅 0.17。线性 RGB 的通道比例要拉开到约 1 : 0.37 : 0.16，否则出来是米白色而不是锈红色。</li><li>撞击坑同 5.2 但深度减半。</li><li><strong>南北二分性</strong>：北半球是年轻的平原，撞击坑要减少约 78%；南半球是古老的高地，坑密集。这是火星最显著的地质特征。</li><li>极冠（随纬度 + 噪声）、水手谷（赤道附近一条高斯型暗色长沟）。</li></ul>
+<h3 id="s30">5.6 气态巨行星（木星、土星）</h3>
+<ul><li><strong>纬向带纹</strong>：以纬度（度）为自变量，叠加 4 个不同频率的正弦（周期分别对应约 4 / 9 / 17 / 30 条带），再用两层 fbm <strong>横向扭曲</strong>纬度值制造湍流。</li><li>扭曲强度要<strong>可按行星调节</strong>：木星强（湍流剧烈），土星弱（约木星的 0.42 倍，土星的带纹柔和得多）。</li><li><strong>极区必须淡出带纹</strong>（约从纬度 46° 开始衰减到 94%），否则极点会出现一圈圈同心「靶环」。</li><li>涡旋斑点：用 Worley 在纬度方向压扁（形成沿经度拉长的椭圆斑）。</li><li><strong>大红斑</strong>：在指定经纬度放一个椭圆区域（长短轴比约 2.15:1），区域内按极角 + 半径采样噪声制造<strong>螺旋</strong>（角度里混入半径项和时间项），边缘加一圈亮色晕。</li><li><strong>土星北极六边形</strong>：纬度 &gt; 0.80 时，用六边形距离函数 <code>hexEdge = 0.115 / cos(mod(经度, 60°) − 30°)</code>，在边界处画一圈暗纹。一个很讨喜的细节。</li><li>加限边昏暗。</li></ul>
+<h3 id="s31">5.7 冰巨行星（天王星、海王星）</h3>
+<p>大体无特征的青/蓝色，只有很淡的带纹和几道明亮的甲烷云条纹。海王星额外加一个暗斑。 <strong>注意</strong>：明亮云条纹<strong>不要</strong>放进高度场（见 7.10）。</p>
+<h3 id="s32">5.8 其他</h3>
+<ul><li><strong>木卫二 Europa</strong>：高反照率冰面 + 红褐色线纹网络（用 <code>abs(fbm − 0.5)</code> 的低值区画细线，三个频率叠加）。</li><li><strong>木卫一 Io</strong>：硫磺黄橙，散布暗色火山口，火山口中心加微弱自发光。</li><li><strong>木卫三 Ganymede</strong>：暗色古老区 + 亮色沟槽地形（沟槽同样用 <code>abs(fbm−0.5)</code> 的低值区）。</li><li><strong>土卫六 Titan</strong>：橙色浓雾，表面细节几乎被大气抹平，晨昏线要特别柔和。</li><li><strong>冥王星</strong>：暗色赤道带（克苏鲁区）+ 一块心形亮区（斯普特尼克平原，用两个高斯斑拼出心形）。</li></ul>
+<h3 id="s33">5.9 大气</h3>
+<p><strong>不要</strong>用「稍大一点的球 + 菲涅尔边缘光」——那样会得到一个边界很硬的玻璃罩。</p>
+<p>正确做法是按<strong>视线撞击参数</strong>积分光学厚度：</p>
+<pre><code>vec3 rd = normalize(片元世界坐标 − 相机);
+vec3 oc = 行星中心 − 相机;
+float tca = dot(oc, rd);
+float b = sqrt(dot(oc,oc) − tca*tca) / 行星半径;      // 归一化撞击参数
+float dens = exp(−max(b − 1.0, 0.0) / 标高);          // 星球边缘最厚，向外指数衰减
+dens *= 1.0 − smoothstep(1.0, 0.960, b) * 0.86;       // 盘面内视线只穿过半层大气
+// 昼夜判定用「视线离球心最近点」的法向，而不是片元法向
+vec3 an = normalize(相机 + rd*tca − 行星中心);</code></pre>
+<p>再乘上：受光因子、前向（米氏）散射项 <code>pow(dot(rd, L)*0.5+0.5, 4)</code>。 壳层几何体半径取 <code>行星半径 × (1 + 标高×7.5)</code>，让指数项在几何体边缘前衰减到 0。 标高取行星半径的 0.02–0.05（真实值约 0.0013，肉眼不可见，必须夸张）。</p>
+<p><strong>强度务必调低</strong>——盘面内的雾应该只有地表亮度的 5%~12%，边缘才是一道明亮细弧。调过头会把整个昼面糊成白色。</p>
+<h3 id="s34">5.10 环系（重点，最出彩的部分）</h3>
+<p>密度剖面见 2.7。渲染时：</p>
+<pre><code>μ_view = max(|dot(环法向, 视线)|, 0.10)          // 下限 0.10 很重要，见 7.4
+μ_sun  = max(|dot(环法向, 光线)|, 0.10)
+τ_view = d · 1.45 / μ_view
+τ_sun  = d · 1.45 / μ_sun
+alpha  = 1 − exp(−τ_view)
+
+正面受光（观察者与太阳在环平面同侧）：
+    亮度 = (1 − exp(−τ_sun)) · 0.85
+背光（异侧）：
+    亮度 = exp(−τ_sun·0.42) · 1.15 · (1 − exp(−τ_sun·0.75))
+    // 效果：薄的 C 环、卡西尼缝前向散射而发亮；厚的 B 环挡光而变暗——这是真实现象</code></pre>
+<p><strong>两个互相投影</strong>（做出来效果极好）：</p>
+<ol><li><strong>行星在环上的投影</strong>：从环上的点向太阳发射线，与母行星球体做<strong>解析求交</strong>。设 <code>oc = 环点 − 行星中心</code>，<code>bb = dot(oc, L)</code>，若 <code>bb &lt; 0</code> 则算最近距离 <code>dmin = sqrt(dot(oc,oc) − bb²)</code>，用 <code>smoothstep(R·0.97, R·1.09, dmin)</code> 得到带半影软边的阴影系数。</li><li><strong>环在行星上的投影</strong>：在行星片元着色器里，把太阳方向变换到物体空间，从当前片元沿该方向求与<strong>环平面（物体空间 y = 0）</strong>的交点，若交点半径落在环范围内，就按 <code>exp(−ringDensity(r)·1.45 / |sunDir.y|)</code> 衰减光照。</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s35">6. 交互与界面</h2>
+<p><strong>相机</strong>：轨道式（yaw / pitch / distance）。鼠标拖拽旋转，滚轮缩放，触摸双指缩放。 点击天体聚焦：用屏幕空间投影做拾取（把每个天体投影到屏幕，找距离点击位置最近且在阈值内的），不需要 GPU 拾取。聚焦切换时相机目标点和距离都要平滑过渡（约 1 秒），不要瞬移。</p>
+<p><strong>界面元素</strong>：</p>
+<div class="tablewrap"><table><thead><tr><th>位置</th><th>内容</th></tr></thead><tbody><tr><td>左侧</td><td>天体列表（恒星 / 行星 / 卫星缩进 / 矮行星），点击聚焦</td></tr><tr><td>右侧</td><td>选中天体的信息卡：<strong>实时数据</strong>（日心距离、黄经黄纬、与地球距离、光行时、近远日点、当前轨道速度）+ 静态参数表 + 科普文字</td></tr><tr><td>底部中央</td><td>播放/暂停、日期时间（UTC）、速度滑块、「此刻」按钮</td></tr><tr><td>右下</td><td>显示开关：轨道 / 名称 / 卫星 / 小行星带 / 彗星 / 真实距离比例 / 辉光</td></tr><tr><td>天体旁</td><td>HTML 覆盖层标签（不要在 canvas 里画字），透明度随天体视半径衰减</td></tr></tbody></table></div>
+<p><strong>实时轨道速度</strong>用活力公式：<code>v = 29.7847 · sqrt(2/r − 1/a)</code> km/s（r、a 单位 AU）。</p>
+<p><strong>时间速度</strong>：对数映射，从实时（1 秒/秒）到约 10 年/秒，支持负值（倒放）。建议：</p>
+<pre><code>速度_天每秒 = sign(v) · 1.157407e-5 · 10^(|v|/100 · 8.55)      // v ∈ [−100, 100]</code></pre>
+<p>显示时按量级自动切换单位（秒/分/小时/天/年 每秒）。</p>
+<p><strong>诚实性要求</strong>：当日期超出 1800–2050 年时，在界面上标注「已超出根数有效区间（外推）」。同样，要在某处说明距离比例被压缩了、但角位置是精确的。</p>
+<p><strong>快捷键</strong>：空格暂停、左右方向键调速、H 隐藏界面。</p>
+<p><strong>视觉风格</strong>：深色玻璃拟态面板（<code>backdrop-filter: blur</code>）、发丝级边框、小字号大字距的标签、数字用等宽字体且 <code>font-variant-numeric: tabular-nums</code>（否则数字跳动时界面会抖）。</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s36">7. 必须避开的坑</h2>
+<p><strong>这一节是本文档最重要的部分。</strong> 下面每一条都是实际写这个东西时踩到的，有几个会导致「看起来完全不工作」但报错为零。</p>
+<h3 id="s37">7.1 <code>gl.clear(DEPTH_BUFFER_BIT)</code> 受 <code>depthMask</code> 约束 ★★★</h3>
+<p>如果调用 <code>clear</code> 时 <code>depthMask</code> 是 <code>false</code>，<strong>深度缓冲根本不会被清除</strong>。</p>
+<p>典型症状：第一帧正常，之后深度缓冲永远停留在第一帧的值。远景看不出来（因为深度值恰好自洽），一旦相机拉近或场景尺度变化，残留的深度值就会把所有几何体剔除掉——<strong>太阳变成一个黑盘、行星消失，但星空和背景还在</strong>（因为它们关了深度测试）。而且 <code>gl.getError()</code> 返回 0，控制台干干净净。</p>
+<p>绝大多数管线会在某个 pass（比如透明物体或后期）里把 <code>depthMask</code> 关掉，然后忘了恢复，下一帧开头的 <code>clear</code> 就废了。</p>
+<p><strong>对策</strong>：每帧 <code>clear</code> 之前显式 <code>gl.depthMask(true)</code>。</p>
+<h3 id="s38">7.2 屏幕空间线宽的单位 ★★</h3>
+<p>用 triangle strip 展宽线条时，如果把切线投影到屏幕空间得到的法向再除以视口半尺寸，那么这个向量在 NDC 里的长度<strong>正好是 1 个像素</strong>。此时偏移量应该直接乘「半线宽（像素）」。</p>
+<p>如果误以为还要再除一次视口尺寸，线宽会变成约 0.001 像素——<strong>轨道线完全不可见</strong>，而且没有任何报错。</p>
+<h3 id="s39">7.3 泛光升采样的纹理反馈环 ★★</h3>
+<p>升采样时如果同时把目标 mip 作为纹理采样（为了「读出旧值再相加」），就构成了同一张纹理既读又写的反馈环。行为未定义，某些驱动上悄悄产生垃圾数据，且<strong>不一定报 GL 错误</strong>。</p>
+<p><strong>对策</strong>：改用加法混合（<code>blendFunc(ONE, ONE)</code>）把模糊结果累加到目标上，着色器只采样源 mip。</p>
+<h3 id="s40">7.4 掠射角下薄环变成黑线 ★★</h3>
+<p>光学厚度公式 <code>τ = d / μ</code> 在 μ→0 时爆炸。当视线接近环平面时，即使是极稀薄的木星尘埃环（d ≈ 0.016）也会算出 alpha ≈ 1，于是在行星脸上画出一道<strong>纯黑的横线</strong>，看起来像渲染 bug。</p>
+<p><strong>对策</strong>：(1) 把 μ 的下限设到 0.10 而不是 0.045；(2) 木星环的密度要设得足够低（τ ≈ 0.016）。土星环在掠射时确实应该是一条实线，那是对的。</p>
+<h3 id="s41">7.5 Voronoi 特征在胞界被硬切断 ★</h3>
+<p>如果撞击坑的影响范围（尤其是溅射毯）延伸到超过 Voronoi 胞的边界，在边界处「获胜胞」会突变，导致坑的参数（半径、是否存在）跳变，表面上出现<strong>一段段的直线接缝</strong>，看起来像划痕。</p>
+<p><strong>对策</strong>：让坑的所有贡献在接近胞界前就衰减到 0，比如整体乘 <code>smoothstep(0.60, 0.40, d1)</code>；同时限制坑半径上限。</p>
+<h3 id="s42">7.6 卫星轨道与环系相撞 ★</h3>
+<p>卫星显示距离如果用一个固定的基准（比如 2.35 倍行星半径），会和土星环的外缘（2.34）几乎重合——土卫六是土星唯一的卫星，比例系数为 1，于是它的球体有一半埋在环里。</p>
+<p><strong>对策</strong>：基准距离必须为 <code>环外缘 + 最内层卫星自身显示半径 + 余量</code>，见 3.7。</p>
+<h3 id="s43">7.7 深空底色 ★★</h3>
+<p>背景的环境光底噪极易设过高。线性值 0.01 经过 ACES + gamma 之后是约 13% 的灰——整个画面会蒙上一层灰雾，星星和行星全都失去对比。</p>
+<p><strong>对策</strong>：深空底色的线性值应在 <strong>0.002 量级</strong>。银河带的亮度也要相应压低。做完之后画面应该是接近纯黑的，星星才会「亮」起来。</p>
+<h3 id="s44">7.8 HDR 预算与过曝 ★★★</h3>
+<p>这是最消耗调试时间的一类问题。ACES 色调映射会把线性值 &gt; 1.5 的部分快速压向白色，<strong>同时把饱和度也压掉</strong>。所以：</p>
+<ul><li>行星的反照率要用<strong>真实值</strong>：火星 0.17、月球 0.12、水星 0.14 —— 这些都很暗。用 0.7 的「好看」颜色会直接过曝成米白色，红色的火星会变成奶油色。</li><li>阳光强度不要给太大。建议 <code>强度 = clamp(1.5 · (1/r_AU)^0.40, 0.26, 2.1)</code>——注意这是<strong>压缩过的</strong>衰减（真实的 1/r² 会让海王星完全看不见）。</li><li>每加一个发光项（大气、边缘散射、镜面、自发光）都要重新检查是否过曝。</li><li><strong>调试方法</strong>：直接用 <code>gl.readPixels</code> 从 HDR 场景缓冲里读像素值，看线性值是多少，而不是靠肉眼判断截图。目标：行星盘面典型线性值在 0.3–0.7，只有太阳、云顶、冰盖、环系应该超过 1.0。</li></ul>
+<h3 id="s45">7.9 Worley 的 F1 给不出细胞结构 ★★</h3>
+<p><code>F1</code>（到最近特征点的距离）在特征点处最小，所以阈值化 F1 得到的是<strong>一堆圆点</strong>，不是细胞。太阳的米粒组织、任何「胞壁网络」都需要 <strong>F2 − F1</strong>（次近距离减最近距离），它在胞的<strong>边界</strong>处趋近 0。</p>
+<p>实现时在同一个循环里维护两个最小值即可，开销几乎不变。</p>
+<h3 id="s46">7.10 阶跃特征不能进高度场 ★</h3>
+<p>如果把一个 <code>smoothstep</code> 出来的锐利特征（云条纹、线纹）以较大权重放进高度场，屏幕空间导数的凹凸映射会把它的边缘放大成<strong>很深的暗色刻痕</strong>，看起来像划伤。</p>
+<p><strong>对策</strong>：这类特征进高度场的权重要小（0.1 量级），或者只影响反照率不影响高度。</p>
+<h3 id="s47">7.11 高倍速下的自转频闪 ★</h3>
+<p>时间速度到 1 年/秒时，地球每帧要转约 6 圈，视觉上变成随机抖动的噪点。</p>
+<p><strong>对策</strong>：自转相位的<strong>每帧增量</strong>做 clamp（±0.22 弧度左右）。信息面板照常显示真实自转周期。注意 clamp 的是增量不是速度，这样低速时完全精确。</p>
+<h3 id="s48">7.12 UV 球的三角形绕序 ★</h3>
+<p>自己生成球体网格时，绕序搞反会导致背面剔除剔掉正面。麻烦的是：对<strong>自发光</strong>的球体（太阳），正面和背面看起来几乎一样，你不会立刻发现；等到加了光照的行星才暴露出来。</p>
+<p><strong>验证方法</strong>：取赤道上一点手算叉积，确认几何法向朝外。</p>
+<h3 id="s49">7.13 GLSL 的 <code>smoothstep(a, b, x)</code> 在 a &gt; b 时未定义 ★</h3>
+<p>想做「反向渐变」时很自然会写 <code>smoothstep(0.7, 0.3, x)</code>。规范规定 <code>edge0 &gt;= edge1</code> 时结果未定义，虽然多数实现能work，但不保证跨平台一致。</p>
+<p><strong>对策</strong>：自己写一个 <code>sstep(a,b,x) { float t = clamp((x-a)/(b-a), 0.0, 1.0); return t*t*(3.0-2.0*t); }</code>，全程用它。</p>
+<h3 id="s50">7.14 fbm 的均值是 0.5，不是 0 ★</h3>
+<p>多倍频 fbm（振幅 0.5, 0.25, 0.125...）的取值范围约 [0,1]，均值 0.5。如果把几个 fbm 相加再送进色带，均值会漂到 0.6~0.8，色带的高端被吃满，<strong>整个天体变成单一颜色</strong>。太阳最容易出这个问题（会变成一个纯白球）。</p>
+<p><strong>对策</strong>：把送入色带前的值显式重新居中和缩放，并且用纸笔估算一遍典型值落在色带的哪一段。</p>
+<h3 id="s51">7.15 <code>readPixels</code> 读默认帧缓冲不可靠 ★</h3>
+<p><code>preserveDrawingBuffer: false</code> 时，在 rAF 回调之外读默认帧缓冲会得到全黑。调试时要读<strong>自己的 FBO</strong>（它们是持久的），或者在同一帧的绘制之后立刻读。</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s52">8. 验收标准</h2>
+<h3 id="s53">8.1 功能</h3>
+<ul><li>[ ] 断网可运行，无控制台报错，<code>gl.getError()</code> 全程为 0</li><li>[ ] 1080p / devicePixelRatio 1.8 下 ≥ 60 fps</li><li>[ ] 点击任意天体可聚焦，相机平滑过渡</li><li>[ ] 所有显示开关可用，「真实距离比例」有动画过渡</li><li>[ ] 时间可正放/倒放/暂停，可跳回当前时刻</li><li>[ ] 窗口缩放不破版，帧缓冲正确重建</li></ul>
+<h3 id="s54">8.2 天文正确性（这些数字可以直接自检）</h3>
+<p>把日期设到 <strong>2026-08-07</strong>，检查地球：</p>
+<div class="tablewrap"><table><thead><tr><th>项</th><th>期望值</th></tr></thead><tbody><tr><td>日心距离</td><td>≈ 1.014 AU（刚过 7 月初的远日点）</td></tr><tr><td>日心黄经</td><td>≈ 314.6°（等于当天太阳视黄经 135° + 180°）</td></tr><tr><td>轨道速度</td><td>≈ 29.3 km/s</td></tr></tbody></table></div>
+<p>其他检查点：</p>
+<div class="tablewrap"><table><thead><tr><th>检查项</th><th>期望</th></tr></thead><tbody><tr><td>土星轨道速度</td><td>≈ 9.7 km/s（平均 9.68）</td></tr><tr><td>海王星日心距（2026）</td><td>≈ 29.9 AU</td></tr><tr><td>2026 年的土星环</td><td><strong>接近侧向、且是背光的暗环</strong>（2025 年刚过环平面穿越，太阳相对环平面高度角约 −7.4°）</td></tr><tr><td>2033 年的土星环</td><td>大幅张开、正面受光、行星阴影清晰投在环上</td></tr><tr><td>木卫一/二/三</td><td>周期比接近 1 : 2 : 4，肉眼可见共振节奏</td></tr><tr><td>木星特洛伊群</td><td>长时间快进后仍稳定停留在木星前后 60°</td></tr><tr><td>天王星</td><td>自转轴几乎躺在轨道面内，环系近乎正对观察者</td></tr><tr><td>海卫一</td><td>公转方向与海王星自转方向相反</td></tr><tr><td>哈雷彗星</td><td>2061 年 7 月底过近日点，此时彗尾最长且背向太阳</td></tr></tbody></table></div>
+<p>如果地球黄经算出来差了 180°，多半是 <code>M = L − ϖ</code> 写成了 <code>L + ϖ</code>，或者坐标映射的手性反了。</p>
+<h3 id="s55">8.3 视觉</h3>
+<ul><li>[ ] 深空是接近纯黑的，星空有明显的银河带</li><li>[ ] 太阳表面能看清米粒组织的胞状网络和黑子，不是一个白球或黄球</li><li>[ ] 地球有蓝色海洋、白云、极冰、夜面城市灯光、蓝色大气边缘</li><li>[ ] 木星有多层带纹和大红斑漩涡</li><li>[ ] 土星环有卡西尼缝、行星阴影投在环上、环的阴影投在行星上</li><li>[ ] 岩质天体的撞击坑有大小分布、有坑缘凸起，不是一堆等大的黑点</li><li>[ ] 火星是锈红色的，不是米色的</li><li>[ ] 泛光和眩光有存在感但不糊住画面</li></ul>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s56">9. 建议的实施顺序</h2>
+<p>不要试图一次写完，按这个顺序分阶段跑通，每一步都能看到东西：</p>
+<ol><li><strong>骨架</strong>：WebGL2 上下文 + 矩阵库 + UV 球 + 轨道相机 + 一个纯色球。（先解决 7.12 绕序）</li><li><strong>轨道力学</strong>：开普勒求解 + 九大行星位置 + 时间控制。用无光照的纯色球验证——先对着 8.2 的数字把天文对上，再谈画面。</li><li><strong>深度与帧缓冲</strong>：HDR FBO + MSAA + 动态近远平面。（7.1 会在这一步埋雷）</li><li><strong>基础光照</strong>：点光源 + 柔和晨昏线，此时应该已经能看出「行星」了。</li><li><strong>后期</strong>：泛光 + ACES + 眩光。（7.3、7.7、7.8 集中在这一步）</li><li><strong>程序化表面</strong>：先写噪声库，然后一个类型一个类型地做，每做完一个就近距离截图检查。</li><li><strong>轨道线 + 小行星带 + 星空</strong>。（7.2 在这一步）</li><li><strong>环系与大气</strong>：包括两个互相投影。</li><li><strong>卫星与彗星</strong>。（7.6 在这一步）</li><li><strong>界面与信息面板</strong>。</li><li><strong>调优</strong>：曝光平衡、颜色饱和度、各种强度系数。这一步会比预期花更多时间，建议用 <code>readPixels</code> 量化而不是靠眼睛。</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s57">附：一个容易被忽略的整体建议</h2>
+<p>这个项目的难点<strong>不在于任何单个技术点</strong>，而在于<strong>曝光和色彩的整体平衡</strong>。太阳、行星昼面、行星夜面、环系、星空、大气、泛光——这七类东西的亮度跨越好几个数量级，任何一个给多了都会毁掉其余的。</p>
+<p>建议的做法是：先把所有东西用中性灰渲染出来、确认几何和运动全对，再一个一个地上色和调亮度，每加一个就用 <code>readPixels</code> 确认线性值落在预期区间。不要一边写着色器一边凭感觉调系数——那样会陷入无休止的来回。</p>
+</div>
+</body>
+</html>

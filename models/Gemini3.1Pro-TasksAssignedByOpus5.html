@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>太阳系实时运动模型</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .panel { pointer-events: auto; position: absolute; background: rgba(20,20,20,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; box-sizing: border-box; }
+        #left-panel { top: 20px; left: 20px; width: 220px; bottom: 80px; overflow-y: auto; }
+        #right-panel { top: 20px; right: 20px; width: 300px; }
+        #bottom-panel { bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 16px; align-items: center; }
+        #controls-panel { bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .list-item { cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+        .list-item:hover { background: rgba(255,255,255,0.1); }
+        .list-item.active { background: rgba(255,255,255,0.2); }
+        .indent { margin-left: 16px; font-size: 0.9em; opacity: 0.8; }
+        h3 { margin: 0 0 12px 0; font-size: 1.1em; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 0.9em; }
+        td { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        td:last-child { text-align: right; }
+        button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; backdrop-filter: blur(4px); }
+        button:hover { background: rgba(255,255,255,0.2); }
+        input[type="range"] { accent-color: #888; }
+        .label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9em; }
+        .overlay-label { position: absolute; pointer-events: none; color: rgba(255,255,255,0.8); font-size: 12px; transform: translate(-50%, -50%); text-shadow: 0 0 2px black; font-variant-numeric: tabular-nums; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        #desc { margin-top: 12px; font-size: 0.85em; opacity: 0.8; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <canvas id="glcanvas"></canvas>
+    <div id="ui-container">
+        <div id="left-panel" class="panel">
+            <h3>天体列表</h3>
+            <div id="body-list"></div>
+        </div>
+        <div id="right-panel" class="panel">
+            <h3 id="info-title">太阳</h3>
+            <table><tbody id="info-table"></tbody></table>
+            <div id="desc"></div>
+        </div>
+        <div id="bottom-panel" class="panel">
+            <button id="btn-play">暂停</button>
+            <button id="btn-now">此刻</button>
+            <div id="time-display" style="font-variant-numeric: tabular-nums; min-width: 180px; text-align: center;"></div>
+            <input type="range" id="speed-slider" min="-100" max="100" value="10">
+            <div id="speed-display" style="min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9em;"></div>
+        </div>
+        <div id="controls-panel" class="panel">
+            <label class="label"><input type="checkbox" id="chk-orbit" checked> 显示轨道</label>
+            <label class="label"><input type="checkbox" id="chk-label" checked> 显示名称</label>
+            <label class="label"><input type="checkbox" id="chk-moon" checked> 显示卫星</label>
+            <label class="label"><input type="checkbox" id="chk-asteroid" checked> 小行星带</label>
+            <label class="label"><input type="checkbox" id="chk-real-dist"> 真实距离比例</label>
+            <label class="label"><input type="checkbox" id="chk-bloom" checked> 辉光效</label>
+        </div>
+        <div id="labels-layer"></div>
+    </div>
+    <script>
+        // JS Code placeholder
+        
+// Math constants and utilities
+const DEG2RAD = Math.PI / 180.0;
+const RAD2DEG = 180.0 / Math.PI;
+
+class Vec3 {
+    constructor(x, y, z) { this.x = x; this.y = y; this.z = z; }
+    add(v) { return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z); }
+    sub(v) { return new Vec3(this.x - v.x, this.y - v.y, this.z - v.z); }
+    mul(s) { return new Vec3(this.x * s, this.y * s, this.z * s); }
+    dot(v) { return this.x * v.x + this.y * v.y + this.z * v.z; }
+    cross(v) { return new Vec3(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x); }
+    len() { return Math.sqrt(this.dot(this)); }
+    norm() { let l = this.len(); return l > 0 ? this.mul(1/l) : new Vec3(0,0,0); }
+    toArray() { return [this.x, this.y, this.z]; }
+}
+
+class Mat4 {
+    constructor() { this.m = new Float32Array(16); this.identity(); }
+    identity() {
+        this.m.fill(0);
+        this.m[0] = this.m[5] = this.m[10] = this.m[15] = 1;
+        return this;
+    }
+    mul(b) {
+        let res = new Mat4();
+        for(let i=0; i<4; i++) {
+            for(let j=0; j<4; j++) {
+                res.m[i*4+j] = this.m[i*4+0]*b.m[0*4+j] + this.m[i*4+1]*b.m[1*4+j] + this.m[i*4+2]*b.m[2*4+j] + this.m[i*4+3]*b.m[3*4+j];
+            }
+        }
+        return res;
+    }
+    translate(v) {
+        let res = new Mat4();
+        res.m.set(this.m);
+        res.m[12] += this.m[0]*v.x + this.m[4]*v.y + this.m[8]*v.z;
+        res.m[13] += this.m[1]*v.x + this.m[5]*v.y + this.m[9]*v.z;
+        res.m[14] += this.m[2]*v.x + this.m[6]*v.y + this.m[10]*v.z;
+        res.m[15] += this.m[3]*v.x + this.m[7]*v.y + this.m[11]*v.z;
+        return res;
+    }
+    scale(s) {
+        let res = new Mat4();
+        res.m.set(this.m);
+        res.m[0]*=s.x; res.m[1]*=s.x; res.m[2]*=s.x; res.m[3]*=s.x;
+        res.m[4]*=s.y; res.m[5]*=s.y; res.m[6]*=s.y; res.m[7]*=s.y;
+        res.m[8]*=s.z; res.m[9]*=s.z; res.m[10]*=s.z; res.m[11]*=s.z;
+        return res;
+    }
+    rotateX(a) {
+        let c = Math.cos(a), s = Math.sin(a);
+        let res = new Mat4(); res.m.set(this.m);
+        for(let i=0; i<4; i++) {
+            let y = this.m[i+4], z = this.m[i+8];
+            res.m[i+4] = y*c + z*s; res.m[i+8] = -y*s + z*c;
+        }
+        return res;
+    }
+    rotateY(a) {
+        let c = Math.cos(a), s = Math.sin(a);
+        let res = new Mat4(); res.m.set(this.m);
+        for(let i=0; i<4; i++) {
+            let x = this.m[i], z = this.m[i+8];
+            res.m[i] = x*c - z*s; res.m[i+8] = x*s + z*c;
+        }
+        return res;
+    }
+    rotateZ(a) {
+        let c = Math.cos(a), s = Math.sin(a);
+        let res = new Mat4(); res.m.set(this.m);
+        for(let i=0; i<4; i++) {
+            let x = this.m[i], y = this.m[i+4];
+            res.m[i] = x*c + y*s; res.m[i+4] = -x*s + y*c;
+        }
+        return res;
+    }
+    perspective(fovy, aspect, near, far) {
+        let f = 1.0 / Math.tan(fovy / 2.0);
+        let nf = 1.0 / (near - far);
+        let res = new Mat4();
+        res.m[0] = f / aspect;
+        res.m[5] = f;
+        res.m[10] = (far + near) * nf;
+        res.m[11] = -1;
+        res.m[14] = (2 * far * near) * nf;
+        res.m[15] = 0;
+        return res;
+    }
+    lookAt(eye, center, up) {
+        let z = eye.sub(center).norm();
+        if (z.len() === 0) z.z = 1;
+        let x = up.cross(z).norm();
+        if (x.len() === 0) { z.x += 0.0001; x = up.cross(z).norm(); }
+        let y = z.cross(x).norm();
+        let res = new Mat4();
+        res.m[0] = x.x; res.m[4] = x.y; res.m[8] = x.z;
+        res.m[1] = y.x; res.m[5] = y.y; res.m[9] = y.z;
+        res.m[2] = z.x; res.m[6] = z.y; res.m[10] = z.z;
+        res.m[12] = -x.dot(eye); res.m[13] = -y.dot(eye); res.m[14] = -z.dot(eye);
+        return res;
+    }
+    invert() {
+        let s = this.m, inv = new Float32Array(16);
+        inv[0] = s[5]*s[10]*s[15]-s[5]*s[11]*s[14]-s[9]*s[6]*s[15]+s[9]*s[7]*s[14]+s[13]*s[6]*s[11]-s[13]*s[7]*s[10];
+        inv[4] = -s[4]*s[10]*s[15]+s[4]*s[11]*s[14]+s[8]*s[6]*s[15]-s[8]*s[7]*s[14]-s[12]*s[6]*s[11]+s[12]*s[7]*s[10];
+        inv[8] = s[4]*s[9]*s[15]-s[4]*s[11]*s[13]-s[8]*s[5]*s[15]+s[8]*s[7]*s[13]+s[12]*s[5]*s[11]-s[12]*s[7]*s[9];
+        inv[12] = -s[4]*s[9]*s[14]+s[4]*s[10]*s[13]+s[8]*s[5]*s[14]-s[8]*s[6]*s[13]-s[12]*s[5]*s[10]+s[12]*s[6]*s[9];
+        inv[1] = -s[1]*s[10]*s[15]+s[1]*s[11]*s[14]+s[9]*s[2]*s[15]-s[9]*s[3]*s[14]-s[13]*s[2]*s[11]+s[13]*s[3]*s[10];
+        inv[5] = s[0]*s[10]*s[15]-s[0]*s[11]*s[14]-s[8]*s[2]*s[15]+s[8]*s[3]*s[14]+s[12]*s[2]*s[11]-s[12]*s[3]*s[10];
+        inv[9] = -s[0]*s[9]*s[15]+s[0]*s[11]*s[13]+s[8]*s[1]*s[15]-s[8]*s[3]*s[13]-s[12]*s[1]*s[11]+s[12]*s[3]*s[9];
+        inv[13] = s[0]*s[9]*s[14]-s[0]*s[10]*s[13]-s[8]*s[1]*s[14]+s[8]*s[2]*s[13]+s[12]*s[1]*s[10]-s[12]*s[2]*s[9];
+        inv[2] = s[1]*s[6]*s[15]-s[1]*s[7]*s[14]-s[5]*s[2]*s[15]+s[5]*s[3]*s[14]+s[13]*s[2]*s[7]-s[13]*s[3]*s[6];
+        inv[6] = -s[0]*s[6]*s[15]+s[0]*s[7]*s[14]+s[4]*s[2]*s[15]-s[4]*s[3]*s[14]-s[12]*s[2]*s[7]+s[12]*s[3]*s[6];
+        inv[10] = s[0]*s[5]*s[15]-s[0]*s[7]*s[13]-s[4]*s[1]*s[15]+s[4]*s[3]*s[13]+s[12]*s[1]*s[7]-s[12]*s[3]*s[5];
+        inv[14] = -s[0]*s[5]*s[14]+s[0]*s[6]*s[13]+s[4]*s[1]*s[14]-s[4]*s[2]*s[13]-s[12]*s[1]*s[6]+s[12]*s[2]*s[5];
+        inv[3] = -s[1]*s[6]*s[11]+s[1]*s[7]*s[10]+s[5]*s[2]*s[11]-s[5]*s[3]*s[10]-s[9]*s[2]*s[7]+s[9]*s[3]*s[6];
+        inv[7] = s[0]*s[6]*s[11]-s[0]*s[7]*s[10]-s[4]*s[2]*s[11]+s[4]*s[3]*s[10]+s[8]*s[2]*s[7]-s[8]*s[3]*s[6];
+        inv[11] = -s[0]*s[5]*s[11]+s[0]*s[7]*s[9]+s[4]*s[1]*s[11]-s[4]*s[3]*s[9]-s[8]*s[1]*s[7]+s[8]*s[3]*s[5];
+        inv[15] = s[0]*s[5]*s[10]-s[0]*s[6]*s[9]-s[4]*s[1]*s[10]+s[4]*s[2]*s[9]+s[8]*s[1]*s[6]-s[8]*s[2]*s[5];
+        let det = s[0]*inv[0] + s[1]*inv[4] + s[2]*inv[8] + s[3]*inv[12];
+        if (det === 0) return this;
+        let res = new Mat4();
+        for(let i=0; i<16; i++) res.m[i] = inv[i] / det;
+        return res;
+    }
+}
+
+function solveKepler(M, e) {
+    let E = M + e * Math.sin(M) * (1 + e * Math.cos(M));
+    for (let i = 0; i < 10; i++) {
+        let dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+        E -= dE;
+        if (Math.abs(dE) < 1e-13) break;
+    }
+    return E;
+}
+
+function computeOrbit(T, elements) {
+    let a = elements.a + elements.da * T;
+    let e = elements.e + elements.de * T;
+    let I = (elements.I + elements.dI * T) * DEG2RAD;
+    let L = (elements.L + elements.dL * T) * DEG2RAD;
+    let wp = (elements.wp + elements.dwp * T) * DEG2RAD;
+    let wO = (elements.wO + elements.dwO * T) * DEG2RAD;
+    
+    let w = wp - wO;
+    let M = L - wp;
+    M = ((M + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
+    
+    let E = solveKepler(M, e);
+    
+    let x_prime = a * (Math.cos(E) - e);
+    let y_prime = a * Math.sqrt(1 - e*e) * Math.sin(E);
+    
+    let cw = Math.cos(w), sw = Math.sin(w);
+    let cO = Math.cos(wO), sO = Math.sin(wO);
+    let cI = Math.cos(I), sI = Math.sin(I);
+    
+    let x = (cw*cO - sw*sO*cI)*x_prime + (-sw*cO - cw*sO*cI)*y_prime;
+    let y = (cw*sO + sw*cO*cI)*x_prime + (-sw*sO + cw*cO*cI)*y_prime;
+    let z = (sw*sI)*x_prime + (cw*sI)*y_prime;
+    
+    return { x: x, y: y, z: z, r: Math.sqrt(x*x + y*y + z*z), a: a };
+}
+
+function eclipticToWorld(p) {
+    // world = (x_ecl, z_ecl, -y_ecl)
+    return new Vec3(p.x, p.z, -p.y);
+}
+
+const planets = {
+  Mercury: { a: 0.38709927, e: 0.20563593, I: 7.00497902, L: 252.25032350, wp: 77.45779628, wO: 48.33076593, da: 0.00000037, de: 0.00001906, dI: -0.00594749, dL: 149472.67411175, dwp: 0.16047689, dwO: -0.12534081, tilt: 7.0, poleLon: 318.4, rotH: 1407.6, radius: 2439.7, mass: 3.30e23, P: 87.97, color: [0.6, 0.6, 0.6] },
+  Venus: { a: 0.72333566, e: 0.00677672, I: 3.39467605, L: 181.97909950, wp: 131.60246718, wO: 76.67984255, da: 0.00000390, de: -0.00004107, dI: -0.00078890, dL: 58517.81538729, dwp: 0.00268329, dwO: -0.27769418, tilt: 177.4, poleLon: 211.2, rotH: -5832.5, radius: 6051.8, mass: 4.87e24, P: 224.70, color: [0.8, 0.7, 0.5] },
+  Earth: { a: 1.00000261, e: 0.01671123, I: -0.00001531, L: 100.46457166, wp: 102.93768193, wO: 0.0, da: 0.00000562, de: -0.00004392, dI: -0.01294668, dL: 35999.37244981, dwp: 0.32327364, dwO: 0.0, tilt: 23.44, poleLon: 90.0, rotH: 23.9345, radius: 6371.0, mass: 5.972e24, P: 365.256, color: [0.2, 0.4, 0.8] },
+  Mars: { a: 1.52371034, e: 0.09339410, I: 1.84969142, L: -4.55343205, wp: -23.94362959, wO: 49.55953891, da: 0.00001847, de: 0.00007882, dI: -0.00813131, dL: 19140.30268499, dwp: 0.44441088, dwO: -0.29257343, tilt: 26.76, poleLon: 352.9, rotH: 24.6229, radius: 3389.5, mass: 6.42e23, P: 686.98, color: [0.7, 0.3, 0.2] },
+  Jupiter: { a: 5.20288700, e: 0.04838624, I: 1.30439695, L: 34.39644051, wp: 14.72847983, wO: 100.47390909, da: -0.00011607, de: -0.00013253, dI: -0.00183714, dL: 3034.74612775, dwp: 0.21252668, dwO: 0.20469106, tilt: 2.25, poleLon: 247.8, rotH: 9.925, radius: 69911, mass: 1.898e27, P: 4332.59, color: [0.6, 0.5, 0.4] }, // P in days (11.86y)
+  Saturn: { a: 9.53667594, e: 0.05386179, I: 2.48599187, L: 49.95424423, wp: 92.59887831, wO: 113.66242448, da: -0.00125060, de: -0.00050991, dI: 0.00193609, dL: 1222.49362201, dwp: -0.41897216, dwO: -0.28867794, tilt: 28.06, poleLon: 79.5, rotH: 10.656, radius: 58232, mass: 5.683e26, P: 10759.22, color: [0.8, 0.7, 0.5] }, // 29.46y
+  Uranus: { a: 19.18916464, e: 0.04725744, I: 0.77263783, L: 313.23810451, wp: 170.95427630, wO: 74.01692503, da: -0.00196176, de: -0.00004397, dI: -0.00242939, dL: 428.48202785, dwp: 0.40805281, dwO: 0.04240589, tilt: 97.77, poleLon: 77.7, rotH: -17.24, radius: 25362, mass: 8.68e25, P: 30688.5, color: [0.4, 0.7, 0.8] }, // 84.01y
+  Neptune: { a: 30.06992276, e: 0.00859048, I: 1.77004347, L: -55.12002969, wp: 44.96476227, wO: 131.78422574, da: 0.00026291, de: 0.00005105, dI: 0.00035372, dL: 218.45945325, dwp: -0.32241464, dwO: -0.00508664, tilt: 28.02, poleLon: 319.3, rotH: 16.11, radius: 24622, mass: 1.024e26, P: 60182, color: [0.2, 0.3, 0.8] }, // 164.8y
+  Pluto: { a: 39.48211675, e: 0.24882730, I: 17.14001206, L: 238.92903833, wp: 224.06891629, wO: 110.30393684, da: -0.00031596, de: 0.00005170, dI: 0.00004818, dL: 145.20780515, dwp: -0.04062942, dwO: -0.01183482, tilt: 112.8, poleLon: 137.4, rotH: -153.29, radius: 1188.3, mass: 1.303e22, P: 90547, color: [0.7, 0.6, 0.5] } // 247.9y
+};
+
+const moons = [
+  { name: 'Moon', parent: 'Earth', radius: 1737.4, a: 384400, P: 27.32166, inc: 5.145, ref: 'ecliptic' },
+  { name: 'Io', parent: 'Jupiter', radius: 1821.6, a: 421700, P: 1.769138, inc: 0.05, ref: 'equator' },
+  { name: 'Europa', parent: 'Jupiter', radius: 1560.8, a: 671034, P: 3.551181, inc: 0.47, ref: 'equator' },
+  { name: 'Ganymede', parent: 'Jupiter', radius: 2634.1, a: 1070412, P: 7.154553, inc: 0.20, ref: 'equator' },
+  { name: 'Callisto', parent: 'Jupiter', radius: 2410.3, a: 1882709, P: 16.6890, inc: 0.19, ref: 'equator' },
+  { name: 'Titan', parent: 'Saturn', radius: 2574.7, a: 1221870, P: 15.945, inc: 0.35, ref: 'equator' },
+  { name: 'Triton', parent: 'Neptune', radius: 1353.4, a: 354759, P: -5.876854, inc: 156.9, ref: 'equator' },
+  { name: 'Charon', parent: 'Pluto', radius: 606, a: 19591, P: 6.3872, inc: 0.08, ref: 'equator' }
+];
+
+const halley = {
+  a: 17.834, e: 0.96714, I: 162.26, wp: 111.33, wO: 58.42, Tp: 2446470.96, P_days: 27512.6
+};
+
+const SHADER_COMMON = `
+#define PI 3.14159265359
+
+vec3 hash33(vec3 p) {
+    p = fract(p * vec3(0.1031, 0.1030, 0.0973));
+    p += dot(p, p.yxz + 33.33);
+    return fract((p.xxy + p.yxx) * p.zyx);
+}
+
+float hash13(vec3 p3) {
+    p3  = fract(p3 * .1031);
+    p3 += dot(p3, p3.zyx + 31.32);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float valueNoise(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    vec3 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix(hash13(i + vec3(0,0,0)), hash13(i + vec3(1,0,0)), u.x),
+                   mix(hash13(i + vec3(0,1,0)), hash13(i + vec3(1,1,0)), u.x), u.y),
+               mix(mix(hash13(i + vec3(0,0,1)), hash13(i + vec3(1,0,1)), u.x),
+                   mix(hash13(i + vec3(0,1,1)), hash13(i + vec3(1,1,1)), u.x), u.y), u.z);
+}
+
+const mat3 rotM = mat3(0.00, 0.80, 0.60, -0.80, 0.36, -0.48, -0.60, -0.48, 0.64);
+float fbm(vec3 p) {
+    float f = 0.0, a = 0.5;
+    for(int i = 0; i < 5; i++) {
+        f += a * valueNoise(p);
+        p = rotM * p * 2.01;
+        a *= 0.5;
+    }
+    return f;
+}
+float fbm7(vec3 p) {
+    float f = 0.0, a = 0.5;
+    for(int i = 0; i < 7; i++) {
+        f += a * valueNoise(p);
+        p = rotM * p * 2.01;
+        a *= 0.5;
+    }
+    return f;
+}
+
+vec2 worley(vec3 p) {
+    vec3 n = floor(p), f = fract(p);
+    float d1 = 1.0, d2 = 1.0;
+    float id = 0.0;
+    for(int k=-1; k<=1; k++)
+    for(int j=-1; j<=1; j++)
+    for(int i=-1; i<=1; i++) {
+        vec3 g = vec3(float(i), float(j), float(k));
+        vec3 o = hash33(n + g);
+        vec3 r = g + o - f;
+        float d = dot(r, r);
+        if(d < d1) { d2 = d1; d1 = d; id = hash13(n + g); }
+        else if(d < d2) { d2 = d; }
+    }
+    return vec2(sqrt(d1), sqrt(d2));
+}
+vec3 worleyWithId(vec3 p) {
+    vec3 n = floor(p), f = fract(p);
+    float d1 = 1.0, d2 = 1.0;
+    float id = 0.0;
+    for(int k=-1; k<=1; k++)
+    for(int j=-1; j<=1; j++)
+    for(int i=-1; i<=1; i++) {
+        vec3 g = vec3(float(i), float(j), float(k));
+        vec3 o = hash33(n + g);
+        vec3 r = g + o - f;
+        float d = dot(r, r);
+        if(d < d1) { d2 = d1; d1 = d; id = hash13(n + g); }
+        else if(d < d2) { d2 = d; }
+    }
+    return vec3(sqrt(d1), sqrt(d2), id);
+}
+
+float sstep(float a, float b, float x) {
+    float t = clamp((x - a) / (b - a), 0.0, 1.0);
+    return t * t * (3.0 - 2.0 * t);
+}
+`;
+
+const SHADER_VS = `#version 300 es
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec3 aNorm;
+layout(location = 2) in vec2 aUv;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProj;
+
+out vec3 vWorldPos;
+out vec3 vNorm;
+out vec2 vUv;
+out vec3 vLocalPos;
+
+void main() {
+    vec4 worldPos = uModel * vec4(aPos, 1.0);
+    vWorldPos = worldPos.xyz;
+    vNorm = normalize(mat3(uModel) * aNorm);
+    vUv = aUv;
+    vLocalPos = aPos;
+    gl_Position = uProj * uView * worldPos;
+}
+`;
+
+const SHADER_FS_SUN = `#version 300 es
+precision highp float;
+
+in vec3 vWorldPos;
+in vec3 vNorm;
+in vec3 vLocalPos;
+
+uniform vec3 uCamPos;
+uniform float uTime;
+
+layout(location = 0) out vec4 fragColor;
+` + SHADER_COMMON + `
+void main() {
+    vec3 p = normalize(vLocalPos);
+    vec3 V = normalize(uCamPos - vWorldPos);
+    vec3 N = normalize(vNorm);
+    
+    // time param
+    vec3 pt = p * 76.0 + uTime * 0.1;
+    vec2 w = worley(pt);
+    float granules = sstep(0.1, 0.4, w.y - w.x);
+    
+    vec3 pt2 = p * 31.0 - uTime * 0.05;
+    vec2 w2 = worley(pt2);
+    granules += sstep(0.1, 0.4, w2.y - w2.x) * 0.5;
+    
+    float superg = fbm(p * 6.5 + uTime * 0.02);
+    
+    float umbra = sstep(0.65, 0.75, superg);
+    float penumbra = sstep(0.55, 0.65, superg);
+    float sunspot = mix(1.0, 0.3, umbra) * mix(1.0, 0.7, penumbra);
+    
+    float baseVal = (granules * 0.2 + superg * 0.8) * sunspot;
+    baseVal = (baseVal - 0.2) * 1.5;
+    
+    float limb = 0.24 + 0.76 * pow(max(dot(N, V), 0.0), 0.38);
+    float v_col = clamp(baseVal * limb, 0.0, 1.0);
+    
+    // Color mapping: dark red -> orange -> yellow -> white-yellow -> white
+    vec3 col = vec3(0.0);
+    if(v_col < 0.2) col = mix(vec3(0.3, 0.05, 0.0), vec3(0.8, 0.2, 0.0), v_col / 0.2);
+    else if(v_col < 0.5) col = mix(vec3(0.8, 0.2, 0.0), vec3(1.0, 0.6, 0.0), (v_col - 0.2) / 0.3);
+    else if(v_col < 0.8) col = mix(vec3(1.0, 0.6, 0.0), vec3(1.0, 0.9, 0.4), (v_col - 0.5) / 0.3);
+    else col = mix(vec3(1.0, 0.9, 0.4), vec3(1.0, 1.0, 1.0), (v_col - 0.8) / 0.2);
+    
+    fragColor = vec4(col * 2.0 * sunspot, 1.0);
+}
+`;
+
+const SHADER_FS_PLANET = `#version 300 es
+precision highp float;
+
+in vec3 vWorldPos;
+in vec3 vNorm;
+in vec3 vLocalPos;
+
+uniform vec3 uCamPos;
+uniform vec3 uLightPos;
+uniform int uType; // 0: rock, 1: earth, 2: gas, 3: ice
+uniform vec3 uBaseColor;
+uniform float uTime;
+
+// ring shadow uniforms
+uniform float uRingInner;
+uniform float uRingOuter;
+uniform mat4 uWorldToRing; // To compute ring shadow
+// sun projection uniforms
+uniform vec3 uSunPos;
+
+layout(location = 0) out vec4 fragColor;
+` + SHADER_COMMON + `
+
+// Ring density function matching the document
+float ringDensity(float r) {
+    if (r < 1.235 || r > 2.34) return 0.0;
+    float tau = 0.0;
+    if (r < 1.53) tau = 0.11; // C
+    else if (r < 1.95) tau = 1.20; // B
+    else if (r < 2.03) tau = 1.20 * 0.13; // Cassini (reduced 87%)
+    else if (r < 2.27) tau = 0.58; // A
+    
+    // Encke and Keeler
+    float encke = exp(-pow((r - 2.214)/0.0045, 2.0));
+    tau *= (1.0 - encke * 0.92);
+    float keeler = exp(-pow((r - 2.265)/0.0018, 2.0));
+    tau *= (1.0 - keeler * 0.80);
+    
+    if (r >= 2.31 && r < 2.34) {
+        float f_ring = exp(-pow((r - 2.324)/0.0055, 2.0));
+        tau += f_ring * 0.30;
+    }
+    
+    float noise = 0.70 + 0.60 * fbm(vec3(r * 230.0, 0.0, 0.0));
+    return tau * noise;
+}
+
+vec2 getCrater(vec3 p, float freq, float depth) {
+    vec3 w = worleyWithId(p * freq);
+    float d1 = w.x; float id = w.z;
+    float rad = 0.13 + 0.22 * fract(id * 7.31);
+    float t = d1 / rad;
+    float bowl = (t < 1.0) ? -(1.0 - t*t) : 0.0;
+    float rim = exp(-pow((t - 1.0)/0.26, 2.0));
+    float exist = step(0.74, fract(id * 13.1)) * sstep(0.40, 0.60, d1);
+    float h = (bowl * 0.90 + rim * 0.50) * depth * exist;
+    float alb = (bowl * 0.55 + rim * 0.32) * exist;
+    return vec2(h, alb);
+}
+
+void main() {
+    vec3 p = normalize(vLocalPos);
+    vec3 N = normalize(vNorm);
+    vec3 V = normalize(uCamPos - vWorldPos);
+    vec3 L = normalize(uLightPos - vWorldPos); // uLightPos is sun world pos
+    
+    float height = 0.0;
+    vec3 albedo = uBaseColor;
+    float spec = 0.0;
+    float selfLight = 0.0;
+    
+    if(uType == 0) { // Rock
+        vec2 c1 = getCrater(p, 5.0, 1.0);
+        vec2 c2 = getCrater(p, 12.0, 0.52);
+        vec2 c3 = getCrater(p, 28.0, 0.26);
+        vec2 c4 = getCrater(p, 62.0, 0.13);
+        height = c1.x + c2.x + c3.x + c4.x;
+        float albMod = c1.y + c2.y + c3.y + c4.y;
+        albedo = uBaseColor * (1.0 + albMod);
+    } 
+    else if(uType == 1) { // Earth
+        float h = fbm7(p * 2.5);
+        if(h > 0.552) { // Land
+            height = (h - 0.552) * 2.0;
+            float n2 = fbm(p * 5.0);
+            albedo = mix(vec3(0.1, 0.3, 0.1), vec3(0.5, 0.4, 0.2), n2);
+            if(height > 0.4) albedo = mix(albedo, vec3(0.4), (height-0.4)*2.0); // Mountain
+            if(abs(p.y) > 0.7) albedo = mix(albedo, vec3(0.8), sstep(0.7, 0.9, abs(p.y))); // Ice
+            
+            // Night lights
+            float dl = dot(N, L);
+            if(dl < 0.0) {
+                float lights = pow(valueNoise(p * 150.0), 6.0) * sstep(-0.1, -0.4, dl);
+                selfLight = lights * 2.0;
+            }
+        } else { // Ocean
+            height = 0.0;
+            float depth = (0.552 - h) / 0.552;
+            albedo = mix(vec3(0.05, 0.2, 0.4), vec3(0.0, 0.05, 0.15), depth);
+            spec = 0.5;
+        }
+        
+        // Clouds
+        float lat = asin(p.y);
+        float cloudU = p.x * cos(uTime*0.01 * (1.0 - abs(p.y)));
+        float cloudNoise = fbm(vec3(cloudU, p.y, p.z) * 4.0);
+        float cloudAmt = sstep(0.4, 0.7, cloudNoise);
+        albedo = mix(albedo, vec3(0.9), cloudAmt);
+        spec *= (1.0 - cloudAmt);
+        height = mix(height, cloudAmt * 0.1, cloudAmt);
+        selfLight *= (1.0 - cloudAmt);
+    }
+    else if(uType == 2) { // Gas (Jupiter/Saturn)
+        float lat = asin(p.y) * 180.0 / PI;
+        
+        // Turbulence
+        float turb = fbm(p * 4.0) * 0.1;
+        float latMod = lat + turb * 20.0; // Wood/Saturn difference can be done by uniforms
+        
+        float bands = sin(latMod * 4.0) + sin(latMod * 9.0)*0.5 + sin(latMod * 17.0)*0.25;
+        bands = sstep(-1.5, 1.5, bands);
+        albedo = mix(uBaseColor, uBaseColor * 0.6, bands);
+        
+        // fade at poles
+        albedo = mix(albedo, uBaseColor*0.8, sstep(46.0, 90.0, abs(lat)));
+        
+        // Great Red Spot (Jupiter approx)
+        if(uBaseColor.g > 0.4 && uBaseColor.g < 0.6 && uBaseColor.r > 0.5) { // Hack to identify Jupiter
+            vec3 spotCenter = normalize(vec3(1.0, -0.3, 0.5));
+            float dSpot = length((p - spotCenter) * vec3(1.0, 2.15, 1.0));
+            if(dSpot < 0.15) {
+                albedo = mix(vec3(0.6, 0.2, 0.1), albedo, sstep(0.1, 0.15, dSpot));
+            }
+        }
+    }
+    else if(uType == 3) { // Ice
+        albedo = uBaseColor;
+    }
+    
+    // Bump mapping
+    if(height > 0.001) {
+        vec3 dpx = dFdx(vWorldPos), dpy = dFdy(vWorldPos);
+        float dhx = dFdx(height), dhy = dFdy(height);
+        vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
+        float det = dot(dpx, r1);
+        if (abs(det) > 1e-5) {
+            vec3 grad = (r1 * dhx + r2 * dhy) / det;
+            N = normalize(N - 0.05 * grad); // Intensity 0.05
+        }
+    }
+
+    float diff = max(dot(N, L), 0.0);
+    
+    // Ring shadow on planet
+    if (uRingOuter > uRingInner) { // Has rings
+        vec4 rpos = uWorldToRing * vec4(vWorldPos, 1.0);
+        vec4 rsun = uWorldToRing * vec4(uLightPos, 1.0);
+        vec3 sunDir = normalize(rsun.xyz - rpos.xyz);
+        
+        // ray intersect with y=0 plane
+        if (sunDir.y != 0.0) {
+            float t = -rpos.y / sunDir.y;
+            if (t > 0.0) {
+                vec3 hit = rpos.xyz + sunDir * t;
+                float r = length(hit.xz); // r is scaled to planet radius = 1 if uWorldToRing is constructed correctly
+                if (r > uRingInner && r < uRingOuter) {
+                    float tau = ringDensity(r);
+                    diff *= exp(-tau * 1.45 / abs(sunDir.y));
+                }
+            }
+        }
+    }
+    
+    // Ambient is extremely low
+    vec3 color = albedo * diff + vec3(0.002);
+    
+    if(spec > 0.0) {
+        vec3 H = normalize(L + V);
+        float s = pow(max(dot(N, H), 0.0), 420.0);
+        color += s * spec * vec3(1.0);
+    }
+    
+    color += vec3(1.0, 0.8, 0.5) * selfLight;
+    
+    // Light attenuation (r_AU)
+    float r_AU = length(uLightPos) / 34.0; // approx
+    float intensity = clamp(1.5 * pow(max(1e-4, r_AU), -0.40), 0.26, 2.1);
+    
+    fragColor = vec4(color * intensity, 1.0);
+}
+`;
+
+const SHADER_VS_RING = `#version 300 es
+layout(location = 0) in vec2 aPos;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProj;
+
+out vec2 vLocalPos;
+out vec3 vWorldPos;
+
+void main() {
+    vec4 w = uModel * vec4(aPos.x, 0.0, aPos.y, 1.0);
+    vWorldPos = w.xyz;
+    vLocalPos = aPos;
+    gl_Position = uProj * uView * w;
+}
+`;
+
+const SHADER_FS_RING = `#version 300 es
+precision highp float;
+
+in vec2 vLocalPos;
+in vec3 vWorldPos;
+
+uniform vec3 uCamPos;
+uniform vec3 uLightPos;
+uniform float uInner;
+uniform float uOuter;
+uniform vec3 uPlanetPos;
+uniform float uPlanetRadius; // in world space
+
+layout(location = 0) out vec4 fragColor;
+` + SHADER_COMMON + `
+
+float ringDensity(float r) {
+    if (r < 1.235 || r > 2.34) return 0.0;
+    float tau = 0.0;
+    if (r < 1.53) tau = 0.11; 
+    else if (r < 1.95) tau = 1.20; 
+    else if (r < 2.03) tau = 1.20 * 0.13; 
+    else if (r < 2.27) tau = 0.58; 
+    
+    float encke = exp(-pow((r - 2.214)/0.0045, 2.0));
+    tau *= (1.0 - encke * 0.92);
+    float keeler = exp(-pow((r - 2.265)/0.0018, 2.0));
+    tau *= (1.0 - keeler * 0.80);
+    
+    if (r >= 2.31 && r < 2.34) {
+        float f_ring = exp(-pow((r - 2.324)/0.0055, 2.0));
+        tau += f_ring * 0.30;
+    }
+    float noise = 0.70 + 0.60 * fbm(vec3(r * 230.0, 0.0, 0.0));
+    return tau * noise;
+}
+
+void main() {
+    float r = length(vLocalPos);
+    if(r < uInner || r > uOuter) discard;
+    
+    float tau_base = ringDensity(r);
+    
+    vec3 N = vec3(0.0, 1.0, 0.0); // local normal
+    vec3 V = normalize(uCamPos - vWorldPos);
+    vec3 L = normalize(uLightPos - vWorldPos);
+    
+    // Normal in world space (roughly matching planet's up vector) - assuming ring is in XZ plane of its model matrix
+    // For simplicity, let's say we pass normal from VS or we do calculation in local space
+    
+    // Transform light and view to local space (assuming ring is in XY or XZ, let's use the local pos)
+    // Wait, vLocalPos is just 2D, the ring is flat.
+    // The density tau_base is optical depth. 
+    // Transmittance = exp(-tau_base / abs(dot(N, V)))
+    
+    // Very simple ring lighting:
+    vec3 color = vec3(0.7, 0.65, 0.55); // base ring color
+    
+    // Planet shadow:
+    // If the ray from local pos to light intersects the planet (radius 1.0 in local space)
+    // Local pos is (vLocalPos.x, 0.0, vLocalPos.y)
+    // L_local is needed, but we don't have the inverse matrix here easily unless passed.
+    // We can just use world space for shadow:
+    vec3 toLight = normalize(uLightPos - vWorldPos);
+    vec3 toPlanet = uPlanetPos - vWorldPos;
+    
+    // Distance along the light ray to the closest point to planet center
+    float t = dot(toPlanet, toLight);
+    float shadow = 1.0;
+    if (t > 0.0) {
+        float distSq = dot(toPlanet, toPlanet) - t * t;
+        if (distSq < uPlanetRadius * uPlanetRadius) {
+            shadow = 0.0; // In shadow
+        }
+    }
+    
+    // Simple diffuse + scatter
+    float scatter = max(0.0, dot(V, -toLight));
+    scatter = pow(scatter, 4.0) * 0.5 + 0.5;
+    
+    float alpha = 1.0 - exp(-tau_base * 2.0); // opacity
+    vec3 finalColor = color * scatter * shadow;
+    
+    fragColor = vec4(finalColor, alpha);
+}
+`;
+
+const SHADER_VS_POST = `#version 300 es
+layout(location = 0) in vec2 aPos;
+out vec2 vUv;
+void main() {
+    vUv = aPos * 0.5 + 0.5;
+    gl_Position = vec4(aPos, 0.0, 1.0);
+}
+`;
+
+const SHADER_FS_BLOOM_EXTRACT = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+layout(location = 0) out vec4 fragColor;
+void main() {
+    vec3 col = texture(uTex, vUv).rgb;
+    float brightness = dot(col, vec3(0.2126, 0.7152, 0.0722));
+    float threshold = 1.25;
+    float knee = 0.6;
+    float rq = clamp(brightness - threshold + knee, 0.0, 2.0 * knee);
+    rq = (rq * rq) / (4.0 * knee + 0.0001);
+    float val = max(rq, brightness - threshold);
+    fragColor = vec4(col * (val / (brightness + 0.0001)), 1.0);
+}
+`;
+
+const SHADER_FS_BLOOM_DOWNSAMPLE = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+uniform vec2 uTexelSize;
+layout(location = 0) out vec4 fragColor;
+void main() {
+    vec2 t = vUv;
+    vec2 tx = uTexelSize;
+    // 13 tap downsample
+    vec3 a = texture(uTex, t + vec2(-2.0, 2.0)*tx).rgb;
+    vec3 b = texture(uTex, t + vec2(0.0, 2.0)*tx).rgb;
+    vec3 c = texture(uTex, t + vec2(2.0, 2.0)*tx).rgb;
+    vec3 d = texture(uTex, t + vec2(-2.0, 0.0)*tx).rgb;
+    vec3 e = texture(uTex, t + vec2(0.0, 0.0)*tx).rgb;
+    vec3 f = texture(uTex, t + vec2(2.0, 0.0)*tx).rgb;
+    vec3 g = texture(uTex, t + vec2(-2.0, -2.0)*tx).rgb;
+    vec3 h = texture(uTex, t + vec2(0.0, -2.0)*tx).rgb;
+    vec3 i = texture(uTex, t + vec2(2.0, -2.0)*tx).rgb;
+    vec3 j = texture(uTex, t + vec2(-1.0, 1.0)*tx).rgb;
+    vec3 k = texture(uTex, t + vec2(1.0, 1.0)*tx).rgb;
+    vec3 l = texture(uTex, t + vec2(-1.0, -1.0)*tx).rgb;
+    vec3 m = texture(uTex, t + vec2(1.0, -1.0)*tx).rgb;
+    
+    vec3 col = e*0.125 + (a+c+g+i)*0.03125 + (b+d+f+h)*0.0625 + (j+k+l+m)*0.125;
+    fragColor = vec4(col, 1.0);
+}
+`;
+
+const SHADER_FS_BLOOM_UPSAMPLE = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+uniform vec2 uTexelSize;
+layout(location = 0) out vec4 fragColor;
+void main() {
+    vec2 t = vUv;
+    vec2 tx = uTexelSize;
+    // 3x3 tent
+    vec3 a = texture(uTex, t + vec2(-1.0, 1.0)*tx).rgb;
+    vec3 b = texture(uTex, t + vec2(0.0, 1.0)*tx).rgb;
+    vec3 c = texture(uTex, t + vec2(1.0, 1.0)*tx).rgb;
+    vec3 d = texture(uTex, t + vec2(-1.0, 0.0)*tx).rgb;
+    vec3 e = texture(uTex, t).rgb;
+    vec3 f = texture(uTex, t + vec2(1.0, 0.0)*tx).rgb;
+    vec3 g = texture(uTex, t + vec2(-1.0, -1.0)*tx).rgb;
+    vec3 h = texture(uTex, t + vec2(0.0, -1.0)*tx).rgb;
+    vec3 i = texture(uTex, t + vec2(1.0, -1.0)*tx).rgb;
+    
+    vec3 col = e*0.25 + (b+d+f+h)*0.125 + (a+c+g+i)*0.0625;
+    fragColor = vec4(col, 1.0);
+}
+`;
+
+const SHADER_FS_COMPOSITE = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uSceneTex;
+uniform sampler2D uBloomTex;
+layout(location = 0) out vec4 fragColor;
+
+vec3 ACESFilm(vec3 x) {
+    float a = 2.51;
+    float b = 0.03;
+    float c = 2.43;
+    float d = 0.59;
+    float e = 0.14;
+    return clamp((x*(a*x+b))/(x*(c*x+d)+e), 0.0, 1.0);
+}
+
+void main() {
+    vec3 scene = texture(uSceneTex, vUv).rgb;
+    vec3 bloom = texture(uBloomTex, vUv).rgb;
+    
+    vec3 color = scene + bloom * 0.34;
+    
+    // Lens flare can be added here or in a separate pass
+    
+    color = ACESFilm(color);
+    color = pow(color, vec3(1.0/2.2));
+    
+    // vignette
+    vec2 uv = vUv * 2.0 - 1.0;
+    float dist = dot(uv, uv);
+    color *= 1.0 - dist * 0.2;
+    
+    fragColor = vec4(color, 1.0);
+}
+`;
+
+class Shader {
+    constructor(gl, vsSource, fsSource) {
+        this.gl = gl;
+        this.program = gl.createProgram();
+        let vs = this.compile(gl.VERTEX_SHADER, vsSource);
+        let fs = this.compile(gl.FRAGMENT_SHADER, fsSource);
+        gl.attachShader(this.program, vs);
+        gl.attachShader(this.program, fs);
+        gl.linkProgram(this.program);
+        if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
+            console.error(gl.getProgramInfoLog(this.program));
+        }
+        this.uniforms = {};
+    }
+    compile(type, source) {
+        let s = this.gl.createShader(type);
+        this.gl.shaderSource(s, source);
+        this.gl.compileShader(s);
+        if (!this.gl.getShaderParameter(s, this.gl.COMPILE_STATUS)) {
+            console.error(this.gl.getShaderInfoLog(s));
+        }
+        return s;
+    }
+    use() { this.gl.useProgram(this.program); }
+    set1i(name, v) { this.gl.uniform1i(this.loc(name), v); }
+    set1f(name, v) { this.gl.uniform1f(this.loc(name), v); }
+    set2f(name, x, y) { this.gl.uniform2f(this.loc(name), x, y); }
+    set3f(name, x, y, z) { this.gl.uniform3f(this.loc(name), x, y, z); }
+    set3fv(name, v) { this.gl.uniform3fv(this.loc(name), v); }
+    setMat4(name, m) { this.gl.uniformMatrix4fv(this.loc(name), false, m.m); }
+    loc(name) {
+        if (this.uniforms[name] === undefined) {
+            this.uniforms[name] = this.gl.getUniformLocation(this.program, name);
+        }
+        return this.uniforms[name];
+    }
+}
+
+function createSphere(gl, radius, latBands, lonBands) {
+    let positions = [];
+    let normals = [];
+    let uvs = [];
+    let indices = [];
+
+    for (let latNumber = 0; latNumber <= latBands; latNumber++) {
+        let theta = latNumber * Math.PI / latBands;
+        let sinTheta = Math.sin(theta);
+        let cosTheta = Math.cos(theta);
+
+        for (let lonNumber = 0; lonNumber <= lonBands; lonNumber++) {
+            let phi = lonNumber * 2 * Math.PI / lonBands;
+            let sinPhi = Math.sin(phi);
+            let cosPhi = Math.cos(phi);
+
+            let x = cosPhi * sinTheta;
+            let y = cosTheta;
+            let z = sinPhi * sinTheta;
+            let u = 1 - (lonNumber / lonBands);
+            let v = 1 - (latNumber / latBands);
+
+            normals.push(x, y, z);
+            uvs.push(u, v);
+            positions.push(radius * x, radius * y, radius * z);
+        }
+    }
+
+    for (let latNumber = 0; latNumber < latBands; latNumber++) {
+        for (let lonNumber = 0; lonNumber < lonBands; lonNumber++) {
+            let first = (latNumber * (lonBands + 1)) + lonNumber;
+            let second = first + lonBands + 1;
+            indices.push(first, second, first + 1);
+            indices.push(second, second + 1, first + 1);
+        }
+    }
+
+    let vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    let pVBO = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    
+    let nVBO = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, nVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+
+    let uvVBO = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(2);
+    gl.vertexAttribPointer(2, 2, gl.FLOAT, false, 0, 0);
+
+    let ebo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    
+    gl.bindVertexArray(null);
+    return { vao, count: indices.length };
+}
+
+function createQuad(gl) {
+    let vertices = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
+    let vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    let vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+    return { vao, count: 4 };
+}
+
+function createRing(gl) {
+    // A simple quad that covers [-3, 3] in XZ plane
+    let vertices = new Float32Array([-3,-3, 3,-3, -3,3, 3,3]);
+    let vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    let vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+    return { vao, count: 4 };
+}
+
+let gl;
+let canvas;
+let shaders = {};
+let meshes = {};
+let state = {
+    jd: 2461259.0, // ≈ 2026-08-07
+    speedLog: 10,
+    playing: true,
+    camParams: { yaw: 0, pitch: 0.3, dist: 100 },
+    target: 'Sun',
+    targetDist: 100,
+    compressTarget: 0.62,
+    compressRatio: 0.62
+};
+
+const G = {
+    SCALE: 34.0,
+    bloomLevels: 6,
+    fbos: {}
+};
+
+function setupFBO(w, h, useMSAA) {
+    let fbo = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    let tex = null, rbColor = null, rbDepth = null;
+    
+    if(useMSAA) {
+        rbColor = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rbColor);
+        gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.RGBA16F, w, h);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, rbColor);
+        
+        rbDepth = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rbDepth);
+        gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.DEPTH_COMPONENT24, w, h);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rbDepth);
+    } else {
+        tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.FLOAT, null);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+        
+        rbDepth = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rbDepth);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, w, h);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rbDepth);
+    }
+    
+    let status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if(status !== gl.FRAMEBUFFER_COMPLETE) console.error("FBO incomplete", status);
+    
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return { fbo, tex, rbColor, rbDepth, w, h };
+}
+
+function initWebGL() {
+    canvas = document.getElementById('glcanvas');
+    gl = canvas.getContext('webgl2', { antialias: false });
+    gl.getExtension('EXT_color_buffer_float');
+    
+    shaders.sun = new Shader(gl, SHADER_VS, SHADER_FS_SUN);
+    shaders.planet = new Shader(gl, SHADER_VS, SHADER_FS_PLANET);
+    shaders.ring = new Shader(gl, SHADER_VS_RING, SHADER_FS_RING);
+    shaders.extract = new Shader(gl, SHADER_VS_POST, SHADER_FS_BLOOM_EXTRACT);
+    shaders.down = new Shader(gl, SHADER_VS_POST, SHADER_FS_BLOOM_DOWNSAMPLE);
+    shaders.up = new Shader(gl, SHADER_VS_POST, SHADER_FS_BLOOM_UPSAMPLE);
+    shaders.composite = new Shader(gl, SHADER_VS_POST, SHADER_FS_COMPOSITE);
+    
+    meshes.sphere = createSphere(gl, 1, 64, 64);
+    meshes.quad = createQuad(gl);
+    meshes.ring = createRing(gl);
+    
+    resize();
+    window.addEventListener('resize', resize);
+    
+    // UI events
+    let isDragging = false;
+    let lastX, lastY;
+    canvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+    canvas.addEventListener('mousemove', e => {
+        if(!isDragging) return;
+        let dx = e.clientX - lastX;
+        let dy = e.clientY - lastY;
+        state.camParams.yaw -= dx * 0.005;
+        state.camParams.pitch += dy * 0.005;
+        state.camParams.pitch = Math.max(-1.5, Math.min(1.5, state.camParams.pitch));
+        lastX = e.clientX; lastY = e.clientY;
+    });
+    canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('mouseleave', () => isDragging = false);
+    canvas.addEventListener('wheel', e => {
+        state.camParams.dist *= (1 + e.deltaY * 0.001);
+        state.camParams.dist = Math.max(1.1, state.camParams.dist);
+        state.targetDist = state.camParams.dist;
+    });
+}
+
+function resize() {
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    canvas.width = w * window.devicePixelRatio;
+    canvas.height = h * window.devicePixelRatio;
+    
+    let bw = canvas.width, bh = canvas.height;
+    G.fbos.msaa = setupFBO(bw, bh, true);
+    G.fbos.scene = setupFBO(bw, bh, false);
+    
+    G.fbos.bloom = [];
+    for(let i=0; i<G.bloomLevels; i++) {
+        bw = Math.floor(bw/2); bh = Math.floor(bh/2);
+        if(bw < 1) bw = 1; if(bh < 1) bh = 1;
+        G.fbos.bloom.push(setupFBO(bw, bh, false));
+    }
+}
+
+let bodies = {};
+
+function getScaleR(r_AU) {
+    return G.SCALE * Math.pow(r_AU, state.compressRatio);
+}
+
+function getDispRad(rad_km, isSun) {
+    if(isSun) return 4.6;
+    return 0.72 * Math.pow(rad_km / 6371.0, 0.42);
+}
+
+function getAxialRotation(tilt, poleLon, phase) {
+    // axis in ecliptic
+    let axis = new Vec3(Math.sin(tilt)*Math.cos(poleLon), Math.sin(tilt)*Math.sin(poleLon), Math.cos(tilt));
+    axis = eclipticToWorld(axis); // (x, z, -y)
+    
+    // ortho basis
+    let Y = axis.norm();
+    let ref = new Vec3(0, 1, 0);
+    if(Math.abs(Y.dot(ref)) > 0.99) ref = new Vec3(1, 0, 0);
+    let X = ref.cross(Y).norm();
+    let Z = X.cross(Y).norm();
+    
+    let basis = new Mat4();
+    basis.m[0]=X.x; basis.m[1]=X.y; basis.m[2]=X.z;
+    basis.m[4]=Y.x; basis.m[5]=Y.y; basis.m[6]=Y.z;
+    basis.m[8]=Z.x; basis.m[9]=Z.y; basis.m[10]=Z.z;
+    
+    return basis.rotateY(phase);
+}
+
+let lastTime = performance.now();
+function renderLoop() {
+    let now = performance.now();
+    let dt = (now - lastTime) / 1000.0;
+    lastTime = now;
+    
+    if(state.playing) {
+        let speed = Math.sign(state.speedLog) * 1.157407e-5 * Math.pow(10, Math.abs(state.speedLog)/100.0 * 8.55);
+        state.jd += speed * dt;
+    }
+    
+    state.compressRatio += (state.compressTarget - state.compressRatio) * 10.0 * dt;
+    
+    let T = (state.jd - 2451545.0) / 36525.0;
+    
+    // Update planets
+    for(let name in planets) {
+        let p = planets[name];
+        let orb = computeOrbit(T, p);
+        let world = eclipticToWorld(orb);
+        
+        // compress
+        let r_disp = getScaleR(orb.r);
+        let pos = world.norm().mul(r_disp);
+        
+        // rotation phase
+        let phaseDelta = (dt / (p.rotH / 24.0)) * 2 * Math.PI;
+        phaseDelta = Math.max(-0.22, Math.min(0.22, phaseDelta));
+        if(p.phase === undefined) p.phase = 0;
+        if(state.playing) p.phase += phaseDelta;
+        
+        let rot = getAxialRotation(p.tilt * DEG2RAD, p.poleLon * DEG2RAD, p.phase);
+        
+        let r = getDispRad(p.radius, false);
+        let model = new Mat4().translate(pos).mul(rot).scale(new Vec3(r,r,r));
+        
+        bodies[name] = { pos, model, rad: r, orb, p };
+    }
+    // Sun
+    bodies['Sun'] = { pos: new Vec3(0,0,0), rad: 4.6, model: new Mat4().scale(new Vec3(4.6,4.6,4.6)) };
+    
+    let camTargetPos = bodies[state.target] ? bodies[state.target].pos : new Vec3(0,0,0);
+    state.camParams.dist += (state.targetDist - state.camParams.dist) * 5.0 * dt;
+    
+    let cx = camTargetPos.x + state.camParams.dist * Math.cos(state.camParams.pitch) * Math.sin(state.camParams.yaw);
+    let cy = camTargetPos.y + state.camParams.dist * Math.sin(state.camParams.pitch);
+    let cz = camTargetPos.z + state.camParams.dist * Math.cos(state.camParams.pitch) * Math.cos(state.camParams.yaw);
+    let camPos = new Vec3(cx, cy, cz);
+    
+    let view = new Mat4().lookAt(camPos, camTargetPos, new Vec3(0,1,0));
+    let aspect = canvas.width / canvas.height;
+    
+    let near = Math.max(0.012, state.camParams.dist * 0.0035);
+    let far = Math.max(state.camParams.dist * 14.0, 4200.0);
+    let proj = new Mat4().perspective(45 * DEG2RAD, aspect, near, far);
+    
+    // === RENDER ===
+    gl.bindFramebuffer(gl.FRAMEBUFFER, G.fbos.msaa.fbo);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    
+    gl.depthMask(true);
+    gl.clearColor(0.002, 0.002, 0.002, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    
+    // Draw Sun
+    let s_sun = shaders.sun;
+    s_sun.use();
+    s_sun.setMat4('uModel', bodies['Sun'].model);
+    s_sun.setMat4('uView', view);
+    s_sun.setMat4('uProj', proj);
+    s_sun.set3fv('uCamPos', camPos.toArray());
+    s_sun.set1f('uTime', performance.now() / 1000.0);
+    
+    gl.bindVertexArray(meshes.sphere.vao);
+    gl.drawElements(gl.TRIANGLES, meshes.sphere.count, gl.UNSIGNED_SHORT, 0);
+    
+    // Draw Planets
+    let s_pl = shaders.planet;
+    s_pl.use();
+    s_pl.setMat4('uView', view);
+    s_pl.setMat4('uProj', proj);
+    s_pl.set3fv('uCamPos', camPos.toArray());
+    s_pl.set3fv('uLightPos', [0,0,0]);
+    s_pl.set1f('uTime', performance.now() / 1000.0);
+    
+    for(let name in planets) {
+        let b = bodies[name];
+        s_pl.setMat4('uModel', b.model);
+        
+        let type = 0;
+        if(name==='Earth') type = 1;
+        else if(name==='Jupiter' || name==='Saturn') type = 2;
+        else if(name==='Uranus' || name==='Neptune') type = 3;
+        
+        s_pl.set1i('uType', type);
+        s_pl.set3fv('uBaseColor', b.p.color);
+        
+        if (name === 'Saturn') {
+            s_pl.set1f('uRingInner', 1.235);
+            s_pl.set1f('uRingOuter', 2.34);
+            let invModel = b.model.invert();
+            s_pl.setMat4('uWorldToRing', invModel);
+        } else {
+            s_pl.set1f('uRingInner', 0.0);
+            s_pl.set1f('uRingOuter', 0.0);
+        }
+        
+        gl.drawElements(gl.TRIANGLES, meshes.sphere.count, gl.UNSIGNED_SHORT, 0);
+    }
+    
+    // Draw Rings (Saturn)
+    gl.disable(gl.CULL_FACE);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    
+    let s_ring = shaders.ring;
+    s_ring.use();
+    s_ring.setMat4('uView', view);
+    s_ring.setMat4('uProj', proj);
+    s_ring.set3fv('uCamPos', camPos.toArray());
+    s_ring.set3fv('uLightPos', [0,0,0]);
+    
+    let saturn = bodies['Saturn'];
+    if (saturn) {
+        s_ring.setMat4('uModel', saturn.model);
+        s_ring.set1f('uInner', 1.235);
+        s_ring.set1f('uOuter', 2.34);
+        s_ring.set3fv('uPlanetPos', saturn.pos.toArray());
+        s_ring.set1f('uPlanetRadius', saturn.rad);
+        gl.bindVertexArray(meshes.ring.vao);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, meshes.ring.count);
+    }
+    
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+    
+    // MSAA resolve
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, G.fbos.msaa.fbo);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, G.fbos.scene.fbo);
+    gl.blitFramebuffer(0,0, canvas.width, canvas.height, 0,0, canvas.width, canvas.height, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+    
+    // Post
+    gl.disable(gl.DEPTH_TEST);
+    
+    // Bloom extract
+    gl.bindFramebuffer(gl.FRAMEBUFFER, G.fbos.bloom[0].fbo);
+    gl.viewport(0,0, G.fbos.bloom[0].w, G.fbos.bloom[0].h);
+    shaders.extract.use();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, G.fbos.scene.tex);
+    shaders.extract.set1i('uTex', 0);
+    gl.bindVertexArray(meshes.quad.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    
+    // Down
+    shaders.down.use();
+    shaders.down.set1i('uTex', 0);
+    for(let i=0; i<G.bloomLevels-1; i++) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, G.fbos.bloom[i+1].fbo);
+        gl.viewport(0,0, G.fbos.bloom[i+1].w, G.fbos.bloom[i+1].h);
+        gl.bindTexture(gl.TEXTURE_2D, G.fbos.bloom[i].tex);
+        shaders.down.set2f('uTexelSize', 1.0/G.fbos.bloom[i].w, 1.0/G.fbos.bloom[i].h);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    
+    // Up
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE); // additive
+    shaders.up.use();
+    shaders.up.set1i('uTex', 0);
+    for(let i=G.bloomLevels-2; i>=0; i--) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, G.fbos.bloom[i].fbo);
+        gl.viewport(0,0, G.fbos.bloom[i].w, G.fbos.bloom[i].h);
+        gl.bindTexture(gl.TEXTURE_2D, G.fbos.bloom[i+1].tex);
+        shaders.up.set2f('uTexelSize', 1.0/G.fbos.bloom[i+1].w, 1.0/G.fbos.bloom[i+1].h);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    gl.disable(gl.BLEND);
+    
+    // Composite
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    shaders.composite.use();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, G.fbos.scene.tex);
+    shaders.composite.set1i('uSceneTex', 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, document.getElementById('chk-bloom').checked ? G.fbos.bloom[0].tex : G.fbos.scene.tex); // reuse scene tex if bloom disabled (hack)
+    shaders.composite.set1i('uBloomTex', 1);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    
+    updateUI();
+    requestAnimationFrame(renderLoop);
+}
+
+function updateUI() {
+    let speed = Math.sign(state.speedLog) * 1.157407e-5 * Math.pow(10, Math.abs(state.speedLog)/100.0 * 8.55);
+    document.getElementById('speed-display').innerText = (speed * 86400).toFixed(2) + ' days/s';
+    
+    let d = new Date((state.jd - 2440587.5) * 86400000);
+    document.getElementById('time-display').innerText = d.toISOString().split('T')[0] + " " + d.toISOString().split('T')[1].substring(0,8) + " UTC";
+}
+
+function setupUI() {
+    let list = document.getElementById('body-list');
+    let items = ['Sun'];
+    for(let k in planets) items.push(k);
+    
+    items.forEach(k => {
+        let div = document.createElement('div');
+        div.className = 'list-item';
+        if(k === 'Sun') div.classList.add('active');
+        div.innerText = k;
+        div.onclick = () => {
+            document.querySelectorAll('.list-item').forEach(e => e.classList.remove('active'));
+            div.classList.add('active');
+            state.target = k;
+            if(k === 'Sun') state.targetDist = 30;
+            else state.targetDist = bodies[k].rad * 10.0;
+        };
+        list.appendChild(div);
+    });
+    
+    document.getElementById('btn-play').onclick = (e) => {
+        state.playing = !state.playing;
+        e.target.innerText = state.playing ? '暂停' : '播放';
+    };
+    
+    document.getElementById('btn-now').onclick = () => {
+        state.jd = Date.now() / 86400000 + 2440587.5;
+    };
+    
+    document.getElementById('speed-slider').oninput = (e) => {
+        state.speedLog = parseFloat(e.target.value);
+    };
+    
+    document.getElementById('chk-real-dist').onchange = (e) => {
+        state.compressTarget = e.target.checked ? 1.0 : 0.62;
+    };
+    
+    initWebGL();
+    requestAnimationFrame(renderLoop);
+}
+
+window.onload = setupUI;
+
+
+    </script>
+</body>
+</html>

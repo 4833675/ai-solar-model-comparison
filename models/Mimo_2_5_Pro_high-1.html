@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>太阳系运动模型</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+canvas { display: block; }
+#info {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.7); font-size: 13px; text-align: center;
+  pointer-events: none; text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+#controls {
+  position: fixed; top: 20px; right: 20px; color: #fff; z-index: 100;
+}
+#controls button {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 8px 16px; margin: 4px; cursor: pointer;
+  border-radius: 4px; font-size: 13px; transition: all 0.3s;
+}
+#controls button:hover { background: rgba(255,255,255,0.25); }
+#controls button.active { background: rgba(100,180,255,0.4); border-color: #6af; }
+#planet-label {
+  position: fixed; color: #fff; font-size: 14px; pointer-events: none;
+  text-shadow: 0 0 8px rgba(100,180,255,0.8); display: none;
+  background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 12px;
+  border: 1px solid rgba(100,180,255,0.4);
+}
+</style>
+</head>
+<body>
+<div id="controls">
+  <button onclick="toggleSpeed(0)">暂停</button>
+  <button onclick="toggleSpeed(1)" class="active">1x</button>
+  <button onclick="toggleSpeed(5)">5x</button>
+  <button onclick="toggleSpeed(20)">20x</button>
+  <br>
+  <button onclick="toggleOrbits()">轨道线</button>
+  <button onclick="toggleLabels()">名称</button>
+  <button onclick="resetCamera()">重置视角</button>
+</div>
+<div id="planet-label"></div>
+<div id="info">鼠标拖拽旋转 · 滚轮缩放 · 右键平移</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let scene, camera, renderer, clock;
+let planets = [], orbitLines = [], labels = [];
+let speedMultiplier = 1, showOrbits = true, showLabels = false;
+let mouseX = 0, mouseY = 0;
+let targetCameraPos = new THREE.Vector3(0, 80, 150);
+let targetLookAt = new THREE.Vector3(0, 0, 0);
+let isDragging = false, isRightDragging = false;
+let prevMouse = { x: 0, y: 0 };
+let cameraTheta = 0.5, cameraPhi = 0.8, cameraRadius = 180;
+let cameraPan = new THREE.Vector3(0, 0, 0);
+
+const PLANET_DATA = [
+  { name: '水星', radius: 0.8, distance: 12, speed: 4.15, color: 0xb5b5b5, emissive: 0x222222, tilt: 0.03 },
+  { name: '金星', radius: 1.5, distance: 18, speed: 1.62, color: 0xe8cda0, emissive: 0x332200, tilt: 2.64 },
+  { name: '地球', radius: 1.6, distance: 25, speed: 1.0, color: 0x4488ff, emissive: 0x001133, tilt: 0.41, hasRing: false, moon: true },
+  { name: '火星', radius: 1.0, distance: 33, speed: 0.53, color: 0xcc4422, emissive: 0x331100, tilt: 0.44 },
+  { name: '木星', radius: 5.0, distance: 50, speed: 0.084, color: 0xd4a574, emissive: 0x221100, tilt: 0.05 },
+  { name: '土星', radius: 4.2, distance: 68, speed: 0.034, color: 0xe8d5a3, emissive: 0x221100, tilt: 0.47, hasRing: true },
+  { name: '天王星', radius: 2.8, distance: 85, speed: 0.012, color: 0x88ccdd, emissive: 0x001122, tilt: 1.71, hasRing: true },
+  { name: '海王星', radius: 2.6, distance: 100, speed: 0.006, color: 0x3355ff, emissive: 0x000033, tilt: 0.49 }
+];
+
+init();
+animate();
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  document.body.appendChild(renderer.domElement);
+
+  clock = new THREE.Clock();
+
+  createStarfield();
+  createSun();
+  createPlanets();
+  createAsteroidBelt();
+
+  const ambientLight = new THREE.AmbientLight(0x111122, 0.3);
+  scene.add(ambientLight);
+
+  updateCameraPosition();
+  setupEvents();
+  window.addEventListener('resize', onResize);
+}
+
+function createStarfield() {
+  const starsGeometry = new THREE.BufferGeometry();
+  const starsCount = 15000;
+  const positions = new Float32Array(starsCount * 3);
+  const colors = new Float32Array(starsCount * 3);
+  const sizes = new Float32Array(starsCount);
+
+  for (let i = 0; i < starsCount; i++) {
+    const i3 = i * 3;
+    const r = 500 + Math.random() * 500;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i3 + 2] = r * Math.cos(phi);
+
+    const starColor = new THREE.Color();
+    starColor.setHSL(0.1 + Math.random() * 0.2, 0.3 + Math.random() * 0.5, 0.7 + Math.random() * 0.3);
+    colors[i3] = starColor.r;
+    colors[i3 + 1] = starColor.g;
+    colors[i3 + 2] = starColor.b;
+    sizes[i] = 0.5 + Math.random() * 2;
+  }
+
+  starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const starsMaterial = new THREE.ShaderMaterial({
+    uniforms: { time: { value: 0 } },
+    vertexShader: `
+      attribute float size;
+      varying vec3 vColor;
+      varying float vSize;
+      uniform float time;
+      void main() {
+        vColor = color;
+        vSize = size;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = size * (200.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      varying float vSize;
+      uniform float time;
+      void main() {
+        float d = length(gl_PointCoord - vec2(0.5));
+        if (d > 0.5) discard;
+        float alpha = 1.0 - smoothstep(0.0, 0.5, d);
+        alpha *= 0.7 + 0.3 * sin(time * 2.0 + vSize * 10.0);
+        gl_FragColor = vec4(vColor, alpha);
+      }
+    `,
+    vertexColors: true,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  const stars = new THREE.Points(starsGeometry, starsMaterial);
+  scene.add(stars);
+}
+
+function createSun() {
+  const sunGeometry = new THREE.SphereGeometry(8, 64, 64);
+  const sunMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      color1: { value: new THREE.Color(0xffaa00) },
+      color2: { value: new THREE.Color(0xff4400) }
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vPosition;
+      void main() {
+        vUv = uv;
+        vNormal = normal;
+        vPosition = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float time;
+      uniform vec3 color1;
+      uniform vec3 color2;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vPosition;
+
+      float noise3d(vec3 p) {
+        return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+      }
+
+      float fbm(vec3 p) {
+        float f = 0.0;
+        f += 0.5 * noise3d(p); p *= 2.01;
+        f += 0.25 * noise3d(p); p *= 2.02;
+        f += 0.125 * noise3d(p); p *= 2.03;
+        f += 0.0625 * noise3d(p);
+        return f;
+      }
+
+      void main() {
+        vec3 p = vPosition * 0.5 + time * 0.1;
+        float n = fbm(p);
+        vec3 col = mix(color1, color2, n);
+        col += vec3(0.3, 0.1, 0.0) * pow(n, 3.0);
+        float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+        col += vec3(1.0, 0.6, 0.2) * fresnel * 0.5;
+        col *= 1.2 + 0.3 * sin(time * 3.0 + n * 10.0);
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `
+  });
+
+  const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  sun.userData = { type: 'sun' };
+  scene.add(sun);
+  planets.push(sun);
+
+  // Sun glow
+  const glowGeometry = new THREE.SphereGeometry(10, 32, 32);
+  const glowMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      viewVector: { value: camera.position }
+    },
+    vertexShader: `
+      uniform vec3 viewVector;
+      varying float intensity;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        vec3 vNormal = normalize(normalMatrix * normal);
+        vec3 vNormel = normalize(normalMatrix * viewVector);
+        intensity = pow(0.7 - dot(vNormal, vNormel), 4.0);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float time;
+      varying float intensity;
+      varying vec2 vUv;
+      void main() {
+        vec3 glow = vec3(1.0, 0.6, 0.1) * intensity;
+        float pulse = 0.8 + 0.2 * sin(time * 2.0);
+        gl_FragColor = vec4(glow * pulse, intensity * 0.6);
+      }
+    `,
+    side: THREE.FrontSide,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    depthWrite: false
+  });
+
+  const sunGlow = new THREE.Mesh(glowGeometry, glowMaterial);
+  sunGlow.userData = { isGlow: true };
+  scene.add(sunGlow);
+
+  // Corona particles
+  const coronaGeo = new THREE.BufferGeometry();
+  const coronaCount = 3000;
+  const coronaPos = new Float32Array(coronaCount * 3);
+  const coronaSizes = new Float32Array(coronaCount);
+
+  for (let i = 0; i < coronaCount; i++) {
+    const i3 = i * 3;
+    const r = 8 + Math.random() * 6;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    coronaPos[i3] = r * Math.sin(phi) * Math.cos(theta);
+    coronaPos[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    coronaPos[i3 + 2] = r * Math.cos(phi);
+    coronaSizes[i] = 1 + Math.random() * 3;
+  }
+
+  coronaGeo.setAttribute('position', new THREE.BufferAttribute(coronaPos, 3));
+  coronaGeo.setAttribute('size', new THREE.BufferAttribute(coronaSizes, 1));
+
+  const coronaMat = new THREE.ShaderMaterial({
+    uniforms: { time: { value: 0 } },
+    vertexShader: `
+      attribute float size;
+      uniform float time;
+      varying float vAlpha;
+      void main() {
+        vec3 pos = position;
+        pos *= 1.0 + 0.1 * sin(time * 3.0 + position.x * 5.0);
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        gl_PointSize = size * (100.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+        vAlpha = 0.3 + 0.2 * sin(time * 2.0 + position.y * 10.0);
+      }
+    `,
+    fragmentShader: `
+      varying float vAlpha;
+      void main() {
+        float d = length(gl_PointCoord - vec2(0.5));
+        if (d > 0.5) discard;
+        float alpha = (1.0 - d * 2.0) * vAlpha;
+        gl_FragColor = vec4(1.0, 0.7, 0.3, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  const corona = new THREE.Points(coronaGeo, coronaMat);
+  corona.userData = { isCorona: true };
+  scene.add(corona);
+
+  // Point light from sun
+  const sunLight = new THREE.PointLight(0xffeedd, 2.5, 300);
+  scene.add(sunLight);
+}
+
+function createPlanetTexture(baseColor, type) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+
+  const gradient = ctx.createLinearGradient(0, 0, 512, 0);
+  const c = new THREE.Color(baseColor);
+
+  if (type === 'earth') {
+    ctx.fillStyle = '#1a3a5c';
+    ctx.fillRect(0, 0, 512, 256);
+    for (let i = 0; i < 20; i++) {
+      ctx.fillStyle = `hsl(${120 + Math.random() * 40}, ${40 + Math.random() * 30}%, ${25 + Math.random() * 20}%)`;
+      ctx.beginPath();
+      ctx.ellipse(Math.random() * 512, Math.random() * 256, 20 + Math.random() * 60, 10 + Math.random() * 30, Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Polar caps
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillRect(0, 0, 512, 15);
+    ctx.fillRect(0, 241, 512, 15);
+  } else if (type === 'jupiter') {
+    for (let y = 0; y < 256; y++) {
+      const hue = 25 + Math.sin(y * 0.05) * 15;
+      const sat = 50 + Math.sin(y * 0.1) * 20;
+      const light = 45 + Math.sin(y * 0.08 + 1) * 15;
+      ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
+      ctx.fillRect(0, y, 512, 1);
+    }
+    // Great Red Spot
+    ctx.fillStyle = 'rgba(200, 80, 40, 0.8)';
+    ctx.beginPath();
+    ctx.ellipse(300, 140, 25, 15, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (type === 'mars') {
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(0, 0, 512, 256);
+    for (let i = 0; i < 100; i++) {
+      ctx.fillStyle = `rgba(${140 + Math.random() * 60}, ${50 + Math.random() * 40}, ${20 + Math.random() * 30}, 0.5)`;
+      ctx.beginPath();
+      ctx.arc(Math.random() * 512, Math.random() * 256, 5 + Math.random() * 20, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Polar ice
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillRect(0, 0, 512, 20);
+    ctx.fillRect(0, 236, 512, 20);
+  } else {
+    for (let i = 0; i < 8; i++) {
+      const stop = i / 8;
+      const variation = (Math.random() - 0.5) * 0.2;
+      const vc = new THREE.Color(baseColor);
+      vc.offsetHSL(variation * 0.1, variation, variation * 0.3);
+      gradient.addColorStop(stop, `#${vc.getHexString()}`);
+    }
+    gradient.addColorStop(1, `#${c.getHexString()}`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 512, 256);
+
+    // Add some noise/detail
+    for (let i = 0; i < 50; i++) {
+      ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 0}, ${Math.random() > 0.5 ? 255 : 0}, ${Math.random() > 0.5 ? 255 : 0}, 0.03)`;
+      ctx.fillRect(Math.random() * 512, Math.random() * 256, Math.random() * 40, Math.random() * 5);
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  return texture;
+}
+
+function createPlanets() {
+  PLANET_DATA.forEach((data, index) => {
+    const orbitGroup = new THREE.Group();
+    scene.add(orbitGroup);
+
+    const planetGroup = new THREE.Group();
+    orbitGroup.add(planetGroup);
+
+    const geometry = new THREE.SphereGeometry(data.radius, 48, 48);
+    const texture = createPlanetTexture(data.color, data.name.toLowerCase());
+    const material = new THREE.MeshStandardMaterial({
+      map: texture,
+      roughness: 0.7,
+      metalness: 0.1,
+      emissive: new THREE.Color(data.emissive),
+      emissiveIntensity: 0.3
+    });
+
+    const planet = new THREE.Mesh(geometry, material);
+    planet.rotation.z = data.tilt;
+    planetGroup.add(planet);
+
+    // Atmosphere for Earth
+    if (data.name === '地球') {
+      const atmoGeo = new THREE.SphereGeometry(data.radius * 1.05, 48, 48);
+      const atmoMat = new THREE.ShaderMaterial({
+        uniforms: {},
+        vertexShader: `
+          varying vec3 vNormal;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormal;
+          void main() {
+            float intensity = pow(0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+            gl_FragColor = vec4(0.3, 0.6, 1.0, intensity * 0.6);
+          }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.FrontSide,
+        transparent: true,
+        depthWrite: false
+      });
+      const atmo = new THREE.Mesh(atmoGeo, atmoMat);
+      planetGroup.add(atmo);
+
+      // Moon
+      const moonGeo = new THREE.SphereGeometry(0.4, 32, 32);
+      const moonMat = new THREE.MeshStandardMaterial({
+        color: 0xaaaaaa,
+        roughness: 0.9,
+        emissive: 0x111111,
+        emissiveIntensity: 0.1
+      });
+      const moon = new THREE.Mesh(moonGeo, moonMat);
+      moon.userData = { orbitRadius: 3.5, speed: 13.0, angle: 0 };
+      planetGroup.add(moon);
+    }
+
+    // Rings for Saturn and Uranus
+    if (data.hasRing) {
+      const innerR = data.radius * 1.4;
+      const outerR = data.radius * (data.name === '土星' ? 2.5 : 1.8);
+      const ringGeo = new THREE.RingGeometry(innerR, outerR, 128);
+      const ringCanvas = document.createElement('canvas');
+      ringCanvas.width = 512;
+      ringCanvas.height = 64;
+      const rCtx = ringCanvas.getContext('2d');
+
+      for (let x = 0; x < 512; x++) {
+        const t = x / 512;
+        const brightness = 0.3 + 0.4 * Math.sin(t * 30) + 0.2 * Math.random();
+        const alpha = 0.4 + 0.3 * (1 - Math.abs(t - 0.5) * 2);
+        if (data.name === '土星') {
+          rCtx.fillStyle = `rgba(${200 + Math.random() * 55}, ${180 + Math.random() * 40}, ${140 + Math.random() * 30}, ${alpha})`;
+        } else {
+          rCtx.fillStyle = `rgba(${130 + Math.random() * 30}, ${180 + Math.random() * 40}, ${200 + Math.random() * 55}, ${alpha})`;
+        }
+        rCtx.fillRect(x, 0, 1, 64);
+      }
+
+      const ringTexture = new THREE.CanvasTexture(ringCanvas);
+      const ringMat = new THREE.MeshStandardMaterial({
+        map: ringTexture,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8,
+        roughness: 0.8
+      });
+
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2 + (data.name === '天王星' ? 1.5 : 0.2);
+      planetGroup.add(ring);
+    }
+
+    planetGroup.position.x = data.distance;
+
+    // Orbit line
+    const orbitCurve = new THREE.EllipseCurve(0, 0, data.distance, data.distance, 0, Math.PI * 2, false, 0);
+    const orbitPoints = orbitCurve.getPoints(256);
+    const orbitGeo = new THREE.BufferGeometry().setFromPoints(
+      orbitPoints.map(p => new THREE.Vector3(p.x, 0, p.y))
+    );
+    const orbitMat = new THREE.LineBasicMaterial({
+      color: 0x334466,
+      transparent: true,
+      opacity: 0.3
+    });
+    const orbitLine = new THREE.Line(orbitGeo, orbitMat);
+    scene.add(orbitLine);
+    orbitLines.push(orbitLine);
+
+    planets.push({
+      mesh: planetGroup,
+      data: data,
+      orbitGroup: orbitGroup,
+      angle: Math.random() * Math.PI * 2,
+      moons: []
+    });
+
+    // Collect moon references
+    planetGroup.traverse(child => {
+      if (child.userData && child.userData.orbitRadius) {
+        planets[planets.length - 1].moons.push(child);
+      }
+    });
+  });
+}
+
+function createAsteroidBelt() {
+  const asteroidCount = 2000;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(asteroidCount * 3);
+  const colors = new Float32Array(asteroidCount * 3);
+  const sizes = new Float32Array(asteroidCount);
+
+  for (let i = 0; i < asteroidCount; i++) {
+    const i3 = i * 3;
+    const angle = Math.random() * Math.PI * 2;
+    const r = 38 + Math.random() * 8;
+    const y = (Math.random() - 0.5) * 2;
+    positions[i3] = Math.cos(angle) * r;
+    positions[i3 + 1] = y;
+    positions[i3 + 2] = Math.sin(angle) * r;
+
+    const brightness = 0.3 + Math.random() * 0.4;
+    colors[i3] = brightness;
+    colors[i3 + 1] = brightness * 0.9;
+    colors[i3 + 2] = brightness * 0.8;
+    sizes[i] = 0.3 + Math.random() * 0.8;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: { time: { value: 0 } },
+    vertexShader: `
+      attribute float size;
+      uniform float time;
+      varying vec3 vColor;
+      void main() {
+        vColor = color;
+        vec3 pos = position;
+        float angle = atan(pos.z, pos.x) + time * 0.01;
+        float r = length(pos.xz);
+        pos.x = cos(angle) * r;
+        pos.z = sin(angle) * r;
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        gl_PointSize = size * (80.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      void main() {
+        float d = length(gl_PointCoord - vec2(0.5));
+        if (d > 0.5) discard;
+        float alpha = (1.0 - d * 2.0) * 0.6;
+        gl_FragColor = vec4(vColor, alpha);
+      }
+    `,
+    vertexColors: true,
+    transparent: true,
+    depthWrite: false
+  });
+
+  const asteroids = new THREE.Points(geometry, material);
+  asteroids.userData = { isAsteroids: true };
+  scene.add(asteroids);
+}
+
+function setupEvents() {
+  document.addEventListener('mousedown', e => {
+    if (e.button === 0) isDragging = true;
+    if (e.button === 2) isRightDragging = true;
+    prevMouse.x = e.clientX;
+    prevMouse.y = e.clientY;
+  });
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    if (isDragging) {
+      const dx = e.clientX - prevMouse.x;
+      const dy = e.clientY - prevMouse.y;
+      cameraTheta -= dx * 0.005;
+      cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraPhi - dy * 0.005));
+      prevMouse.x = e.clientX;
+      prevMouse.y = e.clientY;
+    }
+
+    if (isRightDragging) {
+      const dx = e.clientX - prevMouse.x;
+      const dy = e.clientY - prevMouse.y;
+      const right = new THREE.Vector3();
+      const up = new THREE.Vector3(0, 1, 0);
+      camera.getWorldDirection(right);
+      right.cross(up).normalize();
+      cameraPan.add(right.multiplyScalar(-dx * 0.1));
+      cameraPan.y += dy * 0.1;
+      prevMouse.x = e.clientX;
+      prevMouse.y = e.clientY;
+    }
+  });
+
+  document.addEventListener('mouseup', e => {
+    if (e.button === 0) isDragging = false;
+    if (e.button === 2) isRightDragging = false;
+  });
+
+  document.addEventListener('wheel', e => {
+    cameraRadius = Math.max(20, Math.min(500, cameraRadius + e.deltaY * 0.1));
+  });
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Touch events
+  let touchStartDist = 0;
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      prevMouse.x = e.touches[0].clientX;
+      prevMouse.y = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      touchStartDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
+  });
+
+  document.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && isDragging) {
+      const dx = e.touches[0].clientX - prevMouse.x;
+      const dy = e.touches[0].clientY - prevMouse.y;
+      cameraTheta -= dx * 0.005;
+      cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraPhi - dy * 0.005));
+      prevMouse.x = e.touches[0].clientX;
+      prevMouse.y = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      cameraRadius = Math.max(20, Math.min(500, cameraRadius - (dist - touchStartDist) * 0.3));
+      touchStartDist = dist;
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => isDragging = false);
+}
+
+function updateCameraPosition() {
+  const x = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+  const y = cameraRadius * Math.cos(cameraPhi);
+  const z = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+
+  camera.position.set(x + cameraPan.x, y + cameraPan.y, z + cameraPan.z);
+  camera.lookAt(cameraPan.x, cameraPan.y, cameraPan.z);
+}
+
+function toggleSpeed(s) {
+  speedMultiplier = s;
+  document.querySelectorAll('#controls button').forEach((btn, i) => {
+    if (i < 4) btn.classList.toggle('active', [0, 1, 5, 20][i] === s);
+  });
+}
+
+function toggleOrbits() {
+  showOrbits = !showOrbits;
+  orbitLines.forEach(l => l.visible = showOrbits);
+}
+
+function toggleLabels() {
+  showLabels = !showLabels;
+}
+
+function resetCamera() {
+  cameraTheta = 0.5;
+  cameraPhi = 0.8;
+  cameraRadius = 180;
+  cameraPan.set(0, 0, 0);
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = clock.getDelta();
+  const time = clock.getElapsedTime();
+
+  // Update sun shader
+  planets[0].material.uniforms.time.value = time;
+
+  // Update glow and corona
+  scene.traverse(child => {
+    if (child.userData && child.userData.isGlow) {
+      child.material.uniforms.time.value = time;
+      child.material.uniforms.viewVector.value = camera.position;
+    }
+    if (child.userData && child.userData.isCorona) {
+      child.material.uniforms.time.value = time;
+    }
+    if (child.userData && child.userData.isAsteroids) {
+      child.material.uniforms.time.value = time;
+    }
+  });
+
+  // Update planets
+  for (let i = 1; i < planets.length; i++) {
+    const p = planets[i];
+    p.angle += p.data.speed * delta * 0.5 * speedMultiplier;
+
+    p.mesh.position.x = Math.cos(p.angle) * p.data.distance;
+    p.mesh.position.z = Math.sin(p.angle) * p.data.distance;
+    p.mesh.rotation.y += delta * 0.5 * speedMultiplier;
+
+    // Update moons
+    p.moons.forEach(moon => {
+      moon.userData.angle += moon.userData.speed * delta * 0.5 * speedMultiplier;
+      moon.position.x = Math.cos(moon.userData.angle) * moon.userData.orbitRadius;
+      moon.position.z = Math.sin(moon.userData.angle) * moon.userData.orbitRadius;
+    });
+  }
+
+  // Update starfield twinkle
+  scene.traverse(child => {
+    if (child.isPoints && !child.userData.isAsteroids && !child.userData.isCorona) {
+      if (child.material.uniforms && child.material.uniforms.time) {
+        child.material.uniforms.time.value = time;
+      }
+    }
+  });
+
+  updateCameraPosition();
+  renderer.render(scene, camera);
+}
+</script>
+</body>
+</html>
