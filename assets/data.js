@@ -65,7 +65,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 10
+  "rank": 11
  },
  {
   "id": "DeepSeek_V4_Pro_high-2",
@@ -96,7 +96,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 11
+  "rank": 12
  },
  {
   "id": "DeepSeek_V4_Pro_high-3",
@@ -126,7 +126,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 12
+  "rank": 13
  },
  {
   "id": "Fable5Max-Three",
@@ -480,6 +480,36 @@ window.WORKS=[
   "rank": 4
  },
  {
+  "id": "GPT5.6TerraUltra",
+  "file": "models/GPT5.6TerraUltra.html",
+  "model": "GPT-5.6 Terra Ultra",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Canvas2D",
+  "bytes": 62404,
+  "lines": 1599,
+  "title": "太阳系 · 深空观测仪",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "atmo",
+   "moons"
+  ],
+  "weight": "light",
+  "shot": null,
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 3,
+  "rank": 8
+ },
+ {
   "id": "GPT5.6TerraUltra-TasksAssignedByOpus5",
   "file": "models/GPT5.6TerraUltra-TasksAssignedByOpus5.html",
   "model": "GPT-5.6 Terra Ultra",
@@ -830,7 +860,7 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tier": 3,
-  "rank": 15
+  "rank": 16
  },
  {
   "id": "Mimo_2_5_Pro_high-1",
@@ -860,7 +890,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 9
+  "rank": 10
  },
  {
   "id": "MiniMaxM3-TasksAssignedByOpus5",
@@ -1031,7 +1061,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 8
+  "rank": 9
  },
  {
   "id": "Qwen3.8Max-inQoder",
@@ -1063,7 +1093,7 @@ window.WORKS=[
   ],
   "fix": null,
   "tier": 3,
-  "rank": 13
+  "rank": 14
  },
  {
   "id": "Qwen3.8MaxV1-inQoder",
@@ -1091,7 +1121,7 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tier": 3,
-  "rank": 14
+  "rank": 15
  },
  {
   "id": "Sonnet5Ultra-TasksAssignedByOpus5",
