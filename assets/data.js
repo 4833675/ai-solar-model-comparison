@@ -381,8 +381,8 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tier": 3,
-  "rank": 2
+  "tier": 2,
+  "rank": 5
  },
  {
   "id": "GPT5.6SolUltra-TasksAssignedByOpus5",
