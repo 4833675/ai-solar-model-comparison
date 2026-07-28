@@ -194,6 +194,138 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
   const link = w => `view.html?w=${encodeURIComponent(w.id)}`;
 
+  /* ---------------------------------------------------------- 评分 */
+  const ORBIT_POINTS = [0, 6, 13, 19, 25];
+  const scoreNum = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1);
+
+  function scoreFor(w) {
+    const r = (window.SCORES || {})[w.id];
+    if (!r) return null;
+    const moonOk = r.hasMoon !== false && r.moons > 0;
+    const parts = {
+      features: Math.min(20, r.features * 2.5),
+      orbit: ORBIT_POINTS[r.orbit] || 0,
+      moons: moonOk ? Math.min(15, 10 + Math.max(0, r.moons - 1) * 5 / 9) : 0,
+      offline: r.offline ? 7 : 0,
+      halley: r.halley ? 3 : 0,
+      correctness: r.correctness,
+      visual: r.visual,
+      interaction: r.interaction,
+    };
+    const penalty = r.canvas ? 10 : 0;
+    const raw = Object.values(parts).reduce((sum, value) => sum + value, 0) - penalty;
+    return Object.assign({}, r, { parts, penalty, raw });
+  }
+
+  function scoreTipHtml(w, s) {
+    const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
+    const tier = (window.TIER_LABELS || {})[w.tier] || '';
+    return `<div class="score-tip-head">
+        <div><span>${s.reference ? 'BENCHMARK REFERENCE' : 'SCORE BREAKDOWN'}</span><strong>${esc(w.model)}</strong></div>
+        <b>${s.total}<i>/100</i></b>
+      </div>
+      <p class="score-tip-meta">${s.reference
+        ? `标杆参考分 · 不参与排名 · 原始分 ${scoreNum(s.raw)}`
+        : `原始分 ${scoreNum(s.raw)} → ${esc(tier)}区间总分 ${s.total}`}</p>
+      <div class="score-tip-grid">
+        ${part('功能广度', 'features', 20)}
+        ${part('轨道真实度', 'orbit', 25)}
+        ${part('卫星系统', 'moons', 15)}
+        ${part('离线性', 'offline', 7)}
+        ${part('哈雷彗星', 'halley', 3)}
+        ${part('正确与稳定', 'correctness', 15)}
+        ${part('视觉执行', 'visual', 10)}
+        ${part('交互完成度', 'interaction', 5)}
+      </div>
+      ${s.penalty ? `<div class="score-tip-penalty"><span>Canvas2D 额外扣分</span><b>−${s.penalty}</b></div>` : ''}
+      ${s.note ? `<p class="score-tip-note">${esc(s.note)}</p>` : ''}`;
+  }
+
+  function scoreCell(w) {
+    const s = scoreFor(w);
+    if (!s) return '<span class="score-empty">—</span>';
+    const label = `${w.model} ${s.reference ? '标杆参考分' : '总分'} ${s.total} 分，查看分项得分`;
+    return `<button type="button" class="score-pill score-tier-${w.tier}${s.reference ? ' is-reference' : ''}"
+      data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
+      ${s.reference ? '<span aria-hidden="true">⚑</span>' : ''}<b>${s.total}</b>
+    </button>`;
+  }
+
+  function installScoreTooltip() {
+    if (document.getElementById('score-tip')) return;
+    const tip = document.createElement('div');
+    tip.id = 'score-tip';
+    tip.className = 'score-tip';
+    tip.setAttribute('role', 'tooltip');
+    tip.hidden = true;
+    document.body.appendChild(tip);
+
+    let active = null, pinned = false;
+    const place = () => {
+      if (!active || tip.hidden) return;
+      const r = active.getBoundingClientRect();
+      const gap = 9, edge = 12;
+      const left = Math.max(edge, Math.min(innerWidth - tip.offsetWidth - edge,
+        r.left + r.width / 2 - tip.offsetWidth / 2));
+      let top = r.top - tip.offsetHeight - gap;
+      if (top < edge) top = r.bottom + gap;
+      tip.style.left = `${Math.round(left)}px`;
+      tip.style.top = `${Math.round(top)}px`;
+    };
+    const show = button => {
+      const w = (window.WORKS || []).find(item => item.id === button.dataset.scoreId);
+      const s = w && scoreFor(w);
+      if (!w || !s) return;
+      if (active && active !== button) active.setAttribute('aria-expanded', 'false');
+      active = button;
+      tip.innerHTML = scoreTipHtml(w, s);
+      tip.hidden = false;
+      button.setAttribute('aria-describedby', tip.id);
+      button.setAttribute('aria-expanded', pinned ? 'true' : 'false');
+      requestAnimationFrame(() => { tip.classList.add('show'); place(); });
+    };
+    const hide = force => {
+      if (pinned && !force) return;
+      pinned = false;
+      if (active) {
+        active.setAttribute('aria-expanded', 'false');
+        active.removeAttribute('aria-describedby');
+      }
+      active = null;
+      tip.classList.remove('show');
+      tip.hidden = true;
+    };
+
+    document.addEventListener('pointerover', e => {
+      const button = e.target.closest && e.target.closest('.score-pill');
+      if (button && button !== active) show(button);
+    });
+    document.addEventListener('pointerout', e => {
+      const button = e.target.closest && e.target.closest('.score-pill');
+      if (button && !button.contains(e.relatedTarget)) hide(false);
+    });
+    document.addEventListener('focusin', e => {
+      const button = e.target.closest && e.target.closest('.score-pill');
+      if (button) show(button);
+    });
+    document.addEventListener('focusout', e => {
+      const button = e.target.closest && e.target.closest('.score-pill');
+      if (button && !button.contains(e.relatedTarget)) hide(false);
+    });
+    document.addEventListener('click', e => {
+      const button = e.target.closest && e.target.closest('.score-pill');
+      if (!button) return hide(true);
+      if (button === active && pinned) return hide(true);
+      pinned = true;
+      show(button);
+      button.setAttribute('aria-expanded', 'true');
+      e.stopPropagation();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(true); });
+    addEventListener('resize', place);
+    addEventListener('scroll', place, true);
+  }
+
   function card(w) {
     const risk = workRisk(w);
     const benchmark = w.group === 'A' && w.tier === 1;
@@ -214,6 +346,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function pairBlock(w, i) {
     const a = w.a, b = w.b;
+    const af = (scoreFor(a) || {}).features ?? a.feats.length;
+    const bf = (scoreFor(b) || {}).features ?? b.feats.length;
     const fmtDiff = (label, va, vb) => `<span><i>${va}</i> → <b>${vb}</b> ${label}</span>`;
     return `<div class="pair">
       <div class="pair-head">
@@ -237,7 +371,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <div class="diff">
         ${fmtDiff('渲染方式', a.tech === 'WebGL2' ? '原生 WebGL2' : a.tech, b.tech === 'WebGL2' ? '原生 WebGL2' : b.tech)}
         ${fmtDiff('代码量', a.lines + ' 行', b.lines + ' 行')}
-        ${fmtDiff('功能点', a.feats.length + ' 项', b.feats.length + ' 项')}
+        ${fmtDiff('功能点', af + ' 项', bf + ' 项')}
       </div>
       ${(window.PAIR_NOTES || {})[a.pair]
         ? `<div class="pair-caveat">⚠ ${esc(window.PAIR_NOTES[a.pair])}</div>` : ''}
@@ -264,6 +398,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery,
     $, $$, kb, esc, CAP, detect, renderProbe, workRisk, card, pairBlock, chips, techChip, link,
+    scoreFor, scoreCell, installScoreTooltip,
     byId: id => (window.WORKS || []).find(w => w.id === id),
     pairs() {
       const m = {};
