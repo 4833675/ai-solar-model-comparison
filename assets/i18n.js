@@ -315,7 +315,7 @@
   function page(value, targetLang) {
     if (value == null) return value;
     const target = /^en(?:-|$)/i.test(targetLang || lang) ? 'en' : 'zh';
-    return String(value).replace(/(^|\/)(index|view|compare|spec)(?:\.en)?\.html(?=$|[?#])/i,
+    return String(value).replace(/(^|\/)(index|view|compare|spec)(?:\.en)?(?:\.html)?(?=$|[?#])/i,
       function (_, prefix, name) { return prefix + name + (target === 'en' ? '.en' : '') + '.html'; });
   }
 
