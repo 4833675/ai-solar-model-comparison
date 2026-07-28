@@ -196,13 +196,15 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function card(w) {
     const risk = workRisk(w);
-    return `<div class="card ${w.group === 'A' ? 'ga' : 'gb'}">
+    const benchmark = w.group === 'A' && w.tier === 1;
+    return `<div class="card ${w.group === 'A' ? 'ga' : 'gb'}${benchmark ? ' is-benchmark' : ''}">
       <a class="shot-link" href="${link(w)}">
         ${w.shot ? `<img class="shot" loading="lazy" src="${w.shot}" alt="${esc(w.model)} 的作品截图">`
         : '<div class="shot"></div>'}
       </a>
       <div class="card-body">
-        <h4><span class="dot"></span>${esc(w.model)}${w.featured ? '<span class="star">★</span>' : ''}</h4>
+        <h4><span class="dot"></span><span class="model-name">${esc(w.model)}</span>${benchmark
+          ? '<span class="benchmark-badge" title="第一梯队 · 重点推荐"><span aria-hidden="true">⚑</span> 标杆</span>' : ''}</h4>
         <div class="sub">${esc(w.title || w.id)}</div>
         ${chips(w, risk)}
         ${w.fix ? `<a class="fixlink" href="${w.fix.file}" target="_blank" rel="noopener"
@@ -249,8 +251,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     works.forEach(w => (byTier[w.tier] = byTier[w.tier] || []).push(w));
     return Object.keys(byTier).sort((a, b) => a - b).map(t => {
       const list = byTier[t].sort((a, b) => a.rank - b.rank);
-      return `<div class="tier${t === '4' ? ' t-fail' : ''}">
-          <div class="tier-hd"><span>${esc(T[t] || t)}</span><i>${list.length} 件</i></div>
+      const benchmarkTier = t === '1' && list[0] && list[0].group === 'A';
+      return `<div class="tier${t === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
+          <div class="tier-hd"><span>${esc(T[t] || t)}</span>${benchmarkTier
+            ? '<b class="tier-recommend"><span aria-hidden="true">⚑</span> 标杆 · 重点推荐</b>' : ''}<i>${list.length} 件</i></div>
           <div class="grid">${list.map(card).join('')}</div>
         </div>`;
     }).join('');
