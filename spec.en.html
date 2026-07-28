@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Implementation Specification · Solar System Model Comparison</title>
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/i18n.js"></script>
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <div class="brand">One Prompt <em>VS</em> One Brief</div>
+  <div class="links">
+    <a href="index.en.html">← Back to Home</a>
+    <a href="index.en.html#pairs">Same-model Comparison</a>
+    <a href="index.en.html#gallery">All Works</a>
+    <div class="lang-switch" role="group" aria-label="Language"><button type="button" data-lang="zh">中</button><button type="button" data-lang="en">EN</button></div>
+  </div>
+</div></nav>
+<div class="doc">
+  <div class="note-box" style="margin-bottom:34px">
+    <p><strong>What is this document?</strong></p>
+    <p>Everything below is exactly what the models in the “detailed brief” group received. It was reverse-engineered and compiled by <b>Claude Opus 5</b> after completing its own implementation, based on <b>its own implementation process</b>—including the data tables, algorithmic formulas, rendering-pipeline design, and the 15 <b>real pitfalls it encountered</b> in Section 7.</p>
+    <p>For that reason, the detailed-brief group was effectively <b>answering a question whose solution was already known</b>. This is why this site emphasizes that the comparison can show how dramatically a detailed brief improves output quality, but cannot be used to rank the models’ capabilities.</p>
+  </div>
+  <div class="toc">
+    <div class="kicker" style="margin-bottom:8px">Contents</div>
+    <a href="#s1">0. Goal</a><a href="#s2">1. Hard Constraints</a><a href="#s3">2. Astronomical Data (copy exactly; do not invent values)</a><a href="#s11">3. Core Algorithms</a><a href="#s19">4. Rendering Architecture</a><a href="#s24">5. Procedural Celestial Surfaces</a><a href="#s35">6. Interaction and Interface</a><a href="#s36">7. Pitfalls You Must Avoid</a><a href="#s52">8. Acceptance Criteria</a><a href="#s56">9. Recommended Implementation Order</a><a href="#s57">Appendix: An Easily Overlooked Overall Recommendation</a>
+  </div>
+  <h1>Task Specification: Real-time Solar System Model (Single HTML File)</h1>
+<blockquote>This document is an <strong>implementation specification</strong>. Copy the data tables and formulas exactly; do not rely on memory or guess the values. Write the rendering code, shaders, and UI code yourself. Read all of Section 7, “Pitfalls You Must Avoid,” before you begin—every item describes a problem you will encounter in practice.</blockquote>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s1">0. Goal</h2>
+<p>Build a real-time model of the Solar System as a <strong>single HTML file</strong> that runs when opened directly in a browser.</p>
+<p>There are two core requirements:</p>
+<ol><li><strong>Be as realistic as possible</strong>—celestial positions must be calculated in real time from genuine orbital elements, not from a preset animation or approximate circular motion. Size and distance scales may be compressed (otherwise they cannot be seen together), but angular positions, orbital phases, periods, eccentricities, and inclinations must be real.</li><li><strong>Max out the visuals</strong>—this is not merely a diagram; it should be something people want to keep looking at.</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s2">1. Hard Constraints</h2>
+<div class="tablewrap"><table><thead><tr><th>Item</th><th>Requirement</th></tr></thead><tbody><tr><td>File count</td><td>1 <code>.html</code> file, with all CSS and JS inline</td></tr><tr><td>External dependencies</td><td><strong>Zero</strong>. No <code>&lt;script src&gt;</code>, CDN, <code>import</code>, external images, fonts, or textures</td></tr><tr><td>Offline use</td><td>Must run fully without a network connection</td></tr><tr><td>Graphics API</td><td>Native WebGL2, without Three.js or other libraries</td></tr><tr><td>Target frame rate</td><td>At 1080p: 60 fps</td></tr><tr><td>Interface language</td><td>Chinese</td></tr></tbody></table></div>
+<p><strong>About “no Three.js”</strong>: this means you must write the matrix library, sphere-mesh generation, camera controls, and framebuffer management yourself. Inlining a 600 KB library would make the file size balloon, and features such as the bloom pipeline and mutual shadowing between planets and rings require custom shaders anyway.</p>
+<p><strong>Texture sources</strong>: external images are forbidden, so every celestial surface must be <strong>generated on the fly with procedural noise in fragment shaders</strong>. This is one of the main challenges of the task.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s3">2. Astronomical Data (copy exactly; do not invent values)</h2>
+<h3 id="s4">2.1 Planetary orbital elements (NASA/JPL, “Approximate Positions of the Major Planets”)</h3>
+<p>Six elements plus their rates of change per Julian century. Nominal validity interval: <strong>1800–2050</strong>.</p>
+<p>Units: <code>a</code> is in AU; all other values are in degrees.</p>
+<div class="tablewrap"><table><thead><tr><th>Body</th><th>a</th><th>e</th><th>I</th><th>L</th><th>ϖ (longitude of perihelion)</th><th>Ω (longitude of ascending node)</th></tr></thead><tbody><tr><td>Mercury</td><td>0.38709927</td><td>0.20563593</td><td>7.00497902</td><td>252.25032350</td><td>77.45779628</td><td>48.33076593</td></tr><tr><td>Venus</td><td>0.72333566</td><td>0.00677672</td><td>3.39467605</td><td>181.97909950</td><td>131.60246718</td><td>76.67984255</td></tr><tr><td>Earth</td><td>1.00000261</td><td>0.01671123</td><td>−0.00001531</td><td>100.46457166</td><td>102.93768193</td><td>0.0</td></tr><tr><td>Mars</td><td>1.52371034</td><td>0.09339410</td><td>1.84969142</td><td>−4.55343205</td><td>−23.94362959</td><td>49.55953891</td></tr><tr><td>Jupiter</td><td>5.20288700</td><td>0.04838624</td><td>1.30439695</td><td>34.39644051</td><td>14.72847983</td><td>100.47390909</td></tr><tr><td>Saturn</td><td>9.53667594</td><td>0.05386179</td><td>2.48599187</td><td>49.95424423</td><td>92.59887831</td><td>113.66242448</td></tr><tr><td>Uranus</td><td>19.18916464</td><td>0.04725744</td><td>0.77263783</td><td>313.23810451</td><td>170.95427630</td><td>74.01692503</td></tr><tr><td>Neptune</td><td>30.06992276</td><td>0.00859048</td><td>1.77004347</td><td>−55.12002969</td><td>44.96476227</td><td>131.78422574</td></tr><tr><td>Pluto</td><td>39.48211675</td><td>0.24882730</td><td>17.14001206</td><td>238.92903833</td><td>224.06891629</td><td>110.30393684</td></tr></tbody></table></div>
+<p>Rates of change (per Julian century, or 36,525 days):</p>
+<div class="tablewrap"><table><thead><tr><th>Body</th><th>da/dt</th><th>de/dt</th><th>dI/dt</th><th>dL/dt</th><th>dϖ/dt</th><th>dΩ/dt</th></tr></thead><tbody><tr><td>Mercury</td><td>0.00000037</td><td>0.00001906</td><td>−0.00594749</td><td>149472.67411175</td><td>0.16047689</td><td>−0.12534081</td></tr><tr><td>Venus</td><td>0.00000390</td><td>−0.00004107</td><td>−0.00078890</td><td>58517.81538729</td><td>0.00268329</td><td>−0.27769418</td></tr><tr><td>Earth</td><td>0.00000562</td><td>−0.00004392</td><td>−0.01294668</td><td>35999.37244981</td><td>0.32327364</td><td>0.0</td></tr><tr><td>Mars</td><td>0.00001847</td><td>0.00007882</td><td>−0.00813131</td><td>19140.30268499</td><td>0.44441088</td><td>−0.29257343</td></tr><tr><td>Jupiter</td><td>−0.00011607</td><td>−0.00013253</td><td>−0.00183714</td><td>3034.74612775</td><td>0.21252668</td><td>0.20469106</td></tr><tr><td>Saturn</td><td>−0.00125060</td><td>−0.00050991</td><td>0.00193609</td><td>1222.49362201</td><td>−0.41897216</td><td>−0.28867794</td></tr><tr><td>Uranus</td><td>−0.00196176</td><td>−0.00004397</td><td>−0.00242939</td><td>428.48202785</td><td>0.40805281</td><td>0.04240589</td></tr><tr><td>Neptune</td><td>0.00026291</td><td>0.00005105</td><td>0.00035372</td><td>218.45945325</td><td>−0.32241464</td><td>−0.00508664</td></tr><tr><td>Pluto</td><td>−0.00031596</td><td>0.00005170</td><td>0.00004818</td><td>145.20780515</td><td>−0.04062942</td><td>−0.01183482</td></tr></tbody></table></div>
+<blockquote>Strictly speaking, the Earth row describes the Earth–Moon barycenter. The visual difference is imperceptible, so use it directly as Earth.</blockquote>
+<h3 id="s5">2.2 Rotation periods and axial tilts</h3>
+<p><code>rotH</code> = rotation period in hours; a negative value denotes retrograde rotation.</p>
+<p><code>tilt</code> = angle in degrees between the rotation axis and the <strong>north ecliptic pole</strong>. <code>poleLon</code> = ecliptic longitude in degrees toward which the rotation axis projects on the ecliptic plane.</p>
+<blockquote>Note: textbook “axial tilt” is measured relative to a body’s <strong>own orbital plane</strong>, whereas the values here are relative to the <strong>ecliptic plane</strong>; they differ by several degrees. Use the values below for rendering because the world coordinate system is ecliptic, while the information panel may show textbook values. These values have already been converted from IAU pole right ascension and declination; copy them directly.</blockquote>
+<div class="tablewrap"><table><thead><tr><th>Body</th><th>tilt (to ecliptic)</th><th>poleLon</th><th>rotH</th><th>Textbook tilt (to own orbit)</th></tr></thead><tbody><tr><td>Mercury</td><td>7.0</td><td>318.4</td><td>1407.6</td><td>0.03°</td></tr><tr><td>Venus</td><td>177.4</td><td>211.2</td><td>−5832.5</td><td>177.4°</td></tr><tr><td>Earth</td><td>23.44</td><td>90.0</td><td>23.9345</td><td>23.44°</td></tr><tr><td>Mars</td><td>26.76</td><td>352.9</td><td>24.6229</td><td>25.19°</td></tr><tr><td>Jupiter</td><td>2.25</td><td>247.8</td><td>9.925</td><td>3.13°</td></tr><tr><td>Saturn</td><td>28.06</td><td>79.5</td><td>10.656</td><td>26.73°</td></tr><tr><td>Uranus</td><td>97.77</td><td>77.7</td><td>−17.24</td><td>97.77°</td></tr><tr><td>Neptune</td><td>28.02</td><td>319.3</td><td>16.11</td><td>28.32°</td></tr><tr><td>Pluto</td><td>112.8</td><td>137.4</td><td>−153.29</td><td>119.6°</td></tr></tbody></table></div>
+<p>Direction vector of the rotation axis in <strong>ecliptic Cartesian coordinates</strong>:</p>
+<pre><code>axis_ecl = ( sin(tilt)·cos(poleLon),  sin(tilt)·sin(poleLon),  cos(tilt) )</code></pre>
+<p>The rotation axis must remain <strong>fixed in the inertial frame</strong> rather than changing with orbital motion. This lets Saturn’s ring opening angle naturally widen and narrow across its 29.5-year orbit, and makes Uranus genuinely “roll on its side.”</p>
+<h3 id="s6">2.3 Planetary physical parameters (for the information panel and display radii)</h3>
+<div class="tablewrap"><table><thead><tr><th>Body</th><th>Radius (km)</th><th>Mass (kg)</th><th>Orbital period</th><th>Moons</th><th>Surface/cloud-top temperature</th></tr></thead><tbody><tr><td>Sun</td><td>696,340</td><td>1.989×10³⁰</td><td>—</td><td>—</td><td>5,772 K</td></tr><tr><td>Mercury</td><td>2,439.7</td><td>3.30×10²³</td><td>87.97 days</td><td>0</td><td>−173 ~ 427 °C</td></tr><tr><td>Venus</td><td>6,051.8</td><td>4.87×10²⁴</td><td>224.70 days</td><td>0</td><td>464 °C</td></tr><tr><td>Earth</td><td>6,371.0</td><td>5.972×10²⁴</td><td>365.256 days</td><td>1</td><td>−89 ~ 57 °C</td></tr><tr><td>Mars</td><td>3,389.5</td><td>6.42×10²³</td><td>686.98 days</td><td>2</td><td>−143 ~ 35 °C</td></tr><tr><td>Jupiter</td><td>69,911</td><td>1.898×10²⁷</td><td>11.86 years</td><td>95</td><td>−108 °C</td></tr><tr><td>Saturn</td><td>58,232</td><td>5.683×10²⁶</td><td>29.46 years</td><td>274</td><td>−139 °C</td></tr><tr><td>Uranus</td><td>25,362</td><td>8.68×10²⁵</td><td>84.01 years</td><td>28</td><td>−195 °C</td></tr><tr><td>Neptune</td><td>24,622</td><td>1.024×10²⁶</td><td>164.8 years</td><td>16</td><td>−201 °C</td></tr><tr><td>Pluto</td><td>1,188.3</td><td>1.303×10²²</td><td>247.9 years</td><td>5</td><td>−233 ~ −223 °C</td></tr></tbody></table></div>
+<p>The information panel should also show orbital eccentricity, orbital inclination, axial tilt, atmospheric composition, and a two- or three-sentence educational description.</p>
+<h3 id="s7">2.4 Moons</h3>
+<p>Uniform circular motion with the <strong>real period</strong> is sufficient; you do not need to solve Kepler’s equation. The periods themselves must be real, however, so the 1:2:4 orbital resonance of Io, Europa, and Ganymede emerges naturally.</p>
+<div class="tablewrap"><table><thead><tr><th>Moon</th><th>Parent</th><th>Radius (km)</th><th>Orbital radius (km)</th><th>Period (days)</th><th>Orbital inclination</th><th>Reference plane</th></tr></thead><tbody><tr><td>Moon</td><td>Earth</td><td>1,737.4</td><td>384,400</td><td>27.32166</td><td>5.145°</td><td><strong>Ecliptic plane</strong></td></tr><tr><td>Io</td><td>Jupiter</td><td>1,821.6</td><td>421,700</td><td>1.769138</td><td>0.05°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Europa</td><td>Jupiter</td><td>1,560.8</td><td>671,034</td><td>3.551181</td><td>0.47°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Ganymede</td><td>Jupiter</td><td>2,634.1</td><td>1,070,412</td><td>7.154553</td><td>0.20°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Callisto</td><td>Jupiter</td><td>2,410.3</td><td>1,882,709</td><td>16.6890</td><td>0.19°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Titan</td><td>Saturn</td><td>2,574.7</td><td>1,221,870</td><td>15.945</td><td>0.35°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Triton</td><td>Neptune</td><td>1,353.4</td><td>354,759</td><td><strong>−5.876854</strong></td><td>156.9°</td><td>Parent planet’s equatorial plane</td></tr><tr><td>Charon</td><td>Pluto</td><td>606</td><td>19,591</td><td>6.3872</td><td>0.08°</td><td>Parent planet’s equatorial plane</td></tr></tbody></table></div>
+<ul><li>The Moon’s reference plane is the <strong>ecliptic plane</strong>—its 5.145° inclination is relative to the ecliptic. Every other moon uses its parent planet’s <strong>equatorial plane</strong>. This reflects reality; do not force them all onto one reference plane.</li><li>Triton’s negative period denotes retrograde orbital motion, which must be represented.</li></ul>
+<h3 id="s8">2.5 Halley’s Comet, 1P/Halley</h3>
+<div class="tablewrap"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>a</td><td>17.834 AU</td></tr><tr><td>e</td><td>0.96714</td></tr><tr><td>I</td><td>162.26° (retrograde)</td></tr><tr><td>ω (argument of perihelion)</td><td>111.33°</td></tr><tr><td>Ω (longitude of ascending node)</td><td>58.42°</td></tr><tr><td>Perihelion epoch Tp</td><td>JD 2446470.96 (1986-02-09)</td></tr><tr><td>Period</td><td>75.32 years = 27512.6 days</td></tr></tbody></table></div>
+<p>Compute the mean anomaly directly from the perihelion epoch: <code>M = 2π·(JD − Tp) / P_days</code>.</p>
+<h3 id="s9">2.6 Asteroid belt / Kuiper belt (procedural generation)</h3>
+<p>Solve Kepler’s equation for every small body in the <strong>vertex shader</strong>. Each particle stores eight floating-point values: a, e, I, Ω, ω, M₀, n, and size. The CPU generates them only once during initialization. Suggested counts: 9,000 main-belt objects, 900 Hildas, 2,000 Trojans, and 6,000 Kuiper-belt objects.</p>
+<p><strong>Main belt</strong>: a ∈ [2.06, 3.28] AU. Use <strong>rejection sampling</strong> to carve out the Kirkwood gaps. These are genuine resonance gaps and implementing them adds a great deal of credibility:</p>
+<div class="tablewrap"><table><thead><tr><th>Gap position (AU)</th><th>Width σ</th><th>Removal strength</th></tr></thead><tbody><tr><td>2.502 (3:1)</td><td>0.022</td><td>0.93</td></tr><tr><td>2.825 (5:2)</td><td>0.016</td><td>0.85</td></tr><tr><td>2.958 (7:3)</td><td>0.012</td><td>0.70</td></tr><tr><td>3.279 (2:1)</td><td>0.020</td><td>0.90</td></tr><tr><td>2.065</td><td>0.010</td><td>0.60</td></tr></tbody></table></div>
+<p>Retention probability = <code>Π(1 − strength·exp(−((a−position)/σ)²))</code>, multiplied by an overall density envelope centered at 2.72 AU with σ=0.55. Eccentricity e follows a half-normal distribution with a mean of about 0.14 and a maximum of 0.34; inclination I follows a half-normal distribution with a mean of about 8°.</p>
+<p><strong>Hilda group</strong>: a ≈ 3.90 ± 0.09 AU, e ∈ [0.10, 0.30].</p>
+<p><strong>Jupiter Trojans</strong>: this is the standout detail. Use a ≈ 5.202, but <strong>the mean anomaly must remain locked 60° ahead of or behind Jupiter</strong>:</p>
+<pre><code>M₀ = L_Jupiter(J2000) ± 60° + Gaussian perturbation (σ≈26°)     // L_Jupiter(J2000) = 34.396°
+n  = Jupiter’s mean motion (do not derive n from each object’s own a, or the clusters will disperse after a few decades)</code></pre>
+<p>This keeps the L4 and L5 clusters moving with Jupiter indefinitely.</p>
+<p><strong>Kuiper belt</strong>: 22% plutinos (a ≈ 39.45 ± 0.55, in a 3:2 resonance with Neptune), 64% classical-belt objects (a ∈ [42.5, 47.7], e &lt; 0.11, mean I of 7°), and 14% scattered-disc objects (a ∈ [48, 80], e ∈ [0.15, 0.5], mean I of 22°).</p>
+<p><strong>Rendering</strong>: use <code>gl.POINTS</code>. Point size falls with distance and is clamped to [0.75, 4.5] pixels. Use additive blending and multiply brightness by a factor that falls with heliocentric distance so distant objects are dimmer.</p>
+<h3 id="s10">2.7 Ring systems</h3>
+<p>Describe each ring system with a <strong>radial density function</strong>, <code>ringDensity(r)</code>, where r is measured in parent-planet radii. This directly models optical depth rather than using a texture.</p>
+<p><strong>Saturn</strong> (1.235–2.34 parent-planet radii):</p>
+<div class="tablewrap"><table><thead><tr><th>Structure</th><th>Range</th><th>Optical depth τ</th></tr></thead><tbody><tr><td>C Ring</td><td>1.235 – 1.53</td><td>0.11</td></tr><tr><td>B Ring</td><td>1.525 – 1.95</td><td>1.20</td></tr><tr><td>Cassini Division</td><td>1.95 – 2.03</td><td>Reduce the result above by 87%</td></tr><tr><td>A Ring</td><td>2.025 – 2.27</td><td>0.58</td></tr><tr><td>Encke Gap</td><td>2.214 (σ≈0.0045)</td><td>Reduce by 92%</td></tr><tr><td>Keeler Gap</td><td>2.265 (σ≈0.0018)</td><td>Reduce by 80%</td></tr><tr><td>F Ring</td><td>2.324 (σ≈0.0055)</td><td>+0.30</td></tr></tbody></table></div>
+<p>Finally, multiply the whole profile by high-frequency noise, <code>0.70 + 0.60·fbm(r·230)</code>, to create fine ring banding.</p>
+<p><strong>Uranus</strong>: a set of extremely narrow, dark rings built by adding narrow Gaussians. The ring geometry should span 1.60–2.00; the actual rings lie within it. The ε ring is at <strong>1.951</strong> (τ≈0.55, σ≈0.0055), with another six at 1.909 / 1.863 / 1.823 / 1.786 / 1.751 / 1.690. Their τ decreases from 0.20 to 0.07 and σ ranges from 0.0015 to 0.0025. Their color is nearly charcoal black because the real albedo is only 0.03. Uranus has 13 known rings in reality; implementing the seven principal rings is sufficient.</p>
+<p><strong>Jupiter</strong>: an extremely tenuous dust ring spanning 1.40–1.81, with τ ≈ 0.016. <strong>It must remain very faint</strong>; see Section 7.4 for the reason.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s11">3. Core Algorithms</h2>
+<h3 id="s12">3.1 Time</h3>
+<pre><code>JD = unix_ms / 86400000 + 2440587.5
+T  = (JD − 2451545.0) / 36525          // Julian centuries since J2000</code></pre>
+<h3 id="s13">3.2 Kepler’s equation</h3>
+<p>Given mean anomaly M and eccentricity e, find eccentric anomaly E by solving <code>E − e·sin(E) = M</code>:</p>
+<pre><code>First normalize M to [−π, π]
+Initial value: E = M + e·sin(M)·(1 + e·cos(M))
+Perform 8–10 Newton iterations: E −= (E − e·sin(E) − M) / (1 − e·cos(E))
+Convergence criterion: |ΔE| &lt; 1e-13</code></pre>
+<p>For orbits with e &lt; 0.97, including Halley’s Comet, this initial estimate converges in three to five iterations.</p>
+<h3 id="s14">3.3 Orbital elements → ecliptic Cartesian coordinates</h3>
+<pre><code>1. Update all six elements with T: a = a₀ + (da/dt)·T, and likewise for the others
+2. Argument of perihelion  ω = ϖ − Ω
+   Mean anomaly            M = L − ϖ         (normalize to [−π, π])
+3. Solve Kepler’s equation for E
+4. Coordinates in the orbital plane:
+   x' = a·(cos E − e)
+   y' = a·√(1 − e²)·sin E
+5. Rotate into ecliptic coordinates:
+   x = (cosω·cosΩ − sinω·sinΩ·cosI)·x' + (−sinω·cosΩ − cosω·sinΩ·cosI)·y'
+   y = (cosω·sinΩ + sinω·cosΩ·cosI)·x' + (−sinω·sinΩ + cosω·cosΩ·cosI)·y'
+   z = (sinω·sinI)·x'              + (cosω·sinI)·y'</code></pre>
+<h3 id="s15">3.4 Coordinate-system mapping</h3>
+<p>Ecliptic coordinates form a right-handed system with the z-axis pointing toward the north ecliptic pole, while WebGL conventionally uses an upward y-axis. Map them as follows:</p>
+<pre><code>world = ( x_ecl,  z_ecl,  −y_ecl )</code></pre>
+<p>This mapping preserves handedness.</p>
+<p><strong>Milky Way background orientation</strong>: the north galactic pole is approximately (−0.8678, 0.4972, 0.0003) in ecliptic coordinates; the vector shown is already in world coordinates. Use it to orient the Milky Way band so the relative orientation of the star field and ecliptic plane is correct.</p>
+<h3 id="s16">3.5 Display-scale compression</h3>
+<p>Neptune is at 30 AU and Mercury at 0.39 AU, so the inner planets collapse to a point at a linear scale. Use <strong>radial power-law compression</strong>:</p>
+<pre><code>r_display = SCALE · r_AU ^ COMPRESS        // Suggested: SCALE = 34, COMPRESS = 0.62
+Keep direction unchanged; compress radial distance only</code></pre>
+<p><strong>Key property</strong>: the power law changes only radial distance, leaving <strong>angular position completely unchanged</strong>. Planetary longitudes, relative positions, and conjunction/opposition relationships therefore remain exact. Explain this in the UI.</p>
+<p>Enlarge celestial display radii with another power law:</p>
+<pre><code>R_display = 0.72 · (radius_km / 6371) ^ 0.42        // Use 4.6 separately for the Sun</code></pre>
+<p><strong>You must provide a “true distance scale” toggle</strong> that moves COMPRESS between 0.62 and 1.0 with an <strong>animated transition</strong> over about 0.4 seconds. At 1.0, the inner planets collapse into a cluster and the asteroid belt becomes a dense narrow ring. This highly persuasive comparison is one of the work’s highlights. Rebuild the orbit curves every frame during the transition.</p>
+<h3 id="s17">3.6 Rotation</h3>
+<p>Model matrix = <code>translation(world position) × orthonormal basis with the rotation axis as Y × rotation about Y(rotation phase) × scale(display radius)</code>.</p>
+<p>To construct the orthonormal basis, use <code>axis</code> as the Y column, take the cross product with any nonparallel reference vector to obtain the X column, then take another cross product for the Z column.</p>
+<p><strong>The rotation phase must be rate-limited</strong>; see Section 7.11:</p>
+<pre><code>Per-frame Δphase = clamp(2π·Δt_days / rotation_period_days,  −0.22,  +0.22)</code></pre>
+<h3 id="s18">3.7 Moon positions</h3>
+<pre><code>θ = 2π·(JD − J2000)/period + initial phase
+Local coordinates = (cos θ · d, 0, sin θ · d), then tilt by inc about the X axis
+Then:
+  Reference plane = ecliptic  → add directly to the parent planet’s world coordinates
+  Reference plane = equatorial → first transform by the parent planet’s rotation-axis basis, then add</code></pre>
+<p><strong>Display distance</strong>—there is a pitfall here; see Section 7.6:</p>
+<pre><code>a₀ = actual orbital radius of the planet’s innermost implemented moon
+base = max( 2.35,  outer ring edge + innermost moon display radius / parent display radius + 0.55 )   // Units: parent-planet radii
+d = parent display radius × base × (a_moon / a₀) ^ 0.55</code></pre>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s19">4. Rendering Architecture</h2>
+<h3 id="s20">4.1 Pipeline overview</h3>
+<pre><code>[MSAA framebuffer RGBA16F + DEPTH24]
+   1. Background nebula       depth test off, depth writes off
+   2. Star points             depth test off, additive blending
+   3. Sun sphere              depth test on, depth writes on, back-face culling
+   4. Planet/moon spheres     same as above
+   5. Orbit ribbons           depth test on, depth writes off, additive blending
+   6. Asteroid belts          same as above
+   7. Atmosphere shells       same as above
+   8. Ring systems            depth test on, depth writes off, normal alpha blending, no culling
+   9. Comet tails + coma      additive blending
+  10. Solar corona            additive blending
+        ↓ resolve MSAA with blitFramebuffer
+[Scene texture RGBA16F]
+        ↓ brightness-threshold extraction + 6 downsample levels (13-tap)
+        ↓ 6 upsample levels (3×3 tent, accumulated with additive blending; see 7.3)
+[Bloom texture]
+        ↓
+[Composite: chromatic aberration → add bloom → lens flare → exposure → ACES tone mapping → gamma → vignette → grain]
+[Default framebuffer]</code></pre>
+<p>The <code>EXT_color_buffer_float</code> extension is required for HDR. If unavailable, fall back to RGBA8 and lower the bloom threshold.</p>
+<p>Implement 4× MSAA with <code>renderbufferStorageMultisample</code> and <code>blitFramebuffer</code>. If <code>checkFramebufferStatus</code> reports an incomplete framebuffer, fall back gracefully to a non-MSAA path.</p>
+<h3 id="s21">4.2 Key points for each pass</h3>
+<p><strong>Background</strong>: render a full-screen triangle and reconstruct the view direction from the inverse VP matrix. Draw the Milky Way band with 3D fbm noise, using <code>exp(−(view direction·north galactic pole)²·24)</code> for its band profile, then add a layer of dark dust. <strong>The deep-space base color must be extremely dark</strong>, around 0.002 in linear space, or the entire scene will look gray; see Section 7.7.</p>
+<p><strong>Stars</strong>: approximately 11,000 points. Generate directions with rejection sampling biased toward the galactic plane. Use <code>pow(random, 3.6)</code> for brightness, yielding many dim stars and a few bright ones. Sample color from a seven-step color-temperature palette according to realistic spectral-type proportions, from orange-leaning M-type stars to blue-leaning B-type stars. Place them at <code>camera position + direction×4000</code>, with depth testing disabled, and add subtle twinkling.</p>
+<p><strong>Sun</strong>: see Section 5.1.</p>
+<p><strong>Solar corona</strong>: use a camera-facing billboard quad with additive blending and depth testing enabled, so planets correctly occlude it when they pass in front. Draw two layers: an inner layer at 3.1 solar radii and an outer layer at 9 radii. Use fbm over polar angle to create radial coronal streamers.</p>
+<p><strong>Orbit ribbons</strong>: do not use <code>gl.LINES</code>, because line width is fixed at 1 px in most implementations and cannot be antialiased. Expand a <strong>triangle strip in screen space</strong>: emit two vertices for each sample point (side = ±1), project the tangent into screen space in the vertex shader, take its normal, and offset by the pixel width. Use <code>1−|side|</code> in the fragment shader for soft edges.</p>
+<p>Give opacity a gradient along the orbit: brightest at the body’s current position, with a trailing decay opposite its direction of motion, using <code>alpha = base + peak·pow(max(0, 1−d·k), 3.2)</code>, where d is the lag measured around the orbit parameter. This “comet-tail” orbit looks far better than a uniformly bright ellipse.</p>
+<p><strong>Comet tails</strong>: render two. The ion tail points straight away from the Sun and is blue; the dust tail is wider, warmer yellow, and curves backward along the velocity direction. Scale length and brightness by <code>(3/r_AU)²</code>, and do not draw them when r &gt; 6.5 AU. Build them as billboard ribbons facing the camera around the tail axis, and rebuild them on the CPU each frame; with only dozens of vertices, the cost is negligible.</p>
+<h3 id="s22">4.3 Post-processing</h3>
+<ul><li><strong>Bloom</strong>: extract with a soft-knee threshold (threshold ≈ 1.25, knee width ≈ 0.6), downsample six levels with a 13-tap filter, upsample and accumulate with a 3×3 tent filter, then add the result back at a strength of 0.34.</li><li><strong>Tone mapping</strong>: use the Narkowicz approximation of ACES, followed by gamma 2.2.</li><li><strong>Lens flare</strong>: requires the Sun’s screen position and a visibility factor. Compute visibility on the CPU: determine whether the Sun is in front of the camera and whether any planet occludes it by projecting each planet, comparing screen-space distance with apparent radius, and comparing depth. The flare should contain a core glow, six starburst rays, a horizontal anamorphic streak, and three or four ghost discs along the line from the Sun to screen center. <strong>Keep the overall intensity restrained</strong>; see Section 7.8.</li><li>Add subtle chromatic aberration by slightly offsetting RGB samples according to distance from center, along with vignette and animated grain.</li></ul>
+<h3 id="s23">4.4 Depth precision</h3>
+<p>The scene spans enormous scales: planet radii around 0.5, Neptune’s compressed orbit around 274, and its true-scale orbit around 1020. Use <strong>dynamic near and far planes</strong>:</p>
+<pre><code>near = max(0.012, distance from camera to target × 0.0035)
+far  = max(distance from camera to target × 14, 4200)</code></pre>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s24">5. Procedural Celestial Surfaces</h2>
+<p>Sample all surface noise in <strong>object space</strong> using normalized position <code>p = normalize(object-space coordinates)</code>. This makes the texture rotate with the model matrix instead of “floating” over the surface.</p>
+<p>Required noise tools: <code>hash13</code> / <code>hash33</code>, 3D value noise, fbm with a rotation matrix between octaves to avoid axial alignment, Worley F1, and <strong>dual-distance Worley (F1, F2)</strong>.</p>
+<p><strong>Bump mapping</strong>: do not evaluate the height function three times just to obtain a gradient. Screen-space derivatives do it in one evaluation:</p>
+<pre><code>vec3 dpx = dFdx(worldPos), dpy = dFdy(worldPos);
+float dhx = dFdx(height), dhy = dFdy(height);
+vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
+float det = dot(dpx, r1);
+vec3 grad = (r1*dhx + r2*dhy) / det;
+N = normalize(N − strength * grad);</code></pre>
+<h3 id="s25">5.1 Sun</h3>
+<ul><li><strong>Granulation</strong>: use Worley <strong>F2−F1</strong> to draw the dark cellular boundaries; see Section 7.9. Combine two frequencies, approximately 76 and 31.</li><li><strong>Supergranulation</strong>: use low-frequency fbm, around 6.5, for large-scale brightness variation.</li><li><strong>Sunspots</strong>: threshold the high end of low-frequency fbm, with separate <strong>umbra</strong> and <strong>penumbra</strong> levels. Set the threshold high enough that spots cover only about 5% of the surface, or the whole hemisphere will look dark. In addition to lowering color temperature, multiply sunspots by a separate darkening factor so the umbra appears dark brown rather than orange.</li><li><strong>Limb darkening</strong>: <code>limb = 0.24 + 0.76·pow(max(dot(N,V),0), 0.38)</code>. Apply it to <strong>both brightness and color temperature</strong>; the limb should become darker and redder, not merely darker.</li><li>Map the final color through a five-step ramp from deep red → orange → yellow → yellow-white → white. Use an overall brightness around 2.0 in linear HDR values so bloom can lift it.</li><li>Let the surface flow slowly by translating the noise coordinates over time.</li></ul>
+<h3 id="s26">5.2 Rocky bodies (Mercury, the Moon, Callisto, and Charon)</h3>
+<p><strong>Impact-crater function</strong>—this is essential; a simple Worley threshold produces only a field of equally sized black dots:</p>
+<pre><code>In the Worley loop, track both the distance d1 to the nearest feature point and that cell’s random value id
+Independent crater radius per cell: rad = 0.13 + 0.22·frac(id·7.31)
+t = d1 / rad
+Bowl depression: bowl = (t &lt; 1) ? −(1 − t²) : 0
+Raised rim: rim  = exp(−((t−1)/0.26)²)
+Height = (bowl·0.90 + rim·0.50) · depth · existence flag
+Albedo modulation = (bowl·0.55 + rim·0.32) · existence flag       // dark floor, bright rim
+Existence flag = step(id, 0.74) · smoothstep(0.60, 0.40, d1)       // see 7.5 for the latter term</code></pre>
+<p>Combine four octaves—frequencies around 5 / 12 / 28 / 62 and depths around 1.0 / 0.52 / 0.26 / 0.13—to obtain a realistic crater-size distribution.</p>
+<p>Add the following to the <strong>Moon</strong>: maria, using a low-frequency fbm threshold for dark basalt plains with fewer and shallower internal craters, plus bright ray systems.</p>
+<h3 id="s27">5.3 Earth</h3>
+<ul><li><strong>Land and sea</strong>: use seven-octave fbm as a height field, with a sea-level threshold of <strong>0.552</strong>. The mean of fbm is 0.5, so a 0.5 threshold creates 50% land; the real oceans cover 71%.</li><li><strong>Ocean</strong>: interpolate between deep and shallow blue by elevation and add a turquoise coastal shelf. For <strong>specular highlights</strong>, use Blinn–Phong with a shininess around 420; lower values smear into a broad white patch. Apply it only to cloud-free ocean.</li><li><strong>Land</strong>: use a second noise layer to divide vegetation and desert, transition high elevations to rocky gray, and turn high latitudes ice-white.</li><li><strong>Clouds</strong>: use an independent fbm layer with <strong>latitude-dependent zonal drift</strong> over time—faster at low latitudes, slower at high ones. Modulate coverage by latitude: more cloud in the equatorial convergence zone and mid-latitudes, less in the subtropics.</li><li><strong>Night-side lights</strong>: over land, without clouds, and where <code>dot(N,L) &lt; 0</code>, raise high-frequency noise to a high power to create point-like, warm-yellow emission.</li><li><strong>Apply bump mapping only to land</strong>; perturbing the ocean normal breaks up its specular highlight.</li></ul>
+<h3 id="s28">5.4 Venus</h3>
+<p>Only the thick clouds are visible; the surface is not. Use medium- to high-frequency fbm for swirling bands, warped by latitude, with colors ranging from creamy yellow to off-white and a high albedo of 0.75.</p>
+<h3 id="s29">5.5 Mars</h3>
+<ul><li>Use a <strong>low-albedo red-brown</strong> base color; the real albedo is only 0.17. Separate the linear RGB channel ratios to roughly 1 : 0.37 : 0.16, or the result will look beige rather than rust red.</li><li>Use the same craters as Section 5.2, but at half the depth.</li><li><strong>North–south dichotomy</strong>: the northern hemisphere is young plains, so reduce craters there by about 78%; the southern hemisphere is ancient highland with dense cratering. This is Mars’s most prominent geological feature.</li><li>Add polar caps using latitude plus noise, and Valles Marineris as a long, dark Gaussian trench near the equator.</li></ul>
+<h3 id="s30">5.6 Gas giants (Jupiter and Saturn)</h3>
+<ul><li><strong>Zonal bands</strong>: use latitude in degrees as the independent variable and combine four sine waves at different frequencies, corresponding to roughly 4 / 9 / 17 / 30 bands. Use two layers of fbm to <strong>warp latitude laterally</strong> and create turbulence.</li><li>Make distortion strength <strong>adjustable per planet</strong>: strong for Jupiter’s violent turbulence and weak for Saturn, at about 0.42 times Jupiter’s strength, because Saturn’s bands are much softer.</li><li><strong>Fade bands toward the poles</strong>, beginning around 46° latitude and reaching a 94% reduction, or the poles will show concentric “target rings.”</li><li>For oval storms, flatten Worley noise along latitude to create ellipses stretched in longitude.</li><li><strong>Great Red Spot</strong>: place an elliptical region at a specified longitude and latitude with a major-to-minor axis ratio around 2.15:1. Sample noise from polar angle plus radius to form a <strong>spiral</strong>, mixing radial and time terms into the angle, and add a bright rim.</li><li><strong>Saturn’s north-polar hexagon</strong>: where latitude &gt; 0.80, use the hexagonal distance function <code>hexEdge = 0.115 / cos(mod(longitude, 60°) − 30°)</code> and draw a dark line along its boundary. It is a particularly rewarding detail.</li><li>Add limb darkening.</li></ul>
+<h3 id="s31">5.7 Ice giants (Uranus and Neptune)</h3>
+<p>Use mostly featureless cyan/blue surfaces with only faint banding and a few bright methane-cloud streaks. Give Neptune an additional dark spot. <strong>Important</strong>: do <strong>not</strong> put the bright cloud streaks into the height field; see Section 7.10.</p>
+<h3 id="s32">5.8 Other bodies</h3>
+<ul><li><strong>Europa</strong>: a high-albedo ice surface plus a network of reddish-brown lineae. Draw fine lines in the low-value regions of <code>abs(fbm − 0.5)</code>, combining three frequencies.</li><li><strong>Io</strong>: sulfur-yellow and orange, scattered with dark volcanic vents; add faint emission at the center of each vent.</li><li><strong>Ganymede</strong>: dark ancient regions plus bright grooved terrain. The grooves can likewise use the low-value regions of <code>abs(fbm−0.5)</code>.</li><li><strong>Titan</strong>: dense orange haze that almost completely erases surface detail, with an especially soft terminator.</li><li><strong>Pluto</strong>: a dark equatorial band, Cthulhu Macula, plus a heart-shaped bright region, Sputnik Planitia, built from two Gaussian spots.</li></ul>
+<h3 id="s33">5.9 Atmospheres</h3>
+<p><strong>Do not</strong> use “a slightly larger sphere plus Fresnel rim light”; that creates a glass shell with a hard boundary.</p>
+<p>The correct approach integrates optical depth by <strong>view-ray impact parameter</strong>:</p>
+<pre><code>vec3 rd = normalize(fragment world position − camera);
+vec3 oc = planet center − camera;
+float tca = dot(oc, rd);
+float b = sqrt(dot(oc,oc) − tca*tca) / planet radius;      // normalized impact parameter
+float dens = exp(−max(b − 1.0, 0.0) / scale height);       // thickest at the limb, then decays exponentially outward
+dens *= 1.0 − smoothstep(1.0, 0.960, b) * 0.86;            // sight lines over the disc traverse only half the atmosphere
+// Determine day/night from the normal at the view ray’s closest approach to the center, not from the fragment normal
+vec3 an = normalize(camera + rd*tca − planet center);</code></pre>
+<p>Then multiply by the illumination factor and a forward Mie-scattering term, <code>pow(dot(rd, L)*0.5+0.5, 4)</code>. Set the shell geometry radius to <code>planet radius × (1 + scale height×7.5)</code>, allowing the exponential term to decay to zero before the geometry ends. Use a scale height of 0.02–0.05 planet radii; the real value is around 0.0013 and is invisible to the eye, so it must be exaggerated.</p>
+<p><strong>Keep intensity low</strong>. Haze over the disc should be only 5%–12% of the surface brightness; only the limb should form a thin, bright arc. Too much intensity washes the entire day side white.</p>
+<h3 id="s34">5.10 Ring systems (a major focus and visual highlight)</h3>
+<p>Use the density profiles in Section 2.7. During rendering:</p>
+<pre><code>μ_view = max(|dot(ring normal, view direction)|, 0.10)          // the 0.10 floor is essential; see 7.4
+μ_sun  = max(|dot(ring normal, light direction)|, 0.10)
+τ_view = d · 1.45 / μ_view
+τ_sun  = d · 1.45 / μ_sun
+alpha  = 1 − exp(−τ_view)
+
+Front-lit (observer and Sun on the same side of the ring plane):
+    brightness = (1 − exp(−τ_sun)) · 0.85
+Back-lit (opposite sides):
+    brightness = exp(−τ_sun·0.42) · 1.15 · (1 − exp(−τ_sun·0.75))
+    // Result: the thin C Ring and Cassini Division glow through forward scattering, while the thick B Ring blocks light and darkens—this is a real phenomenon</code></pre>
+<p><strong>Two-way shadowing</strong>, which looks excellent when implemented:</p>
+<ol><li><strong>Planet shadow on rings</strong>: cast a ray from the ring point toward the Sun and perform an <strong>analytic intersection</strong> with the parent planet’s sphere. Let <code>oc = ring point − planet center</code> and <code>bb = dot(oc, L)</code>. If <code>bb &lt; 0</code>, compute the closest distance <code>dmin = sqrt(dot(oc,oc) − bb²)</code>, then use <code>smoothstep(R·0.97, R·1.09, dmin)</code> for a shadow coefficient with a soft penumbra.</li><li><strong>Ring shadow on planet</strong>: in the planet fragment shader, transform the Sun direction into object space. From the current fragment, find the intersection along that direction with the <strong>ring plane, object-space y = 0</strong>. If the intersection radius lies within the ring system, attenuate illumination by <code>exp(−ringDensity(r)·1.45 / |sunDir.y|)</code>.</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s35">6. Interaction and Interface</h2>
+<p><strong>Camera</strong>: use an orbital camera with yaw, pitch, and distance. Drag with the mouse to rotate, use the wheel to zoom, and support two-finger pinch zoom on touch devices. Clicking a body focuses it. Use screen-space projection for picking: project every body to the screen and select the nearest body within a threshold; GPU picking is unnecessary. When focus changes, smoothly transition both the camera target and distance over about one second rather than snapping.</p>
+<p><strong>Interface elements</strong>:</p>
+<div class="tablewrap"><table><thead><tr><th>Position</th><th>Content</th></tr></thead><tbody><tr><td>Left</td><td>Celestial-body list (star / planets / indented moons / dwarf planet); click to focus</td></tr><tr><td>Right</td><td>Information card for the selected body: <strong>live data</strong> (heliocentric distance, ecliptic longitude and latitude, distance from Earth, light-travel time, perihelion and aphelion, current orbital speed) + static parameter table + educational text</td></tr><tr><td>Bottom center</td><td>Play/pause, date and time (UTC), speed slider, and a “Now” button</td></tr><tr><td>Bottom right</td><td>Display toggles: orbits / names / moons / asteroid belts / comet / true distance scale / glow</td></tr><tr><td>Beside each body</td><td>HTML overlay label (do not draw text in the canvas), with opacity falling with the body’s apparent angular radius</td></tr></tbody></table></div>
+<p>Compute <strong>real-time orbital speed</strong> with the vis-viva equation: <code>v = 29.7847 · sqrt(2/r − 1/a)</code> km/s, where r and a are in AU.</p>
+<p><strong>Time speed</strong>: use a logarithmic mapping from real time, one second per second, to about ten years per second, and support negative values for reverse playback. Suggested formula:</p>
+<pre><code>speed_days_per_second = sign(v) · 1.157407e-5 · 10^(|v|/100 · 8.55)      // v ∈ [−100, 100]</code></pre>
+<p>Automatically change the displayed unit by magnitude: seconds, minutes, hours, days, or years per second.</p>
+<p><strong>Honesty requirement</strong>: when the date falls outside 1800–2050, display “Outside the valid interval of the orbital elements (extrapolated).” Also explain somewhere that distance scale is compressed while angular positions remain exact.</p>
+<p><strong>Keyboard shortcuts</strong>: Space to pause, Left/Right Arrow to change speed, and H to hide the interface.</p>
+<p><strong>Visual style</strong>: dark glassmorphism panels using <code>backdrop-filter: blur</code>, hairline borders, small labels with generous letter spacing, and monospaced digits with <code>font-variant-numeric: tabular-nums</code>, preventing the interface from jittering as numbers change.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s36">7. Pitfalls You Must Avoid</h2>
+<p><strong>This is the most important section of the document.</strong> Every item below was encountered while building the project. Several can make the result look completely broken while producing no errors at all.</p>
+<h3 id="s37">7.1 <code>gl.clear(DEPTH_BUFFER_BIT)</code> is constrained by <code>depthMask</code> ★★★</h3>
+<p>If <code>depthMask</code> is <code>false</code> when <code>clear</code> is called, <strong>the depth buffer is not cleared at all</strong>.</p>
+<p>Typical symptoms: the first frame looks correct, but the depth buffer then remains frozen at its first-frame values. From a distant view, this may be invisible because the depth values happen to remain self-consistent. As soon as the camera moves closer or the scene scale changes, stale depth values cull all geometry—the <strong>Sun becomes a black disc and the planets disappear, while the star field and background remain</strong> because their depth tests are disabled. Meanwhile, <code>gl.getError()</code> returns 0 and the console remains clean.</p>
+<p>Most pipelines disable <code>depthMask</code> during some pass, such as transparent geometry or post-processing, then forget to restore it. The next frame’s opening <code>clear</code> consequently does nothing.</p>
+<p><strong>Remedy</strong>: explicitly call <code>gl.depthMask(true)</code> before <code>clear</code> every frame.</p>
+<h3 id="s38">7.2 Units for screen-space line width ★★</h3>
+<p>When expanding a line into a triangle strip, project the tangent into screen space, obtain its normal, then divide that normal by half the viewport size. The resulting vector’s length in NDC is <strong>exactly one pixel</strong>. The offset should therefore be multiplied directly by the half-width in pixels.</p>
+<p>If you mistakenly divide by the viewport dimensions a second time, line width becomes roughly 0.001 pixels—the <strong>orbit lines become completely invisible</strong>, with no error reported.</p>
+<h3 id="s39">7.3 Texture feedback loops during bloom upsampling ★★</h3>
+<p>If the target mip is sampled as a texture while it is also being written during upsampling, perhaps to “read the previous value and add to it,” the same texture is both read and written in a feedback loop. Behavior is undefined; some drivers silently produce garbage, and <strong>no GL error is guaranteed</strong>.</p>
+<p><strong>Remedy</strong>: use additive blending, <code>blendFunc(ONE, ONE)</code>, to accumulate the blurred result into the target. The shader should sample only the source mip.</p>
+<h3 id="s40">7.4 Thin rings turn into black lines at grazing angles ★★</h3>
+<p>The optical-depth formula <code>τ = d / μ</code> diverges as μ→0. When the view direction approaches the ring plane, even Jupiter’s extremely tenuous dust ring with d ≈ 0.016 produces alpha ≈ 1, drawing a <strong>solid black horizontal line</strong> across the planet’s face that looks like a rendering bug.</p>
+<p><strong>Remedy</strong>: (1) clamp μ to a minimum of 0.10 rather than 0.045; (2) keep Jupiter’s ring density sufficiently low, around τ ≈ 0.016. Saturn’s ring really should become a solid line at a grazing angle; that behavior is correct.</p>
+<h3 id="s41">7.5 Voronoi features are abruptly clipped at cell boundaries ★</h3>
+<p>If a crater’s influence—especially its ejecta blanket—extends beyond its Voronoi cell boundary, the “winning cell” changes abruptly at that boundary. Crater parameters such as radius and existence jump, producing <strong>segments of straight seams</strong> across the surface that look like scratches.</p>
+<p><strong>Remedy</strong>: make every crater contribution fade to zero before approaching the cell boundary. For example, multiply the whole result by <code>smoothstep(0.60, 0.40, d1)</code>, and also limit the maximum crater radius.</p>
+<h3 id="s42">7.6 Moon orbits collide with ring systems ★</h3>
+<p>If moon display distances use a fixed baseline, such as 2.35 planet radii, they nearly coincide with Saturn’s outer ring edge at 2.34. Titan is the only implemented Saturnian moon and therefore receives a scale factor of 1, leaving half of its sphere buried in the rings.</p>
+<p><strong>Remedy</strong>: the baseline distance must be <code>outer ring edge + innermost moon’s own display radius + margin</code>; see Section 3.7.</p>
+<h3 id="s43">7.7 Deep-space base color ★★</h3>
+<p>It is very easy to set the background ambient floor too high. A linear value of 0.01 becomes roughly 13% gray after ACES and gamma, covering the entire image with gray haze and destroying contrast in both stars and planets.</p>
+<p><strong>Remedy</strong>: use a deep-space base color around <strong>0.002 in linear space</strong>, and reduce the Milky Way’s brightness accordingly. The completed image should be nearly pure black so the stars can genuinely appear bright.</p>
+<h3 id="s44">7.8 HDR budget and overexposure ★★★</h3>
+<p>This is among the most time-consuming categories of problem to debug. ACES tone mapping rapidly pushes linear values above 1.5 toward white while <strong>also stripping saturation</strong>. Therefore:</p>
+<ul><li>Use <strong>realistic albedo values</strong>: Mars 0.17, the Moon 0.12, Mercury 0.14. These are all dark. An “attractive” value of 0.7 blows them out to off-white, turning red Mars cream-colored.</li><li>Do not make sunlight excessively intense. A suggested formula is <code>intensity = clamp(1.5 · (1/r_AU)^0.40, 0.26, 2.1)</code>. Note that this attenuation is intentionally <strong>compressed</strong>; a physically exact 1/r² law makes Neptune completely invisible.</li><li>Every time you add an emissive contribution—atmosphere, rim scattering, specular reflection, or self-emission—recheck for overexposure.</li><li><strong>Debugging method</strong>: use <code>gl.readPixels</code> to read pixel values directly from the HDR scene buffer and inspect the linear values instead of judging screenshots by eye. Target typical planet-disc values of 0.3–0.7; only the Sun, cloud tops, ice caps, and rings should exceed 1.0.</li></ul>
+<h3 id="s45">7.9 Worley F1 does not produce cellular structure ★★</h3>
+<p><code>F1</code>, the distance to the nearest feature point, is smallest at the feature points themselves. Thresholding F1 therefore creates <strong>a collection of dots</strong>, not cells. Solar granulation and any “cell-wall network” require <strong>F2 − F1</strong>, the second-nearest distance minus the nearest distance, which approaches zero at the <strong>cell boundaries</strong>.</p>
+<p>Track the two smallest distances in the same loop; the performance cost is virtually unchanged.</p>
+<h3 id="s46">7.10 Step-like features must not enter the height field ★</h3>
+<p>If a sharp feature produced by <code>smoothstep</code>, such as a cloud streak or line marking, enters the height field at substantial weight, screen-space derivative bump mapping magnifies its edge into a <strong>deep, dark groove</strong> that looks like a scratch.</p>
+<p><strong>Remedy</strong>: give such features a small height-field weight, around 0.1, or let them affect albedo only and not height.</p>
+<h3 id="s47">7.11 Rotation flicker at high time speeds ★</h3>
+<p>At a time speed of one year per second, Earth rotates about six times per frame, turning into randomly jittering visual noise.</p>
+<p><strong>Remedy</strong>: clamp the rotation phase’s <strong>per-frame increment</strong> to roughly ±0.22 radians. Continue displaying the real rotation period in the information panel. Clamp the increment, not the speed, so low-speed motion remains exact.</p>
+<h3 id="s48">7.12 Triangle winding for UV spheres ★</h3>
+<p>When generating a sphere mesh yourself, reversed winding makes back-face culling remove the front faces. The difficulty is that front and back look almost identical on a <strong>self-emissive</strong> sphere such as the Sun, so the mistake may not be immediately obvious; it becomes visible only when lit planets are added.</p>
+<p><strong>Verification method</strong>: choose a point on the equator, calculate the cross product by hand, and confirm that the geometric normal points outward.</p>
+<h3 id="s49">7.13 GLSL <code>smoothstep(a, b, x)</code> is undefined when a &gt; b ★</h3>
+<p>When creating a “reversed gradient,” it is natural to write <code>smoothstep(0.7, 0.3, x)</code>. The specification says the result is undefined when <code>edge0 &gt;= edge1</code>. Although it works on most implementations, cross-platform consistency is not guaranteed.</p>
+<p><strong>Remedy</strong>: write your own <code>sstep(a,b,x) { float t = clamp((x-a)/(b-a), 0.0, 1.0); return t*t*(3.0-2.0*t); }</code> and use it throughout.</p>
+<h3 id="s50">7.14 The mean of fbm is 0.5, not 0 ★</h3>
+<p>Multi-octave fbm with amplitudes 0.5, 0.25, 0.125, and so on has a range of roughly [0,1] and a mean of 0.5. If several fbm values are added and then fed into a color ramp, the mean drifts to 0.6–0.8 and saturates the upper end of the ramp, turning the <strong>entire body into a single color</strong>. The Sun is especially vulnerable and may become a pure white sphere.</p>
+<p><strong>Remedy</strong>: explicitly recenter and rescale values before sending them into a color ramp, and estimate on paper where typical values fall along that ramp.</p>
+<h3 id="s51">7.15 Reading the default framebuffer with <code>readPixels</code> is unreliable ★</h3>
+<p>With <code>preserveDrawingBuffer: false</code>, reading the default framebuffer outside the rAF callback returns all black. For debugging, read from <strong>your own FBOs</strong>, which persist, or read immediately after drawing in the same frame.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s52">8. Acceptance Criteria</h2>
+<h3 id="s53">8.1 Functionality</h3>
+<ul><li>[ ] Runs offline, produces no console errors, and keeps <code>gl.getError()</code> at 0 throughout</li><li>[ ] Runs at ≥ 60 fps at 1080p with devicePixelRatio 1.8</li><li>[ ] Clicking any celestial body focuses it with a smooth camera transition</li><li>[ ] Every display toggle works, and “true distance scale” transitions with animation</li><li>[ ] Time can run forward, run backward, pause, and jump back to the current moment</li><li>[ ] Window resizing does not break the layout, and framebuffers are rebuilt correctly</li></ul>
+<h3 id="s54">8.2 Astronomical correctness (use these values for direct self-checks)</h3>
+<p>Set the date to <strong>2026-08-07</strong> and inspect Earth:</p>
+<div class="tablewrap"><table><thead><tr><th>Item</th><th>Expected value</th></tr></thead><tbody><tr><td>Heliocentric distance</td><td>≈ 1.014 AU, just after aphelion in early July (month 7)</td></tr><tr><td>Heliocentric ecliptic longitude</td><td>≈ 314.6°, equal to the Sun’s apparent ecliptic longitude that day, 135°, plus 180°</td></tr><tr><td>Orbital speed</td><td>≈ 29.3 km/s</td></tr></tbody></table></div>
+<p>Additional checks:</p>
+<div class="tablewrap"><table><thead><tr><th>Check</th><th>Expected</th></tr></thead><tbody><tr><td>Saturn orbital speed</td><td>≈ 9.7 km/s, mean 9.68</td></tr><tr><td>Neptune heliocentric distance (2026)</td><td>≈ 29.9 AU</td></tr><tr><td>Saturn’s rings in 2026</td><td><strong>Nearly edge-on and dark from backlighting</strong>; the 2025 ring-plane crossing has just passed, and the Sun is about −7.4° above the ring plane</td></tr><tr><td>Saturn’s rings in 2033</td><td>Wide open and front-lit, with the planet’s shadow clearly cast on the rings</td></tr><tr><td>Io / Europa / Ganymede</td><td>Period ratio near 1 : 2 : 4, with a visibly perceptible resonance rhythm</td></tr><tr><td>Jupiter Trojans</td><td>Remain stably clustered 60° ahead of and behind Jupiter after long periods of fast-forwarding</td></tr><tr><td>Uranus</td><td>Its rotation axis lies almost in the orbital plane, with the rings nearly face-on to the observer</td></tr><tr><td>Triton</td><td>Orbits in the direction opposite Neptune’s rotation</td></tr><tr><td>Halley’s Comet</td><td>In 2061, reaches perihelion in late July (month 7), when the tail is longest and points away from the Sun</td></tr></tbody></table></div>
+<p>If Earth’s longitude is off by 180°, you probably wrote <code>M = L + ϖ</code> instead of <code>M = L − ϖ</code>, or reversed the handedness of the coordinate mapping.</p>
+<h3 id="s55">8.3 Visuals</h3>
+<ul><li>[ ] Deep space is nearly pure black, with a clearly visible Milky Way band in the star field</li><li>[ ] The Sun’s cellular granulation network and sunspots are visible; it is not a plain white or yellow sphere</li><li>[ ] Earth has blue oceans, white clouds, polar ice, night-side city lights, and a blue atmospheric limb</li><li>[ ] Jupiter has multiple bands and a swirling Great Red Spot</li><li>[ ] Saturn’s rings show the Cassini Division, the planet’s shadow on the rings, and the rings’ shadow on the planet</li><li>[ ] Craters on rocky bodies vary in size and have raised rims rather than appearing as equally sized black dots</li><li>[ ] Mars is rust red, not beige</li><li>[ ] Bloom and lens flare are noticeable without obscuring the image</li></ul>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s56">9. Recommended Implementation Order</h2>
+<p>Do not try to write everything at once. Build and run the project incrementally in this order, with a visible result at every step:</p>
+<ol><li><strong>Foundation</strong>: WebGL2 context + matrix library + UV sphere + orbital camera + one solid-color sphere. Resolve the winding issue in Section 7.12 first.</li><li><strong>Orbital mechanics</strong>: Kepler solver + positions of the nine planets + time controls. Validate with unlit, solid-color spheres. Match the astronomy against the Section 8.2 values before working on visuals.</li><li><strong>Depth and framebuffers</strong>: HDR FBO + MSAA + dynamic near/far planes. The Section 7.1 trap appears here.</li><li><strong>Basic lighting</strong>: point light + soft terminator. It should already begin to look planetary.</li><li><strong>Post-processing</strong>: bloom + ACES + lens flare. Sections 7.3, 7.7, and 7.8 are concentrated here.</li><li><strong>Procedural surfaces</strong>: write the noise library first, then implement one body type at a time. Take a close-up screenshot after each one.</li><li><strong>Orbit lines + asteroid belts + star field</strong>. Section 7.2 applies here.</li><li><strong>Ring systems and atmospheres</strong>, including both directions of shadowing.</li><li><strong>Moons and comet</strong>. Section 7.6 applies here.</li><li><strong>Interface and information panel</strong>.</li><li><strong>Tuning</strong>: balance exposure, color saturation, and every intensity coefficient. This will take longer than expected; quantify with <code>readPixels</code> instead of relying on eyesight.</li></ol>
+<hr style="border:0;border-top:1px solid var(--line);margin:34px 0">
+<h2 id="s57">Appendix: An Easily Overlooked Overall Recommendation</h2>
+<p>The difficulty of this project lies <strong>not in any single technical element</strong>, but in the <strong>overall balance of exposure and color</strong>. The Sun, planet day sides, planet night sides, rings, star field, atmospheres, and bloom span several orders of magnitude in brightness. Overdriving any one of them ruins all the others.</p>
+<p>A recommended approach is to render everything in neutral gray first and verify that all geometry and motion are correct. Then add color and tune brightness one element at a time, using <code>readPixels</code> after each addition to confirm that linear values remain in the expected range. Do not tune coefficients by feel while simultaneously writing shaders; that leads to endless back-and-forth adjustments.</p>
+</div>
+</body>
+</html>

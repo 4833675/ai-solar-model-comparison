@@ -6,6 +6,14 @@
   const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
   const kb = b => b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(2) + ' MB';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const I18N = window.I18N || { en: false, t: key => key, page: value => value,
+    workText: (work, key) => key === 'fix.what' ? work.fix && work.fix.what || '' : work[key] || '',
+    scoreNote: (_work, fallback) => fallback || '' };
+  const t = (key, vars) => I18N.t(key, vars);
+  const page = value => I18N.page(value);
+  const workText = (work, key) => I18N.workText(work, key);
+  const scoreNote = (work, fallback) => I18N.scoreNote(work, fallback);
+  const tierLabel = tier => t(`tier.${tier}`);
 
   /* ---------------------------------------------------------- 环境自检 */
   const CAP = { done: false };
@@ -108,29 +116,29 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   function verdict() {
-    if (!CAP.webgl2) return { lv: 'bad', t: '无法运行', s: '此浏览器不支持 WebGL 2，本站收录的绝大多数作品都无法显示。请改用较新的 Chrome / Edge / Firefox / Safari。' };
+    if (!CAP.webgl2) return { lv: 'bad', code: 'noWebgl', t: t('verdict.noWebgl.title'), s: t('verdict.noWebgl.body') };
     const b = CAP.b1080;
-    if (CAP.mobile) return { lv: 'warn', t: '移动设备 · 建议改用桌面', s: '这些作品按桌面独显设计，移动端多数会掉帧、发热甚至崩溃。轻量级作品可以试试。' };
-    if (!CAP.float) return { lv: 'warn', t: '缺少浮点缓冲扩展', s: '缺少 EXT_color_buffer_float，依赖 HDR 渲染的作品可能白屏或报错（本站已逐一标注）。' };
-    if (b == null) return { lv: 'warn', t: '无法完成性能实测', s: '能力探测通过，但基准测试未能运行。请以实际体验为准。' };
-    if (b < 22) return { lv: 'ok', t: '可以流畅运行全部作品', s: '实测 GPU 着色吞吐充裕，重量级作品也没问题。' };
-    if (b < 45) return { lv: 'ok', t: '可以运行，重量级作品可能掉帧', s: '轻中量级作品流畅；标记为「重」的作品建议逐个打开，不要同时开多个。' };
-    if (b < 100) return { lv: 'warn', t: '性能吃紧', s: '建议只看标记为「轻」的作品，重量级作品会明显掉帧。' };
-    return { lv: 'bad', t: '性能不足', s: '实测 GPU 负载能力偏低，多数作品会非常卡。建议换一台设备，或只浏览截图。' };
+    if (CAP.mobile) return { lv: 'warn', code: 'mobile', t: t('verdict.mobile.title'), s: t('verdict.mobile.body') };
+    if (!CAP.float) return { lv: 'warn', code: 'noFloat', t: t('verdict.noFloat.title'), s: t('verdict.noFloat.body') };
+    if (b == null) return { lv: 'warn', code: 'noBenchmark', t: t('verdict.noBenchmark.title'), s: t('verdict.noBenchmark.body') };
+    if (b < 22) return { lv: 'ok', code: 'smooth', t: t('verdict.smooth.title'), s: t('verdict.smooth.body') };
+    if (b < 45) return { lv: 'ok', code: 'heavy', t: t('verdict.heavy.title'), s: t('verdict.heavy.body') };
+    if (b < 100) return { lv: 'warn', code: 'strained', t: t('verdict.strained.title'), s: t('verdict.strained.body') };
+    return { lv: 'bad', code: 'insufficient', t: t('verdict.insufficient.title'), s: t('verdict.insufficient.body') };
   }
 
   // 逐作品的可运行性判断（作品重量差近百倍，不能只给一个笼统结论）
   function workRisk(w) {
     if (!CAP.done) return null;
-    if (!CAP.webgl2 && w.tech !== 'Canvas2D') return { lv: 'bad', t: '不支持 WebGL2' };
-    if (w.needsFloat && !CAP.float) return { lv: 'bad', t: '缺 float 扩展' };
+    if (!CAP.webgl2 && w.tech !== 'Canvas2D') return { lv: 'bad', code: 'noWebgl2', t: t('risk.noWebgl2') };
+    if (w.needsFloat && !CAP.float) return { lv: 'bad', code: 'noFloat', t: t('risk.noFloat') };
     const b = CAP.b1080;
     if (b == null) return null;
     const cost = w.weight === 'heavy' ? 1.9 : w.weight === 'medium' ? 1.1 : 0.55;
     const est = b * cost;
     if (est < 40) return null;                       // 流畅，不打标
-    if (est < 90) return { lv: 'warn', t: '可能掉帧' };
-    return { lv: 'bad', t: '预计很卡' };
+    if (est < 90) return { lv: 'warn', code: 'mayDrop', t: t('risk.mayDrop') };
+    return { lv: 'bad', code: 'verySlow', t: t('risk.verySlow') };
   }
 
   function renderProbe(el) {
@@ -139,7 +147,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     box.className = 'probe';
     box.innerHTML = `<div class="probe-top">
         <div class="probe-badge">◍</div>
-        <div><div class="probe-verdict">正在检测…</div><div class="probe-sub">正在运行 GPU 基准测试</div></div>
+        <div><div class="probe-verdict">${t('probe.testing')}</div><div class="probe-sub">${t('probe.benchmarking')}</div></div>
       </div><div class="probe-grid"></div>`;
     el.appendChild(box);
 
@@ -155,22 +163,22 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       $('.probe-verdict', box).textContent = v.t;
       $('.probe-sub', box).textContent = v.s;
 
-      const yn = (v2, good) => `<dd class="${v2 ? (good === false ? 'w' : 'y') : 'n'}">${v2 ? '支持' : '不支持'}</dd>`;
+      const yn = (v2, good) => `<dd class="${v2 ? (good === false ? 'w' : 'y') : 'n'}">${v2 ? t('probe.supported') : t('probe.unsupported')}</dd>`;
       const items = [
-        ['WebGL 2', yn(CAP.webgl2)],
-        ['浮点帧缓冲 <br>EXT_color_buffer_float', yn(CAP.float) + (CAP.float ? '' : '')],
-        ['GPU', `<dd>${esc(CAP.gpu || '未公开')}</dd>`],
-        ['最大 MSAA', `<dd class="${CAP.samples >= 4 ? 'y' : 'w'}">${CAP.samples || 0}×</dd>`],
-        ['最大纹理', `<dd>${CAP.texSize || '—'}</dd>`],
-        ['片元高精度', yn(CAP.highp)],
-        ['基准 · 单次 1024² 着色', `<dd class="${CAP.b == null ? 'n' : CAP.b < 1.2 ? 'y' : CAP.b < 4 ? 'w' : 'n'}">${CAP.b == null ? '未完成' : CAP.b.toFixed(2) + ' ms'}</dd>`],
-        ['估算 1080p 整帧', `<dd class="${CAP.b1080 == null ? 'n' : CAP.b1080 < 22 ? 'y' : CAP.b1080 < 45 ? 'w' : 'n'}">${CAP.b1080 == null ? '—' : CAP.b1080.toFixed(1) + ' ms ≈ ' + Math.round(1000 / CAP.b1080) + ' fps'}</dd>`],
-        ['设备像素比', `<dd>${CAP.dpr}×</dd>`],
-        ['屏幕 / 核心 / 内存', `<dd>${CAP.screen} · ${CAP.cores || '?'}核 · ${CAP.mem ? CAP.mem + 'GB' : '未公开'}</dd>`],
+        [t('probe.webgl2'), yn(CAP.webgl2)],
+        [t('probe.floatBuffer'), yn(CAP.float)],
+        [t('probe.gpu'), `<dd>${esc(CAP.gpu || t('probe.undisclosed'))}</dd>`],
+        [t('probe.maxMsaa'), `<dd class="${CAP.samples >= 4 ? 'y' : 'w'}">${CAP.samples || 0}×</dd>`],
+        [t('probe.maxTexture'), `<dd>${CAP.texSize || '—'}</dd>`],
+        [t('probe.fragmentPrecision'), yn(CAP.highp)],
+        [t('probe.benchmarkPass'), `<dd class="${CAP.b == null ? 'n' : CAP.b < 1.2 ? 'y' : CAP.b < 4 ? 'w' : 'n'}">${CAP.b == null ? t('probe.incomplete') : CAP.b.toFixed(2) + ' ms'}</dd>`],
+        [t('probe.estimatedFrame'), `<dd class="${CAP.b1080 == null ? 'n' : CAP.b1080 < 22 ? 'y' : CAP.b1080 < 45 ? 'w' : 'n'}">${CAP.b1080 == null ? '—' : CAP.b1080.toFixed(1) + ' ms ≈ ' + Math.round(1000 / CAP.b1080) + ' fps'}</dd>`],
+        [t('probe.dpr'), `<dd>${CAP.dpr}×</dd>`],
+        [t('probe.hardware'), `<dd>${t('probe.hardwareValue', { screen: CAP.screen, cores: CAP.cores || '?', memory: CAP.mem ? CAP.mem + 'GB' : t('probe.undisclosed') })}</dd>`],
       ];
       $('.probe-grid', box).innerHTML = items.map(([k, d]) =>
         `<div class="pitem"><dt>${k}</dt>${d}</div>`).join('') +
-        `<div class="pitem" style="border-right:0"><dt>设备类型</dt><dd class="${CAP.mobile ? 'w' : 'y'}">${CAP.mobile ? '移动端' : '桌面'}</dd></div>`;
+        `<div class="pitem" style="border-right:0"><dt>${t('probe.deviceType')}</dt><dd class="${CAP.mobile ? 'w' : 'y'}">${CAP.mobile ? t('probe.mobile') : t('probe.desktop')}</dd></div>`;
 
       document.dispatchEvent(new CustomEvent('probe-done'));
     }, 60));
@@ -179,20 +187,19 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   /* ---------------------------------------------------------- 渲染部件 */
   function techChip(w) {
     const cls = w.tech === 'Three.js' ? 'three' : w.tech === 'Canvas2D' ? 'c2d' : 'gl';
-    return `<span class="chip tech ${cls}">${w.tech === 'WebGL2' ? '原生 WebGL2' : esc(w.tech)}</span>`;
+    return `<span class="chip tech ${cls}">${w.tech === 'WebGL2' ? t('tech.nativeWebgl2') : esc(w.tech)}</span>`;
   }
   function chips(w, risk) {
     const out = [techChip(w),
-      `<span class="chip">${kb(w.bytes)}</span>`, `<span class="chip">${w.lines} 行</span>`];
-    if (w.weight === 'heavy') out.push('<span class="chip warn">重量级</span>');
+      `<span class="chip">${kb(w.bytes)}</span>`, `<span class="chip">${t('unit.lines', { count: w.lines })}</span>`];
+    if (w.weight === 'heavy') out.push(`<span class="chip warn">${t('weight.heavy')}</span>`);
     if (w.net && w.net.length)
-      out.push('<span class="chip warn" title="运行时会从 ' + esc(w.net.join('、')) +
-        ' 拉取资源，断网或内网环境下无法显示">需联网</span>');
-    if (w.issue) out.push('<span class="chip bad" title="' + esc(w.issue) + '">渲染异常</span>');
+      out.push(`<span class="chip warn" title="${esc(t('network.title', { hosts: w.net.join(I18N.en ? ', ' : '、') }))}">${t('network.required')}</span>`);
+    if (w.issue) out.push(`<span class="chip bad" title="${esc(workText(w, 'issue'))}">${t('render.issue')}</span>`);
     if (risk) out.push(`<span class="chip ${risk.lv}">${risk.t}</span>`);
     return `<div class="chips">${out.join('')}</div>`;
   }
-  const link = w => `view.html?w=${encodeURIComponent(w.id)}`;
+  const link = w => `${page('view.html')}?w=${encodeURIComponent(w.id)}`;
 
   /* ---------------------------------------------------------- 评分 */
   const ORBIT_POINTS = [0, 6, 13, 19, 25];
@@ -231,40 +238,42 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
-    const tier = (window.TIER_LABELS || {})[w.tier] || '';
+    const tier = tierLabel(w.tier);
     const capped = Number.isFinite(s.cap) && s.adjusted > s.cap;
     const high = !s.reference && s.total > 80;
     return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
-        <div><span>${s.reference ? 'BENCHMARK REFERENCE' : 'SCORE BREAKDOWN'}</span><strong>${esc(w.model)}</strong></div>
+        <div><span>${s.reference ? t('score.referenceHead') : t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
         <b>${scoreNum(s.total)}<i>/100</i></b>
       </div>
       <p class="score-tip-meta">${s.reference
-        ? `标杆参考分 · 同规则计分 · 不参与排名 · 自动基础分 ${scoreNum(s.raw)}`
+        ? t('score.referenceMeta', { score: scoreNum(s.raw) })
         : capped
-          ? `自动基础分 ${scoreNum(s.raw)} · 致命主画面故障封顶 ${scoreNum(s.cap)}`
+          ? t('score.cappedMeta', { raw: scoreNum(s.raw), cap: scoreNum(s.cap) })
           : s.manualAdjustment
-            ? `自动基础分 ${scoreNum(s.raw)} · 人工修正后 ${scoreNum(s.adjusted)}`
-            : `自动基础分 ${scoreNum(s.raw)} · 无统一人工扣减`}</p>
+            ? t('score.adjustedMeta', { raw: scoreNum(s.raw), adjusted: scoreNum(s.adjusted) })
+            : t('score.baseMeta', { raw: scoreNum(s.raw) })}</p>
       <div class="score-tip-grid">
-        ${part('功能广度', 'features', 20)}
-        ${part('轨道真实度', 'orbit', 25)}
-        ${part('卫星系统', 'moons', 15)}
-        ${part('离线性', 'offline', 7)}
-        ${part('哈雷彗星', 'halley', 3)}
-        ${part('正确与稳定', 'correctness', 15)}
-        ${part('视觉执行', 'visual', 10)}
-        ${part('交互完成度', 'interaction', 5)}
+        ${part(t('score.features'), 'features', 20)}
+        ${part(t('score.orbit'), 'orbit', 25)}
+        ${part(t('score.moons'), 'moons', 15)}
+        ${part(t('score.offline'), 'offline', 7)}
+        ${part(t('score.halley'), 'halley', 3)}
+        ${part(t('score.correctness'), 'correctness', 15)}
+        ${part(t('score.visual'), 'visual', 10)}
+        ${part(t('score.interaction'), 'interaction', 5)}
       </div>
-      ${s.penalty ? `<div class="score-tip-penalty"><span>Canvas2D 额外扣分</span><b>−${s.penalty}</b></div>` : ''}
-      ${s.manualAdjustment ? `<div class="score-tip-adjustment"><span>人工修正 · ${esc(tier)}</span><b>${scoreNum(s.manualAdjustment)}</b></div>` : ''}
-      ${capped ? `<div class="score-tip-penalty"><span>致命主画面故障封顶</span><b>${scoreNum(s.cap)}</b></div>` : ''}
-      ${s.note ? `<p class="score-tip-note">${esc(s.note)}</p>` : ''}`;
+      ${s.penalty ? `<div class="score-tip-penalty"><span>${t('score.canvasPenalty')}</span><b>−${s.penalty}</b></div>` : ''}
+      ${s.manualAdjustment ? `<div class="score-tip-adjustment"><span>${t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${scoreNum(s.manualAdjustment)}</b></div>` : ''}
+      ${capped ? `<div class="score-tip-penalty"><span>${t('score.fatalCap')}</span><b>${scoreNum(s.cap)}</b></div>` : ''}
+      ${s.note ? `<p class="score-tip-note">${esc(scoreNote(w, s.note))}</p>` : ''}`;
   }
 
   function scoreCell(w) {
     const s = scoreFor(w);
     if (!s) return '<span class="score-empty">—</span>';
-    const label = `${w.model} ${s.reference ? '标杆参考分' : '自动评分'} ${s.total} 分，查看分项得分`;
+    const label = s.reference
+      ? t('score.referenceAria', { name: w.model, score: s.total })
+      : t('score.automaticAria', { name: w.model, score: s.total });
     const capped = Number.isFinite(s.cap) && s.adjusted > s.cap;
     const high = !s.reference && s.total > 80;
     return `<button type="button" class="score-pill${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
@@ -353,16 +362,16 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const benchmark = w.group === 'A' && w.tier === 1;
     return `<div class="card ${w.group === 'A' ? 'ga' : 'gb'}${benchmark ? ' is-benchmark' : ''}">
       <a class="shot-link" href="${link(w)}">
-        ${w.shot ? `<img class="shot" loading="lazy" src="${w.shot}" alt="${esc(w.model)} 的作品截图">`
+        ${w.shot ? `<img class="shot" loading="lazy" src="${w.shot}" alt="${esc(t('card.screenshotAlt', { name: w.model }))}">`
         : '<div class="shot"></div>'}
       </a>
       <div class="card-body">
         <h4><span class="dot"></span><span class="model-name">${esc(w.model)}</span>${benchmark
-          ? '<span class="benchmark-badge" title="第一梯队 · 重点推荐"><span aria-hidden="true">⚑</span> 标杆</span>' : ''}</h4>
-        <div class="sub">${esc(w.title || w.id)}</div>
+          ? `<span class="benchmark-badge" title="${t('benchmark.title')}"><span aria-hidden="true">⚑</span> ${t('benchmark.badge')}</span>` : ''}</h4>
+        <div class="sub">${esc(workText(w, 'title') || w.id)}</div>
         ${chips(w, risk)}
         ${w.fix ? `<a class="fixlink" href="${w.fix.file}" target="_blank" rel="noopener"
-             title="${esc(w.fix.what)}">⚙ Opus 5 修复版（仅修复显示问题）→</a>` : ''}
+             title="${esc(workText(w, 'fix.what'))}">${t('fix.link')}</a>` : ''}
       </div></div>`;
   }
 
@@ -370,30 +379,32 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const a = w.a, b = w.b;
     const af = (scoreFor(a) || {}).features ?? a.feats.length;
     const bf = (scoreFor(b) || {}).features ?? b.feats.length;
-    const fmtDiff = (label, va, vb) => `<span><i>${va}</i> → <b>${vb}</b> ${label}</span>`;
+    const fmtDiff = (label, va, vb) => I18N.en
+      ? `<span>${label}: <i>${va}</i> → <b>${vb}</b></span>`
+      : `<span><i>${va}</i> → <b>${vb}</b> ${label}</span>`;
     return `<div class="pair">
       <div class="pair-head">
         <span class="seq">${String(i + 1).padStart(2, '0')}</span>
         <h3>${esc(a.model.replace(/\s*#\d+$/, ''))}</h3>
-        <a class="go" href="compare.html?p=${encodeURIComponent(a.pair)}">并排实跑 →</a>
+        <a class="go" href="${page('compare.html')}?p=${encodeURIComponent(a.pair)}">${t('pair.run')}</a>
       </div>
       <div class="pair-body">
         <div class="side a">
-          <div class="side-tag">一句话提示</div>
+          <div class="side-tag">${t('group.prompt')}</div>
           <a class="shot-link" href="${link(a)}">${a.shot ? `<img class="shot" loading="lazy" src="${a.shot}" alt="">` : '<div class="shot"></div>'}</a>
           ${chips(a, workRisk(a))}
         </div>
         <div class="arrow">→</div>
         <div class="side b">
-          <div class="side-tag">详细文档</div>
+          <div class="side-tag">${t('group.document')}</div>
           <a class="shot-link" href="${link(b)}">${b.shot ? `<img class="shot" loading="lazy" src="${b.shot}" alt="">` : '<div class="shot"></div>'}</a>
           ${chips(b, workRisk(b))}
         </div>
       </div>
       <div class="diff">
-        ${fmtDiff('渲染方式', a.tech === 'WebGL2' ? '原生 WebGL2' : a.tech, b.tech === 'WebGL2' ? '原生 WebGL2' : b.tech)}
-        ${fmtDiff('代码量', a.lines + ' 行', b.lines + ' 行')}
-        ${fmtDiff('功能点', af + ' 项', bf + ' 项')}
+        ${fmtDiff(t('pair.rendering'), a.tech === 'WebGL2' ? t('tech.nativeWebgl2') : a.tech, b.tech === 'WebGL2' ? t('tech.nativeWebgl2') : b.tech)}
+        ${fmtDiff(t('pair.codeSize'), t('unit.lines', { count: a.lines }), t('unit.lines', { count: b.lines }))}
+        ${fmtDiff(t('pair.features'), t('unit.items', { count: af }), t('unit.items', { count: bf }))}
       </div>
       ${(window.PAIR_NOTES || {})[a.pair]
         ? `<div class="pair-caveat">⚠ ${esc(window.PAIR_NOTES[a.pair])}</div>` : ''}
@@ -402,15 +413,14 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   // 按梯队分组渲染画廊
   function tieredGallery(works) {
-    const T = window.TIER_LABELS || {};
     const byTier = {};
     works.forEach(w => (byTier[w.tier] = byTier[w.tier] || []).push(w));
-    return Object.keys(byTier).sort((a, b) => a - b).map(t => {
-      const list = byTier[t].sort((a, b) => scoreOrder(a, b));
-      const benchmarkTier = t === '1' && list[0] && list[0].group === 'A';
-      return `<div class="tier${t === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
-          <div class="tier-hd"><span>${esc(T[t] || t)}</span>${benchmarkTier
-            ? '<b class="tier-recommend"><span aria-hidden="true">⚑</span> 标杆 · 重点推荐</b>' : ''}<i>${list.length} 件</i></div>
+    return Object.keys(byTier).sort((a, b) => a - b).map(tier => {
+      const list = byTier[tier].sort((a, b) => scoreOrder(a, b));
+      const benchmarkTier = tier === '1' && list[0] && list[0].group === 'A';
+      return `<div class="tier${tier === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
+          <div class="tier-hd"><span>${esc(tierLabel(tier) || tier)}</span>${benchmarkTier
+            ? `<b class="tier-recommend"><span aria-hidden="true">⚑</span> ${t('benchmark.recommend')}</b>` : ''}<i>${t('unit.works', { count: list.length })}</i></div>
           <div class="grid">${list.map(card).join('')}</div>
         </div>`;
     }).join('');
@@ -419,7 +429,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   /* ---------------------------------------------------------- 导出 */
   window.SITE = {
     tieredGallery,
-    $, $$, kb, esc, CAP, detect, renderProbe, workRisk, card, pairBlock, chips, techChip, link,
+    $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, chips, techChip, link,
     scoreFor, scoreOrder, scoreCell, installScoreTooltip,
     byId: id => (window.WORKS || []).find(w => w.id === id),
     pairs() {
