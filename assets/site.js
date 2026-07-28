@@ -220,6 +220,15 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     return Object.assign({}, r, { parts, penalty, raw, manualAdjustment, adjusted, total });
   }
 
+  function scoreOrder(a, b, direction = -1) {
+    const sa = scoreFor(a), sb = scoreFor(b);
+    const totalDiff = (sa ? sa.total : -1) - (sb ? sb.total : -1);
+    const exactDiff = (sa ? sa.adjusted : -1) - (sb ? sb.adjusted : -1);
+    return totalDiff * direction || exactDiff * direction ||
+      (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER) ||
+      String(a.id).localeCompare(String(b.id));
+  }
+
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
     const tier = (window.TIER_LABELS || {})[w.tier] || '';
@@ -397,7 +406,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const byTier = {};
     works.forEach(w => (byTier[w.tier] = byTier[w.tier] || []).push(w));
     return Object.keys(byTier).sort((a, b) => a - b).map(t => {
-      const list = byTier[t].sort((a, b) => a.rank - b.rank);
+      const list = byTier[t].sort((a, b) => scoreOrder(a, b));
       const benchmarkTier = t === '1' && list[0] && list[0].group === 'A';
       return `<div class="tier${t === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
           <div class="tier-hd"><span>${esc(T[t] || t)}</span>${benchmarkTier
@@ -411,7 +420,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery,
     $, $$, kb, esc, CAP, detect, renderProbe, workRisk, card, pairBlock, chips, techChip, link,
-    scoreFor, scoreCell, installScoreTooltip,
+    scoreFor, scoreOrder, scoreCell, installScoreTooltip,
     byId: id => (window.WORKS || []).find(w => w.id === id),
     pairs() {
       const m = {};
