@@ -214,23 +214,28 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     };
     const penalty = r.canvas ? 10 : 0;
     const raw = Object.values(parts).reduce((sum, value) => sum + value, 0) - penalty;
-    const uncapped = Math.max(0, Math.min(100, raw));
-    const total = Math.round(Number.isFinite(r.cap) ? Math.min(uncapped, r.cap) : uncapped);
-    return Object.assign({}, r, { parts, penalty, raw, total });
+    const manualAdjustment = r.reference ? 0 : w.tier === 2 ? -5 : w.tier === 3 ? -10 : 0;
+    const adjusted = Math.max(0, Math.min(100, raw + manualAdjustment));
+    const total = Math.round(Number.isFinite(r.cap) ? Math.min(adjusted, r.cap) : adjusted);
+    return Object.assign({}, r, { parts, penalty, raw, manualAdjustment, adjusted, total });
   }
 
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
-    const capped = Number.isFinite(s.cap) && s.raw > s.cap;
-    return `<div class="score-tip-head">
+    const tier = (window.TIER_LABELS || {})[w.tier] || '';
+    const capped = Number.isFinite(s.cap) && s.adjusted > s.cap;
+    const high = !s.reference && s.total > 80;
+    return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
         <div><span>${s.reference ? 'BENCHMARK REFERENCE' : 'SCORE BREAKDOWN'}</span><strong>${esc(w.model)}</strong></div>
         <b>${scoreNum(s.total)}<i>/100</i></b>
       </div>
       <p class="score-tip-meta">${s.reference
-        ? `标杆参考分 · 同规则计分 · 不参与排名 · 分项合计 ${scoreNum(s.raw)}`
+        ? `标杆参考分 · 同规则计分 · 不参与排名 · 自动基础分 ${scoreNum(s.raw)}`
         : capped
-          ? `分项合计 ${scoreNum(s.raw)} · 致命主画面故障封顶 ${scoreNum(s.cap)} · 梯队不参与计算`
-          : `分项合计 ${scoreNum(s.raw)} · 梯队不参与计算或修正`}</p>
+          ? `自动基础分 ${scoreNum(s.raw)} · 致命主画面故障封顶 ${scoreNum(s.cap)}`
+          : s.manualAdjustment
+            ? `自动基础分 ${scoreNum(s.raw)} · 人工修正后 ${scoreNum(s.adjusted)}`
+            : `自动基础分 ${scoreNum(s.raw)} · 无统一人工扣减`}</p>
       <div class="score-tip-grid">
         ${part('功能广度', 'features', 20)}
         ${part('轨道真实度', 'orbit', 25)}
@@ -242,6 +247,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         ${part('交互完成度', 'interaction', 5)}
       </div>
       ${s.penalty ? `<div class="score-tip-penalty"><span>Canvas2D 额外扣分</span><b>−${s.penalty}</b></div>` : ''}
+      ${s.manualAdjustment ? `<div class="score-tip-adjustment"><span>人工修正 · ${esc(tier)}</span><b>${scoreNum(s.manualAdjustment)}</b></div>` : ''}
       ${capped ? `<div class="score-tip-penalty"><span>致命主画面故障封顶</span><b>${scoreNum(s.cap)}</b></div>` : ''}
       ${s.note ? `<p class="score-tip-note">${esc(s.note)}</p>` : ''}`;
   }
@@ -249,9 +255,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreCell(w) {
     const s = scoreFor(w);
     if (!s) return '<span class="score-empty">—</span>';
-    const label = `${w.model} ${s.reference ? '标杆参考分' : '总分'} ${s.total} 分，查看分项得分`;
-    const capped = Number.isFinite(s.cap) && s.raw > s.cap;
-    return `<button type="button" class="score-pill${s.reference ? ' is-reference' : ''}${capped ? ' is-capped' : ''}"
+    const label = `${w.model} ${s.reference ? '标杆参考分' : '自动评分'} ${s.total} 分，查看分项得分`;
+    const capped = Number.isFinite(s.cap) && s.adjusted > s.cap;
+    const high = !s.reference && s.total > 80;
+    return `<button type="button" class="score-pill${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
       ${s.reference ? '<span aria-hidden="true">⚑</span>' : ''}<b>${scoreNum(s.total)}</b>
     </button>`;
