@@ -1,8 +1,8 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol","gpt56terra"];
-window.PAIR_NOTES={};
+window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol","gpt56terra","qwen38"];
+window.PAIR_NOTES={"qwen38":"一句话版来自 Qoder（IDE 智能体），与详细文档版的运行环境不同，差异未必全部来自模型本身"};
 window.WORKS=[
  {
   "id": "DeepSeekProMax-TasksAssignedByOpus5",
@@ -608,7 +608,7 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tier": 3,
-  "rank": 5
+  "rank": 6
  },
  {
   "id": "Gemini3.5Flash-TasksAssignedByOpus5",
@@ -1068,11 +1068,44 @@ window.WORKS=[
   "rank": 9
  },
  {
+  "id": "Qwen3.8Max-TasksAssignedByOpus5",
+  "file": "models/Qwen3.8Max-TasksAssignedByOpus5.html",
+  "model": "Qwen 3.8 Max",
+  "group": "B",
+  "pair": "qwen38",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 57241,
+  "lines": 804,
+  "title": "太阳系实时运动模型",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Qwen3.8Max-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 3,
+  "rank": 5
+ },
+ {
   "id": "Qwen3.8Max-inQoder",
   "file": "models/Qwen3.8Max-inQoder.html",
   "model": "Qwen 3.8 Max",
   "group": "A",
-  "pair": null,
+  "pair": "qwen38",
   "featured": false,
   "tech": "Three.js",
   "bytes": 20615,

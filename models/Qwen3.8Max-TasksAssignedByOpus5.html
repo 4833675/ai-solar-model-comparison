@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>太阳系实时运动模型</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+canvas{display:block;width:100%;height:100%}
+.panel{position:fixed;background:rgba(8,12,20,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#c8d4e0;font-size:12px;letter-spacing:0.3px}
+#leftPanel{left:12px;top:12px;bottom:80px;width:168px;overflow-y:auto;padding:10px 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.15) transparent;z-index:10}
+#leftPanel::-webkit-scrollbar{width:4px}
+#leftPanel::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.body-item{padding:5px 14px;cursor:pointer;transition:background 0.2s;white-space:nowrap;font-size:11.5px}
+.body-item:hover{background:rgba(100,160,255,0.12)}
+.body-item.active{background:rgba(100,160,255,0.18);color:#7cb8ff}
+.body-item.moon{padding-left:28px;font-size:10.5px;color:#8899aa}
+.section-title{padding:6px 14px 3px;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#556677}
+#infoPanel{right:12px;top:12px;width:258px;max-height:calc(100% - 100px);overflow-y:auto;padding:14px;display:none;z-index:10;scrollbar-width:thin}
+#infoPanel h3{font-size:14px;color:#e8f0ff;margin-bottom:8px;font-weight:500}
+.info-row{display:flex;justify-content:space-between;padding:2.5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.info-row .label{color:#7888a0;font-size:11px}
+.info-row .value{color:#c8daf0;font-family:'SF Mono',Consolas,monospace;font-variant-numeric:tabular-nums;font-size:11px}
+.info-desc{margin-top:10px;font-size:11px;line-height:1.6;color:#8899aa}
+#bottomBar{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:8px 18px;border-radius:20px;z-index:10}
+#bottomBar button{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#aabbcc;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;transition:all 0.2s}
+#bottomBar button:hover{background:rgba(100,160,255,0.2);color:#fff}
+#dateDisplay{font-family:'SF Mono',Consolas,monospace;font-variant-numeric:tabular-nums;color:#a0c0e0;font-size:11.5px;min-width:175px;text-align:center}
+#speedSlider{width:130px;accent-color:#5090d0;height:3px}
+#speedLabel{font-family:'SF Mono',Consolas,monospace;font-size:10px;color:#7899bb;min-width:80px}
+#togglePanel{right:12px;bottom:12px;padding:10px 14px;z-index:10}
+#togglePanel label{display:block;padding:2.5px 0;cursor:pointer;font-size:11px;color:#8899aa}
+#togglePanel label:hover{color:#bbccdd}
+#togglePanel input{margin-right:6px;accent-color:#5090d0}
+#warning{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:rgba(200,120,0,0.15);border:1px solid rgba(200,120,0,0.3);color:#e0a040;padding:4px 14px;border-radius:6px;font-size:10.5px;display:none;z-index:20}
+#note{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);color:rgba(150,170,190,0.5);font-size:9.5px;z-index:5}
+.lbl{position:fixed;pointer-events:none;color:rgba(200,220,240,0.85);font-size:10px;letter-spacing:0.5px;text-shadow:0 0 4px rgba(0,0,0,0.9);transform:translate(-50%,-100%);white-space:nowrap;z-index:5}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="leftPanel" class="panel"></div>
+<div id="infoPanel" class="panel"></div>
+<div id="bottomBar" class="panel">
+<button id="btnPlay">⏸</button>
+<button id="btnNow">此刻</button>
+<span id="dateDisplay"></span>
+<input type="range" id="speedSlider" min="-100" max="100" value="30">
+<span id="speedLabel"></span>
+</div>
+<div id="togglePanel" class="panel">
+<label><input type="checkbox" id="togOrbits" checked>轨道</label>
+<label><input type="checkbox" id="togLabels" checked>名称</label>
+<label><input type="checkbox" id="togMoons" checked>卫星</label>
+<label><input type="checkbox" id="togAsteroids" checked>小行星带</label>
+<label><input type="checkbox" id="togComet" checked>彗星</label>
+<label><input type="checkbox" id="togRealDist">真实距离</label>
+<label><input type="checkbox" id="togBloom" checked>辉光</label>
+</div>
+<div id="warning">⚠ 已超出根数有效区间（1800–2050），结果为外推</div>
+<div id="note">距离经幂律压缩 · 角位置/周期/偏心率均为真实值 · 空格暂停 · H隐藏界面</div>
+<script>
+"use strict";
+const PI=Math.PI,TAU=PI*2,DEG=PI/180;
+// ===== Matrix/Vector Math =====
+function mat4(){return new Float32Array(16)}
+function m4id(o){o.fill(0);o[0]=o[5]=o[10]=o[15]=1;return o}
+function m4mul(o,a,b){for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+j]*b[i*4+k];o[i*4+j]=s}return o}
+function m4persp(o,fov,asp,n,f){const t=1/Math.tan(fov/2);o.fill(0);o[0]=t/asp;o[5]=t;o[10]=(f+n)/(n-f);o[11]=-1;o[14]=2*f*n/(n-f);return o}
+function m4lookAt(o,eye,ctr,up){let zx=eye[0]-ctr[0],zy=eye[1]-ctr[1],zz=eye[2]-ctr[2];let l=1/Math.hypot(zx,zy,zz);zx*=l;zy*=l;zz*=l;let xx=up[1]*zz-up[2]*zy,xy=up[2]*zx-up[0]*zz,xz=up[0]*zy-up[1]*zx;l=Math.hypot(xx,xy,xz);if(l<1e-6){xx=1;xy=0;xz=0}else{l=1/l;xx*=l;xy*=l;xz*=l}let yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;o[0]=xx;o[1]=yx;o[2]=zx;o[3]=0;o[4]=xy;o[5]=yy;o[6]=zy;o[7]=0;o[8]=xz;o[9]=yz;o[10]=zz;o[11]=0;o[12]=-(xx*eye[0]+xy*eye[1]+xz*eye[2]);o[13]=-(yx*eye[0]+yy*eye[1]+yz*eye[2]);o[14]=-(zx*eye[0]+zy*eye[1]+zz*eye[2]);o[15]=1;return o}
+function m4invert(o,m){const a=m;const b00=a[0]*a[5]-a[1]*a[4],b01=a[0]*a[6]-a[2]*a[4],b02=a[0]*a[7]-a[3]*a[4],b03=a[1]*a[6]-a[2]*a[5],b04=a[1]*a[7]-a[3]*a[5],b05=a[2]*a[7]-a[3]*a[6],b06=a[8]*a[13]-a[9]*a[12],b07=a[8]*a[14]-a[10]*a[12],b08=a[8]*a[15]-a[11]*a[12],b09=a[9]*a[14]-a[10]*a[13],b10=a[9]*a[15]-a[11]*a[13],b11=a[10]*a[15]-a[11]*a[14];let d=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;if(!d)return o;d=1/d;o[0]=(a[5]*b11-a[6]*b10+a[7]*b09)*d;o[1]=(a[2]*b10-a[1]*b11-a[3]*b09)*d;o[2]=(a[13]*b05-a[14]*b04+a[15]*b03)*d;o[3]=(a[10]*b04-a[9]*b05-a[11]*b03)*d;o[4]=(a[6]*b08-a[4]*b11-a[7]*b07)*d;o[5]=(a[0]*b11-a[2]*b08+a[3]*b07)*d;o[6]=(a[14]*b02-a[12]*b05-a[15]*b01)*d;o[7]=(a[8]*b05-a[10]*b02+a[11]*b01)*d;o[8]=(a[4]*b10-a[5]*b08+a[7]*b06)*d;o[9]=(a[1]*b08-a[0]*b10-a[3]*b06)*d;o[10]=(a[12]*b04-a[13]*b02+a[15]*b00)*d;o[11]=(a[9]*b02-a[8]*b04-a[11]*b00)*d;o[12]=(a[5]*b07-a[4]*b09-a[6]*b06)*d;o[13]=(a[0]*b09-a[1]*b07+a[2]*b06)*d;o[14]=(a[13]*b01-a[12]*b03-a[14]*b00)*d;o[15]=(a[8]*b03-a[9]*b01+a[10]*b00)*d;return o}
+function m4transpose(o,m){const t=m.slice();o[0]=t[0];o[1]=t[4];o[2]=t[8];o[3]=t[12];o[4]=t[1];o[5]=t[5];o[6]=t[9];o[7]=t[13];o[8]=t[2];o[9]=t[6];o[10]=t[10];o[11]=t[14];o[12]=t[3];o[13]=t[7];o[14]=t[11];o[15]=t[15];return o}
+function m4normalFromModel(o,m){m4invert(o,m);m4transpose(o,o);return o}
+const v3sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const v3add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const v3scale=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const v3dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const v3cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const v3len=a=>Math.hypot(a[0],a[1],a[2]);
+const v3norm=a=>{const l=v3len(a)||1;return[a[0]/l,a[1]/l,a[2]/l]};
+// ===== WebGL Init =====
+const canvas=document.getElementById('c');
+const gl=canvas.getContext('webgl2',{antialias:false,alpha:false,preserveDrawingBuffer:false,powerPreference:'high-performance'});
+if(!gl){document.body.innerHTML='<p style="color:#fff;padding:40px">需要WebGL2</p>';throw'no gl'}
+const hasFloat=!!gl.getExtension('EXT_color_buffer_float');
+gl.getExtension('OES_texture_float_linear');
+function mkShader(src,type){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(s));return null}return s}
+function mkProg(vs,fs){const p=gl.createProgram();gl.attachShader(p,mkShader(vs,gl.VERTEX_SHADER));gl.attachShader(p,mkShader(fs,gl.FRAGMENT_SHADER));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(p));return null}return p}
+function uLocs(p,ns){const u={};ns.forEach(n=>u[n]=gl.getUniformLocation(p,n));return u}
+// ===== Sphere Mesh =====
+function mkSphere(lat,lon){const v=[],idx=[];for(let i=0;i<=lat;i++){const th=i*PI/lat,st=Math.sin(th),ct=Math.cos(th);for(let j=0;j<=lon;j++){const ph=j*TAU/lon;v.push(st*Math.cos(ph),ct,st*Math.sin(ph))}}for(let i=0;i<lat;i++)for(let j=0;j<lon;j++){const a=i*(lon+1)+j,b=a+lon+1;idx.push(a,b,a+1,b,b+1,a+1)}const vao=gl.createVertexArray();gl.bindVertexArray(vao);const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);gl.bindVertexArray(null);return{vao,n:idx.length}}
+const sphHi=mkSphere(48,72),sphLo=mkSphere(24,36);
+// Fullscreen triangle
+const fsTriVAO=gl.createVertexArray();gl.bindVertexArray(fsTriVAO);const fsBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,fsBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);gl.bindVertexArray(null);
+// ===== Astronomical Data =====
+const P=[
+{nm:'水星',a:.38709927,e:.20563593,I:7.00497902,L:252.25032350,w:77.45779628,O:48.33076593,da:.00000037,de:.00001906,dI:-.00594749,dL:149472.67411175,dw:.16047689,dO:-.12534081,r:2439.7,tilt:7.0,pole:318.4,rotH:1407.6,alb:.14,tp:0,per:'87.97天',mn:0,tmp:'−173~427℃',mass:'3.30×10²³',desc:'太阳系最小行星，表面布满撞击坑，昼夜温差极大。'},
+{nm:'金星',a:.72333566,e:.00677672,I:3.39467605,L:181.97909950,w:131.60246718,O:76.67984255,da:.00000390,de:-.00004107,dI:-.00078890,dL:58517.81538729,dw:.00268329,dO:-.27769418,r:6051.8,tilt:177.4,pole:211.2,rotH:-5832.5,alb:.75,tp:2,per:'224.70天',mn:0,tmp:'464℃',mass:'4.87×10²⁴',desc:'浓厚CO₂大气产生极端温室效应，表面温度足以融化铅。'},
+{nm:'地球',a:1.00000261,e:.01671123,I:-.00001531,L:100.46457166,w:102.93768193,O:0,da:.00000562,de:-.00004392,dI:-.01294668,dL:35999.37244981,dw:.32327364,dO:0,r:6371,tilt:23.44,pole:90,rotH:23.9345,alb:.30,tp:1,per:'365.256天',mn:1,tmp:'−89~57℃',mass:'5.972×10²⁴',desc:'已知唯一存在生命的星球，液态水覆盖71%表面。'},
+{nm:'火星',a:1.52371034,e:.09339410,I:1.84969142,L:-4.55343205,w:-23.94362959,O:49.55953891,da:.00001847,de:.00007882,dI:-.00813131,dL:19140.30268499,dw:.44441088,dO:-.29257343,r:3389.5,tilt:26.76,pole:352.9,rotH:24.6229,alb:.17,tp:3,per:'686.98天',mn:2,tmp:'−143~35℃',mass:'6.42×10²³',desc:'红色来自氧化铁，拥有太阳系最高火山和最大峡谷。'},
+{nm:'木星',a:5.20288700,e:.04838624,I:1.30439695,L:34.39644051,w:14.72847983,O:100.47390909,da:-.00011607,de:-.00013253,dI:-.00183714,dL:3034.74612775,dw:.21252668,dO:.20469106,r:69911,tilt:2.25,pole:247.8,rotH:9.925,alb:.52,tp:4,per:'11.86年',mn:95,tmp:'−108℃',mass:'1.898×10²⁷',desc:'太阳系最大行星，大红斑是持续数百年的巨型风暴。'},
+{nm:'土星',a:9.53667594,e:.05386179,I:2.48599187,L:49.95424423,w:92.59887831,O:113.66242448,da:-.00125060,de:-.00050991,dI:.00193609,dL:1222.49362201,dw:-.41897216,dO:-.28867794,r:58232,tilt:28.06,pole:79.5,rotH:10.656,alb:.47,tp:5,per:'29.46年',mn:274,tmp:'−139℃',mass:'5.683×10²⁶',desc:'以壮观环系闻名，密度低于水。'},
+{nm:'天王星',a:19.18916464,e:.04725744,I:.77263783,L:313.23810451,w:170.95427630,O:74.01692503,da:-.00196176,de:-.00004397,dI:-.00242939,dL:428.48202785,dw:.40805281,dO:.04240589,r:25362,tilt:97.77,pole:77.7,rotH:-17.24,alb:.51,tp:6,per:'84.01年',mn:28,tmp:'−195℃',mass:'8.68×10²⁵',desc:'自转轴几乎躺在轨道面上，像一颗滚动的行星。'},
+{nm:'海王星',a:30.06992276,e:.00859048,I:1.77004347,L:-55.12002969,w:44.96476227,O:131.78422574,da:.00026291,de:.00005105,dI:.00035372,dL:218.45945325,dw:-.32241464,dO:-.00508664,r:24622,tilt:28.02,pole:319.3,rotH:16.11,alb:.41,tp:7,per:'164.8年',mn:16,tmp:'−201℃',mass:'1.024×10²⁶',desc:'太阳系最远行星，风速可达2100km/h。'},
+{nm:'冥王星',a:39.48211675,e:.24882730,I:17.14001206,L:238.92903833,w:224.06891629,O:110.30393684,da:-.00031596,de:.00005170,dI:.00004818,dL:145.20780515,dw:-.04062942,dO:-.01183482,r:1188.3,tilt:112.8,pole:137.4,rotH:-153.29,alb:.49,tp:8,per:'247.9年',mn:5,tmp:'−233~−223℃',mass:'1.303×10²²',desc:'矮行星，拥有心形斯普特尼克平原。'}
+];
+const MOONS=[
+{nm:'月球',pi:2,r:1737.4,orb:384400,per:27.32166,inc:5.145,ref:0,tp:10},
+{nm:'木卫一',pi:4,r:1821.6,orb:421700,per:1.769138,inc:.05,ref:1,tp:11},
+{nm:'木卫二',pi:4,r:1560.8,orb:671034,per:3.551181,inc:.47,ref:1,tp:12},
+{nm:'木卫三',pi:4,r:2634.1,orb:1070412,per:7.154553,inc:.20,ref:1,tp:13},
+{nm:'木卫四',pi:4,r:2410.3,orb:1882709,per:16.689,inc:.19,ref:1,tp:10},
+{nm:'土卫六',pi:5,r:2574.7,orb:1221870,per:15.945,inc:.35,ref:1,tp:14},
+{nm:'海卫一',pi:7,r:1353.4,orb:354759,per:-5.876854,inc:156.9,ref:1,tp:10},
+{nm:'冥卫一',pi:8,r:606,orb:19591,per:6.3872,inc:.08,ref:1,tp:10}
+];
+const HALLEY={a:17.834,e:.96714,I:162.26,w:111.33,O:58.42,Tp:2446470.96,per:27512.6};
+// ===== Orbital Mechanics =====
+const SCALE=34;let compress=.62,compressTgt=.62;
+function solveK(M,e){M=((M%TAU)+TAU+PI)%TAU-PI;let E=M+e*Math.sin(M)*(1+e*Math.cos(M));for(let i=0;i<10;i++){const d=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));E-=d;if(Math.abs(d)<1e-13)break}return E}
+function orbPos(el,T){const a=el.a+el.da*T,e=el.e+el.de*T,I=(el.I+el.dI*T)*DEG,L=el.L+el.dL*T,w=(el.w+el.dw*T-(el.O+el.dO*T))*DEG,M=(L-(el.w+el.dw*T))*DEG,Om=(el.O+el.dO*T)*DEG;const E=solveK(M,e);const xp=a*(Math.cos(E)-e),yp=a*Math.sqrt(1-e*e)*Math.sin(E);const cw=Math.cos(w),sw=Math.sin(w),cO=Math.cos(Om),sO=Math.sin(Om),cI=Math.cos(I),sI=Math.sin(I);return[(cw*cO-sw*sO*cI)*xp+(-sw*cO-cw*sO*cI)*yp,(sw*sI)*xp+(cw*sI)*yp,-((cw*sO+sw*cO*cI)*xp+(-sw*sO+cw*cO*cI)*yp)]}
+function dispPos(p){const r=v3len(p);if(r<1e-10)return[0,0,0];const rd=SCALE*Math.pow(r,compress);return v3scale(p,rd/r)}
+function dispR(rkm,sun){return sun?4.6:0.72*Math.pow(rkm/6371,.42)}
+function orbVel(rAU,aAU){return 29.7847*Math.sqrt(Math.abs(2/rAU-1/aAU))}
+// ===== Time =====
+let simTime=Date.now(),playing=true,speedVal=30;
+const getJD=()=>simTime/86400000+2440587.5;
+const getT=()=>(getJD()-2451545)/36525;
+function spdDPS(){if(!speedVal)return 0;return Math.sign(speedVal)*1.157407e-5*Math.pow(10,Math.abs(speedVal)/100*8.55)}
+function fmtDate(){const d=new Date(simTime);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0')+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+':'+String(d.getUTCSeconds()).padStart(2,'0')+' UTC'}
+function fmtSpd(){const d=spdDPS();if(!d)return'实时';const a=Math.abs(d),s=d<0?'−':'';if(a<1/86400)return s+(a*86400).toFixed(1)+' 秒/秒';if(a<1/1440)return s+(a*1440).toFixed(1)+' 分/秒';if(a<1)return s+(a*24).toFixed(2)+' 时/秒';if(a<365.25)return s+a.toFixed(1)+' 天/秒';return s+(a/365.25).toFixed(2)+' 年/秒'}
+// ===== Camera =====
+let camYaw=.4,camPitch=.45,camDist=80,camTgt=[0,0,0],camTgtG=[0,0,0],camDistG=80,focusIdx=-1;
+let projM=mat4(),viewM=mat4(),vpM=mat4(),invVP=mat4(),eyePos=[0,0,80];
+function updCam(dt){const k=Math.min(1,dt*4);camTgt[0]+=(camTgtG[0]-camTgt[0])*k;camTgt[1]+=(camTgtG[1]-camTgt[1])*k;camTgt[2]+=(camTgtG[2]-camTgt[2])*k;camDist+=(camDistG-camDist)*k;const cp=Math.cos(camPitch),sp=Math.sin(camPitch);eyePos=[camTgt[0]+camDist*cp*Math.sin(camYaw),camTgt[1]+camDist*sp,camTgt[2]+camDist*cp*Math.cos(camYaw)];m4lookAt(viewM,eyePos,camTgt,[0,1,0])}
+// ===== State =====
+let W=0,H=0,dpr=1;
+let showOrbits=true,showLabels=true,showMoons=true,showAst=true,showComet=true,showBloom=true;
+let planetPos=[],planetDispPos=[],moonDispPos=[],rotPhase=new Array(9).fill(0);
+let sunPos=[0,0,0];
+// ===== SHADERS =====
+const NOISE=`
+float hash13(vec3 p){p=fract(p*vec3(.1031,.1030,.0973));p+=dot(p,p.yxz+33.33);return fract((p.x+p.y)*p.z);}
+vec3 hash33(vec3 p){p=fract(p*vec3(.1031,.1030,.0973));p+=dot(p,p.yxz+33.33);return fract((p.xxy+p.yxx)*p.zyx);}
+float vnoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+float a=hash13(i),b=hash13(i+vec3(1,0,0)),c=hash13(i+vec3(0,1,0)),d=hash13(i+vec3(1,1,0));
+float e=hash13(i+vec3(0,0,1)),f2=hash13(i+vec3(1,0,1)),g=hash13(i+vec3(0,1,1)),h=hash13(i+vec3(1,1,1));
+return mix(mix(mix(a,b,f.x),mix(c,d,f.x),f.y),mix(mix(e,f2,f.x),mix(g,h,f.x),f.y),f.z);}
+mat3 rot3(float a){float c=cos(a),s=sin(a);return mat3(c,0,s,0,1,0,-s,0,c);}
+float fbm(vec3 p,int oct){float v=0.,a=.5;mat3 r=rot3(.7);for(int i=0;i<8;i++){if(i>=oct)break;v+=a*vnoise(p);p=r*p*2.02;a*=.5;}return v;}
+vec2 worley2(vec3 p){vec3 i=floor(p),f=fract(p);float d1=1e9,d2=1e9;
+for(int x=-1;x<=1;x++)for(int y=-1;y<=1;y++)for(int z=-1;z<=1;z++){vec3 g=vec3(x,y,z);vec3 o=hash33(i+g);vec3 r=g+o-f;float d=dot(r,r);if(d<d1){d2=d1;d1=d;}else if(d<d2)d2=d;}
+return vec2(sqrt(d1),sqrt(d2));}
+float sstep(float a,float b,float x){float t=clamp((x-a)/(b-a),0.,1.);return t*t*(3.-2.*t);}
+`;
+const PLANET_VS=`#version 300 es
+layout(location=0) in vec3 aPos;
+uniform mat4 uMVP,uModel,uNorm;
+out vec3 vWP,vOP,vN;
+void main(){vOP=aPos;vec4 wp=uModel*vec4(aPos,1.);vWP=wp.xyz;vN=normalize((uNorm*vec4(aPos,0.)).xyz);gl_Position=uMVP*vec4(aPos,1.);}`;
+const PLANET_FS=`#version 300 es
+precision highp float;
+in vec3 vWP,vOP,vN;
+uniform vec3 uCam,uSunDir;uniform float uTime,uType,uAlb;
+out vec4 fc;
+${NOISE}
+vec3 rockSurf(vec3 p,vec3 N,vec3 L,float alb){
+float h=0.,crA=0.;
+float fr[4]=float[](5.,12.,28.,62.);float dp[4]=float[](1.,.52,.26,.13);
+for(int o=0;o<4;o++){vec3 pp=p*fr[o];vec3 ip=floor(pp);float d1=1e9,id=0.;
+for(int x=-1;x<=1;x++)for(int y=-1;y<=1;y++)for(int z=-1;z<=1;z++){vec3 g=vec3(x,y,z);vec3 fp=ip+g;vec3 r=g+hash33(fp)-fract(pp);float d=dot(r,r);if(d<d1){d1=d;id=hash13(fp);}}
+d1=sqrt(d1);float rad=.13+.22*fract(id*7.31);float t=d1/rad;
+float bowl=t<1.?-(1.-t*t):0.;float rim=exp(-pow((t-1.)/.26,2.));
+float ex=step(id,.74)*smoothstep(.60,.40,d1);
+h+=(bowl*.9+rim*.5)*dp[o]*ex;crA+=(bowl*.55+rim*.32)*ex*dp[o];}
+float base=fbm(p*8.,4)*.3;
+vec3 col=vec3(.45,.42,.38)*(alb/.14);col*=1.+base*.4+crA*.5;
+float diff=max(dot(N,L),0.);return col*(.02+diff);}
+vec3 earthSurf(vec3 p,vec3 N,vec3 L,vec3 V){
+float cont=fbm(p*3.1+vec3(2.2),7);float sl=.552;
+float isL=smoothstep(sl-.01,sl+.01,cont);
+float lat=asin(clamp(p.y,-1.,1.));
+vec3 oc=mix(vec3(.01,.04,.12),vec3(.02,.12,.28),smoothstep(.4,.55,cont));
+float shore=smoothstep(sl-.02,sl,cont)*smoothstep(sl+.02,sl,cont);
+oc=mix(oc,vec3(.02,.18,.16),shore*.5);
+float terr=fbm(p*6.+vec3(5.5),5);
+vec3 lc=mix(vec3(.04,.14,.02),vec3(.16,.12,.04),smoothstep(.4,.6,terr));
+lc=mix(lc,vec3(.25,.22,.18),smoothstep(.65,.8,cont));
+float ice=sstep(1.1,1.35,abs(lat)+fbm(p*12.,3)*.15);
+lc=mix(lc,vec3(.7,.72,.75),ice);
+vec3 sc=mix(oc,lc,isL);
+float diff=max(dot(N,L),0.);
+float spec=pow(max(dot(normalize(L+V),N),0.),420.)*(1.-isL)*.6;
+float cl=fbm(p*4.5+vec3(uTime*.002,lat*2.,uTime*.001),6);
+float ca=smoothstep(.45,.65,cl)*.85*(.7+.3*cos(lat*2.));
+sc=mix(sc,vec3(.85,.87,.9)*diff,ca);
+float night=smoothstep(0.,-.15,dot(N,L));
+float city=pow(fbm(p*45.,4),3.)*isL*(1.-ca)*night;
+sc+=vec3(1.,.8,.4)*city*2.5;
+return sc*(.02+diff)+vec3(spec);}
+vec3 gasGiant(vec3 p,vec3 N,vec3 L,int pl){
+float lat=asin(clamp(p.y,-1.,1.))/3.14159*180.;
+float lon=atan(p.z,p.x);
+float ts=pl==0?1.:.42;
+float w1=fbm(p*vec3(3.,8.,3.)+vec3(0.,uTime*.003,0.),4)*ts*8.;
+float w2=fbm(p*vec3(5.,12.,5.)+vec3(3.3),3)*ts*4.;
+float lw=lat+w1+w2;
+float bands=sin(lw*.7)*.5+sin(lw*.31+1.3)*.3+sin(lw*.17+2.7)*.15+sin(lw*.095)*.1;
+float pf=smoothstep(46.,94.,abs(lat));bands=mix(bands,bands*.06,pf);
+vec3 c1,c2,c3;
+if(pl==0){c1=vec3(.72,.55,.35);c2=vec3(.85,.78,.65);c3=vec3(.6,.35,.2);}
+else{c1=vec3(.82,.72,.5);c2=vec3(.9,.85,.7);c3=vec3(.7,.6,.4);}
+float t=bands*.5+.5;vec3 col=mix(c1,c2,smoothstep(.3,.7,t));col=mix(col,c3,smoothstep(.7,.95,t)*.4);
+if(pl==0){float dx=(lon-1.5)/.35,dy=(lat*3.14159/180.+.35)/.16;float grs=dx*dx+dy*dy;
+if(grs<1.){float ang=atan(dy,dx)+grs*3.+uTime*.01;float sw=fbm(vec3(cos(ang),sin(ang),grs)*3.+uTime*.005,4);
+col=mix(col,vec3(.75,.28,.12),smoothstep(1.,.3,grs)*(.6+.4*sw));col=mix(col,vec3(.9,.7,.5),smoothstep(.8,1.,grs)*.3);}}
+if(pl==1&&lat>72.){float hl=mod(lon,1.0472)-.5236;float he=.115/cos(hl);float hd=abs(1.-lat/78.)-he;
+col*=1.-.15*smoothstep(.05,-.02,hd);}
+float diff=max(dot(N,L),0.);float lf=.3+.7*pow(max(dot(N,normalize(uCam-vWP)),0.),.5);
+return col*diff*lf;}
+vec3 iceGiant(vec3 p,vec3 N,vec3 L,int pl){
+float lat=asin(clamp(p.y,-1.,1.));
+float bands=sin(lat*12.)*.03+sin(lat*5.+1.)*.02;
+vec3 base=pl==0?vec3(.55,.78,.82):vec3(.18,.32,.72);base+=bands;
+float st=fbm(p*vec3(8.,20.,8.)+vec3(uTime*.002),4);base+=smoothstep(.6,.75,st)*.15;
+if(pl==1){float sp=smoothstep(.25,0.,length(p.xz-vec2(.5,.3))+abs(p.y+.2)*2.);base*=1.-sp*.25;}
+return base*max(dot(N,L),0.);}
+void main(){vec3 p=normalize(vOP);vec3 N=normalize(vN);vec3 L=normalize(uSunDir);vec3 V=normalize(uCam-vWP);
+vec3 col=vec3(.5);int tp=int(uType+.5);
+if(tp==0)col=rockSurf(p,N,L,uAlb);
+else if(tp==1)col=earthSurf(p,N,L,V);
+else if(tp==2){float b=fbm(p*vec3(4.,10.,4.)+vec3(0.,asin(clamp(p.y,-1.,1.))*3.,uTime*.001),5);col=mix(vec3(.85,.75,.5),vec3(.95,.92,.82),b)*max(dot(N,L),0.)*.75;}
+else if(tp==3){col=rockSurf(p,N,L,.17);float lat=asin(clamp(p.y,-1.,1.));
+float nh=smoothstep(0.,.3,lat);col*=mix(.5,1.,nh);
+float cap=sstep(1.2,1.45,abs(lat)+fbm(p*10.,3)*.1);col=mix(col,vec3(.8,.78,.75),cap);
+float vg=exp(-pow((lat+.1)/.12,2.))*smoothstep(-.3,.3,atan(p.z,p.x));col*=1.-vg*.3;}
+else if(tp==4)col=gasGiant(p,N,L,0);
+else if(tp==5)col=gasGiant(p,N,L,1);
+else if(tp==6)col=iceGiant(p,N,L,0);
+else if(tp==7)col=iceGiant(p,N,L,1);
+else if(tp==8){float h=fbm(p*4.,5);vec3 base=mix(vec3(.35,.25,.18),vec3(.7,.6,.5),smoothstep(.4,.6,h));
+float heart=smoothstep(.4,0.,length(p.xy-vec2(.2,.1))*2.5);base=mix(base,vec3(.8,.75,.7),heart*.6);
+col=base*max(dot(N,L),0.)*.49;}
+else if(tp==9){// Sun
+vec2 w1=worley2(p*76.+uTime*.003);vec2 w2=worley2(p*31.-uTime*.002);
+float gran=1.-.35*smoothstep(.02,.15,w1.y-w1.x)-.2*smoothstep(.03,.2,w2.y-w2.x);
+float sg=fbm(p*6.5+uTime*.0015,4);
+float spots=fbm(p*3.2+vec3(7.7)+uTime*.0005,5);
+float sm=smoothstep(.62,.72,spots),sc2=smoothstep(.68,.78,spots);
+float limb=pow(max(dot(N,V),0.),.38);float lf=.24+.76*limb;
+float bright=gran*(.75+.5*sg)*lf*(1.-sm*.7-sc2*.5);
+float temp=(.5+.3*sg-.4*sc2)*mix(.7,1.,limb);
+vec3 c=mix(vec3(.6,.08,0.),vec3(1.,.35,0.),smoothstep(0.,.3,temp));
+c=mix(c,vec3(1.,.75,.2),smoothstep(.3,.55,temp));
+c=mix(c,vec3(1.,.95,.7),smoothstep(.55,.75,temp));
+c=mix(c,vec3(1.,1.,.95),smoothstep(.75,1.,temp));
+col=c*bright*2.2;}
+else if(tp==10)col=rockSurf(p,N,L,.12);
+else if(tp==11){float io=fbm(p*6.,4);col=mix(vec3(.8,.7,.2),vec3(.6,.35,.1),io);
+float v=smoothstep(.7,.85,fbm(p*15.,3));col=mix(col,vec3(.15,.08,.02),v);col*=max(dot(N,L),0.);}
+else if(tp==12){float l1=abs(fbm(p*8.,5)-.5);float l2=abs(fbm(p*16.+3.,4)-.5);float l3=abs(fbm(p*32.+7.,3)-.5);
+float net=smoothstep(.08,0.,min(l1,min(l2,l3)));
+col=mix(vec3(.75,.72,.65),vec3(.45,.2,.1),net*.7)*max(dot(N,L),0.)*.67;}
+else if(tp==13){float g=abs(fbm(p*12.+2.,4)-.5);float gm=smoothstep(.06,0.,g);
+col=mix(vec3(.3,.28,.25),vec3(.55,.52,.48),gm)*max(dot(N,L),0.);}
+else if(tp==14){col=vec3(.8,.55,.2)*.4*(.8+.2*fbm(p*3.+uTime*.001,4));col*=max(dot(N,L),0.)*.5+.15;}
+else col=rockSurf(p,N,L,uAlb);
+fc=vec4(col,1.);}`;
+const STAR_VS=`#version 300 es
+layout(location=0) in vec3 aPos;layout(location=1) in float aSize;layout(location=2) in vec3 aCol;
+uniform mat4 uVP;uniform vec3 uCam;uniform float uTime;
+out vec3 vC;
+void main(){vec3 wp=uCam+aPos*4000.;gl_Position=uVP*vec4(wp,1.);
+float tw=.85+.15*sin(uTime*2.+aPos.x*100.);vC=aCol*tw;gl_PointSize=aSize;}`;
+const STAR_FS=`#version 300 es
+precision highp float;in vec3 vC;out vec4 fc;
+void main(){vec2 c=gl_PointCoord*2.-1.;float d=dot(c,c);if(d>1.)discard;fc=vec4(vC*(1.-d),1.);}`;
+const ORBIT_VS=`#version 300 es
+layout(location=0) in vec3 aPos;layout(location=1) in float aSide;layout(location=2) in float aParam;
+uniform mat4 uVP;uniform vec2 uScreen;uniform float uWidth;
+out float vSide,vParam;
+void main(){vec4 clip=uVP*vec4(aPos,1.);
+vec4 c2=uVP*vec4(aPos+vec3(.01,.01,.01),1.);
+vec2 sp=clip.xy/clip.w*uScreen;vec2 sp2=c2.xy/c2.w*uScreen;
+vec2 tg=normalize(sp2-sp+vec2(.0001));vec2 nm=vec2(-tg.y,tg.x);
+clip.xy+=nm*aSide*uWidth/uScreen*clip.w;
+gl_Position=clip;vSide=aSide;vParam=aParam;}`;
+const ORBIT_FS=`#version 300 es
+precision highp float;in float vSide,vParam;
+uniform vec3 uColor;uniform float uHead;out vec4 fc;
+void main(){float edge=1.-abs(vSide);float a=edge*edge;
+float d=fract(vParam-uHead);float trail=pow(max(0.,1.-d*3.),3.2);
+a*=.06+.4*trail;fc=vec4(uColor*a,a);}`;
+const AST_VS=`#version 300 es
+layout(location=0) in vec4 aO1;layout(location=1) in vec4 aO2;
+uniform mat4 uVP;uniform float uJD,uComp,uScale;out float vB;
+float solveK(float M,float e){M=mod(M+3.14159,6.28318)-3.14159;float E=M+e*sin(M);for(int i=0;i<6;i++)E-=(E-e*sin(E)-M)/(1.-e*cos(E));return E;}
+void main(){float a=aO1.x,e=aO1.y,I=aO1.z,Om=aO1.w,w=aO2.x,M0=aO2.y,n=aO2.z,sz=aO2.w;
+float M=M0+n*(uJD-2451545.);float E=solveK(M,e);
+float xp=a*(cos(E)-e),yp=a*sqrt(1.-e*e)*sin(E);
+float cw=cos(w),sw=sin(w),cO=cos(Om),sO=sin(Om),cI=cos(I),sI=sin(I);
+float x=(cw*cO-sw*sO*cI)*xp+(-sw*cO-cw*sO*cI)*yp;
+float y=(cw*sO+sw*cO*cI)*xp+(-sw*sO+cw*cO*cI)*yp;
+float z=sw*sI*xp+cw*sI*yp;
+vec3 ecl=vec3(x,z,-y);float r=length(ecl);
+float rd=uScale*pow(max(r,.001),uComp);vec3 pos=ecl*(rd/max(r,.001));
+gl_Position=uVP*vec4(pos,1.);gl_PointSize=clamp(sz*80./length(pos),.75,4.5);
+vB=clamp(1.5/pow(max(r,.1),.5),.15,1.);}`;
+const AST_FS=`#version 300 es
+precision highp float;in float vB;out vec4 fc;
+void main(){vec2 c=gl_PointCoord*2.-1.;float d=dot(c,c);if(d>1.)discard;
+fc=vec4(vec3(.7,.65,.55)*vB*(1.-d),1.);}`;
+const POST_VS=`#version 300 es
+layout(location=0) in vec2 aPos;out vec2 vUV;void main(){vUV=aPos*.5+.5;gl_Position=vec4(aPos,0.,1.);}`;
+const BLOOM_EXT_FS=`#version 300 es
+precision highp float;in vec2 vUV;uniform sampler2D uTex;out vec4 fc;
+void main(){vec3 c=texture(uTex,vUV).rgb;float l=dot(c,vec3(.2126,.7152,.0722));
+float soft=clamp(l-1.25+.6,0.,1.2);soft=soft*soft/(2.4+.001);
+float w=max(soft,l-1.25)/max(l,.001);fc=vec4(c*max(w,0.),1.);}`;
+const BLUR_FS=`#version 300 es
+precision highp float;in vec2 vUV;uniform sampler2D uTex;uniform vec2 uDir;out vec4 fc;
+void main(){vec2 ts=1./vec2(textureSize(uTex,0));
+vec3 c=texture(uTex,vUV).rgb*.227;
+c+=texture(uTex,vUV+uDir*ts*1.384).rgb*.316;
+c+=texture(uTex,vUV-uDir*ts*1.384).rgb*.316;
+c+=texture(uTex,vUV+uDir*ts*3.231).rgb*.070;
+c+=texture(uTex,vUV-uDir*ts*3.231).rgb*.070;
+fc=vec4(c,1.);}`;
+const COMP_FS=`#version 300 es
+precision highp float;in vec2 vUV;uniform sampler2D uTex,uBloom;uniform float uBloomOn;out vec4 fc;
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+void main(){vec3 c=texture(uTex,vUV).rgb;
+if(uBloomOn>.5)c+=texture(uBloom,vUV).rgb*.34;
+float grain=fract(sin(dot(vUV*43758.5453,vec2(12.9898,78.233)))*.01)*.03-.015;
+c+=grain;
+c=aces(c);c=pow(c,vec3(1./2.2));
+float vig=1.-.3*pow(length(vUV-.5)*1.4,2.5);c*=vig;
+fc=vec4(c,1.);}`;
+const RING_VS=`#version 300 es
+layout(location=0) in vec3 aPos;uniform mat4 uMVP,uModel;out vec3 vWP,vOP;
+void main(){vOP=aPos;vec4 wp=uModel*vec4(aPos,1.);vWP=wp.xyz;gl_Position=uMVP*vec4(aPos,1.);}`;
+const RING_FS=`#version 300 es
+precision highp float;in vec3 vWP,vOP;
+uniform vec3 uCam,uSunDir,uCenter;uniform float uPR,uType;
+out vec4 fc;
+float hash1(float x){return fract(sin(x*127.1)*43758.5453);}
+float satD(float r){float d=0.;
+d+=.11*smoothstep(1.235,1.28,r)*smoothstep(1.53,1.48,r);
+d+=1.2*smoothstep(1.525,1.56,r)*smoothstep(1.95,1.91,r);
+d+=.58*smoothstep(2.025,2.06,r)*smoothstep(2.27,2.23,r);
+d*=1.-.87*exp(-pow((r-1.99)/.04,2.));
+d*=1.-.92*exp(-pow((r-2.214)/.0045,2.));
+d*=1.-.80*exp(-pow((r-2.265)/.0018,2.));
+d+=.30*exp(-pow((r-2.324)/.0055,2.));
+d*=.70+.30*fract(sin(r*230.)*43758.5);return max(d,0.);}
+float uraD(float r){float d=0.;
+float ri[7]=float[](1.951,1.909,1.863,1.823,1.786,1.751,1.690);
+float ta[7]=float[](.55,.20,.17,.14,.11,.09,.07);
+float si[7]=float[](.0055,.002,.002,.0018,.0015,.0018,.0025);
+for(int i=0;i<7;i++)d+=ta[i]*exp(-pow((r-ri[i])/si[i],2.));return d;}
+void main(){float r=length(vOP.xz);float rn=r/uPR;
+float density=uType<.5?satD(rn):(uType<1.5?uraD(rn):.016);
+if(density<.002)discard;
+vec3 N=normalize(cross(dFdx(vWP),dFdy(vWP)));
+vec3 V=normalize(uCam-vWP);vec3 L=normalize(uSunDir);
+float muV=max(abs(dot(N,V)),.10);float muS=max(abs(dot(N,L)),.10);
+float tV=density*1.45/muV;float tS=density*1.45/muS;
+float alpha=1.-exp(-tV);
+vec3 oc=vWP-uCenter;float bb=dot(oc,L);float shadow=1.;
+if(bb<0.){float dmin=sqrt(max(dot(oc,oc)-bb*bb,0.));shadow=smoothstep(uPR*.97,uPR*1.09,dmin);}
+float front=step(0.,dot(N,L)*dot(N,V));
+float bright=mix(exp(-tS*.42)*1.15*(1.-exp(-tS*.75)),(1.-exp(-tS))*.85,front)*shadow;
+vec3 col=uType<.5?vec3(.85,.78,.65):(uType<1.5?vec3(.12,.11,.10):vec3(.5,.45,.4));
+fc=vec4(col*bright,alpha*.92);}`;
+const ATMO_VS=`#version 300 es
+layout(location=0) in vec3 aPos;uniform mat4 uMVP,uModel;out vec3 vWP;
+void main(){vec4 wp=uModel*vec4(aPos,1.);vWP=wp.xyz;gl_Position=uMVP*vec4(aPos,1.);}`;
+const ATMO_FS=`#version 300 es
+precision highp float;in vec3 vWP;
+uniform vec3 uCam,uSunDir,uCenter;uniform float uR,uH;uniform vec3 uCol;out vec4 fc;
+void main(){vec3 rd=normalize(vWP-uCam);vec3 oc=uCenter-uCam;
+float tca=dot(oc,rd);float b=sqrt(max(dot(oc,oc)-tca*tca,0.))/uR;
+float dens=exp(-max(b-1.,0.)/uH);dens*=1.-smoothstep(1.,.96,b)*.86;
+vec3 an=normalize(uCam+rd*tca-uCenter);
+float sf=max(dot(an,uSunDir),0.);float fw=pow(dot(rd,uSunDir)*.5+.5,4.);
+float i=dens*(sf*.7+.3)*(.5+fw*.5);fc=vec4(uCol*i*.35,i*.5);}`;
+function initShaders(){
+progs.planet=mkProg(PLANET_VS,PLANET_FS);
+progs.planetU=uLocs(progs.planet,['uMVP','uModel','uNorm','uCam','uSunDir','uTime','uType','uAlb']);
+progs.star=mkProg(STAR_VS,STAR_FS);
+progs.starU=uLocs(progs.star,['uVP','uCam','uTime']);
+progs.orbit=mkProg(ORBIT_VS,ORBIT_FS);
+progs.orbitU=uLocs(progs.orbit,['uVP','uScreen','uWidth','uColor','uHead']);
+progs.ast=mkProg(AST_VS,AST_FS);
+progs.astU=uLocs(progs.ast,['uVP','uJD','uComp','uScale']);
+progs.bloomExt=mkProg(POST_VS,BLOOM_EXT_FS);
+progs.bloomExtU=uLocs(progs.bloomExt,['uTex']);
+progs.blur=mkProg(POST_VS,BLUR_FS);
+progs.blurU=uLocs(progs.blur,['uTex','uDir']);
+progs.post=mkProg(POST_VS,COMP_FS);
+progs.postU=uLocs(progs.post,['uTex','uBloom','uBloomOn']);
+progs.ring=mkProg(RING_VS,RING_FS);
+progs.ringU=uLocs(progs.ring,['uMVP','uModel','uCam','uSunDir','uCenter','uPR','uType']);
+progs.atmo=mkProg(ATMO_VS,ATMO_FS);
+progs.atmoU=uLocs(progs.atmo,['uMVP','uModel','uCam','uSunDir','uCenter','uR','uH','uCol']);
+}
+// ===== RENDER STATE =====
+let progs={},sceneFBO,sceneTex,bloomFBOA,bloomTexA,bloomFBOB,bloomTexB;
+let starVAO,starCount=11000,astVAO,astCount=0;
+let orbitVAOs=[],ringVAO,ringN=0;
+// ===== INIT =====
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);W=canvas.clientWidth*dpr|0;H=canvas.clientHeight*dpr|0;canvas.width=W;canvas.height=H;buildFBOs()}
+function buildFBOs(){
+if(sceneTex)gl.deleteTexture(sceneTex);if(sceneFBO)gl.deleteFramebuffer(sceneFBO);
+if(bloomTexA)gl.deleteTexture(bloomTexA);if(bloomFBOA)gl.deleteFramebuffer(bloomFBOA);
+if(bloomTexB)gl.deleteTexture(bloomTexB);if(bloomFBOB)gl.deleteFramebuffer(bloomFBOB);
+const fmt=hasFloat?gl.RGBA16F:gl.RGBA8,tp=hasFloat?gl.HALF_FLOAT:gl.UNSIGNED_BYTE;
+function mkFBO(w,h){const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+gl.texImage2D(gl.TEXTURE_2D,0,fmt,w,h,0,gl.RGBA,tp,null);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+const f=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+return{f,t}}
+const s=mkFBO(W,H);sceneFBO=s.f;sceneTex=s.t;
+const drb=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,drb);
+gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,W,H);
+gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,drb);
+const bw=W>>2,bh=H>>2;
+const ba=mkFBO(bw,bh);bloomFBOA=ba.f;bloomTexA=ba.t;
+const bb=mkFBO(bw,bh);bloomFBOB=bb.f;bloomTexB=bb.t;
+gl.bindFramebuffer(gl.FRAMEBUFFER,null);}
+window.addEventListener('resize',resize);
+// ===== MAIN LOOP =====
+let lastT=performance.now();
+function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-lastT)/1000,.1);lastT=now;
+if(playing)simTime+=spdDPS()*86400000*dt;
+compress+=(compressTgt-compress)*Math.min(1,dt*6);
+const T=getT(),JD=getJD();
+updCam(dt);
+const asp=W/H;m4persp(projM,50*DEG,asp,Math.max(.012,camDist*.0035),Math.max(camDist*14,4200));
+m4mul(vpM,projM,viewM);m4invert(invVP,vpM);m4transpose(invVP,invVP);
+// compute positions
+for(let i=0;i<9;i++){planetPos[i]=orbPos(P[i],T);planetDispPos[i]=dispPos(planetPos[i])}
+// rotation
+for(let i=0;i<9;i++){const rotDays=Math.abs(P[i].rotH)/24;const dtDays=spdDPS()*dt;if(playing){let dp=TAU*dtDays/rotDays;dp=Math.max(-.22,Math.min(.22,dp));rotPhase[i]+=dp*(P[i].rotH<0?-1:1)}}
+// focus tracking
+if(focusIdx>=0&&focusIdx<9)camTgtG=[...planetDispPos[focusIdx]];
+else if(focusIdx>=9){const mi=focusIdx-9;if(moonDispPos[mi])camTgtG=[...moonDispPos[mi]]}
+render(T,JD,dt);
+updateUI(T,JD);
+}
+function render(T,JD,dt){
+// Render scene to FBO
+gl.bindFramebuffer(gl.FRAMEBUFFER,sceneFBO);gl.viewport(0,0,W,H);
+gl.depthMask(true);gl.clearColor(0.002,0.002,0.003,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+const pg=progs.planet;if(!pg)return;
+gl.useProgram(pg);
+gl.uniform3fv(progs.planetU.uCam,eyePos);
+gl.uniform1f(progs.planetU.uTime,simTime/1000);
+// Sun
+drawBody(pg,sunPos,4.6,9,[0,1,0],rotPhase[0]);
+// Planets
+for(let i=0;i<9;i++){const ax=getAxis(P[i]);drawBody(pg,planetDispPos[i],dispR(P[i].r,false),P[i].tp,ax,rotPhase[i])}
+// Moons
+if(showMoons)drawMoons(pg,JD);
+gl.disable(gl.CULL_FACE);
+// Rings
+drawRings();
+// Atmosphere
+drawAtmospheres();
+// Orbits
+if(showOrbits)drawOrbits(T);
+// Stars
+drawStars();
+// Asteroids
+if(showAst&&astVAO)drawAsteroids(JD);
+// Comet
+if(showComet)drawComet(JD);
+// === Bloom pass ===
+const bw=W>>2,bh=H>>2;
+gl.disable(gl.DEPTH_TEST);gl.depthMask(false);
+// Extract bright
+if(showBloom){
+gl.bindFramebuffer(gl.FRAMEBUFFER,bloomFBOA);gl.viewport(0,0,bw,bh);
+gl.useProgram(progs.bloomExt);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,sceneTex);
+gl.uniform1i(progs.bloomExtU.uTex,0);gl.bindVertexArray(fsTriVAO);gl.drawArrays(gl.TRIANGLES,0,3);
+// Blur H
+gl.bindFramebuffer(gl.FRAMEBUFFER,bloomFBOB);
+gl.useProgram(progs.blur);gl.bindTexture(gl.TEXTURE_2D,bloomTexA);
+gl.uniform1i(progs.blurU.uTex,0);gl.uniform2f(progs.blurU.uDir,1,0);gl.drawArrays(gl.TRIANGLES,0,3);
+// Blur V
+gl.bindFramebuffer(gl.FRAMEBUFFER,bloomFBOA);
+gl.bindTexture(gl.TEXTURE_2D,bloomTexB);
+gl.uniform2f(progs.blurU.uDir,0,1);gl.drawArrays(gl.TRIANGLES,0,3);
+// 2nd pass
+gl.bindFramebuffer(gl.FRAMEBUFFER,bloomFBOB);gl.bindTexture(gl.TEXTURE_2D,bloomTexA);
+gl.uniform2f(progs.blurU.uDir,1,0);gl.drawArrays(gl.TRIANGLES,0,3);
+gl.bindFramebuffer(gl.FRAMEBUFFER,bloomFBOA);gl.bindTexture(gl.TEXTURE_2D,bloomTexB);
+gl.uniform2f(progs.blurU.uDir,0,1);gl.drawArrays(gl.TRIANGLES,0,3);
+}
+// Composite to screen
+gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,W,H);
+gl.useProgram(progs.post);
+gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,sceneTex);gl.uniform1i(progs.postU.uTex,0);
+gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,bloomTexA);gl.uniform1i(progs.postU.uBloom,1);
+gl.uniform1f(progs.postU.uBloomOn,showBloom?1:0);
+gl.bindVertexArray(fsTriVAO);gl.drawArrays(gl.TRIANGLES,0,3);
+gl.depthMask(true);gl.enable(gl.DEPTH_TEST);}
+function getAxis(p){const t=p.tilt*DEG,pl=p.pole*DEG;return[Math.sin(t)*Math.cos(pl),Math.cos(t),Math.sin(t)*Math.sin(pl)]}
+function drawBody(pg,pos,rad,type,axis,phase){
+const model=mat4();// build model matrix: translate * axis-basis * rotY(phase) * scale
+// Axis basis
+const Y=v3norm(axis);let ref=Math.abs(Y[1])<.9?[0,1,0]:[1,0,0];const X=v3norm(v3cross(ref,Y));const Z=v3cross(X,Y);
+model[0]=X[0];model[1]=X[1];model[2]=X[2];model[3]=0;
+model[4]=Y[0];model[5]=Y[1];model[6]=Y[2];model[7]=0;
+model[8]=Z[0];model[9]=Z[1];model[10]=Z[2];model[11]=0;
+model[12]=pos[0];model[13]=pos[1];model[14]=pos[2];model[15]=1;
+// Apply rotation around Y axis (local)
+const c=Math.cos(phase),s=Math.sin(phase);
+const rm=mat4();m4id(rm);rm[0]=c;rm[2]=-s;rm[8]=s;rm[10]=c;
+const m2=mat4();m4mul(m2,model,rm);
+// Scale
+m2[0]*=rad;m2[1]*=rad;m2[2]*=rad;m2[4]*=rad;m2[5]*=rad;m2[6]*=rad;m2[8]*=rad;m2[9]*=rad;m2[10]*=rad;
+const mvp=mat4();m4mul(mvp,vpM,m2);
+const nm=mat4();m4normalFromModel(nm,m2);
+gl.uniformMatrix4fv(progs.planetU.uMVP,false,mvp);
+gl.uniformMatrix4fv(progs.planetU.uModel,false,m2);
+gl.uniformMatrix4fv(progs.planetU.uNorm,false,nm);
+gl.uniform1f(progs.planetU.uType,type);
+gl.uniform1f(progs.planetU.uAlb,type===9?1.0:P.find(p=>p.tp===type)?.alb||.3);
+const sunDir=v3norm(v3sub(sunPos,pos));
+gl.uniform3fv(progs.planetU.uSunDir,sunDir);
+const sph=rad>2?sphHi:sphLo;
+gl.bindVertexArray(sph.vao);gl.drawElements(gl.TRIANGLES,sph.n,gl.UNSIGNED_SHORT,0);
+}
+function drawMoons(pg,JD){const T=getT();moonDispPos=[];
+for(let mi=0;mi<MOONS.length;mi++){const m=MOONS[mi];const pp=planetDispPos[m.pi];const pr=dispR(P[m.pi].r,false);
+const theta=TAU*(JD-2451545)/m.per;const incR=m.inc*DEG;
+let local=[Math.cos(theta),0,Math.sin(theta)];
+// apply inclination
+const ci=Math.cos(incR),si=Math.sin(incR);
+local=[local[0],local[2]*si,local[2]*ci];
+// display distance
+const a0=m.pi===4?421700:m.pi===5?1221870:m.pi===7?19591:m.pi===2?384400:354759;
+let base=2.35;
+if(m.pi===5)base=Math.max(2.35,2.34+dispR(m.r,false)/pr+0.55);
+const d=pr*base*Math.pow(m.orb/a0,.55);
+let wp=v3add(pp,v3scale(local,d));
+if(m.ref===1){const ax=getAxis(P[m.pi]);const Y=v3norm(ax);let ref=Math.abs(Y[1])<.9?[0,1,0]:[1,0,0];const X=v3norm(v3cross(ref,Y));const Z=v3cross(X,Y);
+wp=v3add(pp,v3add(v3add(v3scale(X,local[0]*d),v3scale(Y,local[1]*d)),v3scale(Z,local[2]*d)));}
+moonDispPos[mi]=wp;
+drawBody(pg,wp,dispR(m.r,false)*0.7,m.tp,getAxis(P[m.pi]),theta);}
+}
+function drawOrbits(T){if(!progs.orbit)return;gl.useProgram(progs.orbit);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);gl.depthMask(false);
+gl.uniformMatrix4fv(progs.orbitU.uVP,false,vpM);gl.uniform2f(progs.orbitU.uScreen,W,H);gl.uniform1f(progs.orbitU.uWidth,1.5);
+for(let i=0;i<9&&orbitVAOs[i];i++){const headParam=(((P[i].L+P[i].dL*T)%360)+360)%360/360;
+gl.uniform3f(progs.orbitU.uColor,.3,.5,.8);gl.uniform1f(progs.orbitU.uHead,headParam);
+gl.bindVertexArray(orbitVAOs[i].vao);gl.drawArrays(gl.TRIANGLE_STRIP,0,orbitVAOs[i].n);}
+gl.depthMask(true);gl.disable(gl.BLEND);}
+function drawStars(){if(!progs.star||!starVAO)return;gl.useProgram(progs.star);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.depthMask(false);gl.disable(gl.DEPTH_TEST);
+gl.uniformMatrix4fv(progs.starU.uVP,false,vpM);gl.uniform3fv(progs.starU.uCam,eyePos);gl.uniform1f(progs.starU.uTime,simTime/1000);
+gl.bindVertexArray(starVAO);gl.drawArrays(gl.POINTS,0,starCount);
+gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);}
+function drawAsteroids(JD){if(!progs.ast)return;gl.useProgram(progs.ast);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.depthMask(false);
+gl.uniformMatrix4fv(progs.astU.uVP,false,vpM);gl.uniform1f(progs.astU.uJD,JD);gl.uniform1f(progs.astU.uComp,compress);gl.uniform1f(progs.astU.uScale,SCALE);
+gl.bindVertexArray(astVAO);gl.drawArrays(gl.POINTS,0,astCount);
+gl.depthMask(true);gl.disable(gl.BLEND);}
+// ===== Rings =====
+function buildRingGeo(){const seg=128,rings=1;const v=[];
+for(let i=0;i<=seg;i++){const a=i/seg*TAU;const c=Math.cos(a),s=Math.sin(a);
+v.push(c*1,0,s*1,c*1,0,s*1);}// placeholder, actual radii set in shader via obj coords
+// Build flat annulus: inner=1, outer=2.34 (will be scaled per planet)
+const v2=[];for(let i=0;i<=seg;i++){const a=i/seg*TAU;const c=Math.cos(a),s=Math.sin(a);
+v2.push(c,0,s,c*2.4,0,s*2.4);}
+ringVAO=gl.createVertexArray();gl.bindVertexArray(ringVAO);
+const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v2),gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+gl.bindVertexArray(null);ringN=(seg+1)*2;}
+function drawRings(){if(!progs.ring||!ringVAO)return;
+gl.useProgram(progs.ring);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+gl.depthMask(false);gl.disable(gl.CULL_FACE);
+gl.uniform3fv(progs.ringU.uCam,eyePos);
+const ringDefs=[{pi:5,inner:1.235,outer:2.34,type:0},{pi:6,inner:1.6,outer:2.0,type:1},{pi:4,inner:1.4,outer:1.81,type:2}];
+for(const rd of ringDefs){const pos=planetDispPos[rd.pi];const pr=dispR(P[rd.pi].r,false);
+const ax=getAxis(P[rd.pi]);const Y=v3norm(ax);let ref=Math.abs(Y[1])<.9?[0,1,0]:[1,0,0];
+const X=v3norm(v3cross(ref,Y));const Z=v3cross(X,Y);
+const model=mat4();
+model[0]=X[0]*pr;model[1]=X[1]*pr;model[2]=X[2]*pr;model[3]=0;
+model[4]=Y[0]*pr;model[5]=Y[1]*pr;model[6]=Y[2]*pr;model[7]=0;
+model[8]=Z[0]*pr;model[9]=Z[1]*pr;model[10]=Z[2]*pr;model[11]=0;
+model[12]=pos[0];model[13]=pos[1];model[14]=pos[2];model[15]=1;
+const mvp=mat4();m4mul(mvp,vpM,model);
+gl.uniformMatrix4fv(progs.ringU.uMVP,false,mvp);
+gl.uniformMatrix4fv(progs.ringU.uModel,false,model);
+gl.uniform3fv(progs.ringU.uSunDir,v3norm(v3sub(sunPos,pos)));
+gl.uniform3fv(progs.ringU.uCenter,pos);
+gl.uniform1f(progs.ringU.uPR,pr);gl.uniform1f(progs.ringU.uType,rd.type);
+gl.bindVertexArray(ringVAO);gl.drawArrays(gl.TRIANGLE_STRIP,0,ringN);}
+gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);}
+// ===== Atmosphere =====
+function drawAtmospheres(){if(!progs.atmo)return;
+gl.useProgram(progs.atmo);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+gl.depthMask(false);gl.disable(gl.CULL_FACE);
+gl.uniform3fv(progs.atmoU.uCam,eyePos);
+const atmoDefs=[{pi:2,col:[.3,.5,1],h:.035},{pi:1,col:[.9,.7,.3],h:.04},{pi:3,col:[.8,.5,.3],h:.025},{pi:4,col:[.7,.6,.4],h:.03},{pi:5,col:[.8,.7,.5],h:.03},{pi:6,col:[.5,.8,.85],h:.03},{pi:7,col:[.3,.4,.9],h:.03}];
+for(const ad of atmoDefs){const pos=planetDispPos[ad.pi];const pr=dispR(P[ad.pi].r,false);
+const shellR=pr*(1+ad.h*7.5);
+const model=mat4();m4id(model);
+model[0]=model[5]=model[10]=shellR;model[12]=pos[0];model[13]=pos[1];model[14]=pos[2];
+const mvp=mat4();m4mul(mvp,vpM,model);
+gl.uniformMatrix4fv(progs.atmoU.uMVP,false,mvp);
+gl.uniformMatrix4fv(progs.atmoU.uModel,false,model);
+gl.uniform3fv(progs.atmoU.uSunDir,v3norm(v3sub(sunPos,pos)));
+gl.uniform3fv(progs.atmoU.uCenter,pos);
+gl.uniform1f(progs.atmoU.uR,pr);gl.uniform1f(progs.atmoU.uH,ad.h);
+gl.uniform3fv(progs.atmoU.uCol,ad.col);
+gl.bindVertexArray(sphLo.vao);gl.drawElements(gl.TRIANGLES,sphLo.n,gl.UNSIGNED_SHORT,0);}
+gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);}
+// ===== Comet =====
+function drawComet(JD){const H_=HALLEY;
+const M=TAU*(JD-H_.Tp)/H_.per;const E=solveK(M,H_.e);
+const a=H_.a,e=H_.e,I=H_.I*DEG,w=H_.w*DEG,O=H_.O*DEG;
+const xp=a*(Math.cos(E)-e),yp=a*Math.sqrt(1-e*e)*Math.sin(E);
+const cw=Math.cos(w),sw=Math.sin(w),cO=Math.cos(O),sO=Math.sin(O),cI=Math.cos(I),sI=Math.sin(I);
+const x=(cw*cO-sw*sO*cI)*xp+(-sw*cO-cw*sO*cI)*yp;
+const y=(cw*sO+sw*cO*cI)*xp+(-sw*sO+cw*cO*cI)*yp;
+const z=(sw*sI)*xp+(cw*sI)*yp;
+const eclPos=[x,z,-y];const rAU=v3len(eclPos);
+if(rAU>6.5)return;// too far, no tail
+const cPos=dispPos(eclPos);
+// Draw comet nucleus as small bright point using planet shader
+gl.useProgram(progs.planet);gl.uniform3fv(progs.planetU.uCam,eyePos);gl.uniform1f(progs.planetU.uTime,simTime/1000);
+drawBody(progs.planet,cPos,0.25,9,[0,1,0],0);
+// Draw tail using additive blended line (simplified as stretched billboard)
+// Ion tail: anti-sun direction, blue
+const antiSun=v3norm(v3scale(cPos,-1));
+const tailLen=Math.min(8,3*Math.pow(3/rAU,2));
+// Use orbit shader for tail lines
+gl.useProgram(progs.orbit);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.depthMask(false);
+gl.uniformMatrix4fv(progs.orbitU.uVP,false,vpM);gl.uniform2f(progs.orbitU.uScreen,W,H);gl.uniform1f(progs.orbitU.uWidth,3);
+gl.uniform3f(progs.orbitU.uColor,.3,.5,1);gl.uniform1f(progs.orbitU.uHead,0);
+// Build tail vertices on the fly
+const tv=[];const perp=v3norm(v3cross(antiSun,v3norm(v3sub(eyePos,cPos))));
+for(let i=0;i<=8;i++){const t=i/8;const p=v3add(cPos,v3scale(antiSun,tailLen*t));
+const w2=0.05+t*0.4;tv.push(p[0]+perp[0]*w2,p[1]+perp[1]*w2,p[2]+perp[2]*w2,1,t);
+tv.push(p[0]-perp[0]*w2,p[1]-perp[1]*w2,p[2]-perp[2]*w2,-1,t);}
+const tva=gl.createVertexArray();gl.bindVertexArray(tva);
+const tvb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,tvb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(tv),gl.DYNAMIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,20,0);
+gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,1,gl.FLOAT,false,20,12);
+gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,1,gl.FLOAT,false,20,16);
+gl.drawArrays(gl.TRIANGLE_STRIP,0,18);
+gl.deleteVertexArray(tva);gl.deleteBuffer(tvb);
+gl.depthMask(true);gl.disable(gl.BLEND);}
+// ===== UI =====
+function updateUI(T,JD){document.getElementById('dateDisplay').textContent=fmtDate();
+document.getElementById('speedLabel').textContent=fmtSpd();
+const yr=new Date(simTime).getUTCFullYear();
+document.getElementById('warning').style.display=(yr<1800||yr>2050)?'block':'none';
+updateLabels();}
+function updateLabels(){if(!showLabels){document.querySelectorAll('.lbl').forEach(e=>e.style.display='none');return}
+const all=[{nm:'太阳',pos:[0,0,0]},...P.map((p,i)=>({nm:p.nm,pos:planetDispPos[i]}))];
+if(showMoons)MOONS.forEach((m,i)=>{if(moonDispPos[i])all.push({nm:m.nm,pos:moonDispPos[i]})});
+let container=document.getElementById('labels');
+if(!container){container=document.createElement('div');container.id='labels';document.body.appendChild(container)}
+while(container.children.length<all.length){const s=document.createElement('span');s.className='lbl';container.appendChild(s)}
+for(let i=0;i<all.length;i++){const el=container.children[i];const p=all[i].pos;
+const clip=project(p);
+if(!clip||clip[2]>1){el.style.display='none';continue}
+el.style.display='block';el.textContent=all[i].nm;
+el.style.left=(clip[0]*.5+.5)*canvas.clientWidth+'px';
+el.style.top=(-(clip[1]*.5)+.5)*canvas.clientHeight-10+'px';}
+for(let i=all.length;i<container.children.length;i++)container.children[i].style.display='none';}
+function project(p){const x=p[0],y=p[1],z=p[2];
+const cx=vpM[0]*x+vpM[4]*y+vpM[8]*z+vpM[12];
+const cy=vpM[1]*x+vpM[5]*y+vpM[9]*z+vpM[13];
+const cw=vpM[3]*x+vpM[7]*y+vpM[11]*z+vpM[15];
+if(cw<=0)return null;return[cx/cw,cy/cw,cw]}
+// ===== Build UI panels =====
+function buildLeftPanel(){const lp=document.getElementById('leftPanel');let h='<div class="section-title">恒星</div><div class="body-item" data-idx="-2">☀ 太阳</div><div class="section-title">行星</div>';
+P.forEach((p,i)=>{h+=`<div class="body-item" data-idx="${i}">${p.nm}</div>`;
+MOONS.forEach((m,mi)=>{if(m.pi===i)h+=`<div class="body-item moon" data-idx="${9+mi}">${m.nm}</div>`})});
+h+='<div class="section-title">矮行星</div>';
+lp.innerHTML=h;
+lp.querySelectorAll('.body-item').forEach(el=>{el.addEventListener('click',()=>{const idx=+el.dataset.idx;focusBody(idx);lp.querySelectorAll('.body-item').forEach(e=>e.classList.remove('active'));el.classList.add('active')})});}
+function focusBody(idx){focusIdx=idx;
+if(idx===-2){camTgtG=[0,0,0];camDistG=30}
+else if(idx>=0&&idx<9){camDistG=dispR(P[idx].r,false)*8+3}
+else if(idx>=9){camDistG=5}
+showInfo(idx);}
+function showInfo(idx){const ip=document.getElementById('infoPanel');
+if(idx<0&&idx!==-2){ip.style.display='none';return}
+ip.style.display='block';
+if(idx===-2){ip.innerHTML='<h3>太阳</h3><div class="info-row"><span class="label">半径</span><span class="value">696,340 km</span></div><div class="info-row"><span class="label">质量</span><span class="value">1.989×10³⁰ kg</span></div><div class="info-row"><span class="label">表面温度</span><span class="value">5,772 K</span></div><div class="info-desc">太阳系的中心恒星，占系统总质量的99.86%。</div>';return}
+if(idx>=0&&idx<9){const p=P[idx];const rAU=v3len(planetPos[idx]);const vel=orbVel(rAU,p.a);
+ip.innerHTML=`<h3>${p.nm}</h3><div class="info-row"><span class="label">日心距离</span><span class="value">${rAU.toFixed(4)} AU</span></div><div class="info-row"><span class="label">轨道速度</span><span class="value">${vel.toFixed(2)} km/s</span></div><div class="info-row"><span class="label">偏心率</span><span class="value">${p.e.toFixed(5)}</span></div><div class="info-row"><span class="label">轨道倾角</span><span class="value">${p.I.toFixed(3)}°</span></div><div class="info-row"><span class="label">转轴倾角</span><span class="value">${p.tilt}°</span></div><div class="info-row"><span class="label">公转周期</span><span class="value">${p.per}</span></div><div class="info-row"><span class="label">半径</span><span class="value">${p.r.toLocaleString()} km</span></div><div class="info-row"><span class="label">质量</span><span class="value">${p.mass} kg</span></div><div class="info-row"><span class="label">卫星数</span><span class="value">${p.mn}</span></div><div class="info-row"><span class="label">温度</span><span class="value">${p.tmp}</span></div><div class="info-desc">${p.desc}</div>`;}}
+// ===== Input =====
+let dragging=false,lastMX=0,lastMY=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastMX=e.clientX;lastMY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;camYaw+=(e.clientX-lastMX)*.005;camPitch=Math.max(-1.5,Math.min(1.5,camPitch+(e.clientY-lastMY)*.005));lastMX=e.clientX;lastMY=e.clientY});
+canvas.addEventListener('pointerup',()=>dragging=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();camDistG=Math.max(3,Math.min(600,camDistG*(1+e.deltaY*.001)))},{passive:false});
+canvas.addEventListener('click',e=>{if(dragging)return;pickBody(e.clientX,e.clientY)});
+function pickBody(mx,my){let best=-1,bestD=30;
+const all=[{pos:[0,0,0],idx:-2},...planetDispPos.map((p,i)=>({pos:p,idx:i}))];
+if(showMoons)moonDispPos.forEach((p,i)=>{if(p)all.push({pos:p,idx:9+i})});
+for(const b of all){const c=project(b.pos);if(!c)continue;
+const sx=(c[0]*.5+.5)*canvas.clientWidth,sy=(-(c[1]*.5)+.5)*canvas.clientHeight;
+const d=Math.hypot(mx-sx,my-sy);if(d<bestD){bestD=d;best=b.idx}}
+if(best>=-2)focusBody(best);}
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playing=!playing;document.getElementById('btnPlay').textContent=playing?'⏸':'▶'}
+if(e.code==='ArrowRight')speedVal=Math.min(100,speedVal+5);
+if(e.code==='ArrowLeft')speedVal=Math.max(-100,speedVal-5);
+if(e.code==='KeyH'){document.querySelectorAll('.panel,#note,#warning').forEach(el=>el.style.display=el.style.display==='none'?'':'none')}});
+document.getElementById('btnPlay').onclick=()=>{playing=!playing;document.getElementById('btnPlay').textContent=playing?'⏸':'▶'};
+document.getElementById('btnNow').onclick=()=>{simTime=Date.now()};
+document.getElementById('speedSlider').oninput=e=>{speedVal=+e.target.value};
+document.getElementById('togOrbits').onchange=e=>showOrbits=e.target.checked;
+document.getElementById('togLabels').onchange=e=>showLabels=e.target.checked;
+document.getElementById('togMoons').onchange=e=>showMoons=e.target.checked;
+document.getElementById('togAsteroids').onchange=e=>showAst=e.target.checked;
+document.getElementById('togComet').onchange=e=>showComet=e.target.checked;
+document.getElementById('togBloom').onchange=e=>showBloom=e.target.checked;
+document.getElementById('togRealDist').onchange=e=>{compressTgt=e.target.checked?1.0:.62};
+// ===== Build orbit geometry =====
+function buildOrbits(){orbitVAOs=[];const N=256;
+for(let pi=0;pi<9;pi++){const verts=[];for(let i=0;i<=N;i++){const t=i/N*360;const el={...P[pi],L:t+P[pi].w};const pos=orbPos({...P[pi],L:P[pi].w+t,dL:0},0);
+const dp=dispPos(pos);const side=i%2===0?1:-1;const param=i/N;
+verts.push(dp[0],dp[1],dp[2],side,param);}
+// Actually use simpler approach - line strip as triangle strip with offset
+const v2=[];for(let i=0;i<=N;i++){const frac=i/N;const ang=frac*TAU;
+// compute orbit point at this mean anomaly
+const el2={a:P[pi].a,e:P[pi].e,I:P[pi].I,L:P[pi].w+frac*360,w:P[pi].w,O:P[pi].O,da:0,de:0,dI:0,dL:0,dw:0,dO:0};
+const pos=orbPos(el2,0);const dp=dispPos(pos);
+v2.push(dp[0],dp[1],dp[2],1,frac,dp[0],dp[1],dp[2],-1,frac);}
+const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v2),gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,20,0);
+gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,1,gl.FLOAT,false,20,12);
+gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,1,gl.FLOAT,false,20,16);
+gl.bindVertexArray(null);orbitVAOs.push({vao,n:(N+1)*2});}}
+// ===== Build stars =====
+function buildStars(){const data=new Float32Array(starCount*7);
+const galPole=[-.8678,.4972,.0003];
+for(let i=0;i<starCount;i++){let dir;
+// rejection sample toward galactic plane
+for(;;){dir=v3norm([Math.random()*2-1,Math.random()*2-1,Math.random()*2-1]);
+const gal=Math.exp(-Math.pow(v3dot(dir,galPole),2)*4);
+if(Math.random()<.3+.7*gal)break}
+const bright=Math.pow(Math.random(),3.6);
+const sz=1+bright*2.5;
+// color from temperature palette
+const tempR=Math.random();let col;
+if(tempR<.58)col=[1,.85,.7];else if(tempR<.8)col=[1,.95,.85];else if(tempR<.92)col=[.9,.95,1];else col=[.7,.8,1];
+data[i*7]=dir[0];data[i*7+1]=dir[1];data[i*7+2]=dir[2];
+data[i*7+3]=sz;data[i*7+4]=col[0]*bright;data[i*7+5]=col[1]*bright;data[i*7+6]=col[2]*bright;}
+starVAO=gl.createVertexArray();gl.bindVertexArray(starVAO);
+const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,28,0);
+gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,1,gl.FLOAT,false,28,12);
+gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,3,gl.FLOAT,false,28,16);
+gl.bindVertexArray(null);}
+// ===== Build asteroids =====
+function buildAsteroids(){const belts=[];
+// Main belt 9000
+for(let i=0;i<9000;i++){let a;for(;;){a=2.06+Math.random()*1.22;
+let prob=1;const gaps=[[2.502,.022,.93],[2.825,.016,.85],[2.958,.012,.70],[3.279,.020,.90],[2.065,.010,.60]];
+for(const g of gaps)prob*=1-g[2]*Math.exp(-Math.pow((a-g[0])/g[1],2));
+prob*=Math.exp(-Math.pow((a-2.72)/.55,2));
+if(Math.random()<prob)break}
+const e=Math.abs(gaussRand())*.14;const I=Math.abs(gaussRand())*8*DEG;
+belts.push(a,Math.min(e,.34),I,Math.random()*TAU,Math.random()*TAU,Math.random()*TAU,TAU/(365.25*Math.pow(a,1.5)),.5+Math.random());}
+// Hilda 900
+for(let i=0;i<900;i++){const a=3.90+gaussRand()*.09;const e=.10+Math.random()*.20;const I=Math.abs(gaussRand())*8*DEG;
+belts.push(a,e,I,Math.random()*TAU,Math.random()*TAU,Math.random()*TAU,TAU/(365.25*Math.pow(a,1.5)),.5+Math.random());}
+// Trojans 2000
+const jupN=TAU/(365.25*Math.pow(5.20288700,1.5));const jupL=34.396*DEG;
+for(let i=0;i<2000;i++){const a=5.202+gaussRand()*.05;const e=Math.abs(gaussRand())*.06;const I=Math.abs(gaussRand())*12*DEG;
+const sign=i<1000?1:-1;const M0=jupL+sign*60*DEG+gaussRand()*26*DEG;
+belts.push(a,e,I,Math.random()*TAU,Math.random()*TAU,M0,jupN,.5+Math.random());}
+// Kuiper 6000
+for(let i=0;i<6000;i++){let a,e,I;const r=Math.random();
+if(r<.22){a=39.45+gaussRand()*.55;e=Math.abs(gaussRand())*.12;I=Math.abs(gaussRand())*8*DEG;}
+else if(r<.86){a=42.5+Math.random()*5.2;e=Math.random()*.11;I=Math.abs(gaussRand())*7*DEG;}
+else{a=48+Math.random()*32;e=.15+Math.random()*.35;I=Math.abs(gaussRand())*22*DEG;}
+belts.push(a,e,I,Math.random()*TAU,Math.random()*TAU,Math.random()*TAU,TAU/(365.25*Math.pow(a,1.5)),.4+Math.random()*.6);}
+astCount=belts.length/8;
+const data=new Float32Array(belts);
+astVAO=gl.createVertexArray();gl.bindVertexArray(astVAO);
+const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,4,gl.FLOAT,false,32,0);
+gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,4,gl.FLOAT,false,32,16);
+gl.bindVertexArray(null);}
+function gaussRand(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v)}
+// ===== BOOT =====
+resize();initShaders();buildLeftPanel();buildStars();buildAsteroids();buildOrbits();buildRingGeo();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
