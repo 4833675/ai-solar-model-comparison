@@ -2,7 +2,7 @@
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
 window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol","gpt56terra","qwen38","hy3"];
-window.PAIR_NOTES={"qwen38":"一句话版来自 Qoder（IDE 智能体），与详细文档版的运行环境不同，差异未必全部来自模型本身"};
+window.PAIR_NOTES={};
 window.WORKS=[
  {
   "id": "DeepSeekProMax-TasksAssignedByOpus5",
