@@ -214,19 +214,23 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     };
     const penalty = r.canvas ? 10 : 0;
     const raw = Object.values(parts).reduce((sum, value) => sum + value, 0) - penalty;
-    return Object.assign({}, r, { parts, penalty, raw });
+    const uncapped = Math.max(0, Math.min(100, raw));
+    const total = Math.round(Number.isFinite(r.cap) ? Math.min(uncapped, r.cap) : uncapped);
+    return Object.assign({}, r, { parts, penalty, raw, total });
   }
 
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
-    const tier = (window.TIER_LABELS || {})[w.tier] || '';
+    const capped = Number.isFinite(s.cap) && s.raw > s.cap;
     return `<div class="score-tip-head">
         <div><span>${s.reference ? 'BENCHMARK REFERENCE' : 'SCORE BREAKDOWN'}</span><strong>${esc(w.model)}</strong></div>
-        <b>${s.total}<i>/100</i></b>
+        <b>${scoreNum(s.total)}<i>/100</i></b>
       </div>
       <p class="score-tip-meta">${s.reference
-        ? `标杆参考分 · 不参与排名 · 原始分 ${scoreNum(s.raw)}`
-        : `原始分 ${scoreNum(s.raw)} → ${esc(tier)}区间总分 ${s.total}`}</p>
+        ? `标杆参考分 · 同规则计分 · 不参与排名 · 分项合计 ${scoreNum(s.raw)}`
+        : capped
+          ? `分项合计 ${scoreNum(s.raw)} · 致命主画面故障封顶 ${scoreNum(s.cap)} · 梯队不参与计算`
+          : `分项合计 ${scoreNum(s.raw)} · 梯队不参与计算或修正`}</p>
       <div class="score-tip-grid">
         ${part('功能广度', 'features', 20)}
         ${part('轨道真实度', 'orbit', 25)}
@@ -238,6 +242,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         ${part('交互完成度', 'interaction', 5)}
       </div>
       ${s.penalty ? `<div class="score-tip-penalty"><span>Canvas2D 额外扣分</span><b>−${s.penalty}</b></div>` : ''}
+      ${capped ? `<div class="score-tip-penalty"><span>致命主画面故障封顶</span><b>${scoreNum(s.cap)}</b></div>` : ''}
       ${s.note ? `<p class="score-tip-note">${esc(s.note)}</p>` : ''}`;
   }
 
@@ -245,9 +250,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const s = scoreFor(w);
     if (!s) return '<span class="score-empty">—</span>';
     const label = `${w.model} ${s.reference ? '标杆参考分' : '总分'} ${s.total} 分，查看分项得分`;
-    return `<button type="button" class="score-pill score-tier-${w.tier}${s.reference ? ' is-reference' : ''}"
+    const capped = Number.isFinite(s.cap) && s.raw > s.cap;
+    return `<button type="button" class="score-pill${s.reference ? ' is-reference' : ''}${capped ? ' is-capped' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
-      ${s.reference ? '<span aria-hidden="true">⚑</span>' : ''}<b>${s.total}</b>
+      ${s.reference ? '<span aria-hidden="true">⚑</span>' : ''}<b>${scoreNum(s.total)}</b>
     </button>`;
   }
 

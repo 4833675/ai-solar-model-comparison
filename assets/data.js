@@ -261,7 +261,7 @@ window.WORKS=[
  {
   "id": "GLM_5_1_high-1",
   "file": "models/GLM_5_1_high-1.html",
-  "model": "GLM 5.1 (high)",
+  "model": "GLM 5.1",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -678,7 +678,7 @@ window.WORKS=[
  {
   "id": "Gemini_3_5_flash_high",
   "file": "models/Gemini_3_5_flash_high.html",
-  "model": "Gemini 3.5 Flash (high)",
+  "model": "Gemini 3.5 Flash",
   "group": "A",
   "pair": "gemini35",
   "featured": false,
@@ -934,7 +934,7 @@ window.WORKS=[
  {
   "id": "Mimo_2_5_Pro_high-1",
   "file": "models/Mimo_2_5_Pro_high-1.html",
-  "model": "MiMo 2.5 Pro (high)",
+  "model": "MiMo 2.5 Pro",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1001,7 +1001,7 @@ window.WORKS=[
  {
   "id": "MiniMax_M3_thinking-1",
   "file": "models/MiniMax_M3_thinking-1.html",
-  "model": "MiniMax M3 (thinking)",
+  "model": "MiniMax M3",
   "group": "A",
   "pair": "minimax",
   "featured": false,
