@@ -409,7 +409,6 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         <span class="seq">${String(i + 1).padStart(2, '0')}</span>
         <h3>${esc(a.model.replace(/\s*#\d+$/, ''))}</h3>
         ${featured ? `<span class="pair-featured-badge"><span aria-hidden="true">⚑</span> ${t('pair.featuredBadge')}</span>` : ''}
-        <a class="go" href="${page('compare.html')}?p=${encodeURIComponent(a.pair)}">${t('pair.run')}</a>
       </div>
       <div class="pair-body">
         <div class="side a">

@@ -1,7 +1,7 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","deepseekv4flash0731","gpt56sol","gpt56terra","qwen38","hy3"];
+window.PAIR_ORDER=["opus5","gpt56sol","gpt56terra","kimik3","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
 window.WORKS=[
  {
