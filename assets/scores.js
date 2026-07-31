@@ -133,6 +133,11 @@
     },
 
     /* 详细文档组 */
+    'Opus5Ultra-TasksAssignedByOpus5': {
+      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
+      correctness: 15, visual: 10, interaction: 5,
+      note: '八项功能、八颗卫星、完整交互与双向环影均成立；它还主动用实测回归间隔校正哈雷彗星 2061 年近日点，并针对长期云层漂移、眩光和片元性能完成实测修正。'
+    },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': {
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,
       correctness: 13, visual: 7, interaction: 4,

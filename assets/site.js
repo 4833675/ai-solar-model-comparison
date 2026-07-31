@@ -375,17 +375,40 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       </div></div>`;
   }
 
+  function featuredPairProof(pair) {
+    if (pair !== 'opus5') return '';
+    const proof = [
+      ['pair.proofHalley', 'pair.proofHalleyValue', 'pair.proofHalleyNote'],
+      ['pair.proofRing', 'pair.proofRingValue', 'pair.proofRingNote'],
+      ['pair.proofKirkwood', 'pair.proofKirkwoodValue', 'pair.proofKirkwoodNote'],
+      ['pair.proofPerf', 'pair.proofPerfValue', 'pair.proofPerfNote'],
+    ];
+    return `<div class="pair-proof">
+      <div class="pair-proof-copy">
+        <span>${t('pair.featuredEyebrow')}</span>
+        <strong>${t('pair.featuredTitle')}</strong>
+        <p>${t('pair.featuredBody')}</p>
+        <small>${t('pair.featuredScoreNote')}</small>
+      </div>
+      <div class="pair-proof-grid">${proof.map(item => `<div>
+        <span>${t(item[0])}</span><b>${t(item[1])}</b><small>${t(item[2])}</small>
+      </div>`).join('')}</div>
+    </div>`;
+  }
+
   function pairBlock(w, i) {
     const a = w.a, b = w.b;
+    const featured = a.pair === 'opus5';
     const af = (scoreFor(a) || {}).features ?? a.feats.length;
     const bf = (scoreFor(b) || {}).features ?? b.feats.length;
     const fmtDiff = (label, va, vb) => I18N.en
       ? `<span>${label}: <i>${va}</i> → <b>${vb}</b></span>`
       : `<span><i>${va}</i> → <b>${vb}</b> ${label}</span>`;
-    return `<div class="pair">
+    return `<div class="pair${featured ? ' pair-featured' : ''}">
       <div class="pair-head">
         <span class="seq">${String(i + 1).padStart(2, '0')}</span>
         <h3>${esc(a.model.replace(/\s*#\d+$/, ''))}</h3>
+        ${featured ? `<span class="pair-featured-badge"><span aria-hidden="true">⚑</span> ${t('pair.featuredBadge')}</span>` : ''}
         <a class="go" href="${page('compare.html')}?p=${encodeURIComponent(a.pair)}">${t('pair.run')}</a>
       </div>
       <div class="pair-body">
@@ -406,6 +429,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         ${fmtDiff(t('pair.codeSize'), t('unit.lines', { count: a.lines }), t('unit.lines', { count: b.lines }))}
         ${fmtDiff(t('pair.features'), t('unit.items', { count: af }), t('unit.items', { count: bf }))}
       </div>
+      ${featuredPairProof(a.pair)}
       ${(window.PAIR_NOTES || {})[a.pair]
         ? `<div class="pair-caveat">⚠ ${esc(window.PAIR_NOTES[a.pair])}</div>` : ''}
       </div>`;

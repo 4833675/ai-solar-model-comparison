@@ -1,9 +1,42 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","deepseekv4flash0731","gpt56sol","gpt56terra","qwen38","hy3"];
+window.PAIR_ORDER=["opus5","longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","deepseekv4flash0731","gpt56sol","gpt56terra","qwen38","hy3"];
 window.PAIR_NOTES={};
 window.WORKS=[
+ {
+  "id": "Opus5Ultra-TasksAssignedByOpus5",
+  "file": "models/Opus5Ultra-TasksAssignedByOpus5.html",
+  "model": "Claude Opus 5 Ultra",
+  "group": "B",
+  "pair": "opus5",
+  "featured": true,
+  "tech": "WebGL2",
+  "bytes": 142181,
+  "lines": 3425,
+  "title": "太阳系实时运动模型",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Opus5Ultra-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "Opus 5 从自己的一句话标杆反推说明书后再次实现；主动校正天文数据，并修复长期动画与性能问题",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 1,
+  "rank": 0
+ },
  {
   "id": "DeepSeek-V4-Flash-0731",
   "file": "models/DeepSeek-V4-Flash-0731.html",
@@ -1109,7 +1142,7 @@ window.WORKS=[
   "file": "models/Opus5Ultra-WebGL2.html",
   "model": "Claude Opus 5 Ultra",
   "group": "A",
-  "pair": null,
+  "pair": "opus5",
   "featured": true,
   "tech": "WebGL2",
   "bytes": 104748,
