@@ -26,6 +26,11 @@
     },
 
     /* 一句话组 */
+    'DeepSeek-V4-Flash-0731': {
+      features: 7, orbit: 4, moons: 1, offline: false, halley: false,
+      correctness: 12.5, visual: 1.5, interaction: 4,
+      note: '轨道、材质和控制结构丰富，但小行星带与柯伊伯带把 0–255 色值写入浮点顶点颜色，Bloom 几乎洗白全场；仅一颗月球，三颗彗星均非哈雷，悬停还会触发 Raycaster 异常，聚焦也不会自动拉近。'
+    },
     'KimiK3Max': {
       features: 8, orbit: 4, moons: 7, offline: false, halley: true,
       correctness: 14, visual: 7, interaction: 5,
@@ -128,6 +133,11 @@
     },
 
     /* 详细文档组 */
+    'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': {
+      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
+      correctness: 13, visual: 7, interaction: 4,
+      note: '八项功能、八颗卫星、双向环影与持续跟随均成立；但卫星距离读数错误，标签和画布拾取投影未计视场角与宽高比，拖拽后仍可能误选。近景常偏暗，土星环默认角度近乎细线，粒子与标签也较拥挤。'
+    },
     'Sonnet5Ultra-TasksAssignedByOpus5': {
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,
       correctness: 14, visual: 8.5, interaction: 5,

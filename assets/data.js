@@ -1,9 +1,77 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","gpt56sol","gpt56terra","qwen38","hy3"];
+window.PAIR_ORDER=["longcat","gemini35","gpt55","glm52","kimik3","minimax","deepseek","deepseekv4flash0731","gpt56sol","gpt56terra","qwen38","hy3"];
 window.PAIR_NOTES={};
 window.WORKS=[
+ {
+  "id": "DeepSeek-V4-Flash-0731",
+  "file": "models/DeepSeek-V4-Flash-0731.html",
+  "model": "DeepSeek V4 Flash 0731",
+  "group": "A",
+  "pair": "deepseekv4flash0731",
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 59338,
+  "lines": 1242,
+  "title": "太阳系模拟 · Solar System",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeek-V4-Flash-0731.jpg",
+  "jsErrors": 1,
+  "note": null,
+  "issue": null,
+  "net": [
+   "cdn.jsdelivr.net"
+  ],
+  "fix": null,
+  "tier": 3,
+  "rank": 16
+ },
+ {
+  "id": "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5",
+  "file": "models/DeepSeek-V4-Flash-0731-TasksAssignedByOpus5.html",
+  "model": "DeepSeek V4 Flash 0731",
+  "group": "B",
+  "pair": "deepseekv4flash0731",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 97427,
+  "lines": 2159,
+  "title": "太阳系 · 实时轨道模型",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeek-V4-Flash-0731-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 3,
+  "rank": 6
+ },
  {
   "id": "DeepSeekProMax-TasksAssignedByOpus5",
   "file": "models/DeepSeekProMax-TasksAssignedByOpus5.html",

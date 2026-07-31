@@ -213,6 +213,8 @@
     'GPT5.6SolUltra-WebGL2': 'Fourteen moons and a complete interaction set stand out. It includes a comet, but the orbital elements are not Halley’s, so neither the Halley feature nor its bonus is counted.',
     'Fable5Max-Three': 'There is no actual ACES pass, and close-ups run bright. Saturn’s rings do not cast the reverse shadow onto the planet, and the minimum zoom can enter large bodies.',
     'Fable5Max-WebGL2': 'The comet is Encke rather than Halley. It models six moons, and Saturn has only the one-way planet-to-ring shadow.',
+    'DeepSeek-V4-Flash-0731': 'The orbital, material, and control structure is rich, but 0–255 asteroid and Kuiper colors are fed into float vertex colors, so bloom washes out nearly the entire scene. It has only the Moon, none of its three comets is Halley, hovering can trigger a Raycaster error, and focus does not zoom in.',
+    'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': 'All eight features, eight moons, two-way ring shadows, and continuous follow work. However, moon-to-Earth distances are wrong, label and canvas-picking projection ignores FOV and aspect ratio, and dragging can still trigger a mistaken click. Close-ups are often dark, Saturn\'s rings are nearly edge-on by default, and particles and labels feel crowded.',
     'KimiK3Max': 'Features, orbital motion, and interaction are complete. The main deductions are for network dependencies, the lack of physically meaningful ring shadows, and an overly strong central glow.',
     'GLM5.2Max': 'Heavy bloom washes out a large central area and erases planetary detail. Orbital realism is low, and the supposed Great Red Spot is implemented as several random storms.',
     'Opus_4_8_Max': 'Surface detail, night sides, orbits, and interaction are all strong. The main omissions are Halley’s Comet and bidirectional shadows for Saturn’s rings.',
@@ -251,6 +253,8 @@
   };
 
   const WORK_TEXT_EN = {
+    'DeepSeek-V4-Flash-0731': { title: 'Solar System Simulation' },
+    'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': { title: 'Solar System · Real-Time Orbital Model' },
     'DeepSeekProMax-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model — DeepSeek ProMax' },
     'DeepSeek_V4_Pro_high-1': { title: 'Solar System' },
     'DeepSeek_V4_Pro_high-2': { title: 'Solar System Motion Model' },
