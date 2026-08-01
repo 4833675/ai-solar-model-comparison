@@ -121,6 +121,11 @@
       correctness: 14, visual: 4.8, interaction: 2.4,
       note: 'Canvas2D 画面简洁稳定，但表面与光影较基础；只有悬停资料，没有聚焦跟随，并额外扣 10 分。'
     },
+    'Qwen3.8MaxV2': {
+      features: 5, orbit: 3, moons: 1, offline: true, halley: false, canvas: true,
+      correctness: 14, visual: 6.5, interaction: 2.5,
+      note: 'Canvas2D 总览稳定，行星环、轨道倾角、小行星带、月球与泛光均可辨；但没有哈雷、ACES 或真实大气，轨道角推进也没有求解开普勒方程。交互仅有拖拽、缩放和悬停，没有点选聚焦、持续跟随、暂停或重置，并额外扣 10 分。'
+    },
     'LongCat2.0': {
       features: 2, orbit: 1, moons: 1, offline: true, halley: false, canvas: true,
       correctness: 14, visual: 4.6, interaction: 2.6,
@@ -212,6 +217,16 @@
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,
       correctness: 9, visual: 5.5, interaction: 4.5,
       note: '总览清楚克制，但土星环因归一化半径被二次缩放而实质失效，卫星显示距离也有映射问题。'
+    },
+    'Qwen3.8MaxV2-TasksAssignedByOpus5': {
+      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
+      correctness: 11, visual: 2.5, interaction: 4,
+      note: '八项功能、真实轨道和八颗卫星均已实现；但默认总览被过量粒子和辉光洗成大片米白，行星细节很难辨认。点击处理读取的是 mouseup 之后的 dragging 状态，拖拽结束仍可能误选，也没有完整重置。'
+    },
+    'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': {
+      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
+      correctness: 3, visual: 4, interaction: 4,
+      note: '八项功能、真实轨道和八颗卫星均已写入，但仍保留大面积调试覆盖层；frame 自己调度下一帧，同时又被 drive 每帧重复调用，渲染循环会持续累积，FPS 读数失真且长期性能不稳定。因此保留在第三梯队并标记为“未完成”。'
     },
     'Gemini3.1Pro-TasksAssignedByOpus5': {
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,

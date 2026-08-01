@@ -57,6 +57,7 @@
       'network.title': '运行时会从 {hosts} 拉取资源，断网或内网环境下无法显示',
       'network.required': '需联网',
       'render.issue': '渲染异常',
+      'work.incomplete': '未完成',
       'score.referenceHead': 'BENCHMARK REFERENCE',
       'score.breakdownHead': 'SCORE BREAKDOWN',
       'score.referenceMeta': '标杆参考分 · 同规则计分 · 不参与排名 · 自动基础分 {score}',
@@ -160,6 +161,7 @@
       'network.title': 'Loads resources from {hosts} at runtime and will not display correctly offline or on a restricted network',
       'network.required': 'Network required',
       'render.issue': 'Rendering issue',
+      'work.incomplete': 'Incomplete',
       'score.referenceHead': 'BENCHMARK REFERENCE',
       'score.breakdownHead': 'SCORE BREAKDOWN',
       'score.referenceMeta': 'Benchmark reference · Same scoring rules · Excluded from ranking · Automatic base score {score}',
@@ -266,6 +268,7 @@
     'DeepSeek_V4_Pro_high-3': 'Exposure is restrained and key planets have dedicated materials. It lacks a Great Red Spot and real ring shadows, while button focus does not follow continuously.',
     'Qwen3.8Max-inQoder': 'Bloom blows out the Sun and inner system, while the planets are small and visually similar. Clicking only opens information; it neither moves the camera nor provides a reset.',
     'Qwen3.8MaxV1-inQoder': 'The Canvas2D view is clean and stable, but surfaces and lighting are basic. It offers hover information only, with no focus or follow behavior, and receives the additional 10-point Canvas2D penalty.',
+    'Qwen3.8MaxV2': 'The Canvas2D overview is stable, with recognizable rings, orbital inclinations, an asteroid belt, the Moon, and glow effects. It lacks Halley, ACES, and a real atmosphere, while orbital angle advancement does not solve Kepler’s equation. Interaction is limited to drag, zoom, and hover, with no click focus, continuous follow, pause, or reset; the 10-point Canvas2D penalty also applies.',
     'LongCat2.0': 'The overview is clear, but features and realism are limited. Its “focus” only draws a marker without moving the camera, and Canvas2D incurs an additional 10-point penalty.',
     'Hy3': 'Surfaces, the red spot, and the procedural Saturn ring are comparatively rich. Orbital realism is low, it requires a network connection, real ring shadows are absent, and bodies cannot be clicked directly.',
     'MiniMax_M3_thinking-1': 'The outer planets visibly drift away from their orbit lines, low speed settings can produce NaN values, and reset does not restore the view; it therefore remains marked incomplete.',
@@ -282,6 +285,8 @@
     'Gemini3.5Flash-TasksAssignedByOpus5': 'The asteroid belt and Sun are harshly bright. The red spot also appears on Saturn, ring shadows mix coordinate spaces, and canvas bodies cannot be clicked directly.',
     'Gemini3.6Flash-TasksAssignedByOpus5': 'Earth’s surface looks blocky and Jupiter’s spot is indistinct. Saturn’s rings have a hard-edged shadow, and releasing a drag can still select an object accidentally.',
     'Qwen3.8Max-TasksAssignedByOpus5': 'The overview is clear and restrained, but Saturn’s ring is effectively broken because its normalized radius is scaled a second time. Display distances for moons are also mapped incorrectly.',
+    'Qwen3.8MaxV2-TasksAssignedByOpus5': 'All eight features, realistic orbits, and eight moons are implemented, but excessive particles and glow wash the default overview into a large off-white field, making planetary detail difficult to read. Click handling checks the dragging state only after mouseup, so releasing a drag can still select an object, and there is no complete reset.',
+    'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': 'All eight features, realistic orbits, and eight moons are present, but a large debug overlay remains visible. frame schedules itself while drive also calls it every display frame, so duplicate render loops keep accumulating, the FPS readout becomes meaningless, and long-run performance is unstable. It therefore remains in Tier 3 with an Incomplete label.',
     'Gemini3.1Pro-TasksAssignedByOpus5': 'Exposure is clean but surface classes are basic, with a night side but no complete atmosphere. Zoom has no maximum bound, and canvas bodies cannot be clicked directly.',
     'Hy3-TasksAssignedByOpus5': 'Saturn and its rings are recognizable, but a cream-colored glow flattens the whole scene. Venus has the wrong semimajor axis, focus does not follow, and “Now” reuses an old timestamp.',
     'MiniMaxM3-TasksAssignedByOpus5': 'A white background and a huge black triangle continuously obscure the main view, while Saturn’s ring fragments are discarded entirely. The fatal rendering-failure score cap applies.'
@@ -290,6 +295,10 @@
   const WORK_TEXT_EN = {
     'DeepSeek-V4-Flash-0731': { title: 'Solar System Simulation' },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': { title: 'Solar System · Real-Time Orbital Model' },
+    'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': {
+      title: 'Solar System · Real-Time Motion Model',
+      note: 'Marked incomplete by the author: a large debug overlay remains visible, and frame schedules itself while drive also calls it every display frame, so duplicate render loops accumulate over time.'
+    },
     'DeepSeekProMax-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model — DeepSeek ProMax' },
     'DeepSeek_V4_Pro_high-1': { title: 'Solar System' },
     'DeepSeek_V4_Pro_high-2': { title: 'Solar System Motion Model' },
@@ -337,6 +346,8 @@
     'Qwen3.8Max-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'Qwen3.8Max-inQoder': { title: '3D Solar System Model — Three.js', note: 'Produced in Qoder, an IDE agent, rather than the conversational environment used for the other works; not every difference can necessarily be attributed to the model.' },
     'Qwen3.8MaxV1-inQoder': { title: 'Solar System Motion Model', note: 'Also produced in Qoder. This earlier version was later replaced by the 3D version created in the same environment.' },
+    'Qwen3.8MaxV2': { title: 'Solar System Motion Model' },
+    'Qwen3.8MaxV2-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'Sonnet5Ultra': { title: 'Solar System Motion Model · Sonnet5Ultra' },
     'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' }
   };

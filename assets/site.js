@@ -195,6 +195,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     if (w.weight === 'heavy') out.push(`<span class="chip warn">${t('weight.heavy')}</span>`);
     if (w.net && w.net.length)
       out.push(`<span class="chip warn" title="${esc(t('network.title', { hosts: w.net.join(I18N.en ? ', ' : '、') }))}">${t('network.required')}</span>`);
+    if (w.incomplete) out.push(`<span class="chip bad">${t('work.incomplete')}</span>`);
     if (w.issue) out.push(`<span class="chip bad" title="${esc(workText(w, 'issue'))}">${t('render.issue')}</span>`);
     if (risk) out.push(`<span class="chip ${risk.lv}">${risk.t}</span>`);
     return `<div class="chips">${out.join('')}</div>`;
@@ -360,7 +361,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function card(w) {
     const risk = workRisk(w);
     const benchmark = w.group === 'A' && w.tier === 1;
-    return `<div class="card ${w.group === 'A' ? 'ga' : 'gb'}${benchmark ? ' is-benchmark' : ''}">
+    return `<div class="card ${w.group === 'A' ? 'ga' : 'gb'}${benchmark ? ' is-benchmark' : ''}${w.incomplete ? ' is-incomplete' : ''}">
       <a class="shot-link" href="${link(w)}">
         ${w.shot ? `<img class="shot" loading="lazy" src="${w.shot}" alt="${esc(t('card.screenshotAlt', { name: w.model }))}">`
         : '<div class="shot"></div>'}
