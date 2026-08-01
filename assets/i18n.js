@@ -251,6 +251,7 @@
     'KimiK3Max': 'Features, orbital motion, and interaction are complete. The main deductions are for network dependencies, the lack of physically meaningful ring shadows, and an overly strong central glow.',
     'GLM5.2Max': 'Heavy bloom washes out a large central area and erases planetary detail. Orbital realism is low, and the supposed Great Red Spot is implemented as several random storms.',
     'Opus_4_8_Max': 'Surface detail, night sides, orbits, and interaction are all strong. The main omissions are Halley’s Comet and bidirectional shadows for Saturn’s rings.',
+    'Sonnet5Ultra': 'Six modeled moons, real Keplerian orbits, continuous following, and an offline Three.js bundle all work. Saturn is clear in close-up, but Halley is absent, ring shadows are not bidirectional as in the specification group, and orbit lines become busy at close range.',
     'GPT5.6SolUltra': 'Orbits, moons, and interaction are solid. In the fixed close-up, Jupiter’s spot and Saturn’s night-side detail are hard to see, and Halley is absent.',
     'GPT5.6SolMax': 'Close to the one-line Sol Ultra result: complete and usable, but Jupiter and Saturn are dark in close-up, with no Halley and no physically accurate ring shadows.',
     'GPT_5_5_xhigh': 'Its objective feature set, orbits, and moons are strong, but the final image is overexposed and the focus distance is too great. Canvas dragging and selection also follow inconsistent paths.',
@@ -269,6 +270,7 @@
     'Hy3': 'Surfaces, the red spot, and the procedural Saturn ring are comparatively rich. Orbital realism is low, it requires a network connection, real ring shadows are absent, and bodies cannot be clicked directly.',
     'MiniMax_M3_thinking-1': 'The outer planets visibly drift away from their orbit lines, low speed settings can produce NaN values, and reset does not restore the view; it therefore remains marked incomplete.',
     'Sonnet5Ultra-TasksAssignedByOpus5': 'Earth’s night side, Saturn’s rings, and bidirectional shadows are particularly strong. Jupiter is slightly washed out and the Great Red Spot has limited contrast.',
+    'Opus4.8Ultra-TasksAssignedByOpus5': 'All eight features, eight moons, native WebGL2, bidirectional ring shadows, and continuous following work, with an excellent Saturn close-up. Halley follows the specification’s osculating period rather than the measured 2061 return correction added by the Opus 5 specification run.',
     'GPT5.6SolUltra-TasksAssignedByOpus5': 'Earth’s clouds and city lights, Jupiter’s Great Red Spot, Saturn’s layered rings, and bidirectional shadows all read clearly; all five interaction criteria are satisfied.',
     'GPT5.6TerraUltra-TasksAssignedByOpus5': 'Distinct surface classes, the Great Red Spot, atmospheric and night-side detail, and bidirectional ring shadows are all present. Actual detail is clearly above Luna, though still below Sol.',
     'GPT5.6LunaMax-TasksAssignedByOpus5': 'Features and orbital motion are complete, but bodies remain small and dark in close-up, making Jupiter’s spot and Saturn’s ring structure hard to inspect. Focus also does not follow continuously.',
@@ -329,11 +331,13 @@
     },
     'Opus5Ultra-WebGL2': { title: 'Solar System', note: 'The site’s detailed task specification was reverse-engineered from this implementation.' },
     'Opus5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model', note: 'Opus 5 reverse-engineered the specification from its own one-line benchmark, then rebuilt it while autonomously validating astronomy, long-run behavior, and performance.' },
+    'Opus4.8Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'Opus_4_8_Max': { title: 'Solar System · Real-Time Motion Model' },
     'Qwen3.7Max': { title: 'Solar System Motion Model' },
     'Qwen3.8Max-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'Qwen3.8Max-inQoder': { title: '3D Solar System Model — Three.js', note: 'Produced in Qoder, an IDE agent, rather than the conversational environment used for the other works; not every difference can necessarily be attributed to the model.' },
     'Qwen3.8MaxV1-inQoder': { title: 'Solar System Motion Model', note: 'Also produced in Qoder. This earlier version was later replaced by the 3D version created in the same environment.' },
+    'Sonnet5Ultra': { title: 'Solar System Motion Model · Sonnet5Ultra' },
     'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' }
   };
 

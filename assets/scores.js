@@ -46,6 +46,11 @@
       correctness: 15, visual: 9, interaction: 5,
       note: '表面、夜面、轨道与交互都很完整；主要缺少哈雷彗星和土星环的双向阴影。'
     },
+    'Sonnet5Ultra': {
+      features: 7, orbit: 4, moons: 6, offline: true, halley: false,
+      correctness: 14, visual: 7.5, interaction: 5,
+      note: '六颗卫星、真实开普勒轨道、持续跟随与离线 Three.js 均成立；土星近景清楚，但没有哈雷彗星，环影并非文档组那种双向实现，轨道线在近景较杂。'
+    },
     'GPT5.6SolUltra': {
       features: 6, orbit: 4, moons: 7, offline: true, halley: false,
       correctness: 15, visual: 6, interaction: 5,
@@ -137,6 +142,11 @@
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,
       correctness: 15, visual: 10, interaction: 5,
       note: '八项功能、八颗卫星、完整交互与双向环影均成立；它还主动用实测回归间隔校正哈雷彗星 2061 年近日点，并针对长期云层漂移、眩光和片元性能完成实测修正。'
+    },
+    'Opus4.8Ultra-TasksAssignedByOpus5': {
+      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
+      correctness: 14.5, visual: 9.5, interaction: 5,
+      note: '原生 WebGL2 的八项功能、八颗卫星、双向环影与持续跟随均成立，土星近景层次优秀；哈雷按规格书的密切周期推演，未像 Opus 5 文档版那样额外校正 2061 年实测回归日期。'
     },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': {
       features: 8, orbit: 4, moons: 8, offline: true, halley: true,

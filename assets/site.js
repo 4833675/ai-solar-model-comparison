@@ -407,7 +407,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     return `<div class="pair${featured ? ' pair-featured' : ''}">
       <div class="pair-head">
         <span class="seq">${String(i + 1).padStart(2, '0')}</span>
-        <h3>${esc(a.model.replace(/\s*#\d+$/, ''))}</h3>
+        <h3>${esc((a.pairLabel || a.model).replace(/\s*#\d+$/, ''))}</h3>
         ${featured ? `<span class="pair-featured-badge"><span aria-hidden="true">⚑</span> ${t('pair.featuredBadge')}</span>` : ''}
       </div>
       <div class="pair-body">

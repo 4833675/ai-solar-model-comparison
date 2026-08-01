@@ -1,7 +1,7 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","gpt56terra","kimik3","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
 window.WORKS=[
  {
@@ -1175,7 +1175,8 @@ window.WORKS=[
   "file": "models/Opus_4_8_Max.html",
   "model": "Claude Opus 4.8 Max",
   "group": "A",
-  "pair": null,
+  "pair": "opus48",
+  "pairLabel": "Claude Opus 4.8",
   "featured": false,
   "tech": "Three.js",
   "bytes": 1009801,
@@ -1186,9 +1187,11 @@ window.WORKS=[
   "feats": [
    "kepler",
    "rings",
+   "belt",
    "bloom",
    "aces",
-   "atmo"
+   "atmo",
+   "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/Opus_4_8_Max.jpg",
@@ -1199,6 +1202,39 @@ window.WORKS=[
   "fix": null,
   "tier": 2,
   "rank": 3
+ },
+ {
+  "id": "Opus4.8Ultra-TasksAssignedByOpus5",
+  "file": "models/Opus4.8Ultra-TasksAssignedByOpus5.html",
+  "model": "Claude Opus 4.8 Ultra",
+  "group": "B",
+  "pair": "opus48",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 102012,
+  "lines": 1969,
+  "title": "太阳系实时运动模型",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Opus4.8Ultra-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 1,
+  "rank": 1
  },
  {
   "id": "Qwen3.7Max",
@@ -1327,11 +1363,43 @@ window.WORKS=[
   "rank": 15
  },
  {
+  "id": "Sonnet5Ultra",
+  "file": "models/Sonnet5Ultra.html",
+  "model": "Claude Sonnet 5 Ultra",
+  "group": "A",
+  "pair": "sonnet5",
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 710008,
+  "lines": 3298,
+  "title": "太阳系运动模型 · Sonnet5Ultra",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "heavy",
+  "shot": "assets/shots/Sonnet5Ultra.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 2,
+  "rank": 2
+ },
+ {
   "id": "Sonnet5Ultra-TasksAssignedByOpus5",
   "file": "models/Sonnet5Ultra-TasksAssignedByOpus5.html",
   "model": "Claude Sonnet 5 Ultra",
   "group": "B",
-  "pair": null,
+  "pair": "sonnet5",
   "featured": false,
   "tech": "WebGL2",
   "bytes": 126295,
@@ -1341,6 +1409,7 @@ window.WORKS=[
   "msaa": true,
   "feats": [
    "kepler",
+   "rings",
    "belt",
    "comet",
    "bloom",
