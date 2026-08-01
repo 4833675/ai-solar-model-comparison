@@ -108,7 +108,7 @@ window.WORKS=[
  {
   "id": "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5",
   "file": "models/DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5.html",
-  "model": "DeepSeek V4 Flash 0731 V2",
+  "model": "DeepSeek V4 Flash 0731 #2",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -1339,7 +1339,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2-TasksAssignedByOpus5",
   "file": "models/Qwen3.8MaxV2-TasksAssignedByOpus5.html",
-  "model": "Qwen 3.8 Max V2",
+  "model": "Qwen 3.8 Max #2",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -1372,7 +1372,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2",
   "file": "models/Qwen3.8MaxV2.html",
-  "model": "Qwen 3.8 Max V2",
+  "model": "Qwen 3.8 Max #2",
   "group": "A",
   "pair": null,
   "featured": false,
