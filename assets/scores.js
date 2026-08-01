@@ -1,247 +1,456 @@
-/* 评分来自源码审计、统一浏览器实跑与固定口径复核。 */
+/* 证据值来自源码审计、统一浏览器实跑与人工视觉复核；公式与排序自动执行。 */
 (function () {
   'use strict';
 
   window.SCORES = {
-    /* 标杆：只给同规则参考分，不参与排名 */
-    'Opus5Ultra-WebGL2': {
-      reference: true, features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 10, interaction: 5,
-      note: '八项功能、双向环影和完整交互均成立；参考分仅因卫星数量尚未达到样本最高档而少量失分。'
-    },
-    'GPT5.6SolUltra-WebGL2': {
-      reference: true, features: 7, orbit: 4, moons: 14, offline: true, halley: false,
-      correctness: 15, visual: 9.5, interaction: 5,
-      note: '十四颗卫星与完整交互很突出；实现了彗星，但轨道根数并非哈雷，因此不计哈雷功能及加分。'
-    },
-    'Fable5Max-Three': {
-      reference: true, features: 7, orbit: 4, moons: 6, offline: true, halley: true,
-      correctness: 15, visual: 7.5, interaction: 4.5,
-      note: '没有实际 ACES，近景偏亮；土星环缺少环投向行星的反向阴影，最小缩放也可能进入大型天体内部。'
-    },
-    'Fable5Max-WebGL2': {
-      reference: true, features: 7, orbit: 4, moons: 6, offline: true, halley: false,
-      correctness: 14.5, visual: 9.5, interaction: 5,
-      note: '实际是恩克彗星而非哈雷；六颗卫星，土星环只有行星投向环的单向阴影。'
-    },
-
-    /* 一句话组 */
+    /* 一句话组（含四个金色参考作品） */
     'DeepSeek-V4-Flash-0731': {
-      features: 7, orbit: 4, moons: 1, offline: false, halley: false,
-      correctness: 12.5, visual: 1.5, interaction: 4,
-      note: '轨道、材质和控制结构丰富，但小行星带与柯伊伯带把 0–255 色值写入浮点顶点颜色，Bloom 几乎洗白全场；仅一颗月球，三颗彗星均非哈雷，悬停还会触发 Raycaster 异常，聚焦也不会自动拉近。'
-    },
-    'KimiK3Max': {
-      features: 8, orbit: 4, moons: 7, offline: false, halley: true,
-      correctness: 14, visual: 7, interaction: 5,
-      note: '功能、轨道和交互完整；主要扣分来自联网依赖、环系没有真实阴影，以及中心辉光偏强。'
-    },
-    'GLM5.2Max': {
-      features: 6, orbit: 1, moons: 1, offline: false, halley: false,
-      correctness: 13, visual: 4, interaction: 5,
-      note: '强 Bloom 让中心大面积发白，行星细节被吞没；轨道真实度低，且所谓大红斑是多枚随机风暴。'
-    },
-    'Opus_4_8_Max': {
-      features: 7, orbit: 4, moons: 8, offline: true, halley: false,
-      correctness: 15, visual: 9, interaction: 5,
-      note: '表面、夜面、轨道与交互都很完整；主要缺少哈雷彗星和土星环的双向阴影。'
-    },
-    'Sonnet5Ultra': {
-      features: 7, orbit: 4, moons: 6, offline: true, halley: false,
-      correctness: 14, visual: 7.5, interaction: 5,
-      note: '六颗卫星、真实开普勒轨道、持续跟随与离线 Three.js 均成立；土星近景清楚，但没有哈雷彗星，环影并非文档组那种双向实现，轨道线在近景较杂。'
-    },
-    'GPT5.6SolUltra': {
-      features: 6, orbit: 4, moons: 7, offline: true, halley: false,
-      correctness: 15, visual: 6, interaction: 5,
-      note: '轨道、卫星和交互扎实；固定近景下木星红斑与土星夜面细节难以观察，也没有哈雷彗星。'
-    },
-    'GPT5.6SolMax': {
-      features: 6, orbit: 4, moons: 7, offline: true, halley: false,
-      correctness: 15, visual: 6, interaction: 5,
-      note: '与 Sol Ultra 一句话版接近；完整可用，但木星与土星近景偏暗，缺少哈雷和真实环影。'
-    },
-    'GPT_5_5_xhigh': {
-      features: 8, orbit: 4, moons: 9, offline: true, halley: true,
-      correctness: 14, visual: 2, interaction: 3,
-      note: '客观功能、轨道和卫星很强，但最终画面过曝且聚焦距离过远；画布拖拽和点选路径也不一致。'
-    },
-    'Gemini_3_5_flash_high': {
-      features: 6, orbit: 3, moons: 10, offline: true, halley: false,
-      correctness: 13, visual: 7, interaction: 5,
-      note: '卫星数量最多、交互完整且曝光克制；缺少哈雷、真实夜面，透明环的阴影路径也存在疑点。'
-    },
-    'Grok4.5': {
-      features: 7, orbit: 3, moons: 5, offline: false, halley: false,
-      correctness: 14, visual: 7, interaction: 4,
-      note: '行星身份、彗尾与大气表现清楚；联网且没有哈雷，pointerdown 拾取可能在拖拽时误选。'
-    },
-    'GLM_5_1_high-1': {
-      features: 5, orbit: 2, moons: 1, offline: false, halley: false,
-      correctness: 13, visual: 3, interaction: 3,
-      note: '表面主要套用三类模板，无大红斑与真实环影；星空与土星观感粗糙，并缺少完整重置。'
-    },
-    'GPT5.6TerraUltra-Three': {
-      features: 7, orbit: 4, moons: 5, offline: false, halley: false,
-      correctness: 13, visual: 6, interaction: 4,
-      note: '源码表面与夜面较丰富，但中心辉光明显过强；依赖联网，聚焦动画结束后不会持续跟随。'
-    },
-    'Qwen3.7Max': {
-      features: 7, orbit: 3, moons: 1, offline: false, halley: false,
-      correctness: 14, visual: 5.2, interaction: 2.2,
-      note: '专用纹理和径向土星环较扎实；太阳烧白，且没有点击聚焦、持续跟随或重置。'
-    },
-    'Mimo_2_5_Pro_high-1': {
-      features: 5, orbit: 1, moons: 1, offline: false, halley: false,
-      correctness: 10, visual: 4.2, interaction: 3,
-      note: '可以正常运行，但中文天体名让地球、木星等专用纹理分支无法命中；没有聚焦和跟随。'
+      reference: false,
+      featureMap: { rings: .4, belt: .4, bloom: .4, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: .5 },
+      orbitRuntime: { pathFit: .5, stability: .5 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 4, data: 4, integrity: 3 }, visualBase: 1.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '轨道、材质和控制结构丰富，但小行星带与柯伊伯带的浮点颜色写入错误，Bloom 几乎洗白全场；仅月球，三颗彗星均非哈雷，悬停和聚焦也有缺陷。'
     },
     'DeepSeek_V4_Pro_high-1': {
-      features: 5, orbit: 1, moons: 1, offline: false, halley: false,
-      correctness: 13, visual: 2.5, interaction: 1.5,
-      note: '多颗行星高光剪切为白色半球，环层次难辨；仅有基础视角控制，没有模拟控制或聚焦。'
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 2.5,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 0 }, fatal: null,
+      note: '多颗行星高光剪切成白色半球，环层次难辨；只有基础视角控制，没有模拟控制或聚焦。'
     },
     'DeepSeek_V4_Pro_high-2': {
-      features: 5, orbit: 2, moons: 0, hasMoon: false, offline: false, halley: false,
-      correctness: 9, visual: 6.1, interaction: 4.7,
-      note: '视觉和交互相对完整，但没有月球；土星环几何被错误压成细线，而且不能真正暂停。'
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 0, elements: 1, orientation: 1, epoch: .5 },
+      orbitRuntime: { pathFit: .5, stability: 1 }, moons: 0, hasEarthMoon: false, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 4 }, visualBase: 6.1,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: .5, pauseReset: .5 }, fatal: null,
+      note: '视觉和交互相对完整，但没有月球；土星环几何被错误压成细线，暂停也不会真正停止时间。'
     },
     'DeepSeek_V4_Pro_high-3': {
-      features: 5, orbit: 1, moons: 1, offline: false, halley: false,
-      correctness: 13, visual: 5.8, interaction: 3.8,
-      note: '曝光克制且关键行星有专用材质；没有大红斑和真实环影，按钮聚焦也不会持续跟随。'
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 5.8,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '曝光克制且关键行星有专用材质；轨道仅为基础元素形状，无开普勒与历元传播，按钮聚焦也不持续跟随。'
     },
-    'Qwen3.8Max-inQoder': {
-      features: 7, orbit: 3, moons: 1, offline: false, halley: false,
-      correctness: 14, visual: 2.1, interaction: 2.1,
-      note: '太阳与内圈被 Bloom 冲白，行星小且表面趋同；点击只显示资料，不移动镜头，也没有重置。'
+    'Fable5Max-Three': {
+      reference: true,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 0, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: .5 }, moons: 6, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '哈雷与六颗卫星均成立；没有实际 ACES，环影仅单向，最小缩放可进入大型天体内部。'
     },
-    'Qwen3.8MaxV1-inQoder': {
-      features: 5, orbit: 3, moons: 1, offline: true, halley: false, canvas: true,
-      correctness: 14, visual: 4.8, interaction: 2.4,
-      note: 'Canvas2D 画面简洁稳定，但表面与光影较基础；只有悬停资料，没有聚焦跟随，并额外扣 10 分。'
+    'Fable5Max-WebGL2': {
+      reference: true,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 9.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '彗星实际是恩克而非哈雷；六颗卫星，土星环只有行星投向环的单向阴影。'
     },
-    'Qwen3.8MaxV2': {
-      features: 5, orbit: 3, moons: 1, offline: true, halley: false, canvas: true,
-      correctness: 14, visual: 6.5, interaction: 2.5,
-      note: 'Canvas2D 总览稳定，行星环、轨道倾角、小行星带、月球与泛光均可辨；但没有哈雷、ACES 或真实大气，轨道角推进也没有求解开普勒方程。交互仅有拖拽、缩放和悬停，没有点选聚焦、持续跟随、暂停或重置，并额外扣 10 分。'
+    'GLM5.2Max': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 4,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '五项控制均可用，但轨道是简化非开普勒路径；过强 Bloom 抹去了中心细节。'
     },
-    'LongCat2.0': {
-      features: 2, orbit: 1, moons: 1, offline: true, halley: false, canvas: true,
-      correctness: 14, visual: 4.6, interaction: 2.6,
-      note: '总览清楚，但功能和真实度较少；所谓聚焦只画提示圈，不移动镜头，Canvas2D 额外扣 10 分。'
+    'GLM_5_1_high-1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 3,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '拖拽、缩放、聚焦和暂停可用，但没有完整重置；轨道简化，星空与土星观感粗糙。'
+    },
+    'GPT5.6SolMax': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 6,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线版的开普勒轨道、七颗卫星与持续跟随均成立；没有哈雷，土星环缺少物理环影。'
+    },
+    'GPT5.6SolUltra-WebGL2': {
+      reference: true,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 14, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 4, data: 5, integrity: 4 }, visualBase: 9.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '十四颗卫星、完整渲染与交互很突出；程序世界需约 12 秒建成，彗星轨道根数也并非哈雷。'
+    },
+    'GPT5.6SolUltra': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 6,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线版的轨道、卫星和五项交互均扎实；没有哈雷，土星环仅部分达到物理处理要求。'
+    },
+    'GPT5.6TerraUltra-Three': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 5, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 3 }, visualBase: 6,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '日期驱动的开普勒场景、聚焦和重置可用；依赖联网，聚焦动画结束后不再持续跟随。'
+    },
+    'GPT_5_5_xhigh': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 2,
+      interaction: { drag: .5, zoom: 1, focus: .5, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '轨道、卫星与哈雷覆盖很强，但最终画面过曝且聚焦过远；画布拖拽和点选路径也不一致。'
+    },
+    'Gemini_3_5_flash_high': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 10, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '十颗卫星、J2000 轨道与完整交互突出；没有哈雷，环透明阴影和大气实现只有部分证据。'
+    },
+    'Grok4.5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 5, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '开普勒求解器、历元和行星材质清楚；依赖联网且无哈雷，拖拽可能触发点选，也无持续跟随。'
     },
     'Hy3': {
-      features: 5, orbit: 1, moons: 1, offline: false, halley: false,
-      correctness: 13, visual: 6.6, interaction: 4,
-      note: '表面、红斑和程序化土星环较丰富；轨道真实度低、需要联网、没有真实环影，也不能直接点天体。'
+      reference: false,
+      featureMap: { rings: .4, belt: 0, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 6.6,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '表面、红斑和程序化土星环较丰富；选定后不会主动拉近，但会持续跟随天体位移，暂停和重置可用。'
+    },
+    'KimiK3Max': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '求解器、哈雷、七颗卫星和五项控制均成立；主要扣分来自联网依赖与缺少物理环影。'
+    },
+    'LongCat2.0': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 2.5, integrity: 5 }, visualBase: 4.6,
+      interaction: { drag: .5, zoom: 1, focus: 0, follow: 0, pauseReset: .5 }, fatal: null,
+      note: 'Canvas2D 总览稳定，但拖拽是平移而非 3D 环绕，“双击聚焦”也不移动视角；功能有效性有限并受 Canvas2D 扣分。'
+    },
+    'Mimo_2_5_Pro_high-1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 2, integrity: 5 }, visualBase: 4.2,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '可以稳定运行，暂停与完整视角重置均有效；但中文天体名让专用材质分支无法命中，也没有聚焦和跟随。'
     },
     'MiniMax_M3_thinking-1': {
-      features: 6, orbit: 3, moons: 1, offline: false, halley: false,
-      correctness: 7, visual: 4.7, interaction: 3.5,
-      note: '外行星会明显脱离轨道线，低速区间可产生 NaN，重置也不恢复视角；因此保持“未完成”。'
+      reference: false,
+      featureMap: { rings: .4, belt: 0, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 0 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 3, data: 4, integrity: 1 }, visualBase: 4.7,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: .5, pauseReset: .5 }, fatal: 'L2',
+      fatalReason: '外行星偏离轨道线，低速产生 NaN，重置失效。',
+      note: '外行星会明显脱离轨道线，低速区间可产生 NaN，重置也不恢复视角；主画面仍可见，故按 L2 长程核心故障封顶。'
+    },
+    'Opus5Ultra-WebGL2': {
+      reference: true,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 10,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '源码、实跑与截图均验证开普勒轨道、月球与哈雷、五项交互和双向环影；作为同规则金色参考。'
+    },
+    'Opus_4_8_Max': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 9,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线完整作品，表面、夜面、轨道和交互都很强；没有实际哈雷，环照明也未达双向参考实现。'
+    },
+    'Qwen3.7Max': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 5.2,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '开普勒求解与材质工作成立；太阳烧白且细节较低，没有点击聚焦、持续跟随或完整重置。'
+    },
+    'Qwen3.8MaxV2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: 1, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3.5, integrity: 5 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 0 }, fatal: null,
+      note: 'Canvas2D 总览稳定，带状物、月球与倾斜轨道清楚；但无开普勒求解、哈雷、ACES 或大气，也无聚焦、暂停和重置。'
+    },
+    'Qwen3.8Max-inQoder': {
+      reference: false,
+      featureMap: { rings: 0, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 2.1,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 0 }, fatal: null,
+      note: '运行稳定且有类开普勒传播，但没有可计分环结构；Bloom 洗白中心，点击只显示资料。'
+    },
+    'Qwen3.8MaxV1-inQoder': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: .5, elements: 1, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3.5, integrity: 5 }, visualBase: 4.8,
+      interaction: { drag: .5, zoom: 1, focus: 0, follow: 0, pauseReset: 0 }, fatal: null,
+      note: 'Canvas2D 有近似开普勒路径和基础行星数据，但拖拽只是平移，仅有悬停信息，视觉也缺色调映射与大气。'
+    },
+    'Sonnet5Ultra': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线的多卫星开普勒模型与持续跟随均成立；没有哈雷，环结构因缺参考级双向阴影而只计部分分。'
     },
 
     /* 详细文档组 */
     'Opus5Ultra-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 10, interaction: 5,
-      note: '八项功能、八颗卫星、完整交互与双向环影均成立；它还主动用实测回归间隔校正哈雷彗星 2061 年近日点，并针对长期云层漂移、眩光和片元性能完成实测修正。'
-    },
-    'Opus4.8Ultra-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 14.5, visual: 9.5, interaction: 5,
-      note: '原生 WebGL2 的八项功能、八颗卫星、双向环影与持续跟随均成立，土星近景层次优秀；哈雷按规格书的密切周期推演，未像 Opus 5 文档版那样额外校正 2061 年实测回归日期。'
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 10,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '完整 J2000/速率传播、哈雷、八颗卫星、双向环影与五项交互均经源码和实跑验证。'
     },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 13, visual: 7, interaction: 4,
-      note: '八项功能、八颗卫星、双向环影与持续跟随均成立；但卫星距离读数错误，标签和画布拾取投影未计视场角与宽高比，拖拽后仍可能误选。近景常偏暗，土星环默认角度近乎细线，粒子与标签也较拥挤。'
-    },
-    'Sonnet5Ultra-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 14, visual: 8.5, interaction: 5,
-      note: '地球夜面、土星环与双向阴影很突出；木星表面略发白，大红斑对比度稍弱。'
-    },
-    'GPT5.6SolUltra-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 10, interaction: 5,
-      note: '地球云层和夜灯、木星大红斑、土星多层环与双向阴影均清楚，五项交互全部成立。'
-    },
-    'GPT5.6TerraUltra-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 8.5, interaction: 5,
-      note: '表面分类、大红斑、大气夜面与双向环影完整；实际细节明显高于 Luna，但仍低于 Sol。'
-    },
-    'GPT5.6LunaMax-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 14, visual: 3.5, interaction: 4,
-      note: '功能和轨道齐全，但近景天体仍偏小偏暗，木星红斑和土星环层次难以观察；也不持续跟随。'
-    },
-    'KimiK3Max-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 9, interaction: 5,
-      note: '地球夜面、木星云带和土星双向环影均完整，曝光自然；仅大红斑在固定角度下不够醒目。'
-    },
-    'GPT5.5xHigh-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 15, visual: 8, interaction: 5,
-      note: '云带、红斑和双向环影完整，交互也无明显缺项；固定土星角度较侧，整体略暖亮。'
-    },
-    'GLM5.2Max-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 13, visual: 3, interaction: 3.5,
-      note: '客观功能齐全，但全场明显泛白、地球贴图断阶，木星和环影细节被吃掉；拖拽会误选且不持续跟随。'
-    },
-    'DeepSeekProMax-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 13, visual: 6, interaction: 3.5,
-      note: '功能与轨道完整；木星红斑偏灰、土星纹理和环近景异常，拖拽会误触且聚焦后不持续跟随。'
-    },
-    'LongCat2.0-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 8, visual: 4.5, interaction: 3.5,
-      note: '大红斑经度计算使其永远不可见，土星环因半径重复缩放基本消失，太阳信息还会显示 NaN 速度。'
-    },
-    'Gemini3.5Flash-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 10, visual: 4, interaction: 4,
-      note: '小行星带与太阳偏刺眼；红斑会误出现在土星，环阴影混用了坐标空间，且不能直接点画布天体。'
-    },
-    'Gemini3.6Flash-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 12, visual: 5, interaction: 4.5,
-      note: '地球表面呈拼块状，木星红斑不明显；土星环有生硬阴影，拖拽结束还可能误选。'
-    },
-    'Qwen3.8Max-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 9, visual: 5.5, interaction: 4.5,
-      note: '总览清楚克制，但土星环因归一化半径被二次缩放而实质失效，卫星显示距离也有映射问题。'
-    },
-    'Qwen3.8MaxV2-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 11, visual: 2.5, interaction: 4,
-      note: '八项功能、真实轨道和八颗卫星均已实现；但默认总览被过量粒子和辉光洗成大片米白，行星细节很难辨认。点击处理读取的是 mouseup 之后的 dragging 状态，拖拽结束仍可能误选，也没有完整重置。'
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 7,
+      interaction: { drag: .5, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '功能、轨道、八颗卫星与跟随均成立；卫星距离和投影计算有误，桌面拖拽释放仍可误触点选。'
     },
     'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 3, visual: 4, interaction: 4,
-      note: '八项功能、真实轨道和八颗卫星均已写入，但仍保留大面积调试覆盖层；frame 自己调度下一帧，同时又被 drive 每帧重复调用，渲染循环会持续累积，FPS 读数失真且长期性能不稳定。因此保留在第三梯队并标记为“未完成”。'
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 0 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 0, data: 2, integrity: 1 }, visualBase: 4,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: 1 }, fatal: 'L2',
+      fatalReason: '双重帧调度让渲染循环持续倍增，长程性能失稳。',
+      note: '主画面与控制初始可用，故非 L1；但相机聚焦后只保留旧位置数组，不能持续跟随，双重帧调度还会让循环持续累积，因长程核心故障按 L2 封顶。'
+    },
+    'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: .5, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2.5, integrity: 4 }, visualBase: 6,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: 'JPL/开普勒、八颗卫星、环影、多重小行星带与后期均可运行；但日冕明显过曝，哈雷实体不贴合轨道线，卫星距离数据失真，高 DPI 点选及聚焦后缩放仍有缺陷。'
+    },
+    'DeepSeekProMax-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 6,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '轨道与数据系统稳定，但土星纹理和环近景异常；拖拽释放可误选，聚焦后不持续跟随。'
+    },
+    'GLM5.2Max-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 3,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '求解器、轨道元素和渲染管线均在，但全场洗白并剪掉细节；拖拽可误选，聚焦不持续。'
+    },
+    'GPT5.5xHigh-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '真实元素、哈雷、八颗卫星、双向环行为和持续聚焦均稳定；只扣固定角度与偏暖亮的视觉分。'
+    },
+    'GPT5.6LunaMax-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 3.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '功能与轨道管线完整，但聚焦后天体仍小且暗，土星环和红斑证据较弱，摄像机也不持续跟随。'
+    },
+    'GPT5.6SolUltra-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 10,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '自带测试 API，轨道、渲染与五项交互均完整；地球、木星与土星细节清楚。'
+    },
+    'GPT5.6TerraUltra-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '完整 J2000 元素、求解器、动态聚焦、哈雷与八卫星数据均稳定；视觉很强但仍低于 GPT-5.6 Sol (Ultra)。'
     },
     'Gemini3.1Pro-TasksAssignedByOpus5': {
-      features: 8, orbit: 4, moons: 8, offline: true, halley: true,
-      correctness: 13, visual: 5.5, interaction: 3,
-      note: '曝光干净但表面分类较基础，只有夜面而缺完整大气；缩放没有最大边界，也不能直接点画布天体。'
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: .5, focus: .5, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '源码没有独立大气壳或散射；运行稳定，但缩放边界弱，聚焦依赖列表且不持续跟随。'
+    },
+    'Gemini3.5Flash-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2, integrity: 3 }, visualBase: 4,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '红斑可误出现在土星，环影混用坐标空间，大气也只是部分边缘效果；列表聚焦跟随可用，但画布拾取缺失。'
+    },
+    'Gemini3.6Flash-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3, integrity: 4 }, visualBase: 5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '专用大气、土星环、小行星着色器和完整元素均在；地球拼块、红斑弱和生硬环影扣分，拖拽释放还可误选。'
     },
     'Hy3-TasksAssignedByOpus5': {
-      features: 8, orbit: 3, moons: 8, offline: true, halley: true,
-      correctness: 10, visual: 5, interaction: 3,
-      note: '土星和环系可辨，但整体被米白辉光洗平；金星半长轴有误，聚焦不持续，“此刻”也使用旧时间。'
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: .5, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2, integrity: 3 }, visualBase: 5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '求解与定向管线完整，但金星半长轴误用地球值；聚焦不持续，“此刻”恢复加载时间而非真正当前时间。'
+    },
+    'KimiK3Max-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 9,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '真实元素、哈雷、八颗卫星、双向环影与持续相机目标均稳定；但 1440×900 下说明面板会挡住暂停按钮，仍可用空格键控制。'
+    },
+    'LongCat2.0-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 1, integrity: 2 }, visualBase: 4.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: 1 }, fatal: 'L2',
+      fatalReason: '环与大红斑核心结构失效，并出现 NaN 实时数据。',
+      note: '环半径重复缩放而基本消失，大红斑永不可见，太阳速度还显示 NaN；按已批准阈值，复合核心结构与数据故障归 L2。'
     },
     'MiniMaxM3-TasksAssignedByOpus5': {
-      features: 8, orbit: 0, moons: 8, offline: true, halley: true, cap: 12,
-      correctness: 3, visual: 0, interaction: 4.5,
-      note: '白底和巨大黑三角持续遮挡主画面，土星环片元也被全部丢弃；触发致命渲染故障总分上限。'
+      reference: false,
+      featureMap: { rings: .4, belt: .4, bloom: .4, aces: .4, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 0 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 1, data: 1, integrity: 1 }, visualBase: 0,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: 'L1',
+      fatalReason: '白场与巨大黑三角遮挡主画面，无法正常审阅。',
+      note: '源码有名义功能与控制，但白场和巨大黑三角持续遮挡主画面，环着色器也丢弃输出；按 L1 主视图不可用封顶。'
+    },
+    'MiniMaxM3(high)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: .4, bloom: .4, aces: .4, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 0 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 1, data: 1, integrity: 1 }, visualBase: 0,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: .5 }, fatal: 'L1',
+      fatalReason: '全屏后期四边形以 XYZ 数据生成，却按紧密排列的 XY 读取；同时 4× MSAA 解析使用了非法的 LINEAR 过滤。两处核心合成错误叠加，使主画布持续全黑，仅 UI 可见。',
+      note: '源码覆盖开普勒轨道、八颗卫星、哈雷彗星和完整控制框架，但逐轴距离压缩会把负坐标钳成正值，地球面板因此错报 39.0253 AU；聚焦不连续跟随，时间秒数显示 undefined，哈雷活跃期还会持续触发顶点缓冲不足警告。主视图不可用，按 L1 封顶。'
+    },
+    'Opus4.8Ultra-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4.5, integrity: 5 }, visualBase: 9.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '完整稳定的 WebGL2 实现与优秀土星证据；哈雷按规格书密切周期而非额外的 2061 实测回归校正，仍计实际哈雷。'
+    },
+    'Qwen3.8Max-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2, integrity: 2 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '开普勒求解和元素变换成立，但环几何实质失效，卫星距离映射也错；拖拽释放会影响聚焦可靠性。'
+    },
+    'Qwen3.8MaxV2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: .4, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3, integrity: 3 }, visualBase: 2.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '环、大气与完整轨道源码成立，但粒子场与辉光压倒默认总览；拖拽释放可误选，且没有完整状态与视角重置。'
+    },
+    'Sonnet5Ultra-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 8.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '完整的源码、运行覆盖与稳定控制；仅木星略发白且大红斑对比偏低。'
     }
   };
 })();

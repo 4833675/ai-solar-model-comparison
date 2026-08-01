@@ -3,11 +3,12 @@ window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
 window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
 window.WORKS=[
  {
   "id": "Opus5Ultra-TasksAssignedByOpus5",
   "file": "models/Opus5Ultra-TasksAssignedByOpus5.html",
-  "model": "Claude Opus 5 Ultra",
+  "model": "Claude Opus 5 (Ultra)",
   "group": "B",
   "pair": "opus5",
   "featured": true,
@@ -30,17 +31,20 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Opus5Ultra-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "Opus 5 从自己的一句话标杆反推说明书后再次实现；主动校正天文数据，并修复长期动画与性能问题",
+  "note": "Claude Opus 5 (Ultra) 从自己的一句话标杆反推说明书后再次实现；主动校正天文数据，并修复长期动画与性能问题",
   "issue": null,
   "net": [],
   "fix": null,
+  "tags": [
+   "近一半时间在调整性能(功能早就完成了)"
+  ],
   "tier": 1,
   "rank": 0
  },
  {
   "id": "DeepSeek-V4-Flash-0731",
   "file": "models/DeepSeek-V4-Flash-0731.html",
-  "model": "DeepSeek V4 Flash 0731",
+  "model": "DeepSeek V4 Flash 0731 (Max)",
   "group": "A",
   "pair": "deepseekv4flash0731",
   "featured": false,
@@ -75,7 +79,7 @@ window.WORKS=[
  {
   "id": "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5",
   "file": "models/DeepSeek-V4-Flash-0731-TasksAssignedByOpus5.html",
-  "model": "DeepSeek V4 Flash 0731",
+  "model": "DeepSeek V4 Flash 0731 (Max) #1",
   "group": "B",
   "pair": "deepseekv4flash0731",
   "featured": false,
@@ -108,7 +112,7 @@ window.WORKS=[
  {
   "id": "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5",
   "file": "models/DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5.html",
-  "model": "DeepSeek V4 Flash 0731 #2",
+  "model": "DeepSeek V4 Flash 0731 (Max) #2",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -135,21 +139,56 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "incomplete": true,
+ "tier": 4,
+ "rank": 8
+ },
+ {
+  "id": "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5",
+  "file": "models/DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5.html",
+  "model": "DeepSeek V4 Flash 0731 (Max) #3",
+  "group": "B",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 121892,
+  "lines": 2992,
+  "title": "太阳系实时运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+   "in Claude CLI"
+  ],
   "tier": 3,
-  "rank": 8
+  "rank": 17
  },
  {
   "id": "DeepSeekProMax-TasksAssignedByOpus5",
   "file": "models/DeepSeekProMax-TasksAssignedByOpus5.html",
-  "model": "DeepSeek V4 Pro",
+  "model": "DeepSeek V4 Pro (Max)",
   "group": "B",
   "pair": "deepseek",
   "featured": false,
   "tech": "WebGL2",
   "bytes": 111405,
   "lines": 2595,
-  "title": "太阳系实时运动模型 — DeepSeek ProMax",
+  "title": "太阳系实时运动模型 — DeepSeek V4 Pro (Max)",
   "needsFloat": true,
   "msaa": true,
   "feats": [
@@ -175,7 +214,7 @@ window.WORKS=[
  {
   "id": "DeepSeek_V4_Pro_high-1",
   "file": "models/DeepSeek_V4_Pro_high-1.html",
-  "model": "DeepSeek V4 Pro #1",
+  "model": "DeepSeek V4 Pro (Max) #1",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -205,7 +244,7 @@ window.WORKS=[
  {
   "id": "DeepSeek_V4_Pro_high-2",
   "file": "models/DeepSeek_V4_Pro_high-2.html",
-  "model": "DeepSeek V4 Pro #2",
+  "model": "DeepSeek V4 Pro (Max) #2",
   "group": "A",
   "pair": "deepseek",
   "featured": false,
@@ -236,7 +275,7 @@ window.WORKS=[
  {
   "id": "DeepSeek_V4_Pro_high-3",
   "file": "models/DeepSeek_V4_Pro_high-3.html",
-  "model": "DeepSeek V4 Pro #3",
+  "model": "DeepSeek V4 Pro (Max) #3",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -266,7 +305,7 @@ window.WORKS=[
  {
   "id": "Fable5Max-Three",
   "file": "models/Fable5Max-Three.html",
-  "model": "Fable 5 Max",
+  "model": "Claude Fable 5 (Max) #1",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -299,7 +338,7 @@ window.WORKS=[
  {
   "id": "Fable5Max-WebGL2",
   "file": "models/Fable5Max-WebGL2.html",
-  "model": "Fable 5 Max",
+  "model": "Claude Fable 5 (Max) #2",
   "group": "A",
   "pair": null,
   "featured": true,
@@ -331,7 +370,7 @@ window.WORKS=[
  {
   "id": "GLM5.2Max-TasksAssignedByOpus5",
   "file": "models/GLM5.2Max-TasksAssignedByOpus5.html",
-  "model": "GLM 5.2 Max",
+  "model": "GLM 5.2 (Max)",
   "group": "B",
   "pair": "glm52",
   "featured": false,
@@ -364,7 +403,7 @@ window.WORKS=[
  {
   "id": "GLM5.2Max",
   "file": "models/GLM5.2Max.html",
-  "model": "GLM 5.2 Max",
+  "model": "GLM 5.2 (Max)",
   "group": "A",
   "pair": "glm52",
   "featured": true,
@@ -396,7 +435,7 @@ window.WORKS=[
  {
   "id": "GLM_5_1_high-1",
   "file": "models/GLM_5_1_high-1.html",
-  "model": "GLM 5.1",
+  "model": "GLM 5.1 (Max)",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -426,7 +465,7 @@ window.WORKS=[
  {
   "id": "GPT5.5xHigh-TasksAssignedByOpus5",
   "file": "models/GPT5.5xHigh-TasksAssignedByOpus5.html",
-  "model": "GPT-5.5 xHigh",
+  "model": "GPT-5.5 (xHigh)",
   "group": "B",
   "pair": "gpt55",
   "featured": false,
@@ -459,7 +498,7 @@ window.WORKS=[
  {
   "id": "GPT5.6LunaMax-TasksAssignedByOpus5",
   "file": "models/GPT5.6LunaMax-TasksAssignedByOpus5.html",
-  "model": "GPT-5.6 Luna Max",
+  "model": "GPT-5.6 Luna (Max)",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -492,7 +531,7 @@ window.WORKS=[
  {
   "id": "GPT5.6SolMax",
   "file": "models/GPT5.6SolMax.html",
-  "model": "GPT-5.6 Sol Max",
+  "model": "GPT-5.6 Sol (Max)",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -522,7 +561,7 @@ window.WORKS=[
  {
   "id": "GPT5.6SolUltra-TasksAssignedByOpus5",
   "file": "models/GPT5.6SolUltra-TasksAssignedByOpus5.html",
-  "model": "GPT-5.6 Sol Ultra",
+  "model": "GPT-5.6 Sol (Ultra)",
   "group": "B",
   "pair": "gpt56sol",
   "featured": false,
@@ -555,7 +594,7 @@ window.WORKS=[
  {
   "id": "GPT5.6SolUltra-WebGL2",
   "file": "models/GPT5.6SolUltra-WebGL2.html",
-  "model": "GPT-5.6 Sol Ultra",
+  "model": "GPT-5.6 Sol (Ultra) #1",
   "group": "A",
   "pair": "gpt56sol",
   "featured": true,
@@ -587,7 +626,7 @@ window.WORKS=[
  {
   "id": "GPT5.6SolUltra",
   "file": "models/GPT5.6SolUltra.html",
-  "model": "GPT-5.6 Sol Ultra",
+  "model": "GPT-5.6 Sol (Ultra) #2",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -617,14 +656,14 @@ window.WORKS=[
  {
   "id": "GPT5.6TerraUltra-Three",
   "file": "models/GPT5.6TerraUltra-Three.html",
-  "model": "GPT-5.6 Terra Ultra",
+  "model": "GPT-5.6 Terra (Ultra)",
   "group": "A",
   "pair": "gpt56terra",
   "featured": false,
   "tech": "Three.js",
   "bytes": 67600,
   "lines": 1216,
-  "title": "Terra Ultra · Three.js 太阳系",
+  "title": "GPT-5.6 Terra (Ultra) · Three.js 太阳系",
   "needsFloat": false,
   "msaa": true,
   "feats": [
@@ -651,7 +690,7 @@ window.WORKS=[
  {
   "id": "GPT5.6TerraUltra-TasksAssignedByOpus5",
   "file": "models/GPT5.6TerraUltra-TasksAssignedByOpus5.html",
-  "model": "GPT-5.6 Terra Ultra",
+  "model": "GPT-5.6 Terra (Ultra)",
   "group": "B",
   "pair": "gpt56terra",
   "featured": false,
@@ -684,7 +723,7 @@ window.WORKS=[
  {
   "id": "GPT_5_5_xhigh",
   "file": "models/GPT_5_5_xhigh.html",
-  "model": "GPT-5.5 xHigh",
+  "model": "GPT-5.5 (xHigh)",
   "group": "A",
   "pair": "gpt55",
   "featured": false,
@@ -716,7 +755,7 @@ window.WORKS=[
  {
   "id": "Gemini3.1Pro-TasksAssignedByOpus5",
   "file": "models/Gemini3.1Pro-TasksAssignedByOpus5.html",
-  "model": "Gemini 3.1 Pro",
+  "model": "Gemini 3.1 Pro (high)",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -748,7 +787,7 @@ window.WORKS=[
  {
   "id": "Gemini3.5Flash-TasksAssignedByOpus5",
   "file": "models/Gemini3.5Flash-TasksAssignedByOpus5.html",
-  "model": "Gemini 3.5 Flash",
+  "model": "Gemini 3.5 Flash (high)",
   "group": "B",
   "pair": "gemini35",
   "featured": false,
@@ -781,7 +820,7 @@ window.WORKS=[
  {
   "id": "Gemini3.6Flash-TasksAssignedByOpus5",
   "file": "models/Gemini3.6Flash-TasksAssignedByOpus5.html",
-  "model": "Gemini 3.6 Flash",
+  "model": "Gemini 3.6 Flash (high)",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -813,7 +852,7 @@ window.WORKS=[
  {
   "id": "Gemini_3_5_flash_high",
   "file": "models/Gemini_3_5_flash_high.html",
-  "model": "Gemini 3.5 Flash",
+  "model": "Gemini 3.5 Flash (high)",
   "group": "A",
   "pair": "gemini35",
   "featured": false,
@@ -843,7 +882,7 @@ window.WORKS=[
  {
   "id": "Grok4.5",
   "file": "models/Grok4.5.html",
-  "model": "Grok 4.5",
+  "model": "Grok 4.5 (high)",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -878,7 +917,7 @@ window.WORKS=[
  {
   "id": "Hy3-TasksAssignedByOpus5",
   "file": "models/Hy3-TasksAssignedByOpus5.html",
-  "model": "Hy 3",
+  "model": "Hy 3 (high)",
   "group": "B",
   "pair": "hy3",
   "featured": false,
@@ -911,7 +950,7 @@ window.WORKS=[
  {
   "id": "Hy3",
   "file": "models/Hy3.html",
-  "model": "Hy 3",
+  "model": "Hy 3 (high)",
   "group": "A",
   "pair": "hy3",
   "featured": false,
@@ -943,7 +982,7 @@ window.WORKS=[
  {
   "id": "KimiK3Max-TasksAssignedByOpus5",
   "file": "models/KimiK3Max-TasksAssignedByOpus5.html",
-  "model": "Kimi K3 Max",
+  "model": "Kimi K3 (Max)",
   "group": "B",
   "pair": "kimik3",
   "featured": false,
@@ -976,7 +1015,7 @@ window.WORKS=[
  {
   "id": "KimiK3Max",
   "file": "models/KimiK3Max.html",
-  "model": "Kimi K3 Max",
+  "model": "Kimi K3 (Max)",
   "group": "A",
   "pair": "kimik3",
   "featured": true,
@@ -1011,7 +1050,7 @@ window.WORKS=[
  {
   "id": "LongCat2.0-TasksAssignedByOpus5",
   "file": "models/LongCat2.0-TasksAssignedByOpus5.html",
-  "model": "LongCat 2.0",
+  "model": "LongCat 2.0 (high)",
   "group": "B",
   "pair": "longcat",
   "featured": false,
@@ -1043,7 +1082,7 @@ window.WORKS=[
  {
   "id": "LongCat2.0",
   "file": "models/LongCat2.0.html",
-  "model": "LongCat 2.0",
+  "model": "LongCat 2.0 (high)",
   "group": "A",
   "pair": "longcat",
   "featured": false,
@@ -1069,7 +1108,7 @@ window.WORKS=[
  {
   "id": "Mimo_2_5_Pro_high-1",
   "file": "models/Mimo_2_5_Pro_high-1.html",
-  "model": "MiMo 2.5 Pro",
+  "model": "MiMo 2.5 Pro (high)",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1099,7 +1138,7 @@ window.WORKS=[
  {
   "id": "MiniMaxM3-TasksAssignedByOpus5",
   "file": "models/MiniMaxM3-TasksAssignedByOpus5.html",
-  "model": "MiniMax M3",
+  "model": "MiniMax M3 (high) #1",
   "group": "B",
   "pair": "minimax",
   "featured": false,
@@ -1125,18 +1164,53 @@ window.WORKS=[
   "note": null,
   "issue": "渲染异常：背景呈白色而非星空，画面中有黑色楔形缺口，仅太阳可见。界面与数据面板本身正常。",
   "net": [],
-  "fix": {
-   "file": "models/MiniMaxM3-TasksAssignedByOpus5-fixbyopus.html",
-   "shot": "assets/shots/MiniMaxM3-TasksAssignedByOpus5-fixbyopus.jpg",
-   "what": "修正两处：全屏四边形顶点顺序（TRIANGLE_STRIP 需 Z 字序，原为环绕序，左侧留下楔形空洞）；日冕 billboard 尺寸单位错误（原为全屏的 11–32 倍，加法混合叠成纯白）"
-  },
+  "fix": null,
+  "tags": [
+   "in Zcode"
+  ],
   "tier": 4,
   "rank": 1
  },
  {
+  "id": "MiniMaxM3(high)V2-TasksAssignedByOpus5",
+  "file": "models/MiniMaxM3(high)V2-TasksAssignedByOpus5.html",
+  "model": "MiniMax M3 (high) #2",
+  "group": "B",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 137459,
+  "lines": 3612,
+  "title": "太阳系实时运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/MiniMaxM3-high-V2-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": "未完成：全屏后期四边形顶点布局错误，且 4× MSAA 解析使用了非法的 LINEAR 过滤，主画布持续全黑、仅界面可见；时间秒数还显示 undefined。",
+  "net": [],
+  "fix": null,
+  "tags": [
+   "in ClaudeCLI"
+  ],
+  "tier": 4,
+  "rank": 18
+ },
+ {
   "id": "MiniMax_M3_thinking-1",
   "file": "models/MiniMax_M3_thinking-1.html",
-  "model": "MiniMax M3",
+  "model": "MiniMax M3 (high)",
   "group": "A",
   "pair": "minimax",
   "featured": false,
@@ -1163,18 +1237,14 @@ window.WORKS=[
    "fonts.googleapis.com",
    "fonts.gstatic.com"
   ],
-  "fix": {
-   "file": "models/MiniMax_M3_thinking-1-fixbyopus.html",
-   "shot": "assets/shots/MiniMax_M3_thinking-1-fixbyopus.jpg",
-   "what": "调整三处：太阳耀斑半径（原 3.5 > 水星轨道 3.17，内三颗行星被吞没）；泛光阈值（原 0.15 过低）；默认相机距离（原视野切掉外侧四颗行星）"
-  },
+  "fix": null,
   "tier": 4,
   "rank": 1
  },
  {
   "id": "Opus5Ultra-WebGL2",
   "file": "models/Opus5Ultra-WebGL2.html",
-  "model": "Claude Opus 5 Ultra",
+  "model": "Claude Opus 5 (Ultra)",
   "group": "A",
   "pair": "opus5",
   "featured": true,
@@ -1207,10 +1277,9 @@ window.WORKS=[
  {
   "id": "Opus_4_8_Max",
   "file": "models/Opus_4_8_Max.html",
-  "model": "Claude Opus 4.8 Max",
+  "model": "Claude Opus 4.8 (Max)",
   "group": "A",
   "pair": "opus48",
-  "pairLabel": "Claude Opus 4.8",
   "featured": false,
   "tech": "Three.js",
   "bytes": 1009801,
@@ -1240,7 +1309,7 @@ window.WORKS=[
  {
   "id": "Opus4.8Ultra-TasksAssignedByOpus5",
   "file": "models/Opus4.8Ultra-TasksAssignedByOpus5.html",
-  "model": "Claude Opus 4.8 Ultra",
+  "model": "Claude Opus 4.8 (Ultra)",
   "group": "B",
   "pair": "opus48",
   "featured": false,
@@ -1273,7 +1342,7 @@ window.WORKS=[
  {
   "id": "Qwen3.7Max",
   "file": "models/Qwen3.7Max.html",
-  "model": "Qwen 3.7 Max",
+  "model": "Qwen 3.7 Max (Max)",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1306,7 +1375,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8Max-TasksAssignedByOpus5",
   "file": "models/Qwen3.8Max-TasksAssignedByOpus5.html",
-  "model": "Qwen 3.8 Max",
+  "model": "Qwen 3.8 Max (Max) #1",
   "group": "B",
   "pair": "qwen38",
   "featured": false,
@@ -1339,7 +1408,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2-TasksAssignedByOpus5",
   "file": "models/Qwen3.8MaxV2-TasksAssignedByOpus5.html",
-  "model": "Qwen 3.8 Max #2",
+  "model": "Qwen 3.8 Max (Max) #2",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -1372,7 +1441,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2",
   "file": "models/Qwen3.8MaxV2.html",
-  "model": "Qwen 3.8 Max #2",
+  "model": "Qwen 3.8 Max (Max) #3",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1402,7 +1471,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8Max-inQoder",
   "file": "models/Qwen3.8Max-inQoder.html",
-  "model": "Qwen 3.8 Max",
+  "model": "Qwen 3.8 Max (Max) #1",
   "group": "A",
   "pair": "qwen38",
   "featured": false,
@@ -1434,7 +1503,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV1-inQoder",
   "file": "models/Qwen3.8MaxV1-inQoder.html",
-  "model": "Qwen 3.8 Max #1",
+  "model": "Qwen 3.8 Max (Max) #2",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1462,14 +1531,14 @@ window.WORKS=[
  {
   "id": "Sonnet5Ultra",
   "file": "models/Sonnet5Ultra.html",
-  "model": "Claude Sonnet 5 Ultra",
+  "model": "Claude Sonnet 5 (Ultra)",
   "group": "A",
   "pair": "sonnet5",
   "featured": false,
   "tech": "Three.js",
   "bytes": 710008,
   "lines": 3298,
-  "title": "太阳系运动模型 · Sonnet5Ultra",
+  "title": "太阳系运动模型 · Claude Sonnet 5 (Ultra)",
   "needsFloat": false,
   "msaa": true,
   "feats": [
@@ -1494,7 +1563,7 @@ window.WORKS=[
  {
   "id": "Sonnet5Ultra-TasksAssignedByOpus5",
   "file": "models/Sonnet5Ultra-TasksAssignedByOpus5.html",
-  "model": "Claude Sonnet 5 Ultra",
+  "model": "Claude Sonnet 5 (Ultra)",
   "group": "B",
   "pair": "sonnet5",
   "featured": false,

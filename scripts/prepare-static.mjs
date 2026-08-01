@@ -13,7 +13,10 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
   }
 }
 
+for (const asset of ["favicon.ico", "favicon.svg"]) {
+  await cp(join(root, asset), join(output, asset));
+}
+
 for (const directory of ["assets", "models"]) {
   await cp(join(root, directory), join(output, directory), { recursive: true });
 }
-
