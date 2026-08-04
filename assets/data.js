@@ -1,9 +1,9 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max Preview (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max Preview (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
 window.WORKS=[
  {
   "id": "Opus5Ultra-TasksAssignedByOpus5",
@@ -1527,6 +1527,137 @@ window.WORKS=[
   "fix": null,
   "tier": 3,
   "rank": 15
+ },
+ {
+  "id": "Qwen3.8Max(Max)V1",
+  "file": "models/Qwen3.8Max(Max)V1.html",
+  "model": "Qwen 3.8 Max (Max) #1",
+  "group": "A",
+  "pair": "qwen38max",
+  "featured": false,
+  "tech": "Canvas2D",
+  "bytes": 33139,
+  "lines": 703,
+  "title": "太阳系运动模型",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "atmo",
+   "moons"
+  ],
+  "weight": "light",
+  "shot": "assets/shots/Qwen3.8Max(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 3,
+  "rank": 19
+ },
+ {
+  "id": "Qwen3.8Max(Max)V2",
+  "file": "models/Qwen3.8Max(Max)V2.html",
+  "model": "Qwen 3.8 Max (Max) #2",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 33555,
+  "lines": 629,
+  "title": "太阳系运动模型 · Three.js 3D",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "moons"
+  ],
+  "weight": "light",
+  "shot": "assets/shots/Qwen3.8Max(Max)V2.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [
+   "unpkg.com"
+  ],
+  "fix": null,
+  "tier": 2,
+  "rank": 9
+ },
+ {
+  "id": "Qwen3.8Max(Max)V3",
+  "file": "models/Qwen3.8Max(Max)V3.html",
+  "model": "Qwen 3.8 Max (Max) #3",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 47999,
+  "lines": 806,
+  "title": "太阳系运动模型 · WebGL2",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Qwen3.8Max(Max)V3.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 2,
+  "rank": 8
+ },
+ {
+  "id": "Qwen3.8Max(Max)V1-TasksAssignedByOpus5",
+  "file": "models/Qwen3.8Max(Max)V1-TasksAssignedByOpus5.html",
+  "model": "Qwen 3.8 Max (Max)",
+  "group": "B",
+  "pair": "qwen38max",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 101683,
+  "lines": 2096,
+  "title": "太阳系实时运动模型",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Qwen3.8Max(Max)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 2,
+  "rank": 4
  },
  {
   "id": "Sonnet5Ultra",

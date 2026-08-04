@@ -69,6 +69,10 @@ const CANONICAL_NAMES = {
   'Qwen3.8MaxV2': 'Qwen 3.8 Max Preview (Max) #3',
   'Qwen3.8Max-inQoder': 'Qwen 3.8 Max Preview (Max) #1',
   'Qwen3.8MaxV1-inQoder': 'Qwen 3.8 Max Preview (Max) #2',
+  'Qwen3.8Max(Max)V1': 'Qwen 3.8 Max (Max) #1',
+  'Qwen3.8Max(Max)V2': 'Qwen 3.8 Max (Max) #2',
+  'Qwen3.8Max(Max)V3': 'Qwen 3.8 Max (Max) #3',
+  'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': 'Qwen 3.8 Max (Max)',
   'Sonnet5Ultra': 'Claude Sonnet 5 (Ultra)',
   'Sonnet5Ultra-TasksAssignedByOpus5': 'Claude Sonnet 5 (Ultra)',
 };
@@ -82,7 +86,8 @@ const EXPECTED_EXACT = {
   'KimiK3Max': 80.5, 'LongCat2.0': 36.66, 'Mimo_2_5_Pro_high-1': 42.42,
   'MiniMax_M3_thinking-1': 51.17, 'Opus5Ultra-WebGL2': 97.6, 'Opus_4_8_Max': 89.5,
   'Qwen3.7Max': 57.57, 'Qwen3.8MaxV2': 44.2, 'Qwen3.8Max-inQoder': 49.16,
-  'Qwen3.8MaxV1-inQoder': 43.03, 'Sonnet5Ultra': 84.5,
+  'Qwen3.8MaxV1-inQoder': 43.03, 'Qwen3.8Max(Max)V1': 54, 'Qwen3.8Max(Max)V2': 63.05,
+  'Qwen3.8Max(Max)V3': 72.95, 'Sonnet5Ultra': 84.5,
   'Opus5Ultra-TasksAssignedByOpus5': 97.6, 'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': 83.9,
   'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': 60, 'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': 79.75,
   'DeepSeekProMax-TasksAssignedByOpus5': 79.85,
@@ -94,7 +99,8 @@ const EXPECTED_EXACT = {
   'LongCat2.0-TasksAssignedByOpus5': 60, 'MiniMaxM3-TasksAssignedByOpus5': 25,
   'MiniMaxM3(high)V2-TasksAssignedByOpus5': 25,
   'Opus4.8Ultra-TasksAssignedByOpus5': 96.3, 'Qwen3.8Max-TasksAssignedByOpus5': 76.95,
-  'Qwen3.8MaxV2-TasksAssignedByOpus5': 73.2, 'Sonnet5Ultra-TasksAssignedByOpus5': 94.2,
+  'Qwen3.8MaxV2-TasksAssignedByOpus5': 73.2, 'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': 90.75,
+  'Sonnet5Ultra-TasksAssignedByOpus5': 94.2,
 };
 
 // Audit-authored field oracle. Order:
@@ -128,6 +134,9 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'Qwen3.8MaxV2': '0|0.4|1|0|0|0|1|0|1|1|0|1|1|1|1|0|5|3.5|5|6.5|1|1|0|0|0|-|-',
   'Qwen3.8Max-inQoder': '0|0|1|1|1|1|1|1|1|0|0|1|1|1|1|0|5|5|4|2.1|1|1|0|0|0|-|-',
   'Qwen3.8MaxV1-inQoder': '0|0.4|1|0|0|0|1|0.5|1|1|0|1|1|1|1|0|5|3.5|5|4.8|0.5|1|0|0|0|-|-',
+  'Qwen3.8Max(Max)V1': '0|0.4|1|0|0|0.4|1|1|1|0|0|1|1|1|1|1|5|3.5|5|6.5|0.5|1|1|1|0.5|-|-',
+  'Qwen3.8Max(Max)V2': '0|0.4|1|1|1|0|1|1|1|0.5|0|1|1|1|1|1|5|3.5|4|5|1|1|1|1|0.5|-|-',
+  'Qwen3.8Max(Max)V3': '0|0.4|1|1|1|0.4|1|1|1|0.5|0|1|1|1|1|1|5|3.5|3.5|6.5|1|1|1|1|0.5|-|-',
   'Sonnet5Ultra': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|5|5|4|7.5|1|1|1|1|1|-|-',
   'Opus5Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|5|5|10|1|1|1|1|1|-|-',
   'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|3|5|7|0.5|1|0.5|1|1|-|-',
@@ -150,6 +159,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'Opus4.8Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4.5|5|9.5|1|1|1|1|1|-|-',
   'Qwen3.8Max-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|2|2|5.5|1|1|0.5|1|1|-|-',
   'Qwen3.8MaxV2-TasksAssignedByOpus5': '0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|5|3|3|2.5|1|1|0.5|1|0.5|-|-',
+  'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|4.5|8.5|1|1|1|1|0.5|-|-',
   'Sonnet5Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|5|4|8.5|1|1|1|1|1|-|-',
 };
 
@@ -165,20 +175,21 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 49, `WORKS count must be 49, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 49, `SCORES count must be 49, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 49, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 49, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 53, `WORKS count must be 53, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 53, `SCORES count must be 53, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 53, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 53, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 49 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 49 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 49 WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 27, 'Group A count must be 27');
-check(WORKS.filter(w => w.group === 'B').length === 22, 'Group B count must be 22');
-check(PAIR_ORDER.length === 15 && new Set(PAIR_ORDER).size === 15, 'PAIR_ORDER must contain 15 unique pairs');
-check(SITE.pairs().length === 15, `Expected 15 complete pairs, got ${SITE.pairs().length}`);
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 53 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 53 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 53 WORKS IDs');
+check(WORKS.filter(w => w.group === 'A').length === 30, 'Group A count must be 30');
+check(WORKS.filter(w => w.group === 'B').length === 23, 'Group B count must be 23');
+check(PAIR_ORDER.length === 16 && new Set(PAIR_ORDER).size === 16, 'PAIR_ORDER must contain 16 unique pairs');
+check(SITE.pairs().length === 16, `Expected 16 complete pairs, got ${SITE.pairs().length}`);
+check(PAIR_ORDER[7] === 'qwen38max', 'The new Qwen 3.8 Max pair must occupy comparison position 08');
 
 const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-Three', 'Fable5Max-WebGL2'].sort();
 check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the four approved references must be flagged');
@@ -237,7 +248,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 49, `scores.js source key ${key} must occur exactly 49 times; duplicate/missing key detected (${count})`);
+  check(count === 53, `scores.js source key ${key} must occur exactly 53 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -278,10 +289,28 @@ check(SITE.chips(miniMax2, null).includes('in ClaudeCLI'), 'MiniMax detailed #2 
 check(fs.existsSync(new URL(`../${miniMax2.shot}`, import.meta.url)), 'MiniMax detailed #2 screenshot asset must exist');
 check(WORKS.find(w => w.id === 'MiniMaxM3-TasksAssignedByOpus5')?.model === 'MiniMax M3 (high) #1', 'Original MiniMax detailed run must be numbered #1');
 
+const qwenStable1 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V1');
+const qwenStable2 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V2');
+const qwenStable3 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V3');
+const qwenStableDoc = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V1-TasksAssignedByOpus5');
+check(qwenStable1?.group === 'A' && qwenStable1?.tier === 3 && qwenStable1?.tech === 'Canvas2D' && qwenStable1?.pair === 'qwen38max', 'Qwen 3.8 Max #1 must be the paired Tier 3 Canvas2D entry');
+check(qwenStable2?.group === 'A' && qwenStable2?.tier === 2 && qwenStable2?.tech === 'Three.js' && qwenStable2?.pair === null, 'Qwen 3.8 Max #2 must be an unpaired Tier 2 Three.js entry');
+check(qwenStable3?.group === 'A' && qwenStable3?.tier === 2 && qwenStable3?.tech === 'WebGL2' && qwenStable3?.pair === null, 'Qwen 3.8 Max #3 must be an unpaired Tier 2 WebGL2 entry');
+check(qwenStableDoc?.group === 'B' && qwenStableDoc?.tier === 2 && qwenStableDoc?.tech === 'WebGL2' && qwenStableDoc?.pair === 'qwen38max', 'Qwen 3.8 Max detailed entry must be the paired Tier 2 WebGL2 entry');
+check(qwenStable1?.bytes === 33139 && qwenStable1?.lines === 703 && qwenStable1?.net.length === 0, 'Qwen 3.8 Max #1 source metadata must match the audited file');
+check(qwenStable2?.bytes === 33555 && qwenStable2?.lines === 629 && qwenStable2?.net[0] === 'unpkg.com', 'Qwen 3.8 Max #2 source metadata must match the audited file');
+check(qwenStable3?.bytes === 47999 && qwenStable3?.lines === 806 && qwenStable3?.net.length === 0, 'Qwen 3.8 Max #3 source metadata must match the audited file');
+check(qwenStableDoc?.bytes === 101683 && qwenStableDoc?.lines === 2096 && qwenStableDoc?.needsFloat === true && qwenStableDoc?.net.length === 0, 'Qwen 3.8 Max detailed source metadata must match the audited file');
+for (const work of [qwenStable1, qwenStable2, qwenStable3, qwenStableDoc]) {
+  check(work && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Qwen stable entry'} screenshot asset must exist`);
+}
+const qwenStablePair = SITE.pairs()[7];
+check(qwenStablePair?.a?.id === 'Qwen3.8Max(Max)V1' && qwenStablePair?.b?.id === 'Qwen3.8Max(Max)V1-TasksAssignedByOpus5', 'Comparison position 08 must pair Qwen 3.8 Max #1 with its detailed run');
+
 const expectedEnvironmentTag = work => {
   if (work.id === 'MiniMaxM3(high)V2-TasksAssignedByOpus5') return 'in ClaudeCLI';
   if (work.id === 'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5') return 'in Claude CLI';
-  if (work.model.startsWith('Qwen 3.8 Max Preview (Max)')) return 'in Qoder';
+  if (work.model.startsWith('Qwen 3.8 Max')) return 'in Qoder';
   if (work.group === 'A' && (work.id === 'DeepSeek_V4_Pro_high-2' || work.id === 'DeepSeek_V4_Pro_high-3')) return 'in Claude Code';
   if (work.model.startsWith('Claude ')) return 'in Claude Code';
   if (work.model.startsWith('GPT-')) return 'in Codex';
@@ -321,11 +350,11 @@ const visibleNamingSurface = [
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
 check(zhHome.includes('<th data-k="model">模型</th><th data-k="environment">运行环境</th>'), 'Chinese total table must show Environment as the second column');
 check(enHome.includes('<th data-k="model">Model</th><th data-k="environment">Environment</th>'), 'English total table must show Environment as the second column');
-check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 15 pairs differ only by brief format');
+check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 16 pairs differ only by brief format');
 check(zhHome.includes('Claude Opus 4.8 是明确例外') && enHome.includes('Claude Opus 4.8 is the explicit exception'), 'Both home pages must disclose the Claude Opus 4.8 Max-to-Ultra exception');
-check(!zhHome.includes('15 组严格对照') && !enHome.includes('15 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
+check(!zhHome.includes('16 组严格对照') && !enHome.includes('16 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="bAll">22') && enHome.includes('id="bAll">22') && zhHome.includes('id="tAll">49') && enHome.includes('id="tAll">49'), 'Both home pages must publish 27/22 and 49-entry counts before JavaScript runs');
+check(zhHome.includes('id="aAll">30') && enHome.includes('id="aAll">30') && zhHome.includes('id="bAll">23') && enHome.includes('id="bAll">23') && zhHome.includes('id="tAll">53') && enHome.includes('id="tAll">53'), 'Both home pages must publish 30/23 and 53-entry counts before JavaScript runs');
 check(zhHome.includes('仅显示「⚑ 标杆」') && enHome.includes('show only “⚑ Benchmark”'), 'Both home pages must state that benchmark scores are hidden');
 check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
 for (const id of referenceIds) {
@@ -348,22 +377,22 @@ check(zhHome.includes('已收录的 Claude Fable 5 (Max) #1') && enHome.includes
 const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 100, 'Score maxima');
 check(stats.maxima.coverage === 59.5 && stats.maxima.execution === 40.5 && stats.maxima.total === 100, 'Max definition must be 59.5 + 40.5 = 100');
-check(stats.pairedSummary.n === 15, 'Paired statistics must use 15 pairs');
-close(stats.pairedSummary.coverage.a, 40.78666666666667, 'Paired A coverage mean');
-close(stats.pairedSummary.coverage.b, 55.4, 'Paired B coverage mean');
-close(stats.pairedSummary.execution.a, 30.100666666666672, 'Paired A execution mean');
-close(stats.pairedSummary.execution.b, 30.970000000000006, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 67.02066666666666, 'Paired A exact-score mean');
-close(stats.pairedSummary.exact.b, 81.19666666666666, 'Paired B exact-score mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 12, tie: 1, decline: 2 }), 'Final paired outcomes must be 12 improve / 1 tie / 2 decline');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 14, tie: 1, decline: 0 }), 'Coverage outcomes must be 14 / 1 / 0');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 8, tie: 1, decline: 6 }), 'Execution outcomes must be 8 / 1 / 6');
+check(stats.pairedSummary.n === 16, 'Paired statistics must use 16 pairs');
+close(stats.pairedSummary.coverage.a, 40.58125, 'Paired A coverage mean');
+close(stats.pairedSummary.coverage.b, 55.506250000000016, 'Paired B coverage mean');
+close(stats.pairedSummary.execution.a, 30.188125000000003, 'Paired A execution mean');
+close(stats.pairedSummary.execution.b, 31.262500000000003, 'Paired B execution mean');
+close(stats.pairedSummary.exact.a, 66.206875, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.b, 81.79374999999999, 'Paired B exact-score mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 2 }), 'Final paired outcomes must be 13 improve / 1 tie / 2 decline');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 15, tie: 1, decline: 0 }), 'Coverage outcomes must be 15 / 1 / 0');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 9, tie: 1, decline: 6 }), 'Execution outcomes must be 9 / 1 / 6');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [27, 39.022222222222226, 29.639259259259255, 64.14296296296297], b: [22, 54.804545454545455, 28.44318181818182, 77.02045454545454] },
-  withoutReferences: { a: [23, 36.47826086956522, 28.2504347826087, 59.42434782608696], b: [22, 54.804545454545455, 28.44318181818182, 77.02045454545454] },
-  withoutTier4: { a: [26, 39.407692307692315, 29.92653846153846, 64.64192307692308], b: [19, 56.126315789473686, 30.973684210526315, 83.3921052631579] },
-  withoutReferencesOrTier4: { a: [22, 36.81818181818182, 28.526818181818182, 59.79954545454546], b: [19, 56.126315789473686, 30.973684210526315, 83.3921052631579] },
+  all: { a: [30, 39.03666666666667, 29.725333333333328, 64.062], b: [23, 54.904347826086955, 28.756521739130438, 77.61739130434783] },
+  withoutReferences: { a: [26, 36.78846153846154, 28.510000000000005, 59.87538461538462], b: [23, 54.904347826086955, 28.756521739130438, 77.61739130434783] },
+  withoutTier4: { a: [29, 39.38275862068966, 29.985862068965513, 64.50655172413794], b: [20, 56.17500000000001, 31.2075, 83.76] },
+  withoutReferencesOrTier4: { a: [25, 37.1, 28.7636, 60.223600000000005], b: [20, 56.17500000000001, 31.2075, 83.76] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -396,4 +425,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + WORKS.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 49 records, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 53 records, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');

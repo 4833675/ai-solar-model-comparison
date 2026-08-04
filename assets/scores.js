@@ -239,6 +239,33 @@
       interaction: { drag: .5, zoom: 1, focus: 0, follow: 0, pauseReset: 0 }, fatal: null,
       note: 'Canvas2D 有近似开普勒路径和基础行星数据，但拖拽只是平移，仅有悬停信息，视觉也缺色调映射与大气。'
     },
+    'Qwen3.8Max(Max)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3.5, integrity: 5 }, visualBase: 6.5,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: 'Canvas2D 总览稳定且聚焦跟随可用；拖拽只是平移，哈雷轨道根数高度简化，没有 Bloom、ACES 或完整重置，并承受 Canvas2D 扣分。'
+    },
+    'Qwen3.8Max(Max)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: 5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: 'Three.js 总览、开普勒、哈雷与持续跟随均可运行；但依赖联网，太阳和星点明显过曝，土星环无物理环影，仅月球且没有完整重置。'
+    },
+    'Qwen3.8Max(Max)V3': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 3.5, integrity: 3.5 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '原生 WebGL2、离线后期和完整聚焦跟随稳定；但哈雷根数与轨道定向被大幅简化，土星环近景几乎不可见，行星表面细节偏粗且无完整重置。'
+    },
     'Sonnet5Ultra': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
@@ -442,6 +469,15 @@
       correctness: { runtime: 5, data: 3, integrity: 3 }, visualBase: 2.5,
       interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
       note: '环、大气与完整轨道源码成立，但粒子场与辉光压倒默认总览；拖拽释放可误选，且没有完整状态与视角重置。'
+    },
+    'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 8.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: 'J2000 轨道、八颗卫星、双向环影、Bloom/ACES 与持续跟随都很强；但哈雷仍按 75.31 年密切周期推进，却把下次近日点标成 2061-07-28，模型实际约早 50 天，且没有完整视角重置。'
     },
     'Sonnet5Ultra-TasksAssignedByOpus5': {
       reference: false,

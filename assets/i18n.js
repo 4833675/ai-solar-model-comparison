@@ -285,6 +285,9 @@
     'Qwen3.8Max-inQoder': 'Bloom blows out the Sun and inner system, while the planets are small and visually similar. Clicking only opens information; it neither moves the camera nor provides a reset.',
     'Qwen3.8MaxV1-inQoder': 'The Canvas2D view is clean and stable, but surfaces and lighting are basic. It offers hover information only, with no focus or follow behavior, and receives the additional 10-point Canvas2D penalty.',
     'Qwen3.8MaxV2': 'The Canvas2D overview is stable, with recognizable rings, orbital inclinations, an asteroid belt, the Moon, and glow effects. It lacks Halley, ACES, and a real atmosphere, while orbital angle advancement does not solve Kepler’s equation. Interaction is limited to drag, zoom, and hover, with no click focus, continuous follow, pause, or reset; the 10-point Canvas2D penalty also applies.',
+    'Qwen3.8Max(Max)V1': 'The Canvas2D overview is stable and click focus with continuous follow works. Dragging only pans the scene, Halley’s elements are heavily simplified, Bloom, ACES, and a complete reset are absent, and the 10-point Canvas2D penalty applies.',
+    'Qwen3.8Max(Max)V2': 'The Three.js overview, Kepler solver, Halley, and continuous follow all run. It requires a network connection, the Sun and square star sprites are visibly overexposed, Saturn has no physical ring shadows, only the Moon is modeled, and there is no complete reset.',
+    'Qwen3.8Max(Max)V3': 'Native WebGL2, offline post-processing, and complete focus-follow behavior run stably. Halley’s elements and orbital orientation are heavily simplified, Saturn’s ring is nearly invisible in close-up, planetary surfaces remain coarse, and there is no complete reset.',
     'LongCat2.0': 'The overview is clear, but features and realism are limited. Its “focus” only draws a marker without moving the camera, and Canvas2D incurs an additional 10-point penalty.',
     'Hy3': 'Surfaces, the red spot, and the procedural Saturn ring are comparatively rich. Selection does not pull the camera closer, but subsequent body displacement is followed continuously. Orbital realism remains low, it requires a network connection, and real ring shadows are absent.',
     'MiniMax_M3_thinking-1': 'The outer planets visibly drift away from their orbit lines, low speed settings can produce NaN values, and reset does not restore the view. The main view remains visible, so this is L2 rather than L1.',
@@ -302,6 +305,7 @@
     'Gemini3.6Flash-TasksAssignedByOpus5': 'Earth’s surface looks blocky and Jupiter’s spot is indistinct. Saturn’s rings have a hard-edged shadow, and releasing a drag can still select an object accidentally.',
     'Qwen3.8Max-TasksAssignedByOpus5': 'The overview is clear and restrained, but Saturn’s ring is effectively broken because its normalized radius is scaled a second time. Display distances for moons are also mapped incorrectly.',
     'Qwen3.8MaxV2-TasksAssignedByOpus5': 'All eight features, realistic orbits, and eight moons are implemented, but excessive particles and glow wash the default overview into a large off-white field, making planetary detail difficult to read. Click handling checks the dragging state only after mouseup, so releasing a drag can still select an object, and there is no complete reset.',
+    'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': 'J2000 orbits, eight moons, bidirectional ring shadows, Bloom/ACES, and continuous follow are all strong. However, Halley is advanced with the 75.31-year osculating period while the panel labels the next perihelion as 2061-07-28; the model reaches perihelion about 50 days earlier, and there is no complete view reset.',
     'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': 'The main view and controls initially work, so this is not L1. Focus retains a stale position array instead of following continuously, while frame schedules itself and drive also calls it every display frame; accumulating render loops make long-run performance unstable, so this remains L2.',
     'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': 'The JPL/Kepler pipeline, eight moons, ring shadows, multiple belts and post-processing all run, but the corona is visibly overexposed, Halley does not follow its displayed orbit, moon distance readouts are distorted, and high-DPI picking plus focused zoom remain flawed.',
     'Gemini3.1Pro-TasksAssignedByOpus5': 'Exposure is clean but surface classes are basic, with a night side but no complete atmosphere. Zoom has no maximum bound, and canvas bodies cannot be clicked directly.',
@@ -375,6 +379,10 @@
     'Qwen3.8MaxV1-inQoder': { title: 'Solar System Motion Model', note: 'Also produced in Qoder. This earlier version was later replaced by the 3D version created in the same environment.' },
     'Qwen3.8MaxV2': { title: 'Solar System Motion Model' },
     'Qwen3.8MaxV2-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'Qwen3.8Max(Max)V1': { title: 'Solar System Motion Model' },
+    'Qwen3.8Max(Max)V2': { title: 'Solar System Motion Model · Three.js 3D' },
+    'Qwen3.8Max(Max)V3': { title: 'Solar System Motion Model · WebGL2' },
+    'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'Sonnet5Ultra': { title: 'Solar System Motion Model · Claude Sonnet 5 (Ultra)' },
     'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' }
   };
