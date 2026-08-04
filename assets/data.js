@@ -3,7 +3,7 @@ window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
 window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max Preview (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
 window.WORKS=[
  {
   "id": "Opus5Ultra-TasksAssignedByOpus5",
@@ -1375,7 +1375,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8Max-TasksAssignedByOpus5",
   "file": "models/Qwen3.8Max-TasksAssignedByOpus5.html",
-  "model": "Qwen 3.8 Max (Max) #1",
+  "model": "Qwen 3.8 Max Preview (Max) #1",
   "group": "B",
   "pair": "qwen38",
   "featured": false,
@@ -1408,7 +1408,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2-TasksAssignedByOpus5",
   "file": "models/Qwen3.8MaxV2-TasksAssignedByOpus5.html",
-  "model": "Qwen 3.8 Max (Max) #2",
+  "model": "Qwen 3.8 Max Preview (Max) #2",
   "group": "B",
   "pair": null,
   "featured": false,
@@ -1441,7 +1441,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV2",
   "file": "models/Qwen3.8MaxV2.html",
-  "model": "Qwen 3.8 Max (Max) #3",
+  "model": "Qwen 3.8 Max Preview (Max) #3",
   "group": "A",
   "pair": null,
   "featured": false,
@@ -1471,7 +1471,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8Max-inQoder",
   "file": "models/Qwen3.8Max-inQoder.html",
-  "model": "Qwen 3.8 Max (Max) #1",
+  "model": "Qwen 3.8 Max Preview (Max) #1",
   "group": "A",
   "pair": "qwen38",
   "featured": false,
@@ -1503,7 +1503,7 @@ window.WORKS=[
  {
   "id": "Qwen3.8MaxV1-inQoder",
   "file": "models/Qwen3.8MaxV1-inQoder.html",
-  "model": "Qwen 3.8 Max (Max) #2",
+  "model": "Qwen 3.8 Max Preview (Max) #2",
   "group": "A",
   "pair": null,
   "featured": false,

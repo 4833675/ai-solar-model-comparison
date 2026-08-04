@@ -64,11 +64,11 @@ const CANONICAL_NAMES = {
   'Opus_4_8_Max': 'Claude Opus 4.8 (Max)',
   'Opus4.8Ultra-TasksAssignedByOpus5': 'Claude Opus 4.8 (Ultra)',
   'Qwen3.7Max': 'Qwen 3.7 Max (Max)',
-  'Qwen3.8Max-TasksAssignedByOpus5': 'Qwen 3.8 Max (Max) #1',
-  'Qwen3.8MaxV2-TasksAssignedByOpus5': 'Qwen 3.8 Max (Max) #2',
-  'Qwen3.8MaxV2': 'Qwen 3.8 Max (Max) #3',
-  'Qwen3.8Max-inQoder': 'Qwen 3.8 Max (Max) #1',
-  'Qwen3.8MaxV1-inQoder': 'Qwen 3.8 Max (Max) #2',
+  'Qwen3.8Max-TasksAssignedByOpus5': 'Qwen 3.8 Max Preview (Max) #1',
+  'Qwen3.8MaxV2-TasksAssignedByOpus5': 'Qwen 3.8 Max Preview (Max) #2',
+  'Qwen3.8MaxV2': 'Qwen 3.8 Max Preview (Max) #3',
+  'Qwen3.8Max-inQoder': 'Qwen 3.8 Max Preview (Max) #1',
+  'Qwen3.8MaxV1-inQoder': 'Qwen 3.8 Max Preview (Max) #2',
   'Sonnet5Ultra': 'Claude Sonnet 5 (Ultra)',
   'Sonnet5Ultra-TasksAssignedByOpus5': 'Claude Sonnet 5 (Ultra)',
 };
@@ -281,7 +281,7 @@ check(WORKS.find(w => w.id === 'MiniMaxM3-TasksAssignedByOpus5')?.model === 'Min
 const expectedEnvironmentTag = work => {
   if (work.id === 'MiniMaxM3(high)V2-TasksAssignedByOpus5') return 'in ClaudeCLI';
   if (work.id === 'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5') return 'in Claude CLI';
-  if (work.model.startsWith('Qwen 3.8 Max (Max)')) return 'in Qoder';
+  if (work.model.startsWith('Qwen 3.8 Max Preview (Max)')) return 'in Qoder';
   if (work.group === 'A' && (work.id === 'DeepSeek_V4_Pro_high-2' || work.id === 'DeepSeek_V4_Pro_high-3')) return 'in Claude Code';
   if (work.model.startsWith('Claude ')) return 'in Claude Code';
   if (work.model.startsWith('GPT-')) return 'in Codex';

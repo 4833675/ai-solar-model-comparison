@@ -306,7 +306,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function environmentTag(w) {
     const explicit = (w.tags || []).map(cleanEnvironmentTag).find(tag => /^in\s+/i.test(tag));
     if (explicit) return explicit;
-    if (w.model.startsWith('Qwen 3.8 Max (Max)')) return 'in Qoder';
+    if (w.model.startsWith('Qwen 3.8 Max Preview (Max)')) return 'in Qoder';
     if (w.group === 'A' && (w.id === 'DeepSeek_V4_Pro_high-2' || w.id === 'DeepSeek_V4_Pro_high-3')) return 'in Claude Code';
     if (w.model.startsWith('Claude ')) return 'in Claude Code';
     if (w.model.startsWith('GPT-')) return 'in Codex';
