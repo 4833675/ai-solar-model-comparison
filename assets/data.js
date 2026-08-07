@@ -1,9 +1,10 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","deepseek","qwen38","longcat","hy3","minimax"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","deepseek","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","qwen38":"Qwen 3.8 Max Preview (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","deepseek":"DeepSeek V4 Pro (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.HIDDEN_WORK_IDS=["Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder"];
 window.WORKS=[
  {
   "id": "Opus5Ultra-TasksAssignedByOpus5",

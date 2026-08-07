@@ -14,6 +14,9 @@
   const workText = (work, key) => I18N.workText(work, key);
   const scoreNote = (work, fallback) => I18N.scoreNote(work, fallback);
   const tierLabel = tier => t(`tier.${tier}`);
+  const hiddenWorkIds = new Set(window.HIDDEN_WORK_IDS || []);
+  const isVisibleWork = work => !!work && !hiddenWorkIds.has(work.id);
+  const visibleWorks = () => (window.WORKS || []).filter(isVisibleWork);
 
   /* Claude Code 的 Ultracode 实际使用 xhigh + workflows；只给名称中的 Ultra 上语义色。 */
   const CLAUDE_ULTRA_RE = /(Claude(?:\s+[A-Za-z0-9.-]+){1,4}\s+\()Ultra(\))/g;
@@ -452,7 +455,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       tip.style.top = `${Math.round(Math.max(edge, top))}px`;
     };
     const show = button => {
-      const w = (window.WORKS || []).find(item => item.id === button.dataset.scoreId);
+      const w = visibleWorks().find(item => item.id === button.dataset.scoreId);
       const s = w && scoreFor(w);
       if (!w || !s || s.reference) return;
       if (active && active !== button) {
@@ -597,7 +600,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function scorePairs() {
     const matched = {};
-    (window.WORKS || []).forEach(w => {
+    visibleWorks().forEach(w => {
       if (!w.pair) return;
       (matched[w.pair] = matched[w.pair] || {})[w.group === 'A' ? 'a' : 'b'] = w;
     });
@@ -605,7 +608,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   function scoreStats() {
-    const works = (window.WORKS || []).map(work => ({ work, score: scoreFor(work) })).filter(row => row.score);
+    const works = visibleWorks().map(work => ({ work, score: scoreFor(work) })).filter(row => row.score);
     const mean = (rows, getter) => rows.length ? rows.reduce((sum, row) => sum + getter(row), 0) / rows.length : 0;
     const coverage = score => score.parts.features + score.parts.orbit + score.parts.moons + score.parts.offline + score.parts.halley;
     const execution = score => score.parts.correctness + score.parts.visual + score.parts.interaction;
@@ -672,8 +675,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, scoreFor, scoreOrder, scoreCell, installScoreTooltip, scoreStats,
-    byId: id => (window.WORKS || []).find(w => w.id === id),
+    environmentTag, scoreFor, scoreOrder, scoreCell, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork,
+    byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
   };
 })();

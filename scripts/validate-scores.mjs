@@ -9,7 +9,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/site.js']) {
   vm.runInContext(read(file), context, { filename: file });
 }
 
-const { WORKS, SCORES, PAIR_ORDER, SITE } = context.window;
+const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, SITE } = context.window;
 const fail = message => { throw new Error(message); };
 const check = (condition, message) => { if (!condition) fail(message); };
 const close = (actual, expected, label) => check(Math.abs(actual - expected) < 1e-9, `${label}: expected ${expected}, got ${actual}`);
@@ -185,10 +185,25 @@ check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs ha
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 53 WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 53 WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 53 WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 30, 'Group A count must be 30');
-check(WORKS.filter(w => w.group === 'B').length === 23, 'Group B count must be 23');
-check(PAIR_ORDER.length === 16 && new Set(PAIR_ORDER).size === 16, 'PAIR_ORDER must contain 16 unique pairs');
-check(SITE.pairs().length === 16, `Expected 16 complete pairs, got ${SITE.pairs().length}`);
+check(WORKS.filter(w => w.group === 'A').length === 30, 'Audited Group A count must remain 30');
+check(WORKS.filter(w => w.group === 'B').length === 23, 'Audited Group B count must remain 23');
+const expectedHiddenIds = [
+  'Qwen3.8Max-TasksAssignedByOpus5',
+  'Qwen3.8MaxV2-TasksAssignedByOpus5',
+  'Qwen3.8MaxV2',
+  'Qwen3.8Max-inQoder',
+  'Qwen3.8MaxV1-inQoder',
+].sort();
+check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'Exactly the five Qwen 3.8 Max Preview works must be hidden');
+const visibleWorks = SITE.visibleWorks();
+check(visibleWorks.length === 48, 'Visible WORKS count must be 48');
+check(visibleWorks.filter(w => w.group === 'A').length === 27, 'Visible Group A count must be 27');
+check(visibleWorks.filter(w => w.group === 'B').length === 21, 'Visible Group B count must be 21');
+check(visibleWorks.every(w => !w.model.includes('Preview')), 'No Preview work may remain on visible site surfaces');
+for (const id of expectedHiddenIds) check(SITE.byId(id) === undefined, id + ': direct work page lookup must stay hidden');
+check(PAIR_ORDER.length === 15 && new Set(PAIR_ORDER).size === 15, 'PAIR_ORDER must contain 15 unique visible pairs');
+check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
+check(SITE.pairs().length === 15, 'Expected 15 complete visible pairs');
 check(PAIR_ORDER[7] === 'qwen38max', 'The new Qwen 3.8 Max pair must occupy comparison position 08');
 
 const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-Three', 'Fable5Max-WebGL2'].sort();
@@ -352,9 +367,10 @@ check(zhHome.includes('<th data-k="model">模型</th><th data-k="environment">�
 check(enHome.includes('<th data-k="model">Model</th><th data-k="environment">Environment</th>'), 'English total table must show Environment as the second column');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 16 pairs differ only by brief format');
 check(zhHome.includes('Claude Opus 4.8 是明确例外') && enHome.includes('Claude Opus 4.8 is the explicit exception'), 'Both home pages must disclose the Claude Opus 4.8 Max-to-Ultra exception');
-check(!zhHome.includes('16 组严格对照') && !enHome.includes('16 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
+check(!zhHome.includes('15 组严格对照') && !enHome.includes('15 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="aAll">30') && enHome.includes('id="aAll">30') && zhHome.includes('id="bAll">23') && enHome.includes('id="bAll">23') && zhHome.includes('id="tAll">53') && enHome.includes('id="tAll">53'), 'Both home pages must publish 30/23 and 53-entry counts before JavaScript runs');
+check(zhHome.includes('id="aAll">27') && enHome.includes('id="aAll">27') && zhHome.includes('id="bAll">21') && enHome.includes('id="bAll">21') && zhHome.includes('id="tAll">48') && enHome.includes('id="tAll">48'), 'Both home pages must publish 27/21 and 48-entry visible counts before JavaScript runs');
+check(!zhHome.includes('40.58 / 59.5') && !enHome.includes('40.58 / 59.5') && !zhHome.includes('16 组同模型') && !enHome.includes('16 same-model'), 'Both home pages must remove the hidden Preview pair from published statistics');
 check(zhHome.includes('仅显示「⚑ 标杆」') && enHome.includes('show only “⚑ Benchmark”'), 'Both home pages must state that benchmark scores are hidden');
 check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
 for (const id of referenceIds) {
@@ -377,22 +393,22 @@ check(zhHome.includes('已收录的 Claude Fable 5 (Max) #1') && enHome.includes
 const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 100, 'Score maxima');
 check(stats.maxima.coverage === 59.5 && stats.maxima.execution === 40.5 && stats.maxima.total === 100, 'Max definition must be 59.5 + 40.5 = 100');
-check(stats.pairedSummary.n === 16, 'Paired statistics must use 16 pairs');
-close(stats.pairedSummary.coverage.a, 40.58125, 'Paired A coverage mean');
-close(stats.pairedSummary.coverage.b, 55.506250000000016, 'Paired B coverage mean');
-close(stats.pairedSummary.execution.a, 30.188125000000003, 'Paired A execution mean');
-close(stats.pairedSummary.execution.b, 31.262500000000003, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 66.206875, 'Paired A exact-score mean');
-close(stats.pairedSummary.exact.b, 81.79374999999999, 'Paired B exact-score mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 2 }), 'Final paired outcomes must be 13 improve / 1 tie / 2 decline');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 15, tie: 1, decline: 0 }), 'Coverage outcomes must be 15 / 1 / 0');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 9, tie: 1, decline: 6 }), 'Execution outcomes must be 9 / 1 / 6');
+check(stats.pairedSummary.n === 15, 'Paired statistics must use 15 visible pairs');
+close(stats.pairedSummary.coverage.a, 41.086666666666666, 'Paired A coverage mean');
+close(stats.pairedSummary.coverage.b, 55.500000000000014, 'Paired B coverage mean');
+close(stats.pairedSummary.execution.a, 30.790000000000003, 'Paired A execution mean');
+close(stats.pairedSummary.execution.b, 31.59, 'Paired B execution mean');
+close(stats.pairedSummary.exact.a, 67.34333333333333, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.b, 82.11666666666665, 'Paired B exact-score mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 12, tie: 1, decline: 2 }), 'Final paired outcomes must be 12 improve / 1 tie / 2 decline');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 14, tie: 1, decline: 0 }), 'Coverage outcomes must be 14 / 1 / 0');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 8, tie: 1, decline: 6 }), 'Execution outcomes must be 8 / 1 / 6');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [30, 39.03666666666667, 29.725333333333328, 64.062], b: [23, 54.904347826086955, 28.756521739130438, 77.61739130434783] },
-  withoutReferences: { a: [26, 36.78846153846154, 28.510000000000005, 59.87538461538462], b: [23, 54.904347826086955, 28.756521739130438, 77.61739130434783] },
-  withoutTier4: { a: [29, 39.38275862068966, 29.985862068965513, 64.50655172413794], b: [20, 56.17500000000001, 31.2075, 83.76] },
-  withoutReferencesOrTier4: { a: [25, 37.1, 28.7636, 60.223600000000005], b: [20, 56.17500000000001, 31.2075, 83.76] },
+  all: { a: [27, 39.72592592592593, 30.328518518518514, 66.12851851851852], b: [21, 54.83809523809524, 29.164285714285718, 77.85952380952381] },
+  withoutReferences: { a: [23, 37.30434782608695, 29.05956521739131, 61.75521739130434], b: [21, 54.83809523809524, 29.164285714285718, 77.85952380952381] },
+  withoutTier4: { a: [26, 40.13846153846154, 30.64230769230769, 66.70384615384616], b: [18, 56.23888888888891, 31.95555555555556, 84.725] },
+  withoutReferencesOrTier4: { a: [22, 37.68181818181818, 29.372727272727275, 62.23636363636364], b: [18, 56.23888888888891, 31.95555555555556, 84.725] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -404,7 +420,7 @@ for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   }
 }
 
-const rows = WORKS.map(work => {
+const rows = visibleWorks.map(work => {
   const score = SITE.scoreFor(work);
   const coverage = score.parts.features + score.parts.orbit + score.parts.moons + score.parts.offline + score.parts.halley;
   const execution = score.parts.correctness + score.parts.visual + score.parts.interaction;
@@ -424,5 +440,5 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
   console.log(`${label}: A ${format(groups.a)}; B ${format(groups.b)}`);
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
-console.log('Sensitivity identifiers: Tier 4 = ' + WORKS.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 53 records, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
+console.log('\nScore validation passed: 53 audited records, 48 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
