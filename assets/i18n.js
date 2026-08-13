@@ -308,6 +308,8 @@
     'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': 'J2000 orbits, eight moons, bidirectional ring shadows, Bloom/ACES, and continuous follow are all strong. However, Halley is advanced with the 75.31-year osculating period while the panel labels the next perihelion as 2061-07-28; the model reaches perihelion about 50 days earlier, and there is no complete view reset.',
     'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': 'The main view and controls initially work, so this is not L1. Focus retains a stale position array instead of following continuously, while frame schedules itself and drive also calls it every display frame; accumulating render loops make long-run performance unstable, so this remains L2.',
     'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': 'The JPL/Kepler pipeline, eight moons, ring shadows, multiple belts and post-processing all run, but the corona is visibly overexposed, Halley does not follow its displayed orbit, moon distance readouts are distorted, and high-DPI picking plus focused zoom remain flawed.',
+    'DeepSeek-V4-Pro-0813-V1': 'The network-dependent Three.js scene includes J2000/Keplerian motion, seven moons, procedural surfaces, Bloom/ACES, atmospheres, and stable focus/follow. However, the orbit line adds the periapsis direction while body propagation does not, so Mercury, Mars, Jupiter, and Uranus systematically miss their displayed paths. There is no Halley; Saturn’s unlit rings have no physical ring shadow, the default solar glow is heavily overexposed, Earth’s close-up turns brown and loses surface detail, and reset restores only the camera.',
+    'DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5': 'The complete offline WebGL2 implementation includes JPL/Keplerian orbits, eight moons, Halley, three ring systems with bidirectional shadows, ACES/Bloom, and all five stable interactions. However, the osculating-period projection is not corrected for Halley\'s 2061 return, relative moon-distance compression is broken, and the chromatic fringe, glow, and procedural surfaces look somewhat coarse.',
     'Gemini3.1Pro-TasksAssignedByOpus5': 'Exposure is clean but surface classes are basic, with a night side but no complete atmosphere. Zoom has no maximum bound, and canvas bodies cannot be clicked directly.',
     'Hy3-TasksAssignedByOpus5': 'Saturn and its rings are recognizable, but a cream-colored glow flattens the whole scene. Venus has the wrong semimajor axis, focus does not follow, and “Now” reuses an old timestamp.',
     'MiniMaxM3-TasksAssignedByOpus5': 'A white background and a huge black triangle continuously obscure the main view, while Saturn’s ring fragments are discarded entirely. This unusable main view is L1 and caps the score at 25.',
@@ -322,6 +324,8 @@
       note: 'Marked incomplete by the author: a large debug overlay remains visible, and frame schedules itself while drive also calls it every display frame, so duplicate render loops accumulate over time.'
     },
     'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'DeepSeek-V4-Pro-0813-V1': { title: 'Solar System · Real-Time Motion Model' },
+    'DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'DeepSeekProMax-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model — DeepSeek V4 Pro (Max)' },
     'DeepSeek_V4_Pro_high-1': { title: 'Solar System' },
     'DeepSeek_V4_Pro_high-2': { title: 'Solar System Motion Model' },

@@ -314,6 +314,24 @@
       interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: 'JPL/开普勒、八颗卫星、环影、多重小行星带与后期均可运行；但日冕明显过曝，哈雷实体不贴合轨道线，卫星距离数据失真，高 DPI 点选及聚焦后缩放仍有缺陷。'
     },
+    'DeepSeek-V4-Pro-0813-V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 4 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版具备 J2000/开普勒运动、七颗卫星、程序化表面、Bloom/ACES、大气和稳定的聚焦跟随；但轨道线额外加入近日点方向，天体传播未加入同一角度，水星、火星、木星和天王星会系统性偏离显示轨道。没有哈雷，土星环无物理环影，默认太阳辉光明显过曝，地球近景偏棕且细节被吞，重置也只恢复视角。'
+    },
+    'DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '完整离线 WebGL2：JPL/开普勒、八颗卫星、哈雷、三套行星环与双向环影、ACES/Bloom 及五项交互均稳定；但密切周期外推未校正 2061 回归，卫星显示距离的相对压缩失效，色散/辉光和程序化表面略显粗重。'
+    },
     'DeepSeekProMax-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
