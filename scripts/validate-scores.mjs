@@ -135,7 +135,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'Grok4.5': '0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|5|4|4|7|1|1|0.5|0|1|-|-',
   'Hy3': '0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|5|3|5|6.6|1|1|0.5|1|1|-|-',
   'KimiK3Max': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|5|5|4|7|1|1|1|1|1|-|-',
-  'KimiK3(Max)V2': '1|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|5|5|4|6.5|1|1|1|1|0.5|-|-',
+  'KimiK3(Max)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|5|5|4|6.5|1|1|1|1|0.5|-|-',
   'LongCat2.0': '0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-',
   'Mimo_2_5_Pro_high-1': '0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|5|2|5|4.2|1|1|0|0|1|-|-',
   'MiniMax_M3_thinking-1': '0|0.4|0|1|1|1|1|1|1|0.5|1|0|0|1|1|0|3|4|1|4.7|1|1|0.5|0.5|0.5|L2|外行星偏离轨道线，低速产生 NaN，重置失效。',
@@ -231,8 +231,8 @@ check(PAIR_ORDER[7] === 'deepseekv4pro0813', 'DeepSeek V4 Pro 0813 must occupy c
 check(PAIR_ORDER[9] === 'qwen38max', 'The Qwen 3.8 Max pair must occupy comparison position 10');
 check(PAIR_ORDER[13] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 14');
 
-const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-Three', 'Fable5Max-WebGL2', 'KimiK3(Max)V2'].sort();
-check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the five approved references must be flagged');
+const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-Three', 'Fable5Max-WebGL2'].sort();
+check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the four approved references must be flagged');
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason'];
@@ -444,6 +444,7 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
 check(zhHome.includes('id="aAll">27') && enHome.includes('id="aAll">27') && zhHome.includes('id="bAll">23') && enHome.includes('id="bAll">23') && zhHome.includes('id="tAll">50') && enHome.includes('id="tAll">50'), 'Both home pages must publish 27/23 and 50-entry visible counts before JavaScript runs');
 check(!zhHome.includes('40.58 / 59.5') && !enHome.includes('40.58 / 59.5') && zhHome.includes('17 组同模型') && enHome.includes('17 same-model') && zhHome.includes('41.89 / 59.5') && enHome.includes('41.89 / 59.5'), 'Both home pages must publish the current 17-pair statistics without restoring the hidden Preview pair');
+check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅显示「⚑ 标杆」') && enHome.includes('show only “⚑ Benchmark”'), 'Both home pages must state that benchmark scores are hidden');
 check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
 for (const id of referenceIds) {
@@ -451,6 +452,8 @@ for (const id of referenceIds) {
   const cell = SITE.scoreCell(work);
   check(cell.includes('⚑') && !cell.includes('<button') && !cell.includes('data-score-id'), `${id}: benchmark score cell must be a static flag label without a score tooltip trigger`);
 }
+const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
+check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('87') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must remain Tier 1 but show its numeric evidence score instead of a benchmark flag');
 check(!i18nSource.includes('标杆参考分 {score}') && !i18nSource.includes('benchmark reference score {score}'), 'Benchmark accessible copy must not expose a numeric score');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
 check(zhSpec.includes('Claude Opus 5 (Ultra)') && enSpec.includes('Claude Opus 5 (Ultra)'), 'Specification author must be labeled Claude Opus 5 (Ultra) in both languages');
@@ -481,9 +484,9 @@ check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify(
 
 const EXPECTED_WHOLE_GROUP = {
   all: { a: [27, 41.351851851851855, 30.669629629629625, 68.39185185185185], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
-  withoutReferences: { a: [22, 38.53636363636363, 29.301363636363643, 63.38318181818181], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
+  withoutReferences: { a: [23, 39.21304347826087, 29.460000000000008, 64.41217391304347], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
   withoutTier4: { a: [26, 41.82692307692308, 30.99653846153846, 69.05423076923077], b: [20, 56.20000000000001, 32.53, 85.5075] },
-  withoutReferencesOrTier4: { a: [21, 38.99047619047619, 29.64095238095238, 63.96476190476191], b: [20, 56.20000000000001, 32.53, 85.5075] },
+  withoutReferencesOrTier4: { a: [22, 39.67727272727273, 29.79136363636364, 65.0140909090909], b: [20, 56.20000000000001, 32.53, 85.5075] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {

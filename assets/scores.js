@@ -3,7 +3,7 @@
   'use strict';
 
   window.SCORES = {
-    /* 一句话组（含五个金色参考作品） */
+    /* 一句话组（含四个金色参考作品） */
     'DeepSeek-V4-Flash-0731': {
       reference: false,
       featureMap: { rings: .4, belt: .4, bloom: .4, aces: 1, atmo: 1 },
@@ -158,7 +158,7 @@
       note: '求解器、哈雷、七颗卫星和五项控制均成立；主要扣分来自联网依赖与缺少物理环影。'
     },
     'KimiK3(Max)V2': {
-      reference: true,
+      reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
