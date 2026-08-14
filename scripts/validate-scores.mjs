@@ -101,7 +101,7 @@ const EXPECTED_EXACT = {
   'GPT5.6LunaMax-TasksAssignedByOpus5': 80.8, 'GPT5.6SolUltra-TasksAssignedByOpus5': 97.6,
   'GPT5.6TerraUltra-TasksAssignedByOpus5': 95.2, 'Gemini3.1Pro-TasksAssignedByOpus5': 77.1,
   'Gemini3.5Flash-TasksAssignedByOpus5': 74.05, 'Gemini3.6Flash-TasksAssignedByOpus5': 80.65,
-  'Gemini3.7Flash(high)V1': 52.5, 'Gemini3.7Flash(high)V1-TasksAssignedByOpus5': 85.6,
+  'Gemini3.7Flash(high)V1': 49.5, 'Gemini3.7Flash(high)V1-TasksAssignedByOpus5': 82.6,
   'Hy3-TasksAssignedByOpus5': 73.8, 'KimiK3Max-TasksAssignedByOpus5': 93.05,
   'LongCat2.0-TasksAssignedByOpus5': 60, 'MiniMaxM3-TasksAssignedByOpus5': 25,
   'MiniMaxM3(high)V2-TasksAssignedByOpus5': 25,
@@ -359,8 +359,8 @@ const qwenStablePair = SITE.pairs()[8];
 check(qwenStablePair?.a?.id === 'Qwen3.8Max(Max)V1' && qwenStablePair?.b?.id === 'Qwen3.8Max(Max)V1-TasksAssignedByOpus5', 'Comparison position 09 must pair Qwen 3.8 Max #1 with its detailed run');
 const gemini37OneLine = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1');
 const gemini37Detailed = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1-TasksAssignedByOpus5');
-check(gemini37OneLine?.group === 'A' && gemini37OneLine?.tier === 2 && gemini37OneLine?.pair === 'gemini37flash', 'Gemini 3.7 Flash one-line run must be the paired Tier 2 entry');
-check(gemini37Detailed?.group === 'B' && gemini37Detailed?.tier === 2 && gemini37Detailed?.pair === 'gemini37flash', 'Gemini 3.7 Flash detailed run must be the paired Tier 2 entry');
+check(gemini37OneLine?.group === 'A' && gemini37OneLine?.tier === 3 && gemini37OneLine?.pair === 'gemini37flash', 'Gemini 3.7 Flash one-line run must be the paired Tier 3 entry');
+check(gemini37Detailed?.group === 'B' && gemini37Detailed?.tier === 3 && gemini37Detailed?.pair === 'gemini37flash', 'Gemini 3.7 Flash detailed run must be the paired Tier 3 entry');
 check(gemini37OneLine?.bytes === 86959 && gemini37OneLine?.lines === 2410 && gemini37OneLine?.tech === 'Three.js' && gemini37OneLine?.needsFloat === false && gemini37OneLine?.msaa === true, 'Gemini 3.7 Flash one-line source metadata must match the audited file');
 check(JSON.stringify(gemini37OneLine?.net) === JSON.stringify(['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com']), 'Gemini 3.7 Flash one-line network dependencies must match the audited file');
 check(gemini37Detailed?.bytes === 156951 && gemini37Detailed?.lines === 3967 && gemini37Detailed?.tech === 'WebGL2' && gemini37Detailed?.needsFloat === true && gemini37Detailed?.msaa === true && gemini37Detailed?.net.length === 0, 'Gemini 3.7 Flash detailed source metadata must match the audited file');
@@ -448,17 +448,17 @@ close(stats.pairedSummary.coverage.a, 41.13125, 'Paired A coverage mean');
 close(stats.pairedSummary.coverage.b, 55.443750000000016, 'Paired B coverage mean');
 close(stats.pairedSummary.execution.a, 30.490000000000002, 'Paired A execution mean');
 close(stats.pairedSummary.execution.b, 32.1, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 67.43374999999999, 'Paired A exact-score mean');
-close(stats.pairedSummary.exact.b, 82.94375, 'Paired B exact-score mean');
+close(stats.pairedSummary.exact.a, 67.24624999999999, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.b, 82.75625, 'Paired B exact-score mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 2 }), 'Final paired outcomes must be 13 improve / 1 tie / 2 decline');
 check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 15, tie: 1, decline: 0 }), 'Coverage outcomes must be 15 / 1 / 0');
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 10, tie: 1, decline: 5 }), 'Execution outcomes must be 10 / 1 / 5');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [26, 40.861538461538466, 30.581923076923072, 67.78961538461539], b: [22, 54.82727272727273, 29.645454545454548, 78.65454545454544] },
-  withoutReferences: { a: [22, 38.53636363636363, 29.301363636363643, 63.519545454545444], b: [22, 54.82727272727273, 29.645454545454548, 78.65454545454544] },
-  withoutTier4: { a: [25, 41.336000000000006, 30.9184, 68.45439999999999], b: [19, 56.152631578947386, 32.36578947368421, 85.28421052631579] },
-  withoutReferencesOrTier4: { a: [21, 38.99047619047619, 29.64095238095238, 64.10761904761905], b: [19, 56.152631578947386, 32.36578947368421, 85.28421052631579] },
+  all: { a: [26, 40.861538461538466, 30.581923076923072, 67.67423076923077], b: [22, 54.82727272727273, 29.645454545454548, 78.51818181818182] },
+  withoutReferences: { a: [22, 38.53636363636363, 29.301363636363643, 63.38318181818181], b: [22, 54.82727272727273, 29.645454545454548, 78.51818181818182] },
+  withoutTier4: { a: [25, 41.336000000000006, 30.9184, 68.3344], b: [19, 56.152631578947386, 32.36578947368421, 85.12631578947368] },
+  withoutReferencesOrTier4: { a: [21, 38.99047619047619, 29.64095238095238, 63.96476190476191], b: [19, 56.152631578947386, 32.36578947368421, 85.12631578947368] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {

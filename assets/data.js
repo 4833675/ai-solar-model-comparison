@@ -958,7 +958,7 @@ window.WORKS=[
    "fonts.gstatic.com"
   ],
   "fix": null,
-  "tier": 2,
+  "tier": 3,
   "rank": 18
  },
  {
@@ -991,7 +991,7 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tier": 2,
+  "tier": 3,
   "rank": 11
  },
  {
