@@ -162,9 +162,9 @@
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
-      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 6.5,
+      correctness: { runtime: 5, data: 2.5, integrity: 4 }, visualBase: 6.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、行星投向土星环的阴影、Bloom/ACES、大气与稳定跟随；但没有哈雷，完整状态重置不足，太阳、地球昼面和土星近景的曝光偏强。'
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、行星投向土星环的阴影、Bloom/ACES、大气与稳定跟随；但卫星只有半径与周期采用真实值，轨道方向并不真实：月球把相对黄道的 5.14° 错套到地球赤道面，其余卫星的倾角与升交点也由随机数生成。另有无哈雷、完整状态重置不足，以及太阳、地球昼面和土星近景曝光偏强等问题。'
     },
     'LongCat2.0': {
       reference: false,

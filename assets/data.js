@@ -1260,7 +1260,7 @@ window.WORKS=[
   "tags": [
    "in Claude Cli"
   ],
-  "tier": 1,
+  "tier": 2,
   "rank": 99
  },
  {

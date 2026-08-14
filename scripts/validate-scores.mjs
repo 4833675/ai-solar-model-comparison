@@ -89,7 +89,7 @@ const EXPECTED_EXACT = {
   'GLM5.2Max': 53.9, 'GLM_5_1_high-1': 43.95, 'GPT5.6SolMax': 81.4,
   'GPT5.6SolUltra-WebGL2': 94.2, 'GPT5.6SolUltra': 81.4, 'GPT5.6TerraUltra-Three': 68.4,
   'GPT_5_5_xhigh': 71.8, 'Gemini_3_5_flash_high': 78.9, 'Grok4.5': 67.55, 'Hy3': 51.61,
-  'KimiK3Max': 80.5, 'KimiK3(Max)V2': 87.05, 'LongCat2.0': 36.66, 'Mimo_2_5_Pro_high-1': 42.42,
+  'KimiK3Max': 80.5, 'KimiK3(Max)V2': 82.55, 'LongCat2.0': 36.66, 'Mimo_2_5_Pro_high-1': 42.42,
   'MiniMax_M3_thinking-1': 51.17, 'Opus5Ultra-WebGL2': 97.6, 'Opus_4_8_Max': 89.5,
   'Qwen3.7Max': 57.57, 'Qwen3.8MaxV2': 44.2, 'Qwen3.8Max-inQoder': 49.16,
   'Qwen3.8MaxV1-inQoder': 43.03, 'Qwen3.8Max(Max)V1': 54, 'Qwen3.8Max(Max)V2': 63.05,
@@ -135,7 +135,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'Grok4.5': '0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|5|4|4|7|1|1|0.5|0|1|-|-',
   'Hy3': '0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|5|3|5|6.6|1|1|0.5|1|1|-|-',
   'KimiK3Max': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|5|5|4|7|1|1|1|1|1|-|-',
-  'KimiK3(Max)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|5|5|4|6.5|1|1|1|1|0.5|-|-',
+  'KimiK3(Max)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|5|2.5|4|6.5|1|1|1|1|0.5|-|-',
   'LongCat2.0': '0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-',
   'Mimo_2_5_Pro_high-1': '0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|5|2|5|4.2|1|1|0|0|1|-|-',
   'MiniMax_M3_thinking-1': '0|0.4|0|1|1|1|1|1|1|0.5|1|0|0|1|1|0|3|4|1|4.7|1|1|0.5|0.5|0.5|L2|外行星偏离轨道线，低速产生 NaN，重置失效。',
@@ -365,7 +365,7 @@ const kimi2OneLine = WORKS.find(w => w.id === 'KimiK3(Max)V2');
 const kimi2Detailed = WORKS.find(w => w.id === 'KimiK3(Max)V2-TasksAssignedByOpus5');
 check(kimi1OneLine?.model === 'Kimi K3 (Max) #1' && kimi1Detailed?.model === 'Kimi K3 (Max) #1', 'Original Kimi K3 runs must be numbered #1');
 check(kimi2OneLine?.model === 'Kimi K3 (Max) #2' && kimi2Detailed?.model === 'Kimi K3 (Max) #2', 'New Kimi K3 runs must be numbered #2');
-check(kimi2OneLine?.group === 'A' && kimi2Detailed?.group === 'B' && kimi2OneLine?.tier === 1 && kimi2Detailed?.tier === 1, 'Both Kimi K3 #2 runs must be Tier 1');
+check(kimi2OneLine?.group === 'A' && kimi2Detailed?.group === 'B' && kimi2OneLine?.tier === 2 && kimi2Detailed?.tier === 1, 'Kimi K3 #2 one-line must be Tier 2 while its detailed run remains Tier 1');
 check(kimi2OneLine?.pair === 'kimik3v2' && kimi2Detailed?.pair === 'kimik3v2', 'Kimi K3 #2 must form its own comparison pair');
 check(kimi2OneLine?.bytes === 71207 && kimi2OneLine?.lines === 1667 && kimi2OneLine?.tech === 'WebGL2' && kimi2OneLine?.needsFloat === false && kimi2OneLine?.msaa === true && kimi2OneLine?.net.length === 0, 'Kimi K3 #2 one-line source metadata must match the audited file');
 check(kimi2Detailed?.bytes === 118997 && kimi2Detailed?.lines === 2635 && kimi2Detailed?.tech === 'WebGL2' && kimi2Detailed?.needsFloat === false && kimi2Detailed?.msaa === true && kimi2Detailed?.net.length === 0, 'Kimi K3 #2 detailed source metadata must match the audited file');
@@ -443,7 +443,8 @@ check(zhHome.includes('Claude Opus 4.8 是明确例外') && enHome.includes('Cla
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
 check(zhHome.includes('id="aAll">27') && enHome.includes('id="aAll">27') && zhHome.includes('id="bAll">23') && enHome.includes('id="bAll">23') && zhHome.includes('id="tAll">50') && enHome.includes('id="tAll">50'), 'Both home pages must publish 27/23 and 50-entry visible counts before JavaScript runs');
-check(!zhHome.includes('40.58 / 59.5') && !enHome.includes('40.58 / 59.5') && zhHome.includes('17 组同模型') && enHome.includes('17 same-model') && zhHome.includes('41.89 / 59.5') && enHome.includes('41.89 / 59.5'), 'Both home pages must publish the current 17-pair statistics without restoring the hidden Preview pair');
+check(!enHome.includes('prefer the 16 paired results') && enHome.includes('prefer the 17 paired results over treating all 27 one-line and 23 detailed-spec works'), 'English full summary must use the current paired and group counts');
+check(!zhHome.includes('40.58 / 59.5') && !enHome.includes('40.58 / 59.5') && zhHome.includes('17 组同模型') && enHome.includes('17 same-model') && zhHome.includes('41.89 / 59.5') && enHome.includes('41.89 / 59.5') && zhHome.includes('30.49 / 40.5') && enHome.includes('30.49 / 40.5'), 'Both home pages must publish the current 17-pair statistics without restoring the hidden Preview pair');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅显示「⚑ 标杆」') && enHome.includes('show only “⚑ Benchmark”'), 'Both home pages must state that benchmark scores are hidden');
 check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
@@ -453,7 +454,7 @@ for (const id of referenceIds) {
   check(cell.includes('⚑') && !cell.includes('<button') && !cell.includes('data-score-id'), `${id}: benchmark score cell must be a static flag label without a score tooltip trigger`);
 }
 const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
-check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('87') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must remain Tier 1 but show its numeric evidence score instead of a benchmark flag');
+check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('83') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
 check(!i18nSource.includes('标杆参考分 {score}') && !i18nSource.includes('benchmark reference score {score}'), 'Benchmark accessible copy must not expose a numeric score');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
 check(zhSpec.includes('Claude Opus 5 (Ultra)') && enSpec.includes('Claude Opus 5 (Ultra)'), 'Specification author must be labeled Claude Opus 5 (Ultra) in both languages');
@@ -474,19 +475,19 @@ check(stats.maxima.coverage === 59.5 && stats.maxima.execution === 40.5 && stats
 check(stats.pairedSummary.n === 17, 'Paired statistics must use 17 visible pairs');
 close(stats.pairedSummary.coverage.a, 41.89411764705883, 'Paired A coverage mean');
 close(stats.pairedSummary.coverage.b, 55.541176470588255, 'Paired B coverage mean');
-close(stats.pairedSummary.execution.a, 30.63470588235294, 'Paired A execution mean');
+close(stats.pairedSummary.execution.a, 30.487647058823526, 'Paired A execution mean');
 close(stats.pairedSummary.execution.b, 32.30882352941177, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 68.41117647058822, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.a, 68.14647058823527, 'Paired A exact-score mean');
 close(stats.pairedSummary.exact.b, 83.34411764705882, 'Paired B exact-score mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 14, tie: 1, decline: 2 }), 'Final paired outcomes must be 14 improve / 1 tie / 2 decline');
 check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 16, tie: 1, decline: 0 }), 'Coverage outcomes must be 16 / 1 / 0');
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 11, tie: 1, decline: 5 }), 'Execution outcomes must be 11 / 1 / 5');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [27, 41.351851851851855, 30.669629629629625, 68.39185185185185], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
-  withoutReferences: { a: [23, 39.21304347826087, 29.460000000000008, 64.41217391304347], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
-  withoutTier4: { a: [26, 41.82692307692308, 30.99653846153846, 69.05423076923077], b: [20, 56.20000000000001, 32.53, 85.5075] },
-  withoutReferencesOrTier4: { a: [22, 39.67727272727273, 29.79136363636364, 65.0140909090909], b: [20, 56.20000000000001, 32.53, 85.5075] },
+  all: { a: [27, 41.351851851851855, 30.577037037037034, 68.22518518518518], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
+  withoutReferences: { a: [23, 39.21304347826087, 29.351304347826094, 64.21652173913043], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
+  withoutTier4: { a: [26, 41.82692307692308, 30.900384615384613, 68.88115384615384], b: [20, 56.20000000000001, 32.53, 85.5075] },
+  withoutReferencesOrTier4: { a: [22, 39.67727272727273, 29.677727272727278, 64.80954545454544], b: [20, 56.20000000000001, 32.53, 85.5075] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
