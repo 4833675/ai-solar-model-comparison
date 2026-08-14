@@ -123,7 +123,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'DeepSeek_V4_Pro_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|5|3|5|2.5|1|1|0|0|0|-|-',
   'DeepSeek_V4_Pro_high-2': '0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-',
   'DeepSeek_V4_Pro_high-3': '0|0.4|1|0|1|1|1|0|0.5|1|0|1|1|1|1|0|5|3|5|5.8|1|1|1|0|0.5|-|-',
-  'Fable5Max-Three': '1|0.4|1|1|0|1|1|1|1|1|1|1|0.5|6|1|1|5|5|4|7.5|1|0.5|1|1|0.5|-|-',
+  'Fable5Max-Three': '0|0.4|1|1|0|1|1|1|1|1|1|1|0.5|6|1|1|5|5|4|7.5|1|0.5|1|1|0.5|-|-',
   'Fable5Max-WebGL2': '1|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|5|5|4|9.5|1|1|1|1|1|-|-',
   'GLM5.2Max': '0|0.4|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|5|3|5|4|1|1|1|1|1|-|-',
   'GLM5.3(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|15|1|0|5|4|4.5|7.5|1|1|1|1|1|-|-',
@@ -233,8 +233,8 @@ check(PAIR_ORDER[7] === 'deepseekv4pro0813', 'DeepSeek V4 Pro 0813 must occupy c
 check(PAIR_ORDER[9] === 'qwen38max', 'The Qwen 3.8 Max pair must occupy comparison position 10');
 check(PAIR_ORDER[13] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 14');
 
-const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-Three', 'Fable5Max-WebGL2'].sort();
-check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the four approved references must be flagged');
+const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2'].sort();
+check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the three approved references must be flagged');
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason'];
@@ -458,6 +458,7 @@ check(zhHome.includes('id="aAll">28') && enHome.includes('id="aAll">28') && zhHo
 check(!enHome.includes('prefer the 16 paired results') && enHome.includes('prefer the 17 paired results over treating all 28 one-line and 23 detailed-spec works'), 'English full summary must use the current paired and group counts');
 check(!zhHome.includes('40.58 / 59.5') && !enHome.includes('40.58 / 59.5') && zhHome.includes('17 组同模型') && enHome.includes('17 same-model') && zhHome.includes('41.89 / 59.5') && enHome.includes('41.89 / 59.5') && zhHome.includes('30.49 / 40.5') && enHome.includes('30.49 / 40.5'), 'Both home pages must publish the current 17-pair statistics without restoring the hidden Preview pair');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
+check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
 check(zhHome.includes('仅显示「⚑ 标杆」') && enHome.includes('show only “⚑ Benchmark”'), 'Both home pages must state that benchmark scores are hidden');
 check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
 for (const id of referenceIds) {
@@ -467,6 +468,9 @@ for (const id of referenceIds) {
 }
 const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
 check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('83') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
+const fableThreeScoreCell = SITE.scoreCell(SITE.byId('Fable5Max-Three'));
+check(!SCORES['Fable5Max-Three'].reference && fableThreeScoreCell.includes('84') && fableThreeScoreCell.includes('<button'), 'Claude Fable 5 #1 must show its numeric evidence score instead of a benchmark flag');
+check(!SITE.card(SITE.byId('Fable5Max-Three')).includes('is-benchmark'), 'Claude Fable 5 #1 card must not retain benchmark presentation');
 check(!i18nSource.includes('标杆参考分 {score}') && !i18nSource.includes('benchmark reference score {score}'), 'Benchmark accessible copy must not expose a numeric score');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
 check(zhSpec.includes('Claude Opus 5 (Ultra)') && enSpec.includes('Claude Opus 5 (Ultra)'), 'Specification author must be labeled Claude Opus 5 (Ultra) in both languages');
@@ -497,9 +501,9 @@ check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify(
 
 const EXPECTED_WHOLE_GROUP = {
   all: { a: [28, 41.642857142857146, 30.734999999999996, 68.80642857142857], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
-  withoutReferences: { a: [24, 39.641666666666666, 29.58666666666667, 65.06166666666667], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
+  withoutReferences: { a: [25, 40.056, 29.7472, 65.8032], b: [23, 54.926086956521736, 29.906521739130437, 79.13695652173912] },
   withoutTier4: { a: [27, 42.111111111111114, 31.05222222222222, 69.45962962962962], b: [20, 56.20000000000001, 32.53, 85.5075] },
-  withoutReferencesOrTier4: { a: [23, 40.10434782608696, 29.90913043478261, 65.66565217391305], b: [20, 56.20000000000001, 32.53, 85.5075] },
+  withoutReferencesOrTier4: { a: [24, 40.516666666666666, 30.062916666666666, 66.41291666666667], b: [20, 56.20000000000001, 32.53, 85.5075] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {

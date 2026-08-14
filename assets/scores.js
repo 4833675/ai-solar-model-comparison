@@ -3,7 +3,7 @@
   'use strict';
 
   window.SCORES = {
-    /* 一句话组（含四个金色参考作品） */
+    /* 一句话组（含三个金色参考作品） */
     'DeepSeek-V4-Flash-0731': {
       reference: false,
       featureMap: { rings: .4, belt: .4, bloom: .4, aces: 1, atmo: 1 },
@@ -41,7 +41,7 @@
       note: '曝光克制且关键行星有专用材质；轨道仅为基础元素形状，无开普勒与历元传播，按钮聚焦也不持续跟随。'
     },
     'Fable5Max-Three': {
-      reference: true,
+      reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 0, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: .5 }, moons: 6, hasEarthMoon: true, halley: true,

@@ -88,7 +88,7 @@
       'card.openAria': '打开 {name} 的完整作品',
       'benchmark.title': '第一梯队 · 重点推荐',
       'benchmark.badge': '标杆',
-      'benchmark.recommend': '标杆 · 重点推荐',
+      'benchmark.recommend': '含标杆 · 重点推荐',
       'fix.link': '⚙ Claude Opus 5 (Max) 修复版（仅修复显示问题）→',
       'group.prompt': '一句话提示',
       'group.document': '详细文档',
@@ -200,7 +200,7 @@
       'card.openAria': 'Open the complete {name} work',
       'benchmark.title': 'Tier 1 · Recommended',
       'benchmark.badge': 'Benchmark',
-      'benchmark.recommend': 'Benchmark · Recommended',
+      'benchmark.recommend': 'Includes benchmarks · Recommended',
       'fix.link': '⚙ Claude Opus 5 (Max) display fix →',
       'group.prompt': 'One-line prompt',
       'group.document': 'Detailed specification',
@@ -259,7 +259,7 @@
   };
 
   const SCORE_NOTES_EN = {
-    'Opus5Ultra-WebGL2': 'All eight features, bidirectional ring shadows, and the complete interaction set are present. It remains one of the four score-hidden benchmark entries.',
+    'Opus5Ultra-WebGL2': 'All eight features, bidirectional ring shadows, and the complete interaction set are present. It remains one of the three score-hidden benchmark entries.',
     'Opus5Ultra-TasksAssignedByOpus5': 'All eight features, eight moons, complete interaction, and bidirectional ring shadows work. It also corrected Halley’s 2061 perihelion using the measured return interval and used runtime testing to fix long-term cloud drift, glare, and fragment-shader performance.',
     'GPT5.6SolUltra-WebGL2': 'Fourteen moons and a complete interaction set stand out. The procedural-world build takes about 12 seconds, and its comet elements are not Halley’s, so the Halley score does not apply.',
     'Fable5Max-Three': 'There is no actual ACES pass, and close-ups run bright. Saturn’s rings do not cast the reverse shadow onto the planet, and the minimum zoom can enter large bodies.',
