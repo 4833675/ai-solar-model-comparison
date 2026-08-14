@@ -350,6 +350,24 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '完整离线 WebGL2：JPL/开普勒、八颗卫星、哈雷、三套行星环与双向环影、ACES/Bloom 及五项交互均稳定；但密切周期外推未校正 2061 回归，卫星显示距离的相对压缩失效，色散/辉光和程序化表面略显粗重。'
     },
+    'DeepSeekV4Pro0813(Max)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 5, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版具备 J2000/开普勒轨道、月球与四颗伽利略卫星、哈雷、主带/柯伊伯带、Bloom/ACES、大气与完整聚焦跟随；但土星环纹理生成时把函数本身误传给噪声采样，透明度变为 NaN，实际运行中行星环完全不可见。近景的方块星点与过大前景小行星较抢眼，木星细节偏软，重置也只恢复视角。'
+    },
+    'DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 4.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版的 JPL/开普勒、八颗卫星、哈雷、三套环系与双向环影、多重小天体带和五项基本交互长时运行稳定；但默认地球近景被太阳过曝与巨大月球前景明显干扰，木星泛白且表面质感偏蜂窝，土星环明暗分区也过重。页面只有“此刻”日期恢复，没有完整的视角/状态重置。'
+    },
     'DeepSeekProMax-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
@@ -421,6 +439,15 @@
       correctness: { runtime: 5, data: 2, integrity: 3 }, visualBase: 4,
       interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
       note: '红斑可误出现在土星，环影混用坐标空间，大气也只是部分边缘效果；列表聚焦跟随可用，但画布拾取缺失。'
+    },
+    'Gemini3.6Flash(high)V0': {
+      reference: false,
+      featureMap: { rings: .4, belt: 0, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: 0, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 1, integrity: 4 }, visualBase: 3.5,
+      interaction: { drag: .5, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '运行稳定、UI 与特效也完整，但它明确把“尽可能真实”改写成“脱离真实物理约束”的赛博幻想：八颗行星均为同构霓虹大理石球，轨道只是平面匀速圆周，没有开普勒、真实元素、历元、小行星带或哈雷，仅有月球；默认自动聚焦地球时还会被巨大的粉色晶体太阳遮挡。土星只有线框环且无环影，暂停和重置也只覆盖部分状态。'
     },
     'Gemini3.6Flash-TasksAssignedByOpus5': {
       reference: false,

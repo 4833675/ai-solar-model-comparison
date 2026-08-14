@@ -380,13 +380,12 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   function scoreTipHtml(w, s) {
-    if (s.reference) return '';
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
     const tier = tierLabel(w.tier);
     const capped = s.exact < s.preCap;
-    const high = s.total >= 80;
+    const high = !s.reference && s.total >= 80;
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
-    return `<div class="score-tip-head${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
+    return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
         <b>${scoreNum(s.total)}<i>/100</i></b>
       </div>
@@ -417,13 +416,14 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreCell(w) {
     const s = scoreFor(w);
     if (!s) return '<span class="score-empty">—</span>';
-    if (s.reference) return `<span class="score-benchmark" aria-label="${esc(t('score.referenceAria', { name: w.model }))}">
+    if (s.reference) return `<button type="button" class="score-trigger score-benchmark" data-score-id="${esc(w.id)}"
+      aria-label="${esc(t('score.referenceAria', { name: w.model, score: s.total }))}" aria-expanded="false">
       <span aria-hidden="true">⚑</span><b>${t('benchmark.badge')}</b>
-    </span>`;
+    </button>`;
     const label = t('score.evidenceAria', { name: w.model, score: s.total });
     const capped = s.exact < s.preCap;
     const high = s.total >= 80;
-    return `<button type="button" class="score-pill${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
+    return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
       <b>${scoreNum(s.total)}</b>
     </button>`;
@@ -457,13 +457,14 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const show = button => {
       const w = visibleWorks().find(item => item.id === button.dataset.scoreId);
       const s = w && scoreFor(w);
-      if (!w || !s || s.reference) return;
+      if (!w || !s) return;
       if (active && active !== button) {
         active.setAttribute('aria-expanded', 'false');
         active.removeAttribute('aria-describedby');
       }
       active = button;
       tip.innerHTML = scoreTipHtml(w, s);
+      tip.classList.toggle('is-reference', s.reference);
       tip.hidden = false;
       button.setAttribute('aria-describedby', tip.id);
       button.setAttribute('aria-expanded', pinned ? 'true' : 'false');
@@ -482,11 +483,11 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     };
 
     document.addEventListener('pointerover', e => {
-      const button = e.target.closest && e.target.closest('button.score-pill[data-score-id]');
+      const button = e.target.closest && e.target.closest('button.score-trigger[data-score-id]');
       if (button && button !== active && !pinned) show(button);
     });
     document.addEventListener('pointerout', e => {
-      const button = e.target.closest && e.target.closest('button.score-pill[data-score-id]');
+      const button = e.target.closest && e.target.closest('button.score-trigger[data-score-id]');
       if (button && !button.contains(e.relatedTarget) && !tip.contains(e.relatedTarget)) hide(false);
     });
     tip.addEventListener('pointerleave', e => {
@@ -494,15 +495,15 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       hide(false);
     });
     document.addEventListener('focusin', e => {
-      const button = e.target.closest && e.target.closest('button.score-pill[data-score-id]');
+      const button = e.target.closest && e.target.closest('button.score-trigger[data-score-id]');
       if (button && (!pinned || button === active)) show(button);
     });
     document.addEventListener('focusout', e => {
-      const button = e.target.closest && e.target.closest('button.score-pill[data-score-id]');
+      const button = e.target.closest && e.target.closest('button.score-trigger[data-score-id]');
       if (button && !button.contains(e.relatedTarget)) hide(false);
     });
     document.addEventListener('click', e => {
-      const button = e.target.closest && e.target.closest('button.score-pill[data-score-id]');
+      const button = e.target.closest && e.target.closest('button.score-trigger[data-score-id]');
       if (!button) return hide(true);
       if (button === active && pinned) return hide(true);
       pinned = true;
@@ -675,7 +676,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, scoreFor, scoreOrder, scoreCell, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork,
+    environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork,
     byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
   };
