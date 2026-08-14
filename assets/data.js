@@ -1,9 +1,9 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","deepseekv4pro0813","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","longcat","hy3","minimax"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","deepseekv4pro0813","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","gemini37flash","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
 window.HIDDEN_WORK_IDS=["Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3"];
 window.WORKS=[
  {
@@ -923,6 +923,76 @@ window.WORKS=[
   "fix": null,
   "tier": 3,
   "rank": 4
+ },
+ {
+  "id": "Gemini3.7Flash(high)V1",
+  "file": "models/Gemini3.7Flash(high)V1.html",
+  "model": "Gemini 3.7 Flash (high)",
+  "group": "A",
+  "pair": "gemini37flash",
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 86959,
+  "lines": 2410,
+  "title": "3D 太阳系超拟真动力学与天体演化模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Gemini3.7Flash(high)V1.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [
+   "cdnjs.cloudflare.com",
+   "cdn.jsdelivr.net",
+   "fonts.googleapis.com",
+   "fonts.gstatic.com"
+  ],
+  "fix": null,
+  "tier": 2,
+  "rank": 18
+ },
+ {
+  "id": "Gemini3.7Flash(high)V1-TasksAssignedByOpus5",
+  "file": "models/Gemini3.7Flash(high)V1-TasksAssignedByOpus5.html",
+  "model": "Gemini 3.7 Flash (high)",
+  "group": "B",
+  "pair": "gemini37flash",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 156951,
+  "lines": 3967,
+  "title": "太阳系实时动力学与天体物理模拟系统",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "heavy",
+  "shot": "assets/shots/Gemini3.7Flash(high)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tier": 2,
+  "rank": 11
  },
  {
   "id": "Gemini_3_5_flash_high",

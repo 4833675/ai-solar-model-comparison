@@ -413,6 +413,24 @@
       interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: 1 }, fatal: null,
       note: '专用大气、土星环、小行星着色器和完整元素均在；地球拼块、红斑弱和生硬环影扣分，拖拽释放还可误选。'
     },
+    'Gemini3.7Flash(high)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 0, elements: .5, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 4 }, visualBase: 4,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版的椭圆轨道、月球、程序化表面、Bloom/ACES、大气与持续跟随均可运行；但公转只按偏近点角匀速推进，没有开普勒求解、轨道方向或历元，且仅一颗卫星、没有哈雷。太阳与土星近景明显过曝，木星夜面几乎全黑，拖拽释放也缺少误点抑制。'
+    },
+    'Gemini3.7Flash(high)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、哈雷、三套行星环、环影、Bloom/ACES 与完整交互，近景层次也较丰富；但轨道带重建时把 y 方向旋转矩阵中的 cos(Ω) 误写成 sin(Ω)，导致显示轨道与天体位置系统性不一致。默认小行星带和色散效果也偏亮、偏杂。'
+    },
     'Hy3-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
