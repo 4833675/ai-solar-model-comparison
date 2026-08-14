@@ -1,9 +1,9 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","sonnet5","deepseekv4pro0813","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","gemini37flash","longcat","hy3","minimax"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","glm52","qwen38max","gpt55","gemini35","deepseekv4flash0731","gemini37flash","longcat","hy3","minimax"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max)","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max)","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","minimax":"MiniMax M3 (high)"};
 window.HIDDEN_WORK_IDS=["Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3"];
 window.WORKS=[
  {
@@ -1127,7 +1127,7 @@ window.WORKS=[
  {
   "id": "KimiK3Max-TasksAssignedByOpus5",
   "file": "models/KimiK3Max-TasksAssignedByOpus5.html",
-  "model": "Kimi K3 (Max)",
+  "model": "Kimi K3 (Max) #1",
   "group": "B",
   "pair": "kimik3",
   "featured": false,
@@ -1160,7 +1160,7 @@ window.WORKS=[
  {
   "id": "KimiK3Max",
   "file": "models/KimiK3Max.html",
-  "model": "Kimi K3 (Max)",
+  "model": "Kimi K3 (Max) #1",
   "group": "A",
   "pair": "kimik3",
   "featured": true,
@@ -1191,6 +1191,77 @@ window.WORKS=[
   "fix": null,
   "tier": 2,
   "rank": 1
+ },
+ {
+  "id": "KimiK3(Max)V2-TasksAssignedByOpus5",
+  "file": "models/KimiK3(Max)V2-TasksAssignedByOpus5.html",
+  "model": "Kimi K3 (Max) #2",
+  "group": "B",
+  "pair": "kimik3v2",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 118997,
+  "lines": 2635,
+  "title": "太阳系实时运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/KimiK3(Max)V2-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+   "in Claude Cli"
+  ],
+  "tier": 1,
+  "rank": 99
+ },
+ {
+  "id": "KimiK3(Max)V2",
+  "file": "models/KimiK3(Max)V2.html",
+  "model": "Kimi K3 (Max) #2",
+  "group": "A",
+  "pair": "kimik3v2",
+  "featured": true,
+  "tech": "WebGL2",
+  "bytes": 71207,
+  "lines": 1667,
+  "title": "太阳系 · Solar System",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/KimiK3(Max)V2.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+   "in Claude Cli"
+  ],
+  "tier": 1,
+  "rank": 99
  },
  {
   "id": "LongCat2.0-TasksAssignedByOpus5",

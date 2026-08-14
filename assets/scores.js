@@ -3,7 +3,7 @@
   'use strict';
 
   window.SCORES = {
-    /* 一句话组（含四个金色参考作品） */
+    /* 一句话组（含五个金色参考作品） */
     'DeepSeek-V4-Flash-0731': {
       reference: false,
       featureMap: { rings: .4, belt: .4, bloom: .4, aces: 1, atmo: 1 },
@@ -156,6 +156,15 @@
       correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '求解器、哈雷、七颗卫星和五项控制均成立；主要扣分来自联网依赖与缺少物理环影。'
+    },
+    'KimiK3(Max)V2': {
+      reference: true,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、行星投向土星环的阴影、Bloom/ACES、大气与稳定跟随；但没有哈雷，完整状态重置不足，太阳、地球昼面和土星近景的曝光偏强。'
     },
     'LongCat2.0': {
       reference: false,
@@ -448,6 +457,15 @@
       correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 9,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
       note: '真实元素、哈雷、八颗卫星、双向环影与持续相机目标均稳定；但 1440×900 下说明面板会挡住暂停按钮，仍可用空格键控制。'
+    },
+    'KimiK3(Max)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4.5, integrity: 4 }, visualBase: 8.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版的 JPL/开普勒轨道、八颗卫星、哈雷、三套行星环与环影、木星大红斑、Bloom/ACES 和持续跟随均稳定；但彗尾缓冲按四浮点布局却逐顶点写入五个值，卫星轨道缓冲也只绘制了已生成顶点的一半，且没有完整状态重置。'
     },
     'LongCat2.0-TasksAssignedByOpus5': {
       reference: false,

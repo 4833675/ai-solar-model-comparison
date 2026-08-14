@@ -259,7 +259,7 @@
   };
 
   const SCORE_NOTES_EN = {
-    'Opus5Ultra-WebGL2': 'All eight features, bidirectional ring shadows, and the complete interaction set are present. It remains one of the four score-hidden benchmark entries.',
+    'Opus5Ultra-WebGL2': 'All eight features, bidirectional ring shadows, and the complete interaction set are present. It remains one of the five score-hidden benchmark entries.',
     'Opus5Ultra-TasksAssignedByOpus5': 'All eight features, eight moons, complete interaction, and bidirectional ring shadows work. It also corrected Halley’s 2061 perihelion using the measured return interval and used runtime testing to fix long-term cloud drift, glare, and fragment-shader performance.',
     'GPT5.6SolUltra-WebGL2': 'Fourteen moons and a complete interaction set stand out. The procedural-world build takes about 12 seconds, and its comet elements are not Halley’s, so the Halley score does not apply.',
     'Fable5Max-Three': 'There is no actual ACES pass, and close-ups run bright. Saturn’s rings do not cast the reverse shadow onto the planet, and the minimum zoom can enter large bodies.',
@@ -267,6 +267,7 @@
     'DeepSeek-V4-Flash-0731': 'The orbital, material, and control structure is rich, but 0–255 asteroid and Kuiper colors are fed into float vertex colors, so bloom washes out nearly the entire scene. It has only the Moon, none of its three comets is Halley, hovering can trigger a Raycaster error, and focus does not zoom in.',
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': 'All eight features, eight moons, two-way ring shadows, and continuous follow work. However, moon-to-Earth distances are wrong, label and canvas-picking projection ignores FOV and aspect ratio, and dragging can still trigger a mistaken click. Close-ups are often dark, Saturn\'s rings are nearly edge-on by default, and particles and labels feel crowded.',
     'KimiK3Max': 'Features, orbital motion, and interaction are complete. The main deductions are for network dependencies, the lack of physically meaningful ring shadows, and an overly strong central glow.',
+    'KimiK3(Max)V2': 'This offline native-WebGL2 build includes JPL secular elements, a Kepler solver, eight moons, a planet-to-ring shadow, Bloom/ACES, atmospheres, and stable follow. It has no Halley, lacks a complete state reset, and runs bright in the Sun, Earth daylight, and Saturn close-ups.',
     'GLM5.2Max': 'Heavy bloom washes out a large central area and erases planetary detail. Orbital realism is low, and the supposed Great Red Spot is implemented as several random storms.',
     'Opus_4_8_Max': 'Surface detail, night sides, orbits, and interaction are all strong. The main omissions are Halley’s Comet and bidirectional shadows for Saturn’s rings.',
     'Sonnet5Ultra': 'Six modeled moons, real Keplerian orbits, continuous following, and an offline Three.js bundle all work. Saturn is clear in close-up, but Halley is absent, ring shadows are not bidirectional as in the specification group, and orbit lines become busy at close range.',
@@ -297,6 +298,7 @@
     'GPT5.6TerraUltra-TasksAssignedByOpus5': 'Distinct surface classes, the Great Red Spot, atmospheric and night-side detail, and bidirectional ring shadows are all present. Actual detail is clearly above GPT-5.6 Luna (Max), though still below GPT-5.6 Sol (Ultra).',
     'GPT5.6LunaMax-TasksAssignedByOpus5': 'Features and orbital motion are complete, but bodies remain small and dark in close-up, making Jupiter’s spot and Saturn’s ring structure hard to inspect. Focus also does not follow continuously.',
     'KimiK3Max-TasksAssignedByOpus5': 'Earth’s night side, Jupiter’s cloud bands, and Saturn’s bidirectional ring shadows are complete, with natural exposure. At 1440×900 the note panel intercepts the visible pause button, although Space still controls playback.',
+    'KimiK3(Max)V2-TasksAssignedByOpus5': 'The offline native-WebGL2 build stably implements JPL/Keplerian orbits, eight moons, Halley, three ring systems with shadows, Jupiter’s Great Red Spot, Bloom/ACES, and continuous follow. However, the comet-tail buffer writes five floats per vertex into a four-float layout, the moon-orbit draw uses only half of its generated vertices, and there is no complete state reset.',
     'GPT5.5xHigh-TasksAssignedByOpus5': 'Cloud bands, the red spot, bidirectional ring shadows, and interaction are complete. Saturn’s fixed angle is rather edge-on, and the overall image is slightly warm and bright.',
     'GLM5.2Max-TasksAssignedByOpus5': 'The objective feature set is complete, but the whole scene is visibly washed out, Earth’s texture shows stepping, and detail on Jupiter and the ring shadows is lost. Dragging can mis-select, and focus does not follow.',
     'DeepSeekProMax-TasksAssignedByOpus5': 'Features and orbital motion are complete. Jupiter’s spot is gray, Saturn’s texture and ring close-up are abnormal, dragging can trigger an unintended click, and focus does not follow afterward.',
@@ -357,6 +359,8 @@
     'Hy3': { title: 'Solar System Motion Model' },
     'KimiK3Max-TasksAssignedByOpus5': { title: 'Solar System · Real-Time Orbital Model' },
     'KimiK3Max': { title: 'Solar System Simulator' },
+    'KimiK3(Max)V2-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'KimiK3(Max)V2': { title: 'Solar System' },
     'LongCat2.0-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'LongCat2.0': { title: 'Solar System', note: 'The only non-3D work in the one-line-prompt group.' },
     'Mimo_2_5_Pro_high-1': { title: 'Solar System Motion Model' },
