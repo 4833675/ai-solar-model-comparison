@@ -67,6 +67,15 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '五项控制均可用，但轨道是简化非开普勒路径；过强 Bloom 抹去了中心细节。'
     },
+    'GLM5.3(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 15, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '联网 Three.js 版的 JPL 世纪率、开普勒求解、十五颗卫星、双向环影、Bloom/ACES、大气和五项交互均稳定；但没有哈雷，卫星轨道均简化为贴合行星赤道的圆轨道，地球高光与木星、土星近景也略显过曝。'
+    },
     'GLM_5_1_high-1': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },

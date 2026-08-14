@@ -508,6 +508,43 @@ window.WORKS=[
   "rank": 2
  },
  {
+  "id": "GLM5.3(Max)V1",
+  "file": "models/GLM5.3(Max)V1.html",
+  "model": "GLM 5.3 (Max)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 73580,
+  "lines": 1700,
+  "title": "太阳系 · Solar System 3D",
+  "needsFloat": true,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/GLM5.3(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [
+   "cdn.jsdelivr.net"
+  ],
+  "fix": null,
+  "tags": [
+   "in Zcode"
+  ],
+  "tier": 1,
+  "rank": 99
+ },
+ {
   "id": "GLM_5_1_high-1",
   "file": "models/GLM_5_1_high-1.html",
   "model": "GLM 5.1 (Max)",
