@@ -148,6 +148,15 @@
       interaction: { drag: 1, zoom: 1, focus: .5, follow: 0, pauseReset: 1 }, fatal: null,
       note: '开普勒求解器、历元和行星材质清楚；依赖联网且无哈雷，拖拽可能触发点选，也无持续跟随。'
     },
+    'Grok4.6(xhigh)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 3.5,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '九颗卫星、哈雷轨道参数、开普勒轨道与持续跟随均可用；但依赖联网，拖拽起点会立即点选，总览不重置时间，强烈辉光与光束明显吞掉太阳、地球及外行星细节，土星环也没有真实环影。'
+    },
     'Hy3': {
       reference: false,
       featureMap: { rings: .4, belt: 0, bloom: 1, aces: 1, atmo: 1 },

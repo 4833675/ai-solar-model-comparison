@@ -1204,8 +1204,51 @@ window.WORKS=[
    "fonts.googleapis.com"
   ],
   "fix": null,
+  "tags": [
+   "in build"
+  ],
   "tier": 3,
   "rank": 6
+ },
+ {
+  "id": "Grok4.6(xhigh)V1",
+  "file": "models/Grok4.6(xhigh)V1.html",
+  "model": "Grok 4.6 (xHigh)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 61227,
+  "lines": 1436,
+  "title": "SOLARIS · 太阳系运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "light",
+  "shot": "assets/shots/Grok4.6(xhigh)V1.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [
+   "unpkg.com",
+   "fonts.googleapis.com",
+   "fonts.gstatic.com"
+  ],
+  "fix": null,
+  "tags": [
+   "in build"
+  ],
+  "tier": 3,
+  "rank": 7
  },
  {
   "id": "Hy3-TasksAssignedByOpus5",

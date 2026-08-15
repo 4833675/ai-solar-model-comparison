@@ -58,6 +58,7 @@ const CANONICAL_NAMES = {
   'Gemini3.7Flash(high)V1-TasksAssignedByOpus5': 'Gemini 3.7 Flash (high)',
   'Gemini_3_5_flash_high': 'Gemini 3.5 Flash (high)',
   'Grok4.5': 'Grok 4.5 (high)',
+  'Grok4.6(xhigh)V1': 'Grok 4.6 (xHigh)',
   'Hy3-TasksAssignedByOpus5': 'Hy 3 (high)',
   'Hy3': 'Hy 3 (high)',
   'KimiK3Max-TasksAssignedByOpus5': 'Kimi K3 (Max) #1',
@@ -92,7 +93,7 @@ const EXPECTED_EXACT = {
   'DeepSeek_V4_Pro_high-3': 51.43, 'Fable5Max-Three': 83.6, 'Fable5Max-WebGL2': 89.7,
   'GLM5.2Max': 53.9, 'GLM5.3(Max)V1': 84.5, 'GLM_5_1_high-1': 43.95, 'GPT5.6SolMax': 81.4,
   'GPT5.6SolUltra-WebGL2': 94.2, 'GPT5.6SolUltra': 81.4, 'GPT5.6TerraUltra-Three': 68.4,
-  'GPT_5_5_xhigh': 71.8, 'Gemini_3_5_flash_high': 78.9, 'Grok4.5': 67.55, 'Hy3': 51.61,
+  'GPT_5_5_xhigh': 71.8, 'Gemini_3_5_flash_high': 78.9, 'Grok4.5': 67.55, 'Grok4.6(xhigh)V1': 70.6, 'Hy3': 51.61,
   'KimiK3Max': 80.5, 'KimiK3(Max)V2': 82.55, 'LongCat2.0': 36.66, 'Mimo_2_5_Pro_high-1': 42.42,
   'MiniMax_M3_thinking-1': 51.17, 'Opus5Ultra-WebGL2': 97.6, 'Opus_4_8_Max': 89.5,
   'Qwen3.7Max': 57.57, 'Qwen3.8MaxV2': 44.2, 'Qwen3.8Max-inQoder': 49.16,
@@ -140,6 +141,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'GPT_5_5_xhigh': '0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|5|5|4|2|0.5|1|0.5|0|1|-|-',
   'Gemini_3_5_flash_high': '0|0.4|1|0|1|0.4|1|1|1|1|1|1|1|10|1|0|5|4|4|7|1|1|1|1|1|-|-',
   'Grok4.5': '0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|5|4|4|7|1|1|0.5|0|1|-|-',
+  'Grok4.6(xhigh)V1': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|9|1|1|5|4|4|3.5|0.5|1|1|1|0.5|-|-',
   'Hy3': '0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|5|3|5|6.6|1|1|0.5|1|1|-|-',
   'KimiK3Max': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|5|5|4|7|1|1|1|1|1|-|-',
   'KimiK3(Max)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|5|2.5|4|6.5|1|1|1|1|0.5|-|-',
@@ -201,17 +203,17 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 63, `WORKS count must be 63, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 63, `SCORES count must be 63, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 63, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 63, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 64, `WORKS count must be 64, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 64, `SCORES count must be 64, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 64, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 64, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 63 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 63 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 63 WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 36, 'Audited Group A count must be 36 after adding DeepSeek V4 Pro 0813 #2');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 64 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 64 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 64 WORKS IDs');
+check(WORKS.filter(w => w.group === 'A').length === 37, 'Audited Group A count must be 37 after adding Grok 4.6');
 check(WORKS.filter(w => w.group === 'B').length === 27, 'Audited Group B count must be 27 after adding DeepSeek V4 Pro 0813 #2');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
@@ -226,8 +228,8 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'Exactly the five Qwen Preview and four retired DeepSeek V4 Pro works must be hidden');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 54, 'Visible WORKS count must be 54');
-check(visibleWorks.filter(w => w.group === 'A').length === 30, 'Visible Group A count must be 30');
+check(visibleWorks.length === 55, 'Visible WORKS count must be 55');
+check(visibleWorks.filter(w => w.group === 'A').length === 31, 'Visible Group A count must be 31');
 check(visibleWorks.filter(w => w.group === 'B').length === 24, 'Visible Group B count must be 24');
 check(visibleWorks.every(w => !w.model.includes('Preview')), 'No Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -299,7 +301,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 63, `scores.js source key ${key} must occur exactly 63 times; duplicate/missing key detected (${count})`);
+  check(count === 64, `scores.js source key ${key} must occur exactly 64 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -318,6 +320,19 @@ for (const [key, values] of numbered) {
   values.sort((a, b) => a - b);
   check(values.every((value, index) => value === index + 1), `${key}: attempt numbering is not unique and contiguous: ${values.join(',')}`);
 }
+
+const grok45 = WORKS.find(w => w.id === 'Grok4.5');
+const grok46 = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1');
+check(grok46?.group === 'A' && grok46?.tier === 3 && grok46?.pair === null, 'Grok 4.6 must be an unpaired Tier 3 one-line entry');
+check(grok46?.model === 'Grok 4.6 (xHigh)' && grok46?.title === 'SOLARIS · 太阳系运动模型', 'Grok 4.6 visible naming must be canonical');
+check(grok46?.bytes === 61227 && grok46?.lines === 1436 && grok46?.tech === 'Three.js' && grok46?.needsFloat === false && grok46?.msaa === true, 'Grok 4.6 source metadata must match the audited file');
+check(JSON.stringify(grok46?.net) === JSON.stringify(['unpkg.com', 'fonts.googleapis.com', 'fonts.gstatic.com']), 'Grok 4.6 network dependencies must match the audited file');
+for (const work of [grok45, grok46]) {
+  check(JSON.stringify(work?.tags) === JSON.stringify(['in build']), `${work?.id || 'Grok'} must show the exact in build tag`);
+  check(SITE.environmentTag(work) === 'in build' && SITE.chips(work, null).includes('in build'), `${work?.id || 'Grok'} environment tag must render as in build`);
+  check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Grok'} screenshot asset must exist`);
+}
+check(SITE.scoreFor(grok46).total === 71, 'Grok 4.6 must score 71 after the Tier 3 adjustment');
 
 const deepSeek2 = WORKS.find(w => w.id === 'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5');
 check(deepSeek2?.tier === 4, 'DeepSeek detailed #2 must remain Tier 4');
@@ -494,8 +509,8 @@ check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes(
 check(zhHome.includes('Claude Opus 4.8 是明确例外') && enHome.includes('Claude Opus 4.8 is the explicit exception'), 'Both home pages must disclose the Claude Opus 4.8 Max-to-Ultra exception');
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="aAll">30') && enHome.includes('id="aAll">30') && zhHome.includes('id="bAll">24') && enHome.includes('id="bAll">24') && zhHome.includes('id="tAll">54') && enHome.includes('id="tAll">54'), 'Both home pages must publish 30/24 and 54-entry visible counts before JavaScript runs');
-check(!enHome.includes('prefer the 18 paired results') && enHome.includes('prefer the 19 paired results over treating all 30 one-line and 24 detailed-spec works'), 'English full summary must use the current paired and group counts');
+check(zhHome.includes('id="aAll">31') && enHome.includes('id="aAll">31') && zhHome.includes('id="bAll">24') && enHome.includes('id="bAll">24') && zhHome.includes('id="tAll">55') && enHome.includes('id="tAll">55'), 'Both home pages must publish 31/24 and 55-entry visible counts before JavaScript runs');
+check(!enHome.includes('prefer the 18 paired results') && enHome.includes('prefer the 19 paired results over treating all 31 one-line and 24 detailed-spec works'), 'English full summary must use the current paired and group counts');
 check(!zhHome.includes('40.68 / 59.5') && !enHome.includes('40.68 / 59.5') && zhHome.includes('19 组同模型') && enHome.includes('19 same-model') && zhHome.includes('40.97 / 59.5') && enHome.includes('40.97 / 59.5') && zhHome.includes('30.10 / 40.5') && enHome.includes('30.10 / 40.5'), 'Both home pages must publish the current 19-pair statistics after adding DeepSeek V4 Pro 0813 #2');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
@@ -545,10 +560,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 12, tie: 1, decline: 6 }), 'Execution outcomes must be 12 / 1 / 6');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [30, 41.07333333333334, 30.476, 67.98266666666667], b: [24, 55.01666666666666, 29.858333333333334, 79.33333333333333] },
-  withoutReferences: { a: [27, 39.540740740740745, 29.53259259259259, 65.11037037037038], b: [24, 55.01666666666666, 29.858333333333334, 79.33333333333333] },
-  withoutTier4: { a: [29, 41.489655172413805, 30.76241379310345, 68.56241379310345], b: [21, 56.24285714285715, 32.35, 85.42857142857143] },
-  withoutReferencesOrTier4: { a: [26, 39.94615384615385, 29.815769230769227, 65.64653846153846], b: [21, 56.24285714285715, 32.35, 85.42857142857143] },
+  all: { a: [31, 41.34193548387096, 30.338064516129034, 68.06709677419354], b: [24, 55.01666666666666, 29.858333333333334, 79.33333333333333] },
+  withoutReferences: { a: [28, 39.892857142857146, 29.413571428571426, 65.30642857142857], b: [24, 55.01666666666666, 29.858333333333334, 79.33333333333333] },
+  withoutTier4: { a: [30, 41.75333333333334, 30.610333333333337, 68.63033333333333], b: [21, 56.24285714285715, 32.35, 85.42857142857143] },
+  withoutReferencesOrTier4: { a: [27, 40.2962962962963, 29.68185185185185, 65.83], b: [21, 56.24285714285715, 32.35, 85.42857142857143] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -581,4 +596,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 63 audited records, 54 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 64 audited records, 55 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
