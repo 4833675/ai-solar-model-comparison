@@ -76,6 +76,33 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '联网 Three.js 版的 JPL 世纪率、开普勒求解、十五颗卫星、双向环影、Bloom/ACES、大气和五项交互均稳定；但没有哈雷，卫星轨道均简化为贴合行星赤道的圆轨道，地球高光与木星、土星近景也略显过曝。'
     },
+    'GLM5.3(Max)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 8,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '联网 Three.js 版的 JPL/开普勒轨道、七颗卫星、哈雷彗星、Bloom/ACES、大气与持续跟随均稳定；地球昼夜面和土星环层次较好，但没有物理环影，卫星显示偏大，木星也缺少清楚的大红斑。'
+    },
+    'GLM5.3(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 3,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版完整实现 JPL/开普勒、八颗卫星、哈雷、双向环影、Bloom/ACES、大气与五项交互；但轨道线由间距明显的点构成，总览辉光拥挤，地球和月球近景偏黑且有噪点，木星表面偏平，土星环高光与阴影也明显过重。'
+    },
+    'GLM5.3(Max)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 4,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版完整实现 JPL/开普勒、八颗卫星、哈雷、双向环影、Bloom/ACES、大气与五项交互，长程加速运行无报错；但轨道线呈点状且不连续，靠近太阳时会出现明显的 X 形光晕伪影，木星表面偏平，卫星显示也过大。'
+    },
     'GLM_5_1_high-1': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
