@@ -85,6 +85,15 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '联网 Three.js 版的 JPL/开普勒轨道、七颗卫星、哈雷彗星、Bloom/ACES、大气与持续跟随均稳定；地球昼夜面和土星环层次较好，但没有物理环影，卫星显示偏大，木星也缺少清楚的大红斑。'
     },
+    'GLM5.3(Max)V3': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 10, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 4, data: 4, integrity: 3 }, visualBase: 3.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、十颗卫星、哈雷与恩克彗星、双向环影、Bloom/ACES、大气和五项交互；但总览被极强灰白光晕与色散覆盖，近景卫星和轨道显示过大，木星、土星主体反而难以观察。彗尾绘制还漏绑点阵 VAO，活跃时每帧产生 GL_INVALID_OPERATION，实际尾迹无法正常绘制。'
+    },
     'GLM5.3(Max)V1-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
@@ -210,6 +219,15 @@
       correctness: { runtime: 5, data: 2.5, integrity: 4 }, visualBase: 6.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
       note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、行星投向土星环的阴影、Bloom/ACES、大气与稳定跟随；但卫星只有半径与周期采用真实值，轨道方向并不真实：月球把相对黄道的 5.14° 错套到地球赤道面，其余卫星的倾角与升交点也由随机数生成。另有无哈雷、完整状态重置不足，以及太阳、地球昼面和土星近景曝光偏强等问题。'
+    },
+    'KimiK3(Max)V3': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4.5, integrity: 4.5 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版具备 J2000 开普勒轨道、哈雷、月球、小行星带与柯伊伯带、Bloom/ACES、大气和稳定跟随；但只实现一颗卫星，土星环没有物理阴影，彗尾是沿轨道累积的历史尾迹而非背太阳方向。地球近景明显偏棕，木星纹理模糊且没有清楚的大红斑，重置也只恢复视角。'
     },
     'LongCat2.0': {
       reference: false,

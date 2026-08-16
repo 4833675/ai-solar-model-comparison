@@ -657,6 +657,42 @@ window.WORKS=[
   "rank": 99
  },
  {
+  "id": "GLM5.3(Max)V3",
+  "file": "models/GLM5.3(Max)V3.html",
+  "model": "GLM 5.3 (Max) #3",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 80129,
+  "lines": 1840,
+  "title": "太阳系运动模型 · WebGL2",
+  "needsFloat": true,
+  "msaa": false,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/GLM5.3(Max)V3.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+   "in Zcode"
+  ],
+  "tier": 2,
+  "rank": 99
+ },
+ {
   "id": "GLM5.3(Max)V1-TasksAssignedByOpus5",
   "file": "models/GLM5.3(Max)V1-TasksAssignedByOpus5.html",
   "model": "GLM 5.3 (Max) #1",
@@ -1560,6 +1596,44 @@ window.WORKS=[
   "fix": null,
   "tags": [
    "in Claude Cli"
+  ],
+  "tier": 2,
+  "rank": 99
+ },
+ {
+  "id": "KimiK3(Max)V3",
+  "file": "models/KimiK3(Max)V3.html",
+  "model": "Kimi K3 (Max) #3",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 53289,
+  "lines": 1247,
+  "title": "太阳系运动模型 · Solar System",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+   "kepler",
+   "rings",
+   "belt",
+   "comet",
+   "bloom",
+   "aces",
+   "atmo",
+   "moons"
+  ],
+  "weight": "light",
+  "shot": "assets/shots/KimiK3(Max)V3.jpg",
+  "jsErrors": 0,
+  "note": null,
+  "issue": null,
+  "net": [
+   "cdn.jsdelivr.net"
+  ],
+  "fix": null,
+  "tags": [
+   "in KimiCode"
   ],
   "tier": 2,
   "rank": 99
