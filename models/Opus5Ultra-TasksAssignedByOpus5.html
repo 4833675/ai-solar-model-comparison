@@ -575,6 +575,12 @@ for (const b of [SUN, ...PLANETS, ...MOONS]) {
   b.pos = [0, 0, 0];      // world 显示坐标
   b.posAU = [0, 0, 0];    // 真实黄道坐标 (AU)
 }
+/* 哈雷彗核始终作为实体天体绘制；彗发与彗尾按日距另行激活。 */
+const HALLEY_NUCLEUS = {
+  key:'halleyNucleus', shader:'MOON', rDisp:0.16, rAU:35.0,
+  rotH:52.8, phase:0, axis:[0, 1, 0], pos:[0, 0, 0]
+};
+HALLEY_NUCLEUS.basis = basisFromAxis(HALLEY_NUCLEUS.axis);
 /* 卫星继承母行星的自转轴基（赤道参考面） */
 for (const m of MOONS) {
   const h = BODY_BY_KEY[m.host];
@@ -2267,7 +2273,7 @@ function stepBodies(jd, dtFrame) {
     m.orbAngle = th;
   }
   // 自转（3.6 + 7.11：限速每帧增量）
-  for (const b of [SUN, ...PLANETS, ...MOONS]) {
+  for (const b of [SUN, ...PLANETS, ...MOONS, HALLEY_NUCLEUS]) {
     if (!b.rotH) { b.rotH = b.rotH || 0; }
     const rotDays = (b.rotH || 24) / 24;
     let dph = TAU * dDays / rotDays;
@@ -2285,6 +2291,8 @@ function stepBodies(jd, dtFrame) {
   HALLEY.speed = orbitalSpeed(HALLEY.rAU, HALLEY.a);
   HALLEY.lonEcl = wrapTau(Math.atan2(hp.y, hp.x));
   HALLEY.latEcl = Math.asin(hp.z / HALLEY.rAU);
+  HALLEY_NUCLEUS.pos = HALLEY.pos;
+  HALLEY_NUCLEUS.rAU = HALLEY.rAU;
 }
 
 /* 3.6 模型矩阵：平移 × 自转轴正交基 × 绕 Y 自转 × 缩放 */
@@ -2552,12 +2560,15 @@ function project(p, vp) {
 function buildTails(camEye) {
   const r = HALLEY.rAU;
   if (r > 6.5) return null;
-  const scale = Math.min(9.0, Math.pow(3.0 / Math.max(r, 0.35), 2.0));
+  const scale = Math.min(1.0, Math.pow(3.0 / Math.max(r, 0.35), 2.0));
+  if (scale < 0.02) return null;
   const pos = HALLEY.pos;
   const antiSun = V3.norm(pos);                       // 太阳在原点
   const vel = HALLEY.vel;
   const viewDir = V3.norm(V3.sub(pos, camEye));
-  const len = Math.min(38, 7.5 * scale + 3.0);
+  const base = SCALE_K * 0.34;
+  const ionLen = base * 1.55 * scale;
+  const dustLen = base * 1.05 * scale;
   const D = R.tailData;
   let v = 0;
   const segs = [];
@@ -2578,17 +2589,17 @@ function buildTails(camEye) {
     segs.push({ start, count: (N + 1) * 2 });
   };
   // 离子尾：笔直指向反日方向
-  strip(t => [pos[0] + antiSun[0]*len*t, pos[1] + antiSun[1]*len*t, pos[2] + antiSun[2]*len*t],
-        t => 0.30 + 1.45*Math.pow(t, 0.75), 30);
+  strip(t => [pos[0] + antiSun[0]*ionLen*t, pos[1] + antiSun[1]*ionLen*t, pos[2] + antiSun[2]*ionLen*t],
+        t => HALLEY_NUCLEUS.rDisp * (0.9 + 6.1*Math.pow(t, 0.75)), 30);
   // 尘埃尾：更宽，沿速度反方向弯曲滞后
   strip(t => {
-      const k = len*0.74*t, c = len*0.40*Math.pow(t, 1.7);
+      const k = dustLen*t, c = dustLen*0.42*t*t;
       return [pos[0] + antiSun[0]*k - vel[0]*c, pos[1] + antiSun[1]*k - vel[1]*c, pos[2] + antiSun[2]*k - vel[2]*c];
     },
-    t => 0.55 + 4.0*Math.pow(t, 0.85), 30);
+    t => HALLEY_NUCLEUS.rDisp * (1.1 + 11.9*Math.pow(t, 0.75)), 30);
   gl.bindBuffer(gl.ARRAY_BUFFER, R.tailBuf);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, D.subarray(0, v));
-  return { segs, scale, len };
+  return { segs, scale };
 }
 
 /* ---- 通用：画球 ---- */
@@ -2711,6 +2722,9 @@ function render(dt) {
     const vao = scr > 0.05 ? R.vao.sphereHi : (scr > 0.012 ? R.vao.sphereMd : R.vao.sphereLo);
     const mesh = scr > 0.05 ? R.mesh.sphereHi : (scr > 0.012 ? R.mesh.sphereMd : R.mesh.sphereLo);
     drawBody(m, m.shader, vao, mesh);
+  }
+  if (sim.show.comet) {
+    drawBody(HALLEY_NUCLEUS, HALLEY_NUCLEUS.shader, R.vao.sphereLo, R.mesh.sphereLo);
   }
 
   /* --- 5. 轨道缎带 --- */
@@ -2835,11 +2849,11 @@ function render(dt) {
   if (sim.show.comet) {
     const T = buildTails(cam.eye);
     if (T) {
+      const k = T.scale;
       const p = R.prog.tail;
       gl.useProgram(p.p);
       gl.uniformMatrix4fv(p.u.uVP, false, MAT.vp);
       gl.bindVertexArray(R.tailVAO);
-      const k = Math.min(1.0, T.scale / 5.0);
       // 尘埃尾（偏暖黄，先画）
       gl.uniform3f(p.u.uColA, 1.00, 0.82, 0.52);
       gl.uniform3f(p.u.uColB, 0.70, 0.46, 0.24);
@@ -2852,19 +2866,23 @@ function render(dt) {
       gl.uniform1f(p.u.uInt, 0.68 * k);
       gl.uniform1f(p.u.uSharp, 2.6);
       gl.drawArrays(gl.TRIANGLE_STRIP, T.segs[0].start, T.segs[0].count);
-      // 彗发
-      const g = R.prog.glow;
+      // 彗发：固定几何尺度，只随近日点活跃度改变亮度，避免穿过聚焦相机。
+      const g = R.prog.corona;
       gl.useProgram(g.p);
       gl.uniformMatrix4fv(g.u.uVP, false, MAT.vp);
-      const rr = V3.norm(V3.cross([0, 1, 0], V3.sub(cam.eye, HALLEY.pos)));
-      const uu = V3.norm(V3.cross(V3.sub(cam.eye, HALLEY.pos), rr));
+      const toCam = V3.sub(cam.eye, HALLEY.pos);
+      const rr = V3.norm(V3.cross([0, 1, 0], toCam));
+      const uu = V3.norm(V3.cross(toCam, rr));
       gl.uniform3fv(g.u.uCenter, HALLEY.pos);
       gl.uniform3fv(g.u.uRight, rr);
       gl.uniform3fv(g.u.uUp, uu);
-      gl.uniform1f(g.u.uSize, 0.50 + 0.62 * Math.sqrt(T.scale));
+      gl.uniform1f(g.u.uTime, sim.elapsed * 0.4);
+      gl.uniform1f(g.u.uSize, HALLEY_NUCLEUS.rDisp * 5.0);
+      gl.uniform1f(g.u.uInner, 0.20);
+      gl.uniform1f(g.u.uFall, 4.8);
+      gl.uniform1f(g.u.uFreq, 5.5);
+      gl.uniform1f(g.u.uInt, 0.34 * k);
       gl.uniform3f(g.u.uCol, 0.62, 0.85, 0.92);
-      gl.uniform1f(g.u.uInt, 0.52 * k + 0.16);
-      gl.uniform1f(g.u.uFall, 3.4);
       gl.bindVertexArray(R.vao.bill);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
