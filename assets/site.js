@@ -17,6 +17,23 @@
   const hiddenWorkIds = new Set(window.HIDDEN_WORK_IDS || []);
   const isVisibleWork = work => !!work && !hiddenWorkIds.has(work.id);
   const visibleWorks = () => (window.WORKS || []).filter(isVisibleWork);
+  const modelSearchKey = value => String(value == null ? '' : value)
+    .normalize('NFKC').toLocaleLowerCase().replace(/[\s()[\]{}·._/\\-]+/g, '');
+  const modelMatches = (work, query) => {
+    const key = modelSearchKey(query);
+    return !key || modelSearchKey(work && work.model).includes(key);
+  };
+  const MODEL_GAP_DEFS = [
+    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', rightId: 'Hy3' },
+    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', rightId: 'Hy3-TasksAssignedByOpus5' },
+  ];
+  function modelGapComparisons() {
+    const byId = new Map(visibleWorks().map(work => [work.id, work]));
+    return MODEL_GAP_DEFS.map(def => Object.assign({}, def, {
+      left: byId.get(def.leftId), right: byId.get(def.rightId),
+    })).filter(row => row.left && row.right);
+  }
+  const modelGapMatches = (row, query) => modelMatches(row.left, query) || modelMatches(row.right, query);
 
   /* Claude Code 的 Ultracode 实际使用 xhigh + workflows；只给名称中的 Ultra 上语义色。 */
   const CLAUDE_ULTRA_RE = /(Claude(?:\s+[A-Za-z0-9.-]+){1,4}\s+\()Ultra(\))/g;
@@ -534,6 +551,41 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       </div></div>`;
   }
 
+  function modelGapSide(work, role) {
+    const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
+    return `<div class="model-gap-side ${role}">
+      <div class="model-gap-model">
+        <div><span>${role === 'opus' ? 'CLAUDE OPUS 5' : 'HY 3'}</span><h5>${esc(work.model)}</h5></div>
+        <div class="model-gap-score">${scoreCell(work)}</div>
+      </div>
+      <a class="model-gap-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">
+        <img loading="lazy" src="${work.shot}" alt="${esc(t('card.screenshotAlt', { name: work.model }))}">
+        <span>${t('gap.open')}</span>
+      </a>
+      <div class="model-gap-meta">
+        <span class="tier-cell-${work.tier}">${esc(tierLabel(work.tier))}</span>
+        <span>${esc(environmentTag(work))}</span>
+        <span>${esc(renderer)}</span>
+        <span>${t('gap.featureCount', { count: work.feats.length })}</span>
+      </div>
+    </div>`;
+  }
+
+  function modelGapBlock(row, index) {
+    const isPrompt = row.key === 'prompt';
+    return `<article class="model-gap-row ${isPrompt ? 'is-prompt' : 'is-document'}" data-gap-key="${esc(row.key)}">
+      <header class="model-gap-row-head">
+        <span>${String(index + 1).padStart(2, '0')}</span>
+        <div><b>${t(isPrompt ? 'group.prompt' : 'group.document')}</b><h4>${t(isPrompt ? 'gap.promptTitle' : 'gap.documentTitle')}</h4></div>
+      </header>
+      <div class="model-gap-body">
+        ${modelGapSide(row.left, 'opus')}
+        <div class="model-gap-vs" aria-hidden="true"><span>VS</span></div>
+        ${modelGapSide(row.right, 'hy')}
+      </div>
+    </article>`;
+  }
+
   function featuredPairProof(a, b) {
     if (a.pair !== 'opus5') return '';
     const proof = [
@@ -676,7 +728,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork,
+    environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    modelGapComparisons, modelGapMatches, modelGapBlock,
     byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
   };

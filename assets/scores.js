@@ -187,11 +187,11 @@
     'Grok4.6(xhigh)V1': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: true,
-      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 3.5,
-      interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '九颗卫星、哈雷轨道参数、开普勒轨道与持续跟随均可用；但依赖联网，拖拽起点会立即点选，总览不重置时间，强烈辉光与光束明显吞掉太阳、地球及外行星细节，土星环也没有真实环影。'
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 12, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2.5, integrity: 4 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '替换后的联网 Three.js 版拥有克制的总览、专用行星表面、十二颗卫星、哈雷、双星带、Bloom/ACES、大气和持续跟随；但轨道数据缺少 J2000 初始平近点角，所有行星与哈雷都从近日点同时起步，卫星升交点还由随机数生成。土星环没有物理环影，选择天体也往往要再点“复位镜头”才会明显拉近，重置不会恢复时间或显示开关。'
     },
     'Hy3': {
       reference: false,
@@ -529,6 +529,15 @@
       correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、哈雷、三套行星环、环影、Bloom/ACES 与完整交互，近景层次也较丰富；但轨道带重建时把 y 方向旋转矩阵中的 cos(Ω) 误写成 sin(Ω)，导致显示轨道与天体位置系统性不一致。默认小行星带和色散效果也偏亮、偏杂。'
+    },
+    'Grok4.6(xhigh)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 3 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、哈雷、三套环系与双向环影、Bloom/ACES、大气和完整交互，1440×900 实跑约 60 fps 且长程加速无报错；但彗尾代码把日心位置取反后当作背日方向，离子尾实际朝向太阳。默认太阳辉光也覆盖了大片内太阳系，近景表面带有明显颗粒与高光噪声。'
     },
     'Hy3-TasksAssignedByOpus5': {
       reference: false,
