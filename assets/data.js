@@ -1462,6 +1462,9 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
+  "tags": [
+   "in WorkBuddy"
+  ],
   "tier": 3,
   "rank": 7
  },
@@ -1494,6 +1497,9 @@ window.WORKS=[
    "unpkg.com"
   ],
   "fix": null,
+  "tags": [
+   "in WorkBuddy"
+  ],
   "tier": 3,
   "rank": 17
  },
