@@ -570,7 +570,7 @@ check(!source.includes('低于 Sol。'), 'Chinese score note still uses bare Sol
 const siteSource = read('assets/site.js');
 const cssSource = read('assets/site.css');
 check(siteSource.includes("w.tier === 2 ? -2 : w.tier === 3 ? -5"), 'Scoring formula must use Tier 2 −2 and Tier 3 −5');
-check((siteSource.match(/s\.total >= 80/g) || []).length === 2, 'Both score badge and tooltip must use the green threshold final score >= 80');
+check((siteSource.match(/s\.total >= \(w\.group === 'B' \? 91 : 80\)/g) || []).length === 2, 'Both score badge and tooltip must use 80 for one-line entries and 91 for detailed-spec entries');
 check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && /\.model-gap-model h5\{[^}]*white-space:nowrap/.test(cssSource), 'Model-gap headings must reserve width and keep short model names on one line');
@@ -655,7 +655,7 @@ check(zhHome.includes('22 组同模型') && enHome.includes('22 same-model') && 
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
-check(zhHome.includes('最终分大于等于 80') && enHome.includes('final score of 80 or higher'), 'Both home pages must publish the inclusive green threshold');
+check(zhHome.includes('一句话组的非标杆最终分大于等于 80') && zhHome.includes('详细文档组则需大于等于 91') && enHome.includes('one-line entries turn green at 80 or higher') && enHome.includes('detailed-spec entries turn green at 91 or higher'), 'Both home pages must publish the group-specific inclusive green thresholds');
 for (const id of referenceIds) {
   const work = WORKS.find(item => item.id === id);
   const score = SITE.scoreFor(work);
