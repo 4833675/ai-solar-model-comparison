@@ -27,6 +27,12 @@
     { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', rightId: 'Hy3' },
     { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', rightId: 'Hy3-TasksAssignedByOpus5' },
   ];
+  const SOL_EFFORT_IDS = [
+    'GPT5.6SolUltra-WebGL2',
+    'GPT5.6Sol(xhigh)V1',
+    'GPT5.6Sol(xhigh)V2',
+    'GPT5.6Sol(xhigh)V3',
+  ];
   function modelGapComparisons() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return MODEL_GAP_DEFS.map(def => Object.assign({}, def, {
@@ -34,6 +40,11 @@
     })).filter(row => row.left && row.right);
   }
   const modelGapMatches = (row, query) => modelMatches(row.left, query) || modelMatches(row.right, query);
+  function effortComparisonWorks() {
+    const byId = new Map(visibleWorks().map(work => [work.id, work]));
+    return SOL_EFFORT_IDS.map(id => byId.get(id)).filter(Boolean);
+  }
+  const effortComparisonMatches = (works, query) => works.some(work => modelMatches(work, query));
 
   /* Claude Code 的 Ultracode 实际使用 xhigh + workflows；只给名称中的 Ultra 上语义色。 */
   const CLAUDE_ULTRA_RE = /(Claude(?:\s+[A-Za-z0-9.-]+){1,4}\s+\()Ultra(\))/g;
@@ -586,6 +597,35 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     </article>`;
   }
 
+  function effortRunCard(work, index) {
+    const isUltra = index === 0;
+    const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
+    const environment = environmentTag(work);
+    const displayTags = workText(work, 'tags') || [];
+    const extraTags = displayTags.filter(tag => cleanEnvironmentTag(tag) !== environment);
+    return `<article class="effort-run-card${isUltra ? ' is-ultra' : ''}">
+      <header>
+        <div><span>${isUltra ? t('effort.ultra') : t('effort.xhighRun', { count: index })}</span><h4>${esc(work.model)}</h4></div>
+        <b>${String(index + 1).padStart(2, '0')}</b>
+      </header>
+      <a class="effort-run-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">
+        <img loading="lazy" src="${work.shot}" alt="${esc(t('card.screenshotAlt', { name: work.model }))}">
+        <span>${t('gap.open')}</span>
+      </a>
+      <div class="effort-run-score">${scoreCell(work)}</div>
+      <div class="effort-run-meta">
+        <span class="tier-cell-${work.tier}">${esc(tierLabel(work.tier))}</span>
+        <span>${esc(environment)}</span>
+        ${extraTags.map(tag => `<span class="is-note">${esc(tag)}</span>`).join('')}
+        <span>${esc(renderer)}</span>
+        <span>${t('gap.featureCount', { count: work.feats.length })}</span>
+      </div>
+      <p>${t('effort.samePrompt')}</p>
+    </article>`;
+  }
+
+  const effortComparisonBlock = works => works.map(effortRunCard).join('');
+
   function featuredPairProof(a, b) {
     if (a.pair !== 'opus5') return '';
     const proof = [
@@ -730,6 +770,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
     environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
+    effortComparisonWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
   };

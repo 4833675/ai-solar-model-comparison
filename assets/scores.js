@@ -148,6 +148,33 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '离线版的轨道、卫星和五项交互均扎实；没有哈雷，土星环仅部分达到物理处理要求。'
     },
+    'GPT5.6Sol(xhigh)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: 'Canvas2D 总览的十三颗卫星、开普勒轨道与完整交互均稳定，视觉完成度也较高；但相位并非真实历元，且无哈雷、Bloom、ACES 与物理环影，另计 Canvas2D 扣分。'
+    },
+    'GPT5.6Sol(xhigh)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: .4, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 11, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 J2000 开普勒轨道、十一颗卫星、小行星带、Bloom、大气与持续跟随；没有哈雷和物理环影，色调映射并非严格 ACES，也没有完整重置。'
+    },
+    'GPT5.6Sol(xhigh)V3': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: .4, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版的 J2000 开普勒轨道、七颗卫星、双粒子带、Bloom、大气和聚焦跟随均稳定，近景层次较好；没有哈雷与物理环影，色调映射并非严格 ACES，重置只覆盖镜头。'
+    },
     'GPT5.6TerraUltra-Three': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },

@@ -51,6 +51,9 @@ const CANONICAL_NAMES = {
   'GPT5.6SolUltra-TasksAssignedByOpus5': 'GPT-5.6 Sol (Ultra)',
   'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra) #1',
   'GPT5.6SolUltra': 'GPT-5.6 Sol (Ultra) #2',
+  'GPT5.6Sol(xhigh)V1': 'GPT-5.6 Sol (xHigh) #1',
+  'GPT5.6Sol(xhigh)V2': 'GPT-5.6 Sol (xHigh) #2',
+  'GPT5.6Sol(xhigh)V3': 'GPT-5.6 Sol (xHigh) #3',
   'GPT5.6TerraUltra-Three': 'GPT-5.6 Terra (Ultra)',
   'GPT5.6TerraUltra-TasksAssignedByOpus5': 'GPT-5.6 Terra (Ultra)',
   'GPT_5_5_xhigh': 'GPT-5.5 (xHigh)',
@@ -100,7 +103,9 @@ const EXPECTED_EXACT = {
   'GLM5.2Max': 53.9, 'GLM5.3(Max)V1': 82.5, 'GLM5.3(Max)V2': 81.6, 'GLM5.3(Max)V3': 82.8,
   'GLM5.3(Max)V1-TasksAssignedByOpus5': 79.4, 'GLM5.3(Max)V2-TasksAssignedByOpus5': 81.5,
   'GLM_5_1_high-1': 43.95, 'GPT5.6SolMax': 81.4,
-  'GPT5.6SolUltra-WebGL2': 94.2, 'GPT5.6SolUltra': 81.4, 'GPT5.6TerraUltra-Three': 68.4,
+  'GPT5.6SolUltra-WebGL2': 94.2, 'GPT5.6SolUltra': 81.4,
+  'GPT5.6Sol(xhigh)V1': 66, 'GPT5.6Sol(xhigh)V2': 87.85, 'GPT5.6Sol(xhigh)V3': 85.45,
+  'GPT5.6TerraUltra-Three': 68.4,
   'GPT_5_5_xhigh': 71.8, 'Gemini_3_5_flash_high': 78.9, 'Grok4.5': 67.55, 'Grok4.6(xhigh)V1': 77.1, 'Hy3': 51.61,
   'KimiK3Max': 80.5, 'KimiK3(Max)V2': 82.55, 'KimiK3(Max)V3': 72.35, 'LongCat2.0': 36.66, 'Mimo_2_5_Pro_high-1': 42.42,
   'MiniMax_M3_thinking-1': 51.17, 'Opus5Ultra-WebGL2': 97.6, 'Opus_4_8_Max': 89.5,
@@ -150,6 +155,9 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'GPT5.6SolMax': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|5|5|5|6|1|1|1|1|1|-|-',
   'GPT5.6SolUltra-WebGL2': '1|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|4|5|4|9.5|1|1|1|1|1|-|-',
   'GPT5.6SolUltra': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|5|5|5|6|1|1|1|1|1|-|-',
+  'GPT5.6Sol(xhigh)V1': '0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|5|4|5|7.5|1|1|1|1|1|-|-',
+  'GPT5.6Sol(xhigh)V2': '0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|11|1|0|5|5|5|8|1|1|1|1|0.5|-|-',
+  'GPT5.6Sol(xhigh)V3': '0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|7|1|0|5|5|5|8.5|1|1|1|1|0.5|-|-',
   'GPT5.6TerraUltra-Three': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|5|1|0|5|5|3|6|1|1|1|0|1|-|-',
   'GPT_5_5_xhigh': '0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|5|5|4|2|0.5|1|0.5|0|1|-|-',
   'Gemini_3_5_flash_high': '0|0.4|1|0|1|0.4|1|1|1|1|1|1|1|10|1|0|5|4|4|7|1|1|1|1|1|-|-',
@@ -218,17 +226,17 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 70, `WORKS count must be 70, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 70, `SCORES count must be 70, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 70, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 70, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 73, `WORKS count must be 73, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 73, `SCORES count must be 73, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 73, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 73, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 70 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 70 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 70 WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 40, 'Audited Group A count must be 40 after adding Kimi K3 #3 and GLM 5.3 #3');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 73 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 73 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 73 WORKS IDs');
+check(WORKS.filter(w => w.group === 'A').length === 43, 'Audited Group A count must be 43 after adding the three GPT-5.6 Sol xHigh runs');
 check(WORKS.filter(w => w.group === 'B').length === 30, 'Audited Group B count must be 30 after adding the Grok 4.6 detailed run');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
@@ -243,8 +251,8 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'Exactly the five Qwen Preview and four retired DeepSeek V4 Pro works must be hidden');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 61, 'Visible WORKS count must be 61');
-check(visibleWorks.filter(w => w.group === 'A').length === 34, 'Visible Group A count must be 34');
+check(visibleWorks.length === 64, 'Visible WORKS count must be 64');
+check(visibleWorks.filter(w => w.group === 'A').length === 37, 'Visible Group A count must be 37');
 check(visibleWorks.filter(w => w.group === 'B').length === 27, 'Visible Group B count must be 27');
 check(visibleWorks.every(w => !w.model.includes('Preview')), 'No Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -318,7 +326,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 70, `scores.js source key ${key} must occur exactly 70 times; duplicate/missing key detected (${count})`);
+  check(count === 73, `scores.js source key ${key} must occur exactly 73 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -337,6 +345,22 @@ for (const [key, values] of numbered) {
   values.sort((a, b) => a - b);
   check(values.every((value, index) => value === index + 1), `${key}: attempt numbering is not unique and contiguous: ${values.join(',')}`);
 }
+
+const solXHigh1 = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V1');
+const solXHigh2 = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V2');
+const solXHigh3 = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V3');
+check(solXHigh1?.group === 'A' && solXHigh1?.tier === 3 && solXHigh1?.tech === 'Canvas2D', 'GPT-5.6 Sol xHigh #1 must be a Tier 3 Canvas2D one-line run');
+check(solXHigh2?.group === 'A' && solXHigh2?.tier === 2 && solXHigh2?.tech === 'WebGL2', 'GPT-5.6 Sol xHigh #2 must be a Tier 2 WebGL2 one-line run');
+check(solXHigh3?.group === 'A' && solXHigh3?.tier === 2 && solXHigh3?.tech === 'WebGL2', 'GPT-5.6 Sol xHigh #3 must be a Tier 2 WebGL2 one-line run');
+check(JSON.stringify(solXHigh1?.tags) === JSON.stringify(['in Zcode', '中转站']) && JSON.stringify(solXHigh2?.tags) === JSON.stringify(['in Zcode', '中转站']), 'GPT-5.6 Sol xHigh #1/#2 must show in Zcode plus the relay-service tag');
+check(JSON.stringify(solXHigh3?.tags) === JSON.stringify(['in Codex']), 'GPT-5.6 Sol xHigh #3 must show the in Codex tag');
+check(solXHigh1?.bytes === 60111 && solXHigh1?.lines === 1107 && solXHigh1?.net.length === 0, 'GPT-5.6 Sol xHigh #1 source metadata must match the supplied file');
+check(solXHigh2?.bytes === 40148 && solXHigh2?.lines === 187 && solXHigh2?.net.length === 0, 'GPT-5.6 Sol xHigh #2 source metadata must match the supplied file');
+check(solXHigh3?.bytes === 63449 && solXHigh3?.lines === 1688 && solXHigh3?.net.length === 0, 'GPT-5.6 Sol xHigh #3 source metadata must match the supplied file');
+for (const work of [solXHigh1, solXHigh2, solXHigh3]) {
+  check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
+}
+check(SITE.scoreFor(solXHigh1).total === 66 && SITE.scoreFor(solXHigh2).total === 88 && SITE.scoreFor(solXHigh3).total === 85, 'GPT-5.6 Sol xHigh evidence scores must be 66, 88, and 85');
 
 const grok45 = WORKS.find(w => w.id === 'Grok4.5');
 const grok46 = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1');
@@ -547,7 +571,7 @@ const siteSource = read('assets/site.js');
 const cssSource = read('assets/site.css');
 check(siteSource.includes("w.tier === 2 ? -2 : w.tier === 3 ? -5"), 'Scoring formula must use Tier 2 −2 and Tier 3 −5');
 check((siteSource.match(/s\.total >= 80/g) || []).length === 2, 'Both score badge and tooltip must use the green threshold final score >= 80');
-check((siteSource.match(/card\.openAria/g) || []).length === 3, 'Pair and model-gap screenshot links must render accessible full-work labels');
+check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && /\.model-gap-model h5\{[^}]*white-space:nowrap/.test(cssSource), 'Model-gap headings must reserve width and keep short model names on one line');
 check(cssSource.includes('.model-gap-model>div:first-child>span{') && !cssSource.includes('.model-gap-model span{'), 'Model-gap eyebrow styling must not turn nested Ultra or score spans into block elements');
@@ -577,6 +601,15 @@ for (const id of ['Opus5Ultra-WebGL2', 'Hy3', 'Opus5Ultra-TasksAssignedByOpus5',
   check(modelGapHtml.includes(`data-score-id="${id}"`), `${id} must render its existing score trigger in the curated comparison`);
   check(modelGapHtml.includes(WORKS.find(w => w.id === id).shot), `${id} must render its existing screenshot in the curated comparison`);
 }
+check(typeof SITE.effortComparisonWorks === 'function' && typeof SITE.effortComparisonBlock === 'function' && typeof SITE.effortComparisonMatches === 'function', 'SITE must expose the four-way reasoning-effort comparison API');
+const effortWorks = SITE.effortComparisonWorks();
+check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6Sol(xhigh)V1', 'GPT5.6Sol(xhigh)V2', 'GPT5.6Sol(xhigh)V3']), 'The reasoning-effort comparison must preserve Ultra #1 followed by xHigh #1/#2/#3');
+check(SITE.effortComparisonMatches(effortWorks, 'GPT-5.6 Sol') && SITE.effortComparisonMatches(effortWorks, 'xhigh') && !SITE.effortComparisonMatches(effortWorks, 'Kimi'), 'The reasoning-effort comparison must follow model-name search filtering');
+const effortHtml = SITE.effortComparisonBlock(effortWorks);
+for (const work of effortWorks) {
+  check(effortHtml.includes(`data-score-id="${work.id}"`) && effortHtml.includes(work.shot), `${work.id} must render its score trigger and screenshot in the four-way comparison`);
+}
+check(effortHtml.includes('中转站') && effortHtml.includes('in Zcode') && effortHtml.includes('in Codex'), 'The four-way comparison must retain all supplied environment and relay tags');
 for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(page.includes('id="modelSearchInput"') && page.includes('id="modelSearchClear"') && page.includes('id="modelSearchStatus"'), `${language} home must include the global model-search controls`);
   check(page.includes('role="search"') && page.includes('aria-live="polite"'), `${language} model search must expose search and live-status semantics`);
@@ -594,8 +627,12 @@ for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(modelGapStart > caveatStart && modelGapStart < tableStart && page.includes('id="modelGapList"'), `${language} model-gap section must sit between the Ultra notice and the table`);
   check(page.includes('S.modelGapComparisons') && page.includes('S.modelGapMatches'), `${language} model-gap section must participate in global search filtering`);
   check(page.indexOf('<section id="table"') < page.indexOf('<section id="pairs"'), `${language} total table must appear before the same-model comparison`);
+  const effortStart = page.indexOf('id="solEffortComparison"');
+  check(effortStart > tableStart && effortStart < page.indexOf('<section id="pairs"') && page.includes('id="solEffortList"'), `${language} four-way reasoning-effort comparison must sit below the table and above same-model pairs`);
+  check(page.includes('S.effortComparisonWorks') && page.includes('S.effortComparisonMatches') && page.includes('S.effortComparisonBlock'), `${language} four-way reasoning-effort comparison must participate in global search filtering`);
 }
 check(zhHome.includes('同一种需求，不同模型') && enHome.includes('Same Brief, Different Models'), 'Both languages must title the new cross-model comparison section');
+check(zhHome.includes('同一个 GPT-5.6 Sol，四次一句话交付') && enHome.includes('One GPT-5.6 Sol, four one-line deliveries'), 'Both languages must title the four-way reasoning-effort comparison');
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
 check(!enHome.includes('What it cannot demonstrate: an overall ranking of model capability') && !enHome.includes('Claude Fable 5 (Max) still has no specification-based version') && !enHome.includes('Reasoning-level note:'), 'English method section must remove the corresponding three explanatory paragraphs');
 check(enHome.includes("works.length===1?'entry':'entries'") && enHome.includes("pairs.length===1?'comparison':'comparisons'"), 'English live search status must use singular nouns for one result');
@@ -605,8 +642,8 @@ check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes(
 check(zhHome.includes('Claude Opus 4.8 则是 (Max → Ultra) 的跨档位例外') && enHome.includes('Claude Opus 4.8 is the (Max → Ultra) cross-level exception'), 'Both pair introductions must retain the Claude Opus 4.8 Max-to-Ultra exception');
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="aAll">34') && enHome.includes('id="aAll">34') && zhHome.includes('id="bAll">27') && enHome.includes('id="bAll">27') && zhHome.includes('id="tAll">61') && enHome.includes('id="tAll">61'), 'Both home pages must publish 34/27 and 61-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 34 件和文档组 27 件') && enHome.includes('prefer the 22 paired results over treating all 34 one-line and 27 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">37') && enHome.includes('id="aAll">37') && zhHome.includes('id="bAll">27') && enHome.includes('id="bAll">27') && zhHome.includes('id="tAll">64') && enHome.includes('id="tAll">64'), 'Both home pages must publish 37/27 and 64-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 37 件和文档组 27 件') && enHome.includes('prefer the 22 paired results over treating all 37 one-line and 27 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('22 组同模型') && enHome.includes('22 same-model') && zhHome.includes('41.99 / 59.5') && enHome.includes('41.99 / 59.5') && zhHome.includes('31.53 / 40.5') && enHome.includes('31.53 / 40.5'), 'Both home pages must publish the current 22-pair statistics after adding Grok 4.6');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
@@ -656,10 +693,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 12, tie: 1, decline: 9 }), 'Execution outcomes must be 12 / 1 / 9');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [34, 42.05, 30.54794117647059, 69.15676470588235], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
-  withoutReferences: { a: [31, 40.80967741935484, 29.733225806451614, 66.76870967741935], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
-  withoutTier4: { a: [33, 42.44545454545454, 30.801818181818188, 69.70181818181818], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
-  withoutReferencesOrTier4: { a: [30, 41.20333333333334, 29.985333333333337, 67.28866666666666], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
+  all: { a: [37, 42.67567567567567, 31.01702702702703, 70.01702702702703], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
+  withoutReferences: { a: [34, 41.6, 30.31558823529412, 67.91558823529412], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
+  withoutTier4: { a: [36, 43.05555555555555, 31.262777777777778, 70.54055555555556], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
+  withoutReferencesOrTier4: { a: [33, 41.981818181818184, 30.562424242424242, 68.42303030303029], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -692,4 +729,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 70 audited records, 61 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 73 audited records, 64 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
