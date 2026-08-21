@@ -610,6 +610,13 @@ for (const work of effortWorks) {
   check(effortHtml.includes(`data-score-id="${work.id}"`) && effortHtml.includes(work.shot), `${work.id} must render its score trigger and screenshot in the four-way comparison`);
 }
 check(effortHtml.includes('中转站') && effortHtml.includes('in Zcode') && effortHtml.includes('in Codex'), 'The four-way comparison must retain all supplied environment and relay tags');
+check(typeof SITE.pairCollection === 'function', 'SITE must expose the collapsible same-model comparison renderer');
+const collapsedPairs = SITE.pairCollection(SITE.pairs(), false);
+check(collapsedPairs.includes('pair-archive') && !collapsedPairs.includes('<details class="pair-archive" open'), 'Same-model comparisons must keep only the first pair open by default');
+check(SITE.pairCollection(SITE.pairs(), true).includes('<details class="pair-archive" open'), 'Active model search must expand the remaining same-model comparisons');
+const collapsedGallery = SITE.tieredGallery(visibleWorks.filter(work => work.group === 'A'), false);
+check(collapsedGallery.includes('tier-archive') && !collapsedGallery.includes('<details class="tier-archive" open'), 'Entry previews must keep only Tier 1 visible by default');
+check(SITE.tieredGallery(visibleWorks.filter(work => work.group === 'A'), true).includes('<details class="tier-archive" open'), 'Active model search must expand the remaining preview tiers');
 for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(page.includes('id="modelSearchInput"') && page.includes('id="modelSearchClear"') && page.includes('id="modelSearchStatus"'), `${language} home must include the global model-search controls`);
   check(page.includes('role="search"') && page.includes('aria-live="polite"'), `${language} model search must expose search and live-status semantics`);

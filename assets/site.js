@@ -687,6 +687,17 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       </div>`;
   }
 
+  function pairCollection(pairs, expandRest = false) {
+    if (!pairs.length) return '';
+    const first = pairBlock(pairs[0], 0);
+    const rest = pairs.slice(1);
+    if (!rest.length) return first;
+    return `${first}<details class="pair-archive"${expandRest ? ' open' : ''}>
+      <summary><span class="collection-closed">${t('collection.showPairs', { count: rest.length })}</span><span class="collection-open">${t('collection.hidePairs', { count: rest.length })}</span><b aria-hidden="true">⌄</b></summary>
+      <div class="pairs pair-archive-grid">${rest.map((pair, index) => pairBlock(pair, index + 1)).join('')}</div>
+    </details>`;
+  }
+
   function pairTitle(pair) {
     return (window.PAIR_TITLES || {})[pair.a.pair] || pair.a.model;
   }
@@ -750,10 +761,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   // 按梯队分组渲染画廊
-  function tieredGallery(works) {
+  function tieredGallery(works, expandRest = false) {
     const byTier = {};
     works.forEach(w => (byTier[w.tier] = byTier[w.tier] || []).push(w));
-    return Object.keys(byTier).sort((a, b) => a - b).map(tier => {
+    const tierBlock = tier => {
       const list = byTier[tier].sort((a, b) => scoreOrder(a, b));
       const benchmarkTier = tier === '1' && list[0] && list[0].group === 'A';
       return `<div class="tier tier-${tier}${tier === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
@@ -761,12 +772,21 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
             ? `<b class="tier-recommend"><span aria-hidden="true">⚑</span> ${t('benchmark.recommend')}</b>` : ''}<i>${t('unit.works', { count: list.length })}</i></div>
           <div class="grid">${list.map(card).join('')}</div>
         </div>`;
-    }).join('');
+    };
+    const tiers = Object.keys(byTier).sort((a, b) => a - b);
+    const primary = tiers.includes('1') ? tierBlock('1') : '';
+    const rest = tiers.filter(tier => tier !== '1');
+    if (!rest.length) return primary;
+    const restCount = rest.reduce((sum, tier) => sum + byTier[tier].length, 0);
+    return `${primary}<details class="tier-archive"${expandRest ? ' open' : ''}>
+      <summary><span class="collection-closed">${t('collection.showWorks', { count: restCount })}</span><span class="collection-open">${t('collection.hideWorks', { count: restCount })}</span><b aria-hidden="true">⌄</b></summary>
+      <div class="tier-archive-body">${rest.map(tierBlock).join('')}</div>
+    </details>`;
   }
 
   /* ---------------------------------------------------------- 导出 */
   window.SITE = {
-    tieredGallery,
+    tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
     environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
