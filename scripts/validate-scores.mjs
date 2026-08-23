@@ -22,6 +22,9 @@ const allowed = (value, values, label) => check(values.includes(value), `${label
 const finiteRange = (value, min, max, label) => check(Number.isFinite(value) && value >= min && value <= max, `${label}: expected finite ${min}..${max}, got ${value}`);
 
 const CANONICAL_NAMES = {
+  'DoubaoSeedEvolving(Max)V1': 'Doubao Seed Evolving (Max)',
+  'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': 'Doubao Seed Evolving (Max)',
+  'GPT5.6Sol(high)V1': 'GPT-5.6 Sol (high)',
   'Opus5Ultra-TasksAssignedByOpus5': 'Claude Opus 5 (Ultra)',
   'DeepSeek-V4-Flash-0731': 'DeepSeek V4 Flash 0731 (Max)',
   'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': 'DeepSeek V4 Flash 0731 (Max) #1',
@@ -98,6 +101,9 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  'DoubaoSeedEvolving(Max)V1': 57.5,
+  'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': 81.05,
+  'GPT5.6Sol(high)V1': 82.9,
   'DeepSeek-V4-Flash-0731': 45.55, 'DeepSeek_V4_Pro_high-1': 40.3, 'DeepSeek_V4_Pro_high-2': 51.86,
   'DeepSeek_V4_Pro_high-3': 51.43, 'Fable5Max-Three': 83.6, 'Fable5Max-WebGL2': 89.7,
   'GLM5.2Max': 53.9, 'GLM5.3(Max)V1': 82.5, 'GLM5.3(Max)V2': 81.6, 'GLM5.3(Max)V3': 82.8,
@@ -139,6 +145,9 @@ const EXPECTED_EXACT = {
 // correctness(3) | visualBase | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  'DoubaoSeedEvolving(Max)V1': '0|1|1|1|1|0|1|0|0|0|0|1|1|11|1|0|5|3|5|3|1|1|0|0|1|-|-',
+  'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|5|4|1|1|1|1|0.5|-|-',
+  'GPT5.6Sol(high)V1': '0|0.4|1|1|1|1|1|1|1|1|0|1|1|8|1|0|5|3|5|8|1|1|1|1|1|-|-',
   'DeepSeek-V4-Flash-0731': '0|0.4|0.4|0.4|1|1|1|1|1|0.5|0.5|0.5|0.5|1|1|0|4|4|3|1.5|1|1|0.5|0|1|-|-',
   'DeepSeek_V4_Pro_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|5|3|5|2.5|1|1|0|0|0|-|-',
   'DeepSeek_V4_Pro_high-2': '0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-',
@@ -226,18 +235,18 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 73, `WORKS count must be 73, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 73, `SCORES count must be 73, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 73, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 73, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 76, `WORKS count must be 76, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 76, `SCORES count must be 76, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 76, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 76, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 73 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 73 WORKS IDs');
-check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 73 WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 43, 'Audited Group A count must be 43 after adding the three GPT-5.6 Sol xHigh runs');
-check(WORKS.filter(w => w.group === 'B').length === 30, 'Audited Group B count must be 30 after adding the Grok 4.6 detailed run');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the 76 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the 76 WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the 76 WORKS IDs');
+check(WORKS.filter(w => w.group === 'A').length === 45, 'Audited Group A count must be 45 after adding Doubao and GPT-5.6 Sol high');
+check(WORKS.filter(w => w.group === 'B').length === 31, 'Audited Group B count must be 31 after adding the Doubao detailed run');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
   'Qwen3.8MaxV2-TasksAssignedByOpus5',
@@ -251,16 +260,16 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'Exactly the five Qwen Preview and four retired DeepSeek V4 Pro works must be hidden');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 64, 'Visible WORKS count must be 64');
-check(visibleWorks.filter(w => w.group === 'A').length === 37, 'Visible Group A count must be 37');
-check(visibleWorks.filter(w => w.group === 'B').length === 27, 'Visible Group B count must be 27');
+check(visibleWorks.length === 67, 'Visible WORKS count must be 67');
+check(visibleWorks.filter(w => w.group === 'A').length === 39, 'Visible Group A count must be 39');
+check(visibleWorks.filter(w => w.group === 'B').length === 28, 'Visible Group B count must be 28');
 check(visibleWorks.every(w => !w.model.includes('Preview')), 'No Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) check(SITE.byId(id) === undefined, id + ': direct work page lookup must stay hidden');
-check(PAIR_ORDER.length === 22 && new Set(PAIR_ORDER).size === 22, 'PAIR_ORDER must contain 22 unique visible pairs');
+check(PAIR_ORDER.length === 23 && new Set(PAIR_ORDER).size === 23, 'PAIR_ORDER must contain 23 unique visible pairs');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 22, 'Expected 22 complete visible pairs');
+check(SITE.pairs().length === 23, 'Expected 23 complete visible pairs');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
 check(PAIR_ORDER[7] === 'deepseekv4pro0813' && PAIR_ORDER[8] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 08 and 09');
 check(PAIR_ORDER[9] === 'glm53v1' && PAIR_ORDER[10] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 10 and 11');
@@ -268,6 +277,7 @@ check(PAIR_ORDER[12] === 'qwen38max', 'The Qwen 3.8 Max pair must occupy compari
 check(PAIR_ORDER[13] === 'grok46', 'The Grok 4.6 pair must occupy comparison position 14');
 check(PAIR_ORDER[16] === 'gemini36flash', 'Gemini 3.6 Flash must occupy comparison position 17');
 check(PAIR_ORDER[18] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 19 after inserting Grok 4.6');
+check(PAIR_ORDER[21] === 'doubao' && PAIR_ORDER[22] === 'minimax', 'Doubao must occupy comparison position 22 before MiniMax');
 
 const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2'].sort();
 check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the three approved references must be flagged');
@@ -326,7 +336,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 73, `scores.js source key ${key} must occur exactly 73 times; duplicate/missing key detected (${count})`);
+  check(count === 76, `scores.js source key ${key} must occur exactly 76 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -345,6 +355,20 @@ for (const [key, values] of numbered) {
   values.sort((a, b) => a - b);
   check(values.every((value, index) => value === index + 1), `${key}: attempt numbering is not unique and contiguous: ${values.join(',')}`);
 }
+
+const doubaoOneLine = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1');
+const doubaoDetailed = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5');
+const solHigh = WORKS.find(w => w.id === 'GPT5.6Sol(high)V1');
+check(doubaoOneLine?.group === 'A' && doubaoDetailed?.group === 'B' && doubaoOneLine?.tier === 3 && doubaoDetailed?.tier === 3, 'Both Doubao Seed Evolving runs must be Tier 3');
+check(doubaoOneLine?.pair === 'doubao' && doubaoDetailed?.pair === 'doubao', 'Doubao Seed Evolving runs must form one explicit pair');
+check(JSON.stringify(doubaoOneLine?.tags) === JSON.stringify(['in Claude CLI']) && JSON.stringify(doubaoDetailed?.tags) === JSON.stringify(['in Claude CLI']), 'Both Doubao runs must show in Claude CLI');
+check(doubaoOneLine?.bytes === 43559 && doubaoOneLine?.lines === 994 && doubaoDetailed?.bytes === 100880 && doubaoDetailed?.lines === 2568, 'Doubao source metadata must match the supplied files');
+check(solHigh?.group === 'A' && solHigh?.tier === 2 && solHigh?.pair === null && JSON.stringify(solHigh?.tags) === JSON.stringify(['in Codex']), 'GPT-5.6 Sol high must be an unpaired Tier 2 in Codex run');
+check(solHigh?.bytes === 48544 && solHigh?.lines === 407 && solHigh?.tech === 'WebGL2', 'GPT-5.6 Sol high source metadata must match the supplied file');
+for (const work of [doubaoOneLine, doubaoDetailed, solHigh]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
+check(SITE.scoreFor(doubaoOneLine).total === 58 && SITE.scoreFor(doubaoDetailed).total === 81 && SITE.scoreFor(solHigh).total === 83, 'New evidence scores must be 58, 81, and 83');
+const doubaoPair = SITE.pairs()[21];
+check(doubaoPair?.a?.id === doubaoOneLine.id && doubaoPair?.b?.id === doubaoDetailed.id, 'Comparison position 22 must be the Doubao pair');
 
 const solXHigh1 = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V1');
 const solXHigh2 = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V2');
@@ -573,7 +597,7 @@ check(siteSource.includes("w.tier === 2 ? -2 : w.tier === 3 ? -5"), 'Scoring for
 check((siteSource.match(/s\.total >= \(w\.group === 'B' \? 91 : 80\)/g) || []).length === 2, 'Both score badge and tooltip must use 80 for one-line entries and 91 for detailed-spec entries');
 check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
-check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && /\.model-gap-model h5\{[^}]*white-space:nowrap/.test(cssSource), 'Model-gap headings must reserve width and keep short model names on one line');
+check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
 check(cssSource.includes('.model-gap-model>div:first-child>span{') && !cssSource.includes('.model-gap-model span{'), 'Model-gap eyebrow styling must not turn nested Ultra or score spans into block elements');
 const zhHome = read('index.html');
 const enHome = read('index.en.html');
@@ -593,23 +617,23 @@ check(SITE.modelMatches(searchKimi3, ''), 'An empty model query must restore eve
 check(typeof SITE.modelGapComparisons === 'function' && typeof SITE.modelGapBlock === 'function' && typeof SITE.modelGapMatches === 'function', 'SITE must expose the curated cross-model comparison API');
 const modelGaps = SITE.modelGapComparisons();
 check(modelGaps.length === 2, 'The curated model-gap section must contain exactly two comparisons');
-check(modelGaps[0]?.left?.id === 'Opus5Ultra-WebGL2' && modelGaps[0]?.right?.id === 'Hy3' && modelGaps[0]?.left?.group === 'A' && modelGaps[0]?.right?.group === 'A', 'The first model-gap comparison must be the one-line Claude Opus 5 vs Hy 3 pair');
-check(modelGaps[1]?.left?.id === 'Opus5Ultra-TasksAssignedByOpus5' && modelGaps[1]?.right?.id === 'Hy3-TasksAssignedByOpus5' && modelGaps[1]?.left?.group === 'B' && modelGaps[1]?.right?.group === 'B', 'The second model-gap comparison must be the detailed-spec Claude Opus 5 vs Hy 3 pair');
-check(SITE.modelGapMatches(modelGaps[0], 'Opus') && SITE.modelGapMatches(modelGaps[0], 'Hy 3') && !SITE.modelGapMatches(modelGaps[0], 'Kimi'), 'Curated comparisons must follow the global model-name search');
+check(modelGaps[0]?.left?.id === 'Opus5Ultra-WebGL2' && modelGaps[0]?.middle?.id === 'Hy3' && modelGaps[0]?.right?.id === 'DoubaoSeedEvolving(Max)V1', 'The first model-gap comparison must contain the three one-line runs in the requested order');
+check(modelGaps[1]?.left?.id === 'Opus5Ultra-TasksAssignedByOpus5' && modelGaps[1]?.middle?.id === 'Hy3-TasksAssignedByOpus5' && modelGaps[1]?.right?.id === 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5', 'The second model-gap comparison must contain the three detailed-spec runs in the requested order');
+check(SITE.modelGapMatches(modelGaps[0], 'Opus') && SITE.modelGapMatches(modelGaps[0], 'Hy 3') && SITE.modelGapMatches(modelGaps[0], 'Doubao') && !SITE.modelGapMatches(modelGaps[0], 'Kimi'), 'Curated comparisons must follow the global model-name search');
 const modelGapHtml = modelGaps.map(SITE.modelGapBlock).join('');
-for (const id of ['Opus5Ultra-WebGL2', 'Hy3', 'Opus5Ultra-TasksAssignedByOpus5', 'Hy3-TasksAssignedByOpus5']) {
+for (const id of ['Opus5Ultra-WebGL2', 'Hy3', 'DoubaoSeedEvolving(Max)V1', 'Opus5Ultra-TasksAssignedByOpus5', 'Hy3-TasksAssignedByOpus5', 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5']) {
   check(modelGapHtml.includes(`data-score-id="${id}"`), `${id} must render its existing score trigger in the curated comparison`);
   check(modelGapHtml.includes(WORKS.find(w => w.id === id).shot), `${id} must render its existing screenshot in the curated comparison`);
 }
 check(typeof SITE.effortComparisonWorks === 'function' && typeof SITE.effortComparisonBlock === 'function' && typeof SITE.effortComparisonMatches === 'function', 'SITE must expose the four-way reasoning-effort comparison API');
 const effortWorks = SITE.effortComparisonWorks();
-check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6Sol(xhigh)V1', 'GPT5.6Sol(xhigh)V2', 'GPT5.6Sol(xhigh)V3']), 'The reasoning-effort comparison must preserve Ultra #1 followed by xHigh #1/#2/#3');
+check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6SolMax', 'GPT5.6Sol(xhigh)V3', 'GPT5.6Sol(high)V1']), 'The reasoning-effort comparison must preserve Ultra #1, Max, xHigh #3, and high');
 check(SITE.effortComparisonMatches(effortWorks, 'GPT-5.6 Sol') && SITE.effortComparisonMatches(effortWorks, 'xhigh') && !SITE.effortComparisonMatches(effortWorks, 'Kimi'), 'The reasoning-effort comparison must follow model-name search filtering');
 const effortHtml = SITE.effortComparisonBlock(effortWorks);
 for (const work of effortWorks) {
   check(effortHtml.includes(`data-score-id="${work.id}"`) && effortHtml.includes(work.shot), `${work.id} must render its score trigger and screenshot in the four-way comparison`);
 }
-check(effortHtml.includes('中转站') && effortHtml.includes('in Zcode') && effortHtml.includes('in Codex'), 'The four-way comparison must retain all supplied environment and relay tags');
+check((effortHtml.match(/in Codex/g) || []).length === 4 && !effortHtml.includes('中转站'), 'The revised four-way comparison must show the four requested Codex runs');
 check(typeof SITE.pairCollection === 'function', 'SITE must expose the collapsible same-model comparison renderer');
 const collapsedPairs = SITE.pairCollection(SITE.pairs(), false);
 check(collapsedPairs.includes('pair-archive') && !collapsedPairs.includes('<details class="pair-archive" open'), 'Same-model comparisons must keep only the first pair open by default');
@@ -649,9 +673,9 @@ check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes(
 check(zhHome.includes('Claude Opus 4.8 则是 (Max → Ultra) 的跨档位例外') && enHome.includes('Claude Opus 4.8 is the (Max → Ultra) cross-level exception'), 'Both pair introductions must retain the Claude Opus 4.8 Max-to-Ultra exception');
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="aAll">37') && enHome.includes('id="aAll">37') && zhHome.includes('id="bAll">27') && enHome.includes('id="bAll">27') && zhHome.includes('id="tAll">64') && enHome.includes('id="tAll">64'), 'Both home pages must publish 37/27 and 64-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 37 件和文档组 27 件') && enHome.includes('prefer the 22 paired results over treating all 37 one-line and 27 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('22 组同模型') && enHome.includes('22 same-model') && zhHome.includes('41.99 / 59.5') && enHome.includes('41.99 / 59.5') && zhHome.includes('31.53 / 40.5') && enHome.includes('31.53 / 40.5'), 'Both home pages must publish the current 22-pair statistics after adding Grok 4.6');
+check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">28') && enHome.includes('id="bAll">28') && zhHome.includes('id="tAll">67') && enHome.includes('id="tAll">67'), 'Both home pages must publish 39/28 and 67-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 39 件和文档组 28 件') && enHome.includes('prefer the 23 paired results over treating all 39 one-line and 28 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('23 组同模型') && enHome.includes('23 same-model') && zhHome.includes('41.86 / 59.5') && enHome.includes('41.86 / 59.5') && zhHome.includes('31.41 / 40.5') && enHome.includes('31.41 / 40.5'), 'Both home pages must publish the current 23-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -688,22 +712,22 @@ check(zhHome.includes('已收录的 Claude Fable 5 (Max) #1') && enHome.includes
 const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 100, 'Score maxima');
 check(stats.maxima.coverage === 59.5 && stats.maxima.execution === 40.5 && stats.maxima.total === 100, 'Max definition must be 59.5 + 40.5 = 100');
-check(stats.pairedSummary.n === 22, 'Paired statistics must use 22 visible pairs');
-close(stats.pairedSummary.coverage.a, 41.98636363636364, 'Paired A coverage mean');
-close(stats.pairedSummary.coverage.b, 55.89545454545455, 'Paired B coverage mean');
-close(stats.pairedSummary.execution.a, 30.63136363636363, 'Paired A execution mean');
-close(stats.pairedSummary.execution.b, 31.525, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 68.7540909090909, 'Paired A exact-score mean');
-close(stats.pairedSummary.exact.b, 83.07500000000002, 'Paired B exact-score mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 17, tie: 1, decline: 4 }), 'Final paired outcomes must be 17 improve / 1 tie / 4 decline');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 21, tie: 1, decline: 0 }), 'Coverage outcomes must be 21 / 1 / 0');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 12, tie: 1, decline: 9 }), 'Execution outcomes must be 12 / 1 / 9');
+check(stats.pairedSummary.n === 23, 'Paired statistics must use 23 visible pairs');
+close(stats.pairedSummary.coverage.a, 41.856521739130436, 'Paired A coverage mean');
+close(stats.pairedSummary.coverage.b, 55.94782608695652, 'Paired B coverage mean');
+close(stats.pairedSummary.execution.a, 30.321304347826082, 'Paired A execution mean');
+close(stats.pairedSummary.execution.b, 31.41304347826087, 'Paired B execution mean');
+close(stats.pairedSummary.exact.a, 68.26478260869565, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.b, 82.98695652173915, 'Paired B exact-score mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 18, tie: 1, decline: 4 }), 'Final paired outcomes must be 18 improve / 1 tie / 4 decline');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 22, tie: 1, decline: 0 }), 'Coverage outcomes must be 22 / 1 / 0');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 9 }), 'Execution outcomes must be 13 / 1 / 9');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [37, 42.67567567567567, 31.01702702702703, 70.01702702702703], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
-  withoutReferences: { a: [34, 41.6, 30.31558823529412, 67.91558823529412], b: [27, 55.24814814814813, 29.76296296296297, 79.64074074074071] },
-  withoutTier4: { a: [36, 43.05555555555555, 31.262777777777778, 70.54055555555556], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
-  withoutReferencesOrTier4: { a: [33, 41.981818181818184, 30.562424242424242, 68.42303030303029], b: [24, 56.349999999999994, 31.931250000000006, 85.01249999999999] },
+  all: { a: [39, 42.75897435897434, 30.934102564102567, 70.02641025641026], b: [28, 55.314285714285695, 29.733928571428574, 79.6910714285714] },
+  withoutReferences: { a: [36, 41.74999999999999, 30.26472222222223, 68.0425], b: [28, 55.314285714285695, 29.733928571428574, 79.6910714285714] },
+  withoutTier4: { a: [38, 43.121052631578934, 31.16473684210527, 70.52263157894737], b: [25, 56.37999999999999, 31.81200000000001, 84.85399999999998] },
+  withoutReferencesOrTier4: { a: [35, 42.11428571428571, 30.496000000000002, 68.52457142857143], b: [25, 56.37999999999999, 31.81200000000001, 84.85399999999998] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -736,4 +760,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 73 audited records, 64 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 76 audited records, 67 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');

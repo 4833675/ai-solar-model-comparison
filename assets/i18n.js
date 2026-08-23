@@ -281,6 +281,9 @@
   };
 
   const SCORE_NOTES_EN = {
+    'DoubaoSeedEvolving(Max)V1': 'The offline native-WebGL2 build runs eleven moons, ring shadows, Bloom/ACES, and an asteroid belt. Its planets use coplanar circular paths and hand-tuned speeds rather than Keplerian motion or a real epoch, it has no focus-follow interaction, and the default view is heavily washed out by bright particles.',
+    'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': 'The detailed-spec run covers JPL/Keplerian orbits, eight moons, Halley, three ring systems with shadows, Bloom/ACES, atmospheres, and continuous follow. The default scene and orbit lines are strongly overexposed with a gold cast, and there is no complete state reset.',
+    'GPT5.6Sol(high)V1': 'The offline native-WebGL2 build stably delivers eight moons, an asteroid belt, Bloom/ACES, atmospheres, and complete interaction, with a clear overview. Every planet starts from perihelion because initial mean anomalies are absent, while Halley and physical ring shadows are also missing.',
     'Opus5Ultra-WebGL2': 'All eight features, bidirectional ring shadows, and the complete interaction set are present. It remains one of the three benchmark entries whose table cells keep the gold label while exposing the score on hover.',
     'Opus5Ultra-TasksAssignedByOpus5': 'All eight features, eight moons, complete interaction, and bidirectional ring shadows work. It also corrected Halley’s 2061 perihelion using the measured return interval and used runtime testing to fix long-term cloud drift, glare, and fragment-shader performance.',
     'GPT5.6SolUltra-WebGL2': 'Fourteen moons and a complete interaction set stand out. The procedural-world build takes about 12 seconds, and its comet elements are not Halley’s, so the Halley score does not apply.',
@@ -357,6 +360,9 @@
   };
 
   const WORK_TEXT_EN = {
+    'DoubaoSeedEvolving(Max)V1': { title: 'Solar System · WebGL2' },
+    'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'GPT5.6Sol(high)V1': { title: 'HELIOS · Dynamic Solar-System Observatory' },
     'DeepSeek-V4-Flash-0731': { title: 'Solar System Simulation' },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': { title: 'Solar System · Real-Time Orbital Model' },
     'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': {

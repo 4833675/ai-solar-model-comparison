@@ -24,22 +24,22 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const MODEL_GAP_DEFS = [
-    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', rightId: 'Hy3' },
-    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', rightId: 'Hy3-TasksAssignedByOpus5' },
+    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy3', rightId: 'DoubaoSeedEvolving(Max)V1' },
+    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy3-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
   ];
   const SOL_EFFORT_IDS = [
     'GPT5.6SolUltra-WebGL2',
-    'GPT5.6Sol(xhigh)V1',
-    'GPT5.6Sol(xhigh)V2',
+    'GPT5.6SolMax',
     'GPT5.6Sol(xhigh)V3',
+    'GPT5.6Sol(high)V1',
   ];
   function modelGapComparisons() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return MODEL_GAP_DEFS.map(def => Object.assign({}, def, {
-      left: byId.get(def.leftId), right: byId.get(def.rightId),
-    })).filter(row => row.left && row.right);
+      left: byId.get(def.leftId), middle: byId.get(def.middleId), right: byId.get(def.rightId),
+    })).filter(row => row.left && row.middle && row.right);
   }
-  const modelGapMatches = (row, query) => modelMatches(row.left, query) || modelMatches(row.right, query);
+  const modelGapMatches = (row, query) => modelMatches(row.left, query) || modelMatches(row.middle, query) || modelMatches(row.right, query);
   function effortComparisonWorks() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return SOL_EFFORT_IDS.map(id => byId.get(id)).filter(Boolean);
@@ -564,9 +564,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function modelGapSide(work, role) {
     const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
+    const family = role === 'opus' ? 'CLAUDE OPUS 5' : role === 'hy' ? 'HY 3' : 'DOUBAO SEED EVOLVING';
     return `<div class="model-gap-side ${role}">
       <div class="model-gap-model">
-        <div><span>${role === 'opus' ? 'CLAUDE OPUS 5' : 'HY 3'}</span><h5>${esc(work.model)}</h5></div>
+        <div><span>${family}</span><h5>${esc(work.model)}</h5></div>
         <div class="model-gap-score">${scoreCell(work)}</div>
       </div>
       <a class="model-gap-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">
@@ -592,20 +593,23 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <div class="model-gap-body">
         ${modelGapSide(row.left, 'opus')}
         <div class="model-gap-vs" aria-hidden="true"><span>VS</span></div>
-        ${modelGapSide(row.right, 'hy')}
+        ${modelGapSide(row.middle, 'hy')}
+        <div class="model-gap-vs" aria-hidden="true"><span>VS</span></div>
+        ${modelGapSide(row.right, 'doubao')}
       </div>
     </article>`;
   }
 
   function effortRunCard(work, index) {
     const isUltra = index === 0;
+    const effort = isUltra ? t('effort.ultra') : (work.model.match(/\(([^)]+)\)/) || [])[1] || 'MODE';
     const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
     const environment = environmentTag(work);
     const displayTags = workText(work, 'tags') || [];
     const extraTags = displayTags.filter(tag => cleanEnvironmentTag(tag) !== environment);
     return `<article class="effort-run-card${isUltra ? ' is-ultra' : ''}">
       <header>
-        <div><span>${isUltra ? t('effort.ultra') : t('effort.xhighRun', { count: index })}</span><h4>${esc(work.model)}</h4></div>
+        <div><span>${esc(effort)}</span><h4>${esc(work.model)}</h4></div>
         <b>${String(index + 1).padStart(2, '0')}</b>
       </header>
       <a class="effort-run-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">

@@ -3,6 +3,33 @@
   'use strict';
 
   window.SCORES = {
+    'DoubaoSeedEvolving(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 0, elements: 0, orientation: 0, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 11, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 3,
+      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2、十一颗卫星、环影、Bloom/ACES 与小行星带均可运行；但行星使用共面圆轨道与手工速度，没有开普勒、真实历元或聚焦跟随，默认画面也被大量高亮粒子明显洗白。'
+    },
+    'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 4,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '详细文档版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、三套环影、Bloom/ACES、大气和持续跟随；但默认场景曝光与轨道线亮度过强，近景背景明显泛金，且没有完整状态重置。'
+    },
+    'GPT5.6Sol(high)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 8,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 的八颗卫星、小行星带、Bloom/ACES、大气与完整交互均稳定，默认总览清晰；但所有行星从近日点同步起步，没有真实初始平近点角，且缺少哈雷与物理环影。'
+    },
     /* 一句话组（含三个金色参考作品） */
     'DeepSeek-V4-Flash-0731': {
       reference: false,
