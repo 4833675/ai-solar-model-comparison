@@ -53,7 +53,7 @@ const CANONICAL_NAMES = {
   'GLM_5_1_high-1': 'GLM 5.1 (Max)',
   'GPT5.5xHigh-TasksAssignedByOpus5': 'GPT-5.5 (xHigh)',
   'GPT5.6LunaMax-TasksAssignedByOpus5': 'GPT-5.6 Luna (Max)',
-  'GPT5.6SolMax': 'GPT-5.6 Sol (Max)',
+  'GPT5.6Sol(Max)V1': 'GPT-5.6 Sol (Max)',
   'GPT5.6SolUltra-TasksAssignedByOpus5': 'GPT-5.6 Sol (Ultra)',
   'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra) #1',
   'GPT5.6SolUltra': 'GPT-5.6 Sol (Ultra) #2',
@@ -104,7 +104,7 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
-  'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': 93.05,
+  'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': 95.05,
   'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5': 87.45,
   'GPT5.6Sol(high)V1-TasksAssignedByOpus5': 84.85,
   'DoubaoSeedEvolving(Max)V1': 57.5,
@@ -114,7 +114,7 @@ const EXPECTED_EXACT = {
   'DeepSeek_V4_Pro_high-3': 51.43, 'Fable5Max-Three': 83.6, 'Fable5Max-WebGL2': 89.7,
   'GLM5.2Max': 53.9, 'GLM5.3(Max)V1': 82.5, 'GLM5.3(Max)V2': 81.6, 'GLM5.3(Max)V3': 82.8,
   'GLM5.3(Max)V1-TasksAssignedByOpus5': 79.4, 'GLM5.3(Max)V2-TasksAssignedByOpus5': 81.5,
-  'GLM_5_1_high-1': 43.95, 'GPT5.6SolMax': 81.4,
+  'GLM_5_1_high-1': 43.95, 'GPT5.6Sol(Max)V1': 89.6,
   'GPT5.6SolUltra-WebGL2': 94.2, 'GPT5.6SolUltra': 81.4,
   'GPT5.6Sol(xhigh)V1': 66, 'GPT5.6Sol(xhigh)V2': 87.85, 'GPT5.6Sol(xhigh)V3': 85.45,
   'GPT5.6TerraUltra-Three': 68.4,
@@ -170,7 +170,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'GLM5.3(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|4|3|1|1|1|1|1|-|-',
   'GLM5.3(Max)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|4.5|4|1|1|1|1|1|-|-',
   'GLM_5_1_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|5|3|5|3|1|1|1|0|0.5|-|-',
-  'GPT5.6SolMax': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|5|5|5|6|1|1|1|1|1|-|-',
+  'GPT5.6Sol(Max)V1': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|10|1|0|5|5|5|8|1|0.5|1|1|0.5|-|-',
   'GPT5.6SolUltra-WebGL2': '1|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|4|5|4|9.5|1|1|1|1|1|-|-',
   'GPT5.6SolUltra': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|5|5|5|6|1|1|1|1|1|-|-',
   'GPT5.6Sol(xhigh)V1': '0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|5|4|5|7.5|1|1|1|1|1|-|-',
@@ -368,6 +368,7 @@ for (const [key, values] of numbered) {
 const doubaoOneLine = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1');
 const doubaoDetailed = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5');
 const solHigh = WORKS.find(w => w.id === 'GPT5.6Sol(high)V1');
+const solMaxOneLine = WORKS.find(w => w.id === 'GPT5.6Sol(Max)V1');
 const solMaxDetailed = WORKS.find(w => w.id === 'GPT5.6Sol(Max)V1-TasksAssignedByOpus5');
 const solXHighDetailed = WORKS.find(w => w.id === 'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5');
 const solHighDetailed = WORKS.find(w => w.id === 'GPT5.6Sol(high)V1-TasksAssignedByOpus5');
@@ -377,16 +378,20 @@ check(JSON.stringify(doubaoOneLine?.tags) === JSON.stringify(['in Claude CLI']) 
 check(doubaoOneLine?.bytes === 43559 && doubaoOneLine?.lines === 994 && doubaoDetailed?.bytes === 100880 && doubaoDetailed?.lines === 2568, 'Doubao source metadata must match the supplied files');
 check(solHigh?.group === 'A' && solHigh?.tier === 2 && solHigh?.pair === null && JSON.stringify(solHigh?.tags) === JSON.stringify(['in Codex']), 'GPT-5.6 Sol high must be an unpaired Tier 2 in Codex run');
 check(solHigh?.bytes === 48544 && solHigh?.lines === 407 && solHigh?.tech === 'WebGL2', 'GPT-5.6 Sol high source metadata must match the supplied file');
-for (const work of [doubaoOneLine, doubaoDetailed, solHigh]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
+check(solMaxOneLine?.group === 'A' && solMaxOneLine?.tier === 1 && solMaxOneLine?.pair === null && SITE.environmentTag(solMaxOneLine) === 'in Codex', 'GPT-5.6 Sol Max replacement must be an unpaired Tier 1 in Codex run');
+check(solMaxOneLine?.file === 'models/GPT5.6Sol(Max)V1.html' && solMaxOneLine?.bytes === 102251 && solMaxOneLine?.lines === 2737 && solMaxOneLine?.tech === 'WebGL2' && solMaxOneLine?.msaa === false, 'GPT-5.6 Sol Max replacement metadata must match the supplied file');
+for (const work of [doubaoOneLine, doubaoDetailed, solHigh, solMaxOneLine]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
 check(SITE.scoreFor(doubaoOneLine).total === 58 && SITE.scoreFor(doubaoDetailed).total === 81 && SITE.scoreFor(solHigh).total === 83, 'New evidence scores must be 58, 81, and 83');
-for (const work of [solMaxDetailed, solXHighDetailed, solHighDetailed]) {
+check(solMaxDetailed?.group === 'B' && solMaxDetailed?.tier === 1 && solMaxDetailed?.pair === null, 'GPT-5.6 Sol Max must be an unpaired Tier 1 detailed-spec run');
+check(JSON.stringify(solMaxDetailed?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${solMaxDetailed.shot}`, import.meta.url)), 'GPT-5.6 Sol Max detailed must show in Codex and have a screenshot');
+for (const work of [solXHighDetailed, solHighDetailed]) {
   check(work?.group === 'B' && work?.tier === 2 && work?.pair === null, `${work?.id || 'GPT-5.6 Sol detailed'} must be an unpaired Tier 2 detailed-spec run`);
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Sol detailed'} must show in Codex and have a screenshot`);
 }
 check(solMaxDetailed?.bytes === 86118 && solMaxDetailed?.lines === 1061 && solMaxDetailed?.msaa === true, 'GPT-5.6 Sol Max detailed metadata must match the supplied file');
 check(solXHighDetailed?.bytes === 76202 && solXHighDetailed?.lines === 283 && solXHighDetailed?.msaa === true, 'GPT-5.6 Sol xHigh detailed metadata must match the supplied file');
 check(solHighDetailed?.bytes === 45296 && solHighDetailed?.lines === 172 && solHighDetailed?.msaa === false, 'GPT-5.6 Sol high detailed metadata must match the supplied file');
-check(SITE.scoreFor(solMaxDetailed).total === 93 && SITE.scoreFor(solXHighDetailed).total === 87 && SITE.scoreFor(solHighDetailed).total === 85, 'Detailed effort scores must be 93, 87, and 85');
+check(SITE.scoreFor(solMaxOneLine).total === 90 && SITE.scoreFor(solMaxDetailed).total === 95 && SITE.scoreFor(solXHighDetailed).total === 87 && SITE.scoreFor(solHighDetailed).total === 85, 'Updated Sol effort scores must be 90, 95, 87, and 85');
 const doubaoPair = SITE.pairs()[21];
 check(doubaoPair?.a?.id === doubaoOneLine.id && doubaoPair?.b?.id === doubaoDetailed.id, 'Comparison position 22 must be the Doubao pair');
 
@@ -647,7 +652,7 @@ for (const id of ['Opus5Ultra-WebGL2', 'Hy3', 'DoubaoSeedEvolving(Max)V1', 'Opus
 }
 check(typeof SITE.effortComparisonWorks === 'function' && typeof SITE.effortDocumentWorks === 'function' && typeof SITE.effortComparisonBlock === 'function' && typeof SITE.effortComparisonMatches === 'function', 'SITE must expose both four-way reasoning-effort comparison APIs');
 const effortWorks = SITE.effortComparisonWorks();
-check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6SolMax', 'GPT5.6Sol(xhigh)V3', 'GPT5.6Sol(high)V1']), 'The reasoning-effort comparison must preserve Ultra #1, Max, xHigh #3, and high');
+check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6Sol(Max)V1', 'GPT5.6Sol(xhigh)V3', 'GPT5.6Sol(high)V1']), 'The reasoning-effort comparison must preserve Ultra #1, Max, xHigh #3, and high');
 check(SITE.effortComparisonMatches(effortWorks, 'GPT-5.6 Sol') && SITE.effortComparisonMatches(effortWorks, 'xhigh') && !SITE.effortComparisonMatches(effortWorks, 'Kimi'), 'The reasoning-effort comparison must follow model-name search filtering');
 const effortHtml = SITE.effortComparisonBlock(effortWorks);
 for (const work of effortWorks) {
@@ -749,10 +754,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 9 }), 'Execution outcomes must be 13 / 1 / 9');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [39, 42.75897435897434, 30.934102564102567, 70.02641025641026], b: [31, 55.39032258064514, 30.18064516129032, 80.53870967741933] },
-  withoutReferences: { a: [36, 41.74999999999999, 30.26472222222223, 68.0425], b: [31, 55.39032258064514, 30.18064516129032, 80.53870967741933] },
-  withoutTier4: { a: [38, 43.121052631578934, 31.16473684210527, 70.52263157894737], b: [28, 56.34999999999999, 32.08392857142858, 85.23928571428569] },
-  withoutReferencesOrTier4: { a: [35, 42.11428571428571, 30.496000000000002, 68.52457142857143], b: [28, 56.34999999999999, 32.08392857142858, 85.23928571428569] },
+  all: { a: [39, 42.88461538461537, 30.967435897435898, 70.23666666666666], b: [31, 55.39032258064513, 30.18064516129032, 80.60322580645159] },
+  withoutReferences: { a: [36, 41.886111111111106, 30.300833333333337, 68.27027777777778], b: [31, 55.39032258064513, 30.18064516129032, 80.60322580645159] },
+  withoutTier4: { a: [38, 43.249999999999986, 31.198947368421056, 70.73842105263158], b: [28, 56.34999999999998, 32.08392857142858, 85.31071428571428] },
+  withoutReferencesOrTier4: { a: [35, 42.25428571428571, 30.53314285714286, 68.75885714285714], b: [28, 56.34999999999998, 32.08392857142858, 85.31071428571428] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {

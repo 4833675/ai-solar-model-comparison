@@ -29,7 +29,7 @@
   ];
   const SOL_EFFORT_IDS = [
     'GPT5.6SolUltra-WebGL2',
-    'GPT5.6SolMax',
+    'GPT5.6Sol(Max)V1',
     'GPT5.6Sol(xhigh)V3',
     'GPT5.6Sol(high)V1',
   ];

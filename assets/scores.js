@@ -148,14 +148,14 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
       note: '拖拽、缩放、聚焦和暂停可用，但没有完整重置；轨道简化，星空与土星观感粗糙。'
     },
-    'GPT5.6SolMax': {
+    'GPT5.6Sol(Max)V1': {
       reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 1, atmo: 1 },
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 6,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线版的开普勒轨道、七颗卫星与持续跟随均成立；没有哈雷，土星环缺少物理环影。'
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 10, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版的 J2000/开普勒轨道、十颗卫星、小行星带、Bloom/ACES、大气与持续跟随均稳定，地球昼夜面、木星条纹和土星近景层次清楚；但没有哈雷，土星环缺少物理环影，缩放下限可进入大型天体，也没有一次完整状态重置。'
     },
     'GPT5.6SolUltra-WebGL2': {
       reference: true,
