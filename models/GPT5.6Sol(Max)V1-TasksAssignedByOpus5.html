@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>太阳系 · 实时轨道模型</title>
+<style>
+  :root {
+    --ink: #f2f6ff;
+    --muted: #8996aa;
+    --line: rgba(174, 207, 255, .15);
+    --glass: rgba(6, 12, 25, .64);
+    --glass-strong: rgba(7, 14, 29, .84);
+    --cyan: #78dff7;
+    --gold: #ffc86b;
+    --violet: #9d93ff;
+    --danger: #ff9a91;
+    --panel-blur: 22px;
+  }
+  * { box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #010207; color: var(--ink); }
+  body {
+    font-family: "Avenir Next", "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+    letter-spacing: .01em;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { border: 0; }
+  #app { position: relative; width: 100%; height: 100%; isolation: isolate; background: #010207; }
+  #glCanvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  #glCanvas:active { cursor: grabbing; }
+  #labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .body-label {
+    position: absolute;
+    transform: translate(10px, -50%);
+    color: rgba(232, 242, 255, .84);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-shadow: 0 1px 8px #000, 0 0 12px rgba(89, 190, 255, .35);
+    white-space: nowrap;
+    transition: opacity .18s ease;
+  }
+  .body-label::before {
+    content: "";
+    position: absolute;
+    width: 5px; height: 5px; border-radius: 50%;
+    left: -10px; top: 50%; transform: translateY(-50%);
+    border: 1px solid currentColor;
+    opacity: .62;
+  }
+  .body-label.selected { color: #fff5d7; text-shadow: 0 0 12px rgba(255, 202, 99, .9); }
+  .glass {
+    background: linear-gradient(135deg, rgba(15, 27, 50, .76), var(--glass));
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255,255,255,.025);
+    backdrop-filter: blur(var(--panel-blur)) saturate(125%);
+    -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(125%);
+  }
+  .eyebrow {
+    color: var(--cyan);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+  }
+  .brand {
+    position: absolute;
+    left: 26px; top: 22px;
+    display: flex; align-items: center; gap: 12px;
+    z-index: 5; pointer-events: none;
+  }
+  .brand-mark {
+    width: 30px; height: 30px; position: relative;
+    border: 1px solid rgba(255, 210, 119, .4); border-radius: 50%;
+    box-shadow: inset 0 0 14px rgba(255, 180, 55, .12);
+  }
+  .brand-mark::before {
+    content: ""; position: absolute; inset: 9px; border-radius: 50%;
+    background: #ffd27e; box-shadow: 0 0 14px #ffb43d, 0 0 32px rgba(255, 148, 35, .46);
+  }
+  .brand-mark::after {
+    content: ""; position: absolute; left: -6px; right: -6px; top: 14px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(137, 220, 255, .55), transparent);
+    transform: rotate(-17deg);
+  }
+  .brand h1 { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: .18em; }
+  .brand p { margin: 3px 0 0; color: var(--muted); font: 9px/1.2 ui-monospace, "SFMono-Regular", monospace; letter-spacing: .16em; }
+  #bodyPanel {
+    position: absolute; z-index: 6; left: 20px; top: 78px; bottom: 96px; width: 206px;
+    border-radius: 14px; padding: 14px 9px 12px; overflow: auto; scrollbar-width: thin;
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 11px; }
+  .panel-head small { color: var(--muted); font: 9px ui-monospace, monospace; }
+  .body-group { margin-top: 4px; }
+  .group-title {
+    padding: 9px 9px 5px;
+    color: rgba(149, 170, 200, .72);
+    font-size: 8px; font-weight: 500; letter-spacing: .24em;
+  }
+  .body-button {
+    width: 100%; min-height: 31px; padding: 5px 9px;
+    display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 8px;
+    color: #bbc6d7; background: transparent; border-radius: 8px;
+    text-align: left; font-size: 11px; letter-spacing: .08em; cursor: pointer;
+    transition: background .16s ease, color .16s ease, transform .16s ease;
+  }
+  .body-button:hover { background: rgba(125, 181, 239, .08); color: #edf5ff; }
+  .body-button:focus-visible { outline: 1px solid var(--cyan); outline-offset: -1px; }
+  .body-button.active { background: linear-gradient(90deg, rgba(102, 199, 240, .16), rgba(102, 199, 240, .035)); color: #fff; }
+  .body-button.moon { padding-left: 24px; color: #8e9aac; font-size: 10px; }
+  .body-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot, #a8b8cb); box-shadow: 0 0 8px color-mix(in srgb, var(--dot) 70%, transparent); }
+  .body-distance { font: 8px ui-monospace, monospace; color: #6e7d92; letter-spacing: .02em; }
+  #infoPanel {
+    position: absolute; z-index: 6; right: 20px; top: 20px; width: 306px; max-height: calc(100% - 156px);
+    border-radius: 16px; overflow: auto; padding: 18px 18px 16px; scrollbar-width: thin;
+  }
+  .info-kicker { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  #infoClass { color: #74859b; font: 9px ui-monospace, monospace; letter-spacing: .13em; }
+  #infoName {
+    margin: 8px 0 1px; font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 34px; font-weight: 400; letter-spacing: .09em;
+  }
+  #infoLatin { margin: 0; color: #77879b; font: 10px ui-monospace, monospace; letter-spacing: .16em; }
+  .live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 18px; margin: 18px 0 14px; }
+  .metric { padding: 9px 0; border-top: 1px solid rgba(161, 194, 233, .1); min-width: 0; }
+  .metric-label { color: #718196; font-size: 8px; letter-spacing: .18em; }
+  .metric-value {
+    margin-top: 4px; color: #e8f4ff; font: 12px/1.25 ui-monospace, "SFMono-Regular", monospace;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .data-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 10px; }
+  .data-table td { border-top: 1px solid rgba(161, 194, 233, .09); padding: 7px 0; vertical-align: top; }
+  .data-table td:first-child { color: #6f8097; width: 43%; letter-spacing: .08em; }
+  .data-table td:last-child { color: #c7d1df; text-align: right; font-family: ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  #infoText { margin: 15px 0 0; color: #9aa8ba; font-size: 10px; line-height: 1.75; text-align: justify; }
+  .section-label { margin: 14px 0 6px; color: var(--cyan); font-size: 8px; letter-spacing: .22em; }
+  #timeDock {
+    position: absolute; z-index: 7; left: 50%; bottom: 18px; transform: translateX(-50%);
+    width: min(620px, calc(100% - 520px)); min-width: 420px; border-radius: 15px;
+    display: grid; grid-template-columns: auto minmax(160px, 1fr) auto; align-items: center; gap: 12px;
+    padding: 10px 12px;
+  }
+  .icon-button, .quiet-button {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 32px; border-radius: 9px; cursor: pointer;
+    background: rgba(139, 184, 231, .075); border: 1px solid rgba(158, 196, 239, .12);
+    transition: background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .icon-button { width: 34px; font-size: 13px; }
+  .quiet-button { padding: 0 11px; color: #aab8c9; font-size: 9px; letter-spacing: .12em; }
+  .icon-button:hover, .quiet-button:hover { background: rgba(139, 197, 247, .14); border-color: rgba(158, 213, 255, .24); }
+  .icon-button:active, .quiet-button:active { transform: scale(.97); }
+  button:focus-visible, input:focus-visible { outline: 1px solid var(--cyan); outline-offset: 2px; }
+  .time-main { min-width: 0; }
+  .time-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  #dateInput {
+    width: 184px; max-width: 55%; padding: 0; border: 0; background: transparent;
+    color: #e6eef9; font: 11px ui-monospace, monospace; font-variant-numeric: tabular-nums;
+    color-scheme: dark;
+  }
+  #speedReadout { color: var(--gold); font: 9px ui-monospace, monospace; white-space: nowrap; }
+  #speedRange { width: 100%; height: 18px; margin: 3px 0 0; accent-color: #9bdcf5; }
+  #viewDock {
+    position: absolute; z-index: 7; right: 20px; bottom: 18px; width: 306px; border-radius: 14px;
+    padding: 11px 13px;
+  }
+  .toggle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 10px; margin-top: 9px; }
+  .toggle { display: flex; align-items: center; gap: 6px; color: #99a7ba; font-size: 9px; letter-spacing: .06em; cursor: pointer; white-space: nowrap; }
+  .toggle input { appearance: none; width: 22px; height: 12px; border-radius: 8px; background: rgba(126, 148, 178, .22); border: 1px solid rgba(168, 198, 235, .16); position: relative; transition: .18s ease; }
+  .toggle input::after { content: ""; position: absolute; width: 6px; height: 6px; left: 2px; top: 2px; border-radius: 50%; background: #8695a7; transition: .18s ease; }
+  .toggle input:checked { background: rgba(92, 197, 232, .3); border-color: rgba(111, 215, 248, .44); }
+  .toggle input:checked::after { left: 12px; background: #c5f4ff; box-shadow: 0 0 7px #72ddfa; }
+  #scaleNotice {
+    position: absolute; z-index: 4; left: 50%; top: 22px; transform: translateX(-50%);
+    color: rgba(175, 192, 213, .62); font-size: 9px; letter-spacing: .09em; text-align: center;
+    pointer-events: none;
+  }
+  #validityWarning { color: var(--danger); display: none; margin-left: 8px; }
+  #status {
+    position: absolute; left: 24px; bottom: 24px; z-index: 5;
+    color: rgba(130, 149, 174, .66); font: 8px ui-monospace, monospace; letter-spacing: .09em;
+    pointer-events: none; font-variant-numeric: tabular-nums;
+  }
+  #help {
+    position: absolute; left: 241px; bottom: 100px; z-index: 4;
+    color: rgba(142, 157, 181, .55); font-size: 8px; letter-spacing: .08em; pointer-events: none;
+  }
+  #webglError {
+    display: none; position: absolute; inset: 0; z-index: 20; place-items: center; padding: 30px;
+    background: radial-gradient(circle, #111a2b, #02040a 65%); text-align: center;
+  }
+  #webglError strong { display: block; font-size: 22px; margin-bottom: 10px; }
+  .mobile-tab { display: none; position: absolute; top: 18px; z-index: 9; }
+  #mobileBodies { left: 18px; }
+  #mobileInfo { right: 18px; }
+  .ui-hidden .ui-layer { opacity: 0 !important; pointer-events: none !important; }
+  .ui-layer { transition: opacity .2s ease; }
+  @media (max-width: 1120px) {
+    #timeDock { width: min(520px, calc(100% - 468px)); }
+    #infoPanel, #viewDock { width: 278px; }
+    #bodyPanel { width: 184px; }
+  }
+  @media (max-width: 850px) {
+    .brand { left: 64px; top: 20px; }
+    .mobile-tab { display: inline-flex; width: auto; padding: 0 10px; }
+    #bodyPanel { left: 12px; top: 58px; bottom: 220px; transform: translateX(calc(-100% - 20px)); transition: transform .2s ease; }
+    #infoPanel { right: 12px; top: 58px; bottom: 220px; max-height: none; transform: translateX(calc(100% + 20px)); transition: transform .2s ease; }
+    body.show-bodies #bodyPanel { transform: translateX(0); }
+    body.show-info #infoPanel { transform: translateX(0); }
+    #viewDock { right: 12px; bottom: 98px; width: min(320px, calc(100% - 24px)); }
+    #timeDock { left: 12px; right: 12px; bottom: 12px; width: auto; min-width: 0; transform: none; }
+    #status { display: none; }
+    #help { display: none; }
+    #scaleNotice { top: 62px; max-width: calc(100% - 40px); }
+  }
+  @media (max-width: 520px) {
+    .brand h1 { font-size: 13px; }
+    .brand p { display: none; }
+    .brand-mark { width: 26px; height: 26px; }
+    .brand-mark::before { inset: 8px; }
+    #viewDock { padding: 9px 11px; }
+    .toggle-grid { grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 7px; }
+    .toggle { flex-direction: column; gap: 3px; font-size: 8px; }
+    #timeDock { grid-template-columns: auto 1fr auto; gap: 7px; }
+    #dateInput { width: 152px; max-width: 66%; font-size: 9px; }
+    .quiet-button { padding: 0 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
+</style>
+</head>
+<body>
+<main id="app">
+  <canvas id="glCanvas" aria-label="可交互太阳系三维实时模型"></canvas>
+  <div id="labels" aria-hidden="true"></div>
+
+  <div class="brand ui-layer">
+    <div class="brand-mark"></div>
+    <div><h1>太阳系</h1><p>HELIOCENTRIC LIVE MODEL</p></div>
+  </div>
+
+  <button id="mobileBodies" class="mobile-tab quiet-button glass ui-layer" type="button">天体</button>
+  <button id="mobileInfo" class="mobile-tab quiet-button glass ui-layer" type="button">数据</button>
+
+  <aside id="bodyPanel" class="glass ui-layer" aria-label="天体列表">
+    <div class="panel-head"><span class="eyebrow">天体导航</span><small>选择聚焦</small></div>
+    <div id="bodyList"></div>
+  </aside>
+
+  <aside id="infoPanel" class="glass ui-layer" aria-live="polite">
+    <div class="info-kicker"><span class="eyebrow">观测档案</span><span id="infoClass"></span></div>
+    <h2 id="infoName">太阳</h2>
+    <p id="infoLatin">SOL</p>
+    <div class="section-label">实时轨道数据</div>
+    <div class="live-grid">
+      <div class="metric"><div class="metric-label">日心距离</div><div class="metric-value" id="mHelio">—</div></div>
+      <div class="metric"><div class="metric-label">与地球距离</div><div class="metric-value" id="mEarth">—</div></div>
+      <div class="metric"><div class="metric-label">黄经 / 黄纬</div><div class="metric-value" id="mLonLat">—</div></div>
+      <div class="metric"><div class="metric-label">光行时间</div><div class="metric-value" id="mLight">—</div></div>
+      <div class="metric"><div class="metric-label">近日点 / 远日点</div><div class="metric-value" id="mApsides">—</div></div>
+      <div class="metric"><div class="metric-label">轨道速度</div><div class="metric-value" id="mVelocity">—</div></div>
+    </div>
+    <div class="section-label">物理参数</div>
+    <table class="data-table"><tbody id="staticData"></tbody></table>
+    <p id="infoText"></p>
+  </aside>
+
+  <div id="scaleNotice" class="ui-layer">径向距离采用幂律压缩 · 角位置与轨道相位保持真实 <span id="validityWarning">已超出根数有效区间（外推）</span></div>
+
+  <section id="timeDock" class="glass ui-layer" aria-label="时间控制">
+    <button id="playButton" class="icon-button" type="button" aria-label="暂停">Ⅱ</button>
+    <div class="time-main">
+      <div class="time-row">
+        <input id="dateInput" type="datetime-local" step="1" aria-label="UTC 日期时间">
+        <output id="speedReadout">实时 · 1 秒/秒</output>
+      </div>
+      <input id="speedRange" type="range" min="-100" max="100" step="1" value="0" aria-label="时间速度">
+    </div>
+    <button id="nowButton" class="quiet-button" type="button">此刻 UTC</button>
+  </section>
+
+  <section id="viewDock" class="glass ui-layer" aria-label="显示设置">
+    <div class="eyebrow">显示图层</div>
+    <div class="toggle-grid">
+      <label class="toggle"><input id="toggleOrbits" type="checkbox" checked>轨道</label>
+      <label class="toggle"><input id="toggleLabels" type="checkbox" checked>名称</label>
+      <label class="toggle"><input id="toggleMoons" type="checkbox" checked>卫星</label>
+      <label class="toggle"><input id="toggleBelts" type="checkbox" checked>小天体</label>
+      <label class="toggle"><input id="toggleComet" type="checkbox" checked>彗星</label>
+      <label class="toggle"><input id="toggleReal" type="checkbox">真实距离</label>
+      <label class="toggle"><input id="toggleBloom" type="checkbox" checked>辉光</label>
+    </div>
+  </section>
+
+  <div id="status" class="ui-layer">WEBGL2 · 初始化中</div>
+  <div id="help" class="ui-layer">拖拽旋转 · 滚轮缩放 · 点击天体聚焦 · 空格暂停 · ← → 调速 · H 隐藏界面</div>
+  <div id="webglError"><div><strong>此浏览器无法启动 WebGL2</strong><span>请使用支持 WebGL2 的新版浏览器，并确认硬件加速已开启。</span></div></div>
+</main>
+
+<script id="vs-bg" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+out vec2 vUv;
+void main(){
+  vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+  vUv = p;
+  gl_Position = vec4(p * 2.0 - 1.0, 0.99999, 1.0);
+}</script>
+<script id="fs-bg" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec2 vUv;
+out vec4 outColor;
+uniform mat4 uInvVP;
+uniform vec3 uCamera;
+uniform float uTime;
+float hash31(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123); }
+float noise3(vec3 p){
+  vec3 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(hash31(i),hash31(i+vec3(1,0,0)),f.x),mix(hash31(i+vec3(0,1,0)),hash31(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(hash31(i+vec3(0,0,1)),hash31(i+vec3(1,0,1)),f.x),mix(hash31(i+vec3(0,1,1)),hash31(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
+float fbm(vec3 p){ float s=0.0,a=.5; mat3 r=mat3(.00,.80,.60,-.80,.36,-.48,-.60,-.48,.64); for(int i=0;i<5;i++){s+=a*noise3(p);p=r*p*2.03+1.7;a*=.5;}return s; }
+void main(){
+  vec2 ndc=vUv*2.0-1.0;
+  vec4 q=uInvVP*vec4(ndc,1.0,1.0);
+  vec3 rd=normalize(q.xyz/q.w-uCamera);
+  vec3 pole=normalize(vec3(-.8678,.4972,.0003));
+  float gp=abs(dot(rd,pole));
+  float band=exp(-gp*gp*24.0);
+  float filament=fbm(rd*5.2+vec3(1.3,3.1,.2))+0.45*fbm(rd*13.0);
+  float dust=fbm(rd*21.0-vec3(2.1,.2,4.0));
+  float split=1.0-smoothstep(.49,.68,dust)*exp(-gp*gp*85.0);
+  vec3 base=vec3(.0012,.0017,.0034);
+  vec3 milky=mix(vec3(.014,.019,.040),vec3(.045,.036,.070),filament)*band*split*.55;
+  float faint=pow(max(noise3(floor(rd*760.0)),0.0),18.0)*.018;
+  outColor=vec4(base+milky+faint,1.0);
+}</script>
+
+<script id="vs-star" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec3 aDir;
+layout(location=1) in float aSize;
+layout(location=2) in vec3 aColor;
+layout(location=3) in float aPhase;
+uniform mat4 uVP;
+uniform vec3 uCamera;
+uniform float uTime;
+out vec3 vColor;
+out float vAlpha;
+void main(){
+  gl_Position=uVP*vec4(uCamera+aDir*3600.0,1.0);
+  gl_PointSize=clamp(aSize*(1.0+.11*sin(uTime*.0015+aPhase)),.75,3.8);
+  vColor=aColor;
+  vAlpha=clamp(aSize*.34,.16,1.0);
+}</script>
+<script id="fs-star" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec3 vColor; in float vAlpha; out vec4 outColor;
+void main(){ vec2 p=gl_PointCoord-.5; float d=length(p); if(d>.5)discard; float a=exp(-d*d*22.0)*vAlpha; outColor=vec4(vColor*a,a); }</script>
+
+<script id="vs-body" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPosition;
+layout(location=1) in vec3 aNormal;
+uniform mat4 uModel;
+uniform mat4 uVP;
+out vec3 vObj;
+out vec3 vWorld;
+out vec3 vNormal;
+void main(){
+  vec4 w=uModel*vec4(aPosition,1.0);
+  vObj=aPosition; vWorld=w.xyz; vNormal=normalize(mat3(uModel)*aNormal);
+  gl_Position=uVP*w;
+}</script>
+<script id="fs-body" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec3 vObj; in vec3 vWorld; in vec3 vNormal;
+out vec4 outColor;
+uniform int uKind;
+uniform float uTime;
+uniform float uDistAU;
+uniform vec3 uCamera;
+uniform vec3 uSunObj;
+uniform int uRingType;
+float hash13(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453123); }
+vec3 hash33(vec3 p){ p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));return fract(sin(p)*43758.5453); }
+float sstep(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}
+float noise3(vec3 p){
+  vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(hash13(i),hash13(i+vec3(1,0,0)),f.x),mix(hash13(i+vec3(0,1,0)),hash13(i+vec3(1,1,0)),f.x),f.y),
+  mix(mix(hash13(i+vec3(0,0,1)),hash13(i+vec3(1,0,1)),f.x),mix(hash13(i+vec3(0,1,1)),hash13(i+vec3(1,1,1)),f.x),f.y),f.z);
+}
+float fbm(vec3 p){float s=0.0,a=.5;mat3 r=mat3(.00,.80,.60,-.80,.36,-.48,-.60,-.48,.64);for(int i=0;i<6;i++){s+=a*noise3(p);p=r*p*2.03+1.31;a*=.5;}return s;}
+vec3 worley2(vec3 p){
+  vec3 ip=floor(p),fp=fract(p);float f1=9.0,f2=9.0,id=0.0;
+  for(int z=-1;z<=1;z++)for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){
+    vec3 o=vec3(x,y,z),h=hash33(ip+o),q=o+h-fp;float d=dot(q,q);
+    if(d<f1){f2=f1;f1=d;id=hash13(ip+o+17.0);}else if(d<f2){f2=d;}
+  }
+  return vec3(sqrt(f1),sqrt(f2),id);
+}
+vec2 craterLayer(vec3 p,float freq,float depth){
+  vec3 w=worley2(p*freq);float rad=.13+.22*fract(w.z*7.31);float t=w.x/rad;
+  float bowl=t<1.0?-(1.0-t*t):0.0;float rim=exp(-pow((t-1.0)/.26,2.0));
+  float exist=step(w.z,.74)*(1.0-sstep(.40,.60,w.x));
+  return vec2((bowl*.90+rim*.50)*depth,(bowl*.55+rim*.32)*exist);
+}
+vec2 craters(vec3 p){
+  vec2 c=vec2(0);c+=craterLayer(p,5.0,1.0);c+=craterLayer(p+4.2,12.0,.52);
+  c+=craterLayer(p-7.1,28.0,.26);c+=craterLayer(p+13.0,62.0,.13);return c;
+}
+float ringD(float r,int typ){
+  if(typ==2){
+    float d=0.0;
+    d+=.11*sstep(1.235,1.255,r)*(1.0-sstep(1.51,1.53,r));
+    d+=1.20*sstep(1.525,1.55,r)*(1.0-sstep(1.925,1.95,r));
+    d*=1.0-.87*exp(-pow((r-1.99)/.038,6.0));
+    d+=.58*sstep(2.025,2.045,r)*(1.0-sstep(2.25,2.27,r));
+    d*=1.0-.92*exp(-pow((r-2.214)/.0045,2.0));
+    d*=1.0-.80*exp(-pow((r-2.265)/.0018,2.0));
+    d+=.30*exp(-pow((r-2.324)/.0055,2.0));return d;
+  }
+  if(typ==3){
+    float d=.55*exp(-pow((r-1.951)/.0055,2.0));
+    d+=.20*exp(-pow((r-1.909)/.0022,2.0))+.16*exp(-pow((r-1.863)/.0020,2.0));
+    d+=.13*exp(-pow((r-1.823)/.0019,2.0))+.10*exp(-pow((r-1.786)/.0018,2.0));
+    d+=.08*exp(-pow((r-1.751)/.0017,2.0))+.07*exp(-pow((r-1.690)/.0015,2.0));return d;
+  }
+  return (r>1.40&&r<1.81)?.016:0.0;
+}
+void main(){
+  vec3 p=normalize(vObj),N=normalize(vNormal),V=normalize(uCamera-vWorld),L=normalize(-vWorld);
+  float lat=asin(clamp(p.y,-1.0,1.0)),lon=atan(p.z,p.x);
+  vec3 albedo=vec3(.25);float height=0.0;float emission=0.0;float specular=0.0;float gloss=40.0;
+  if(uKind==0){
+    vec3 flow=p*6.5+vec3(uTime*.000018,0.0,uTime*.000009);
+    float superg=fbm(flow);
+    vec3 w1=worley2(p*76.0+uTime*.00003),w2=worley2(p*31.0-uTime*.000017);
+    float walls=exp(-min(w1.y-w1.x,w2.y-w2.x)*34.0);
+    float spotNoise=fbm(p*3.2+vec3(0,uTime*.000006,0));
+    float pen=sstep(.72,.83,spotNoise),umb=sstep(.83,.91,spotNoise);
+    float heat=clamp(.32+.75*(superg-.5)-.25*walls-.33*pen-.35*umb,0.0,1.0);
+    vec3 c0=vec3(.60,.035,.004),c1=vec3(1.0,.18,.015),c2=vec3(1.0,.58,.055),c3=vec3(1.0,.91,.49),c4=vec3(1.0,.98,.80);
+    vec3 c=heat<.25?mix(c0,c1,heat*4.0):heat<.5?mix(c1,c2,(heat-.25)*4.0):heat<.75?mix(c2,c3,(heat-.5)*4.0):mix(c3,c4,(heat-.75)*4.0);
+    float limb=.24+.76*pow(max(dot(N,V),0.0),.38);
+    c*=mix(.18,1.0,1.0-umb)*mix(.52,1.0,1.0-pen);
+    outColor=vec4(c*2.05*limb,1.0);return;
+  } else if(uKind==1){
+    vec2 c=craters(p);height=c.x;albedo=vec3(.14,.135,.125)*(1.0+c.y*.8)+fbm(p*3.0)*.025;
+  } else if(uKind==2){
+    float sw=fbm(vec3(lon*1.5+sin(lat*5.0)*.7,lat*7.0,uTime*.000015));
+    float band=.5+.5*sin(lat*23.0+sw*7.0);albedo=mix(vec3(.58,.39,.16),vec3(.92,.75,.46),band*.65+sw*.35);
+  } else if(uKind==3){
+    float h=fbm(p*3.15+vec3(3.7,1.2,5.9));float land=sstep(.552,.61,h);height=(h-.552)*land*.24;
+    vec3 ocean=mix(vec3(.008,.045,.115),vec3(.014,.19,.27),sstep(.40,.55,h));
+    float eco=fbm(p*7.1+8.0);vec3 ground=mix(vec3(.09,.22,.075),vec3(.38,.27,.095),sstep(.51,.67,eco));
+    ground=mix(ground,vec3(.31,.32,.30),sstep(.68,.82,h));float ice=sstep(.72,.91,abs(p.y)+noise3(p*6.0)*.10);
+    albedo=mix(ocean,ground,land);albedo=mix(albedo,vec3(.78,.84,.84),ice);
+    float drift=(1.0-abs(p.y)*.65)*uTime*.000035;
+    float clouds=sstep(.58,.72,fbm(p*6.2+vec3(drift,0.0,-drift*.35))+sin(lat*10.0)*.035);
+    albedo=mix(albedo,vec3(.95),clouds*.76);specular=(1.0-land)*(1.0-clouds);gloss=420.0;
+    float night=max(-dot(N,L),0.0);float cities=pow(noise3(p*94.0),14.0)*land*(1.0-clouds)*night;albedo+=vec3(1.0,.42,.08)*cities*5.0;emission=cities*2.2;
+  } else if(uKind==4){
+    vec2 c=craters(p);float north=sstep(-.12,.18,p.y);height=c.x*mix(1.0,.22,north);
+    float terrain=fbm(p*4.0);albedo=vec3(.19,.055,.019)*(0.7+terrain*.48+c.y*.18*mix(1.0,.22,north));
+    float cap=sstep(.78,.94,abs(p.y)+noise3(p*8.0)*.08);albedo=mix(albedo,vec3(.68,.63,.53),cap);
+    float valley=exp(-pow(lat/.105,2.0))*exp(-pow((lon+.4)/1.25,6.0))*sstep(.43,.58,noise3(p*5.0));albedo*=1.0-.48*valley;
+  } else if(uKind==5 || uKind==6){
+    float turb=uKind==5?1.0:.42;float warp=(fbm(vec3(lon*1.4,lat*4.2,uTime*.00001))-.5)*turb;
+    float la=lat+warp*.22;float bands=.40+.16*sin(la*25.0)+.10*sin(la*57.0)+.07*sin(la*106.0)+.04*sin(la*188.0);
+    bands=mix(.48,bands,1.0-sstep(.80,1.38,abs(lat)));
+    if(uKind==5){
+      albedo=mix(vec3(.31,.17,.10),vec3(.82,.62,.40),clamp(bands,0.0,1.0));
+      vec2 q=vec2(atan(p.z,p.x)-.72,lat+.34);q.x=atan(sin(q.x),cos(q.x))*cos(lat);float rr=length(q/vec2(.40,.185));
+      float grs=1.0-sstep(.80,1.08,rr);float spiral=.5+.5*sin(atan(q.y,q.x)*4.0+rr*10.0-uTime*.00008);
+      albedo=mix(albedo,vec3(.72,.16,.07)+spiral*.08,grs*.78);
+    }else{
+      albedo=mix(vec3(.31,.25,.16),vec3(.79,.67,.44),clamp(bands+.14,0.0,1.0));
+      float polar=sstep(.80,1.08,abs(lat));float ang=mod(lon+.5236,1.0472)-.5236;float edge=.115/cos(ang);float hex=exp(-pow((1.0-abs(p.y)-edge)/.018,2.0));albedo*=1.0-.28*hex*polar;
+    }
+  } else if(uKind==7 || uKind==8){
+    float bands=.035*sin(lat*40.0+fbm(p*3.0)*3.0);
+    albedo=(uKind==7?vec3(.20,.60,.65):vec3(.045,.18,.58))*(.88+bands);
+    float clouds=sstep(.82,.91,noise3(vec3(lon*9.0,lat*42.0,uTime*.00002)));albedo+=vec3(.25,.52,.58)*clouds*.22;
+    if(uKind==8){vec2 q=vec2(atan(sin(lon+1.1),cos(lon+1.1))*cos(lat),lat+.28);float spot=1.0-sstep(.13,.25,length(q));albedo*=1.0-.52*spot;}
+  } else if(uKind==9){
+    float n=fbm(p*5.0);albedo=mix(vec3(.12,.09,.075),vec3(.48,.40,.32),n);
+    albedo*=1.0-.38*exp(-pow(lat/.30,4.0));
+    float x=atan(sin(lon-.55),cos(lon-.55))*cos(lat),y=lat-.18;
+    float heart=max(exp(-dot(vec2(x-.10,y)/vec2(.26,.35),vec2(x-.10,y)/vec2(.26,.35))),exp(-dot(vec2(x+.10,y)/vec2(.26,.35),vec2(x+.10,y)/vec2(.26,.35))));
+    albedo=mix(albedo,vec3(.76,.70,.60),heart*.72);
+  } else if(uKind==10 || uKind==14 || uKind==17){
+    vec2 c=craters(p);height=c.x;albedo=vec3(uKind==10?.12:uKind==14?.16:.13)*(1.0+c.y*.72);
+    if(uKind==10){float mare=sstep(.58,.70,fbm(p*2.4));albedo*=1.0-.47*mare;}
+  } else if(uKind==11){
+    float n=fbm(p*5.0);albedo=mix(vec3(.62,.22,.025),vec3(.95,.72,.10),n);
+    vec3 w=worley2(p*13.0);float vent=1.0-sstep(.08,.23,w.x);albedo*=1.0-.55*vent;emission=vent*.10;
+  } else if(uKind==12){
+    float ice=fbm(p*4.0);float cracks=1.0-sstep(.018,.065,abs(fbm(p*12.0)-.5));
+    cracks=max(cracks,1.0-sstep(.014,.045,abs(fbm(p*27.0+4.0)-.5)));albedo=mix(vec3(.42,.50,.55),vec3(.75,.78,.70),ice);albedo=mix(albedo,vec3(.42,.12,.06),cracks*.65);
+  } else if(uKind==13){
+    float dark=sstep(.52,.68,fbm(p*3.5));float grooves=1.0-sstep(.015,.05,abs(fbm(p*25.0)-.5));
+    albedo=mix(vec3(.19,.16,.13),vec3(.50,.45,.37),dark)+grooves*.12;
+  } else if(uKind==15){
+    albedo=mix(vec3(.46,.19,.035),vec3(.78,.42,.10),fbm(p*7.0))*.75;
+  } else if(uKind==16){
+    vec2 c=craters(p);height=c.x*.5;albedo=vec3(.28,.30,.31)*(1.0+c.y*.35);
+  } else {
+    albedo=vec3(.18,.15,.11)*(.65+fbm(p*9.0));
+  }
+  vec3 dpx=dFdx(vWorld),dpy=dFdy(vWorld);float dhx=dFdx(height),dhy=dFdy(height);
+  vec3 r1=cross(dpy,N),r2=cross(N,dpx);float det=dot(dpx,r1);
+  if(abs(det)>1e-7)N=normalize(N-.12*(r1*dhx+r2*dhy)/det);
+  float ndl=dot(N,L);float daylight=sstep(-.12,.24,ndl);
+  float sunPower=clamp(1.5*pow(max(uDistAU,.18),-.40),.26,2.1);
+  float ringShadow=1.0;
+  if(uRingType>0 && abs(uSunObj.y)>.0001){
+    float t=-p.y/uSunObj.y;vec3 q=p+uSunObj*t;float rr=length(q.xz);
+    if(t>0.0)ringShadow=exp(-ringD(rr,uRingType)*1.45/max(abs(uSunObj.y),.10));
+  }
+  float diff=(.035+daylight*max(ndl,0.0)*sunPower)*ringShadow;
+  vec3 H=normalize(L+V);float sp=specular*pow(max(dot(N,H),0.0),gloss)*sunPower;
+  float limb=.62+.38*pow(max(dot(N,V),0.0),.45);
+  vec3 color=albedo*diff*limb+vec3(sp)+albedo*emission;
+  outColor=vec4(color,1.0);
+}</script>
+
+<script id="vs-orbit" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNext;
+layout(location=2) in float aSide;
+layout(location=3) in float aT;
+uniform mat4 uVP;
+uniform vec2 uViewport;
+out float vSide;out float vT;
+void main(){
+  vec4 c=uVP*vec4(aPos,1.0),n=uVP*vec4(aNext,1.0);
+  vec2 cp=c.xy/c.w,np=n.xy/n.w;
+  vec2 tangent=normalize((np-cp)*uViewport*.5+vec2(1e-6));
+  vec2 normal=vec2(-tangent.y,tangent.x);
+  c.xy+=normal*aSide*1.05*2.0/uViewport*c.w;
+  gl_Position=c;vSide=aSide;vT=aT;
+}</script>
+<script id="fs-orbit" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in float vSide;in float vT;out vec4 outColor;
+uniform vec3 uColor;uniform float uPhase;
+void main(){
+  float soft=pow(max(0.0,1.0-abs(vSide)),.55);
+  float d=mod(uPhase-vT+1.0,1.0);
+  float a=.10+.68*pow(max(0.0,1.0-d*3.1),3.2);
+  outColor=vec4(uColor*soft*a,soft*a);
+}</script>
+
+<script id="vs-particle" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec4 aAEIO;
+layout(location=1) in vec4 aWMNS;
+layout(location=2) in float aGroup;
+uniform mat4 uVP;
+uniform float uDays;
+uniform float uScale;
+uniform float uCompress;
+out float vBright;out float vGroup;
+void main(){
+  float a=aAEIO.x,e=aAEIO.y,I=aAEIO.z,O=aAEIO.w,w=aWMNS.x,M=aWMNS.y+aWMNS.z*uDays;
+  M=mod(M+3.14159265,6.2831853)-3.14159265;float E=M+e*sin(M)*(1.0+e*cos(M));
+  for(int k=0;k<8;k++)E-=(E-e*sin(E)-M)/(1.0-e*cos(E));
+  float xp=a*(cos(E)-e),yp=a*sqrt(1.0-e*e)*sin(E);
+  float co=cos(O),so=sin(O),cw=cos(w),sw=sin(w),ci=cos(I),si=sin(I);
+  vec3 ec=vec3((cw*co-sw*so*ci)*xp+(-sw*co-cw*so*ci)*yp,(cw*so+sw*co*ci)*xp+(-sw*so+cw*co*ci)*yp,sw*si*xp+cw*si*yp);
+  vec3 world=vec3(ec.x,ec.z,-ec.y);float r=length(world);world=normalize(world)*uScale*pow(r,uCompress);
+  vec4 clip=uVP*vec4(world,1.0);gl_Position=clip;
+  gl_PointSize=clamp(aWMNS.w*170.0/max(clip.w,1.0),.75,4.5);
+  vBright=clamp(pow(3.0/max(r,1.0),.28),.18,1.2);vGroup=aGroup;
+}</script>
+<script id="fs-particle" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in float vBright;in float vGroup;out vec4 outColor;
+void main(){vec2 q=gl_PointCoord-.5;float a=exp(-dot(q,q)*18.0)*.38*vBright;vec3 c=vGroup<1.5?vec3(.80,.70,.51):vGroup<2.5?vec3(.70,.53,.35):vec3(.44,.61,.78);outColor=vec4(c*a,a);}</script>
+
+<script id="vs-ring" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPosition;
+uniform mat4 uModel;uniform mat4 uVP;
+out vec3 vWorld;out float vRadius;
+void main(){vec4 w=uModel*vec4(aPosition,1.0);vWorld=w.xyz;vRadius=length(aPosition.xz);gl_Position=uVP*w;}</script>
+<script id="fs-ring" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec3 vWorld;in float vRadius;out vec4 outColor;
+uniform int uType;uniform vec3 uCamera;uniform vec3 uNormal;uniform vec3 uCenter;uniform float uTime;uniform float uPlanetRadius;
+float hash(float p){return fract(sin(p*127.1)*43758.5453);}
+float noise(float p){float i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(hash(i),hash(i+1.0),f);}
+float fbm(float p){float s=0.0,a=.5;for(int i=0;i<5;i++){s+=a*noise(p);p=p*2.03+3.1;a*=.5;}return s;}
+float sstep(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}
+float dens(float r){
+  if(uType==2){float d=.11*sstep(1.235,1.255,r)*(1.0-sstep(1.51,1.53,r));d+=1.2*sstep(1.525,1.55,r)*(1.0-sstep(1.925,1.95,r));d*=1.0-.87*exp(-pow((r-1.99)/.038,6.0));d+=.58*sstep(2.025,2.045,r)*(1.0-sstep(2.25,2.27,r));d*=1.0-.92*exp(-pow((r-2.214)/.0045,2.0));d*=1.0-.80*exp(-pow((r-2.265)/.0018,2.0));d+=.30*exp(-pow((r-2.324)/.0055,2.0));return d*(.70+.60*fbm(r*230.0));}
+  if(uType==3){float d=.55*exp(-pow((r-1.951)/.0055,2.0));float rr[6]=float[6](1.909,1.863,1.823,1.786,1.751,1.690);for(int i=0;i<6;i++)d+=(.20-float(i)*.026)*exp(-pow((r-rr[i])/.002,2.0));return d;}
+  return (r>1.40&&r<1.81)?.016:0.0;
+}
+void main(){
+  float d=dens(vRadius);if(d<.002)discard;
+  vec3 V=normalize(uCamera-vWorld),L=normalize(-vWorld),N=normalize(uNormal);
+  float mv=max(abs(dot(N,V)),.10),ms=max(abs(dot(N,L)),.10),tv=d*1.45/mv,ts=d*1.45/ms;
+  float alpha=1.0-exp(-tv);bool front=dot(N,V)*dot(N,L)>=0.0;
+  float light=front?(1.0-exp(-ts))*.85:exp(-ts*.42)*1.15*(1.0-exp(-ts*.75));
+  vec3 oc=vWorld-uCenter;float bb=dot(oc,L);float dmin=sqrt(max(dot(oc,oc)-bb*bb,0.0));
+  if(bb<0.0)light*=sstep(uPlanetRadius*.97,uPlanetRadius*1.09,dmin);
+  vec3 c=uType==2?mix(vec3(.30,.24,.16),vec3(.90,.77,.52),clamp(d*.62,0.0,1.0)):uType==3?vec3(.025,.028,.030):vec3(.25,.21,.17);
+  outColor=vec4(c*light,alpha*(uType==1?.32:1.0));
+}</script>
+
+<script id="vs-atmo" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPosition;
+uniform mat4 uModel;uniform mat4 uVP;
+out vec3 vWorld;
+void main(){vec4 w=uModel*vec4(aPosition,1.0);vWorld=w.xyz;gl_Position=uVP*w;}</script>
+<script id="fs-atmo" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec3 vWorld;out vec4 outColor;
+uniform vec3 uCamera;uniform vec3 uCenter;uniform vec3 uColor;uniform float uRadius;uniform float uHeight;
+float sstep(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}
+void main(){
+  vec3 rd=normalize(vWorld-uCamera),oc=uCenter-uCamera;float tca=dot(oc,rd);
+  float b=sqrt(max(dot(oc,oc)-tca*tca,0.0))/uRadius;
+  float den=exp(-max(b-1.0,0.0)/uHeight);den*=mix(.14,1.0,sstep(.960,1.015,b));
+  vec3 an=normalize(uCamera+rd*tca-uCenter),L=normalize(-uCenter);
+  float day=sstep(-.18,.28,dot(an,L));float mie=pow(dot(rd,L)*.5+.5,4.0);
+  float a=den*(.045+day*.19+mie*.11);outColor=vec4(uColor*a,a);
+}</script>
+
+<script id="vs-post" type="x-shader/x-vertex">#version 300 es
+precision highp float;out vec2 vUv;
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);vUv=p;gl_Position=vec4(p*2.0-1.0,0,1);}</script>
+<script id="fs-post" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec2 vUv;out vec4 outColor;
+uniform sampler2D uScene;uniform vec2 uResolution;uniform float uBloom;uniform float uTime;uniform vec2 uSunScreen;uniform float uSunVis;
+vec3 aces(vec3 x){float a=2.51,b=.03,c=2.43,d=.59,e=.14;return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.0,1.0);}
+float flareDisc(vec2 p,vec2 c,float r){return exp(-dot(p-c,p-c)/(r*r));}
+void main(){
+  vec2 uv=vUv;vec2 px=1.0/uResolution;float ca=.00065*length(uv-.5);
+  vec3 col=vec3(texture(uScene,uv+normalize(uv-.5+1e-5)*ca).r,texture(uScene,uv).g,texture(uScene,uv-normalize(uv-.5+1e-5)*ca).b);
+  vec3 bloom=vec3(0.0);
+  if(uBloom>.5){
+    vec2 taps[12]=vec2[12](vec2(4,0),vec2(-4,0),vec2(0,4),vec2(0,-4),vec2(3,3),vec2(-3,3),vec2(3,-3),vec2(-3,-3),vec2(9,0),vec2(-9,0),vec2(0,9),vec2(0,-9));
+    for(int i=0;i<12;i++){vec3 s=texture(uScene,uv+taps[i]*px).rgb;float l=max(max(s.r,s.g),s.b);bloom+=s*smoothstep(.72,1.75,l);}
+    col+=bloom*(.34/12.0);
+  }
+  vec2 sun=uSunScreen*.5+.5,center=vec2(.5);vec2 aspect=vec2(uResolution.x/uResolution.y,1.0);vec2 p=(uv-center)*aspect,sp=(sun-center)*aspect;
+  float vis=uSunVis*uBloom;
+  float core=flareDisc(p,sp,.035)+.25*flareDisc(p,sp,.14);
+  vec2 dir=normalize(sp+vec2(1e-5));float star=pow(max(0.0,1.0-abs(dot(p-sp,vec2(-dir.y,dir.x)))*130.0),12.0)*exp(-length(p-sp)*8.0);
+  float ghosts=.12*flareDisc(p,-sp*.35,.055)+.08*flareDisc(p,-sp*.72,.085)+.05*flareDisc(p,sp*-1.15,.13);
+  col+=vec3(1.0,.47,.13)*core*.18*vis+vec3(.65,.77,1.0)*star*.10*vis+vec3(.18,.45,.72)*ghosts*vis;
+  col=aces(col);
+  col=pow(col,vec3(1.0/2.2));
+  float vig=1.0-.34*pow(length((uv-.5)*vec2(.78,1.0))*1.35,2.1);col*=vig;
+  float grain=fract(sin(dot(gl_FragCoord.xy+uTime,vec2(12.9898,78.233)))*43758.5453)-.5;col+=grain*.008;
+  outColor=vec4(col,1.0);
+}</script>
+
+<script>
+(function(){
+"use strict";
+const canvas=document.getElementById("glCanvas");
+const app=document.getElementById("app");
+const gl=canvas.getContext("webgl2",{alpha:false,antialias:false,depth:true,preserveDrawingBuffer:false,powerPreference:"high-performance"});
+if(!gl){document.getElementById("webglError").style.display="grid";return;}
+const TAU=Math.PI*2,DEG=Math.PI/180,J2000=2451545.0,SCALE=34;
+const $=function(id){return document.getElementById(id);};
+const clamp=function(x,a,b){return Math.max(a,Math.min(b,x));};
+const mod=function(x,m){return ((x%m)+m)%m;};
+const len=function(a){return Math.hypot(a[0],a[1],a[2]);};
+const add=function(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];};
+const sub=function(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];};
+const mul=function(a,s){return [a[0]*s,a[1]*s,a[2]*s];};
+const dot=function(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];};
+const cross=function(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];};
+const norm=function(a){const l=Math.max(len(a),1e-12);return [a[0]/l,a[1]/l,a[2]/l];};
+function m4mul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];return o;}
+function perspective(fovy,aspect,near,far){const f=1/Math.tan(fovy/2),nf=1/(near-far),o=new Float32Array(16);o[0]=f/aspect;o[5]=f;o[10]=(far+near)*nf;o[11]=-1;o[14]=2*far*near*nf;return o;}
+function lookAt(eye,target,up){const z=norm(sub(eye,target)),x=norm(cross(up,z)),y=cross(z,x);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1]);}
+function inverse(a){const o=new Float32Array(16);const a00=a[0],a01=a[1],a02=a[2],a03=a[3],a10=a[4],a11=a[5],a12=a[6],a13=a[7],a20=a[8],a21=a[9],a22=a[10],a23=a[11],a30=a[12],a31=a[13],a32=a[14],a33=a[15];const b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32;let d=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;d=1/d;o[0]=(a11*b11-a12*b10+a13*b09)*d;o[1]=(a02*b10-a01*b11-a03*b09)*d;o[2]=(a31*b05-a32*b04+a33*b03)*d;o[3]=(a22*b04-a21*b05-a23*b03)*d;o[4]=(a12*b08-a10*b11-a13*b07)*d;o[5]=(a00*b11-a02*b08+a03*b07)*d;o[6]=(a32*b02-a30*b05-a33*b01)*d;o[7]=(a20*b05-a22*b02+a23*b01)*d;o[8]=(a10*b10-a11*b08+a13*b06)*d;o[9]=(a01*b08-a00*b10-a03*b06)*d;o[10]=(a30*b04-a31*b02+a33*b00)*d;o[11]=(a21*b02-a20*b04-a23*b00)*d;o[12]=(a11*b07-a10*b09-a12*b06)*d;o[13]=(a00*b09-a01*b07+a02*b06)*d;o[14]=(a31*b01-a30*b03-a32*b00)*d;o[15]=(a20*b03-a21*b01+a22*b00)*d;return o;}
+function axisFrom(tilt,lon){const t=tilt*DEG,l=lon*DEG;const ec=[Math.sin(t)*Math.cos(l),Math.sin(t)*Math.sin(l),Math.cos(t)];return norm([ec[0],ec[2],-ec[1]]);}
+function basisFromAxis(y){const ref=Math.abs(y[1])<.9?[0,1,0]:[1,0,0];const x=norm(cross(y,ref)),z=norm(cross(x,y));return {x:x,y:y,z:z};}
+function modelMatrix(center,axis,phase,scale){const b=basisFromAxis(axis),c=Math.cos(phase),s=Math.sin(phase);const x=sub(mul(b.x,c),mul(b.z,s)),z=add(mul(b.x,s),mul(b.z,c));return new Float32Array([x[0]*scale,x[1]*scale,x[2]*scale,0,b.y[0]*scale,b.y[1]*scale,b.y[2]*scale,0,z[0]*scale,z[1]*scale,z[2]*scale,0,center[0],center[1],center[2],1]);}
+function basisModel(center,axis,scale){const b=basisFromAxis(axis);return new Float32Array([b.x[0]*scale,b.x[1]*scale,b.x[2]*scale,0,b.y[0]*scale,b.y[1]*scale,b.y[2]*scale,0,b.z[0]*scale,b.z[1]*scale,b.z[2]*scale,0,center[0],center[1],center[2],1]);}
+function jdFromMs(ms){return ms/86400000+2440587.5;}
+function msFromJd(jd){return (jd-2440587.5)*86400000;}
+function solveKepler(M,e){M=mod(M+Math.PI,TAU)-Math.PI;let E=M+e*Math.sin(M)*(1+e*Math.cos(M));for(let i=0;i<10;i++){const d=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));E-=d;if(Math.abs(d)<1e-13)break;}return E;}
+const sun={id:"sun",name:"太阳",latin:"SOL",className:"恒星 · G2V",kind:0,radius:696340,mass:"1.989×10³⁰ kg",period:"—",moonCount:"—",temperature:"5,772 K",tilt:7.25,poleLon:75,rotH:609.12,axis:axisFrom(7.25,75),color:"#ffd477",atmosphere:"氢 73% · 氦 25%",text:"太阳集中了整个太阳系约 99.86% 的质量。它的光球层不是平滑表面，而是被对流塑成不断翻涌的米粒组织；这里的胞状网络、黑子与临边昏暗均由着色器实时生成。"};
+const planetRows=[
+["mercury","水星","MERCURY",1,[.38709927,.20563593,7.00497902,252.25032350,77.45779628,48.33076593],[.00000037,.00001906,-.00594749,149472.67411175,.16047689,-.12534081],2439.7,"3.30×10²³ kg","87.97 天","0","−173 ~ 427 ℃",7.0,318.4,1407.6,.03,"几乎无大气（稀薄外逸层）","离太阳最近的行星，也是轨道偏心率最大的内行星。昼夜温差极端，表面保存着从太阳系早期延续至今的大量撞击坑。","#aaa59c"],
+["venus","金星","VENUS",2,[.72333566,.00677672,3.39467605,181.97909950,131.60246718,76.67984255],[.00000390,-.00004107,-.00078890,58517.81538729,.00268329,-.27769418],6051.8,"4.87×10²⁴ kg","224.70 天","0","464 ℃",177.4,211.2,-5832.5,177.4,"CO₂ 96.5% · N₂ 3.5%","金星被浓厚的二氧化碳大气和硫酸云完全包裹，是太阳系最热的行星。它缓慢逆行自转，从云顶看太阳会由西方升起。","#e8bd79"],
+["earth","地球","EARTH",3,[1.00000261,.01671123,-.00001531,100.46457166,102.93768193,0],[.00000562,-.00004392,-.01294668,35999.37244981,.32327364,0],6371,"5.972×10²⁴ kg","365.256 天","1","−89 ~ 57 ℃",23.44,90,23.9345,23.44,"N₂ 78% · O₂ 21%","地球是已知唯一拥有稳定表面海洋与生命的世界。程序化海陆、云系、极冰和夜面灯光会随自转共同运动，海面在日照方向产生窄而明亮的镜面反光。","#5bb8ef"],
+["mars","火星","MARS",4,[1.52371034,.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891],[.00001847,.00007882,-.00813131,19140.30268499,.44441088,-.29257343],3389.5,"6.42×10²³ kg","686.98 天","2","−143 ~ 35 ℃",26.76,352.9,24.6229,25.19,"CO₂ 95.3% · N₂ 2.7%","火星的锈红来自含铁矿物氧化。北方低地年轻而平坦，南方高地古老且撞击坑密布；模型也保留了这条鲜明的南北地质分界。","#d96b42"],
+["jupiter","木星","JUPITER",5,[5.202887,.04838624,1.30439695,34.39644051,14.72847983,100.47390909],[-.00011607,-.00013253,-.00183714,3034.74612775,.21252668,.20469106],69911,"1.898×10²⁷ kg","11.86 年","95","−108 ℃",2.25,247.8,9.925,3.13,"H₂ 89% · He 10%","木星是太阳系最大的行星，快速自转把云层拉成剧烈湍动的纬向带。大红斑是一场至少持续数百年的巨大风暴，四颗伽利略卫星则构成一套微型行星系统。","#d9a879"],
+["saturn","土星","SATURN",6,[9.53667594,.05386179,2.48599187,49.95424423,92.59887831,113.66242448],[-.00125060,-.00050991,.00193609,1222.49362201,-.41897216,-.28867794],58232,"5.683×10²⁶ kg","29.46 年","274","−139 ℃",28.06,79.5,10.656,26.73,"H₂ 96% · He 3%","土星环由无数冰粒组成，光学厚度在 C、B、A 环及缝隙间急剧变化。固定在惯性空间的自转轴让环面张角随着 29.5 年公转周期自然开合。","#e5c777"],
+["uranus","天王星","URANUS",7,[19.18916464,.04725744,.77263783,313.23810451,170.95427630,74.01692503],[-.00196176,-.00004397,-.00242939,428.48202785,.40805281,.04240589],25362,"8.68×10²⁵ kg","84.01 年","28","−195 ℃",97.77,77.7,-17.24,97.77,"H₂ 83% · He 15% · CH₄ 2%","天王星几乎侧躺在轨道面内自转，可能源于早期一次巨型碰撞。甲烷吸收红光，使它呈现宁静的蓝绿色，细窄暗环也随倾倒的赤道面一起转动。","#80d8d8"],
+["neptune","海王星","NEPTUNE",8,[30.06992276,.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],[.00026291,.00005105,.00035372,218.45945325,-.32241464,-.00508664],24622,"1.024×10²⁶ kg","164.8 年","16","−201 ℃",28.02,319.3,16.11,28.32,"H₂ 80% · He 19% · CH₄ 1.5%","海王星是最遥远的主要行星，却拥有太阳系最快的行星风。深蓝云顶上会出现短命的暗斑风暴，海卫一则沿逆行轨道环绕它。","#437be3"],
+["pluto","冥王星","PLUTO",9,[39.48211675,.24882730,17.14001206,238.92903833,224.06891629,110.30393684],[-.00031596,.00005170,.00004818,145.20780515,-.04062942,-.01183482],1188.3,"1.303×10²² kg","247.9 年","5","−233 ~ −223 ℃",112.8,137.4,-153.29,119.6,"N₂ · CH₄ · CO（稀薄）","冥王星沿倾斜而偏心的轨道穿行于柯伊伯带。明亮的心形斯普特尼克平原由氮冰覆盖，赤道附近则横卧着暗色的克苏鲁区。","#c6aa8b"]
+];
+const planets=planetRows.map(function(r){return {id:r[0],name:r[1],latin:r[2],kind:r[3],el:r[4],rate:r[5],radius:r[6],mass:r[7],period:r[8],moonCount:r[9],temperature:r[10],tilt:r[11],poleLon:r[12],rotH:r[13],bookTilt:r[14],atmosphere:r[15],text:r[16],color:r[17],axis:axisFrom(r[11],r[12]),className:r[0]==="pluto"?"矮行星 · 柯伊伯带":"行星"};});
+const moonRows=[
+["moon","月球","MOON","earth",10,1737.4,384400,27.32166,5.145,"ecliptic","7.342×10²² kg","−173 ~ 127 ℃",".0","几乎无大气","地球唯一的天然卫星，表面由古老高地与玄武岩月海构成。自转与公转同步，因此始终以近乎同一面朝向地球。","#c8c6bc"],
+["io","木卫一","IO","jupiter",11,1821.6,421700,1.769138,.05,"equator","8.932×10²² kg","约 −143 ℃",".04","SO₂（极稀薄）","木卫一被木星与其他卫星的潮汐拉扯持续加热，是太阳系火山活动最剧烈的天体。硫与二氧化硫塑造了鲜明的黄橙色表面。","#eac04f"],
+["europa","木卫二","EUROPA","jupiter",12,1560.8,671034,3.551181,.47,"equator","4.80×10²² kg","约 −160 ℃",".1","O₂（极稀薄）","木卫二明亮的水冰外壳遍布红褐色裂纹，其下很可能藏着全球性液态海洋。它与木卫一、木卫三处于 1:2:4 拉普拉斯共振。","#d8d4bf"],
+["ganymede","木卫三","GANYMEDE","jupiter",13,2634.1,1070412,7.154553,.20,"equator","1.482×10²³ kg","约 −163 ℃",".33","O₂（极稀薄）","木卫三是太阳系最大的卫星，甚至大于水星，也是唯一拥有自身磁场的卫星。深色古老地形与明亮沟槽区交错分布。","#99917d"],
+["callisto","木卫四","CALLISTO","jupiter",14,2410.3,1882709,16.689,.19,"equator","1.076×10²³ kg","约 −139 ℃",".19","CO₂（极稀薄）","木卫四的表面极其古老，密布重叠的撞击坑。它位于木星强辐射带的外侧，是伽利略卫星中受潮汐改造最少的一颗。","#7d746a"],
+["titan","土卫六","TITAN","saturn",15,2574.7,1221870,15.945,.35,"equator","1.345×10²³ kg","约 −179 ℃",".22","N₂ 95% · CH₄ 5%","土卫六拥有比地球更稠密的大气，橙色有机雾霾遮住了地表。那里存在由液态甲烷与乙烷构成的湖泊、河流和降雨循环。","#d5913e"],
+["triton","海卫一","TRITON","neptune",16,1353.4,354759,-5.876854,156.9,"equator","2.14×10²² kg","约 −235 ℃",".0","N₂（稀薄）","海卫一沿逆行轨道环绕海王星，可能是被捕获的柯伊伯带天体。它的氮冰表面喷发出由太阳加热驱动的暗色间歇泉。","#a8b8b4"],
+["charon","冥卫一","CHARON","pluto",17,606,19591,6.3872,.08,"equator","1.586×10²¹ kg","约 −220 ℃",".0","无显著大气","冥卫一相对冥王星大得异乎寻常，两者共同围绕体外质心转动，常被视作双矮行星系统。灰暗表面上分布着深峡谷与撞击盆地。","#98928b"]
+];
+const moons=moonRows.map(function(r,i){return {id:r[0],name:r[1],latin:r[2],parentId:r[3],kind:r[4],radius:r[5],orbitKm:r[6],periodDays:r[7],inc:r[8],ref:r[9],mass:r[10],temperature:r[11],albedo:r[12],atmosphere:r[13],text:r[14],color:r[15],className:"天然卫星",phase0:(i*.739+1.1)%TAU,tilt:0,rotH:Math.abs(r[7])*24,bookTilt:r[8]};});
+const halley={id:"halley",name:"哈雷彗星",latin:"1P / HALLEY",kind:18,radius:5.5,mass:"约 2.2×10¹⁴ kg",period:"75.32 年",moonCount:"0",temperature:"随日心距变化",tilt:162.26,poleLon:58.42,rotH:52.8,bookTilt:162.26,atmosphere:"彗发：H₂O · CO · CO₂",text:"哈雷彗星沿强烈偏心且逆行的轨道往返于内太阳系与海王星之外。接近太阳时，离子尾笔直背向太阳，较宽的尘埃尾则因轨道运动而弯曲滞后。",color:"#b8ddff",className:"周期彗星",axis:axisFrom(162.26,58.42),a:17.834,e:.96714,I:162.26,omega:111.33,Omega:58.42,Tp:2446470.96,P:27512.6};
+const bodyById=new Map([[sun.id,sun]]);planets.forEach(function(b){bodyById.set(b.id,b);});moons.forEach(function(b){bodyById.set(b.id,b);});bodyById.set(halley.id,halley);
+const ringTypes={jupiter:1,saturn:2,uranus:3};
+const ringOuter={jupiter:1.81,saturn:2.34,uranus:2.00};
+function displayRadius(body){if(body.id==="sun")return 4.6;if(body.id==="halley")return .16;return .72*Math.pow(body.radius/6371,.42);}
+function currentElements(body,jd){const T=(jd-J2000)/36525,o=[];for(let i=0;i<6;i++)o[i]=body.el[i]+body.rate[i]*T;return {a:o[0],e:o[1],I:o[2]*DEG,L:o[3]*DEG,peri:o[4]*DEG,Omega:o[5]*DEG};}
+function orbitFromElements(el,M){
+  const E=solveKepler(M,el.e),xp=el.a*(Math.cos(E)-el.e),yp=el.a*Math.sqrt(1-el.e*el.e)*Math.sin(E);
+  const w=el.peri-el.Omega,cw=Math.cos(w),sw=Math.sin(w),co=Math.cos(el.Omega),so=Math.sin(el.Omega),ci=Math.cos(el.I),si=Math.sin(el.I);
+  const ec=[(cw*co-sw*so*ci)*xp+(-sw*co-cw*so*ci)*yp,(cw*so+sw*co*ci)*xp+(-sw*so+cw*co*ci)*yp,sw*si*xp+cw*si*yp];
+  const world=[ec[0],ec[2],-ec[1]],r=len(ec);
+  return {ec:ec,world:world,r:r,E:E};
+}
+function planetState(body,jd){const el=currentElements(body,jd),M=mod(el.L-el.peri+Math.PI,TAU)-Math.PI,o=orbitFromElements(el,M);o.a=el.a;o.e=el.e;o.I=el.I;o.M=M;o.Omega=el.Omega;o.peri=el.peri;o.phase=mod(M/TAU,1);o.lon=mod(Math.atan2(o.ec[1],o.ec[0])/DEG,360);o.lat=Math.asin(o.ec[2]/o.r)/DEG;o.velocity=29.7847*Math.sqrt(2/o.r-1/el.a);return o;}
+function halleyState(jd){const el={a:halley.a,e:halley.e,I:halley.I*DEG,peri:(halley.omega+halley.Omega)*DEG,Omega:halley.Omega*DEG};const M=TAU*(jd-halley.Tp)/halley.P,o=orbitFromElements(el,M);o.a=el.a;o.e=el.e;o.I=el.I;o.M=M;o.phase=mod(M/TAU,1);o.lon=mod(Math.atan2(o.ec[1],o.ec[0])/DEG,360);o.lat=Math.asin(o.ec[2]/o.r)/DEG;o.velocity=29.7847*Math.sqrt(Math.max(0,2/o.r-1/el.a));return o;}
+function compressed(p,power){const r=len(p);return r<1e-9?[0,0,0]:mul(p,SCALE*Math.pow(r,power)/r);}
+function pointOnOrbit(body,jd,E,power){
+  let el;
+  if(body.id==="halley")el={a:halley.a,e:halley.e,I:halley.I*DEG,peri:(halley.omega+halley.Omega)*DEG,Omega:halley.Omega*DEG};
+  else el=currentElements(body,jd);
+  const xp=el.a*(Math.cos(E)-el.e),yp=el.a*Math.sqrt(1-el.e*el.e)*Math.sin(E),w=el.peri-el.Omega,cw=Math.cos(w),sw=Math.sin(w),co=Math.cos(el.Omega),so=Math.sin(el.Omega),ci=Math.cos(el.I),si=Math.sin(el.I);
+  const ec=[(cw*co-sw*so*ci)*xp+(-sw*co-cw*so*ci)*yp,(cw*so+sw*co*ci)*xp+(-sw*so+cw*co*ci)*yp,sw*si*xp+cw*si*yp];
+  return compressed([ec[0],ec[2],-ec[1]],power);
+}
+function stateFor(body,jd,power,planetStates){
+  if(body.id==="sun")return {world:[0,0,0],display:[0,0,0],r:0,a:0,e:0,I:0,lon:0,lat:0,velocity:0,phase:0};
+  if(body.id==="halley"){const s=halleyState(jd);s.display=compressed(s.world,power);return s;}
+  if(!body.parentId){const s=planetStates&&planetStates[body.id]?planetStates[body.id]:planetState(body,jd);s.display=compressed(s.world,power);return s;}
+  const parent=bodyById.get(body.parentId),ps=planetStates[parent.id]||planetState(parent,jd),pc=compressed(ps.world,power);
+  const siblings=moons.filter(function(m){return m.parentId===body.parentId;}).sort(function(a,b){return a.orbitKm-b.orbitKm;});
+  const a0=siblings[0].orbitKm,pr=displayRadius(parent),firstR=displayRadius(siblings[0]);
+  const base=Math.max(2.35,(ringOuter[parent.id]||0)+firstR/pr+.55);
+  const d=pr*base*Math.pow(body.orbitKm/a0,.55),theta=TAU*(jd-J2000)/body.periodDays+body.phase0,inc=body.inc*DEG;
+  let off;
+  if(body.ref==="ecliptic")off=[Math.cos(theta)*d,Math.sin(theta)*Math.sin(inc)*d,Math.sin(theta)*Math.cos(inc)*d];
+  else {const b=basisFromAxis(parent.axis),local=[Math.cos(theta)*d,-Math.sin(theta)*Math.sin(inc)*d,Math.sin(theta)*Math.cos(inc)*d];off=add(add(mul(b.x,local[0]),mul(b.y,local[1])),mul(b.z,local[2]));}
+  const display=add(pc,off),world=add(ps.world,mul(norm(off),body.orbitKm/149597870.7));
+  return {world:world,display:display,r:len(world),a:ps.a,e:0,I:body.inc*DEG,lon:mod(Math.atan2(-world[2],world[0])/DEG,360),lat:Math.asin(world[1]/Math.max(len(world),1e-9))/DEG,velocity:TAU*body.orbitKm/(Math.abs(body.periodDays)*86400),phase:mod(theta/TAU,1),parentState:ps};
+}
+function shader(id){return $(id).textContent.trim();}
+function makeShader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){const msg=gl.getShaderInfoLog(s);gl.deleteShader(s);throw new Error(msg);}return s;}
+function makeProgram(v,f){const p=gl.createProgram(),vs=makeShader(gl.VERTEX_SHADER,shader(v)),fs=makeShader(gl.FRAGMENT_SHADER,shader(f));gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);gl.deleteShader(vs);gl.deleteShader(fs);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));return p;}
+function locs(p,names){const o={};names.forEach(function(n){o[n]=gl.getUniformLocation(p,n);});return o;}
+let programs;
+try{
+  programs={
+    bg:makeProgram("vs-bg","fs-bg"),star:makeProgram("vs-star","fs-star"),body:makeProgram("vs-body","fs-body"),
+    orbit:makeProgram("vs-orbit","fs-orbit"),particle:makeProgram("vs-particle","fs-particle"),
+    ring:makeProgram("vs-ring","fs-ring"),atmo:makeProgram("vs-atmo","fs-atmo"),post:makeProgram("vs-post","fs-post")
+  };
+}catch(err){$("webglError").style.display="grid";$("webglError").innerHTML="<div><strong>着色器初始化失败</strong><span>"+String(err.message).replace(/[<>]/g,"")+"</span></div>";return;}
+const U={
+ bg:locs(programs.bg,["uInvVP","uCamera","uTime"]),
+ star:locs(programs.star,["uVP","uCamera","uTime"]),
+ body:locs(programs.body,["uModel","uVP","uKind","uTime","uDistAU","uCamera","uSunObj","uRingType"]),
+ orbit:locs(programs.orbit,["uVP","uViewport","uColor","uPhase"]),
+ particle:locs(programs.particle,["uVP","uDays","uScale","uCompress"]),
+ ring:locs(programs.ring,["uModel","uVP","uType","uCamera","uNormal","uCenter","uTime","uPlanetRadius"]),
+ atmo:locs(programs.atmo,["uModel","uVP","uCamera","uCenter","uColor","uRadius","uHeight"]),
+ post:locs(programs.post,["uScene","uResolution","uBloom","uTime","uSunScreen","uSunVis"])
+};
+function createSphere(cols,rows){
+  const v=[],ind=[];
+  for(let y=0;y<=rows;y++){const t=y/rows*Math.PI,st=Math.sin(t),ct=Math.cos(t);for(let x=0;x<=cols;x++){const p=x/cols*TAU,n=[st*Math.cos(p),ct,st*Math.sin(p)];v.push(n[0],n[1],n[2],n[0],n[1],n[2]);}}
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const a=y*(cols+1)+x,b=a+1,c=a+cols+1,d=c+1;ind.push(a,b,c,b,d,c);}
+  const vao=gl.createVertexArray();gl.bindVertexArray(vao);const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v),gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,24,12);
+  const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint32Array(ind),gl.STATIC_DRAW);gl.bindVertexArray(null);
+  return {vao:vao,count:ind.length};
+}
+const sphere=createSphere(64,40);
+const emptyVao=gl.createVertexArray();
+function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+const rand=seeded(20260824);
+function gauss(){let u=0,v=0;while(!u)u=rand();while(!v)v=rand();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);}
+function createStars(){
+  const v=[],palette=[[1,.54,.28],[1,.72,.43],[1,.90,.73],[.94,.96,1],[.77,.86,1],[.62,.74,1],[.50,.65,1]],weights=[.38,.25,.18,.10,.05,.025,.015],pole=norm([-.8678,.4972,.0003]);
+  for(let i=0;i<11000;i++){let d;do{d=norm([rand()*2-1,rand()*2-1,rand()*2-1]);}while(rand()>.28+.72*Math.pow(1-Math.abs(dot(d,pole)),1.8));const lum=Math.pow(rand(),3.6),size=.72+lum*3.2;let q=rand(),idx=0;while(idx<weights.length-1&&q>weights[idx]){q-=weights[idx];idx++;}const c=palette[idx];v.push(d[0],d[1],d[2],size,c[0],c[1],c[2],rand()*TAU);}
+  const vao=gl.createVertexArray();gl.bindVertexArray(vao);const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v),gl.STATIC_DRAW);const stride=32;
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,stride,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,1,gl.FLOAT,false,stride,12);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,3,gl.FLOAT,false,stride,16);gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,stride,28);gl.bindVertexArray(null);return {vao:vao,count:11000};
+}
+const stars=createStars();
+function createRing(){
+  const v=[],steps=512;for(let i=0;i<=steps;i++){const a=i/steps*TAU,c=Math.cos(a),s=Math.sin(a);v.push(c*1.20,0,s*1.20,c*2.35,0,s*2.35);}
+  const vao=gl.createVertexArray();gl.bindVertexArray(vao);const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);gl.bindVertexArray(null);return {vao:vao,count:(steps+1)*2};
+}
+const ringMesh=createRing();
+const orbitVao=gl.createVertexArray(),orbitBuffer=gl.createBuffer();
+gl.bindVertexArray(orbitVao);gl.bindBuffer(gl.ARRAY_BUFFER,orbitBuffer);gl.bufferData(gl.ARRAY_BUFFER,32768*4,gl.DYNAMIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,32,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,32,12);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,1,gl.FLOAT,false,32,24);gl.enableVertexAttribArray(3);gl.vertexAttribPointer(3,1,gl.FLOAT,false,32,28);gl.bindVertexArray(null);
+function pushParticle(arr,a,e,I,O,w,M,n,size,group){arr.push(a,e,I*DEG,O*DEG,w*DEG,M,n,size,group);}
+function createParticles(){
+  const a=[];
+  const gaps=[[2.502,.022,.93],[2.825,.016,.85],[2.958,.012,.70],[3.279,.020,.90],[2.065,.010,.60]];
+  let made=0;while(made<9000){const x=2.06+rand()*1.22;let keep=Math.exp(-Math.pow((x-2.72)/.55,2));gaps.forEach(function(g){keep*=1-g[2]*Math.exp(-Math.pow((x-g[0])/g[1],2));});if(rand()>keep)continue;pushParticle(a,x,Math.min(.34,Math.abs(gauss())*.175),Math.min(32,Math.abs(gauss())*10),rand()*360,rand()*360,rand()*TAU,TAU/(365.256*Math.pow(x,1.5)),.65+rand()*1.4,1);made++;}
+  for(let i=0;i<900;i++){const x=clamp(3.90+gauss()*.09,3.62,4.18);pushParticle(a,x,.10+rand()*.20,Math.abs(gauss())*7,rand()*360,rand()*360,rand()*TAU,TAU/(365.256*Math.pow(x,1.5)),.75+rand()*1.5,1);}
+  const jn=(3034.74612775/36525)*DEG;
+  for(let i=0;i<2000;i++){const lead=i%2?60:-60,x=5.202+gauss()*.045,M=(34.39644051+lead+gauss()*26)*DEG;pushParticle(a,x,.02+rand()*.11,Math.abs(gauss())*10,rand()*360,rand()*360,M,jn,.75+rand()*1.6,2);}
+  for(let i=0;i<6000;i++){const q=rand();let x,e,I,n;if(q<.22){x=39.45+gauss()*.55;e=.08+rand()*.23;I=Math.abs(gauss())*12;n=TAU/(365.256*Math.pow(x,1.5));}else if(q<.86){x=42.5+rand()*5.2;e=rand()*.11;I=Math.abs(gauss())*8.8;n=TAU/(365.256*Math.pow(x,1.5));}else{x=48+rand()*32;e=.15+rand()*.35;I=Math.abs(gauss())*27.5;n=TAU/(365.256*Math.pow(x,1.5));}pushParticle(a,x,e,I,rand()*360,rand()*360,rand()*TAU,n,.65+rand()*1.6,3);}
+  const vao=gl.createVertexArray();gl.bindVertexArray(vao);const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(a),gl.STATIC_DRAW);const stride=36;
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,4,gl.FLOAT,false,stride,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,4,gl.FLOAT,false,stride,16);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,1,gl.FLOAT,false,stride,32);gl.bindVertexArray(null);return {vao:vao,count:a.length/9};
+}
+const particles=createParticles();
+const toggles={orbits:true,labels:true,moons:true,belts:true,comet:true,real:false,bloom:true};
+const sim={jd:jdFromMs(Date.now()),playing:true,slider:0,rate:1/86400};
+const camera={yaw:-.86,pitch:.48,distance:610,target:[0,0,0],desiredTarget:[0,0,0],desiredDistance:610,eye:[0,0,0]};
+let compressPower=.62,targetCompress=.62,selected=sun,lastFrame=performance.now(),lastInfo=0,lastInputSync=0,frameCounter=0,fpsStamp=performance.now(),fps=0,uiHidden=false;
+let currentStates={},planetStates={},vpMatrix=new Float32Array(16),invVPMatrix=new Float32Array(16),renderWidth=1,renderHeight=1;
+const rotationPhase={};
+[sun].concat(planets,moons,[halley]).forEach(function(b){const days=b.rotH/24;rotationPhase[b.id]=days?mod((sim.jd-J2000)/days*TAU,TAU):0;});
+function speedFromSlider(v){if(v===0)return 1/86400;return Math.sign(v)*1.157407e-5*Math.pow(10,Math.abs(v)/100*8.55);}
+function speedLabel(daysPerSec,v){
+  const seconds=Math.abs(daysPerSec)*86400,sgn=daysPerSec<0?"−":"";
+  if(v===0)return "实时 · 1 秒/秒";
+  if(seconds<60)return sgn+seconds.toFixed(seconds<10?1:0)+" 秒/秒";
+  if(seconds<3600)return sgn+(seconds/60).toFixed(1)+" 分/秒";
+  if(seconds<86400)return sgn+(seconds/3600).toFixed(1)+" 小时/秒";
+  if(seconds<365.256*86400)return sgn+(seconds/86400).toFixed(seconds/86400<10?1:0)+" 天/秒";
+  return sgn+(seconds/(365.256*86400)).toFixed(2)+" 年/秒";
+}
+function parseHex(h){return [parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255];}
+function buildBodyList(){
+  const root=$("bodyList");
+  function title(t){const d=document.createElement("div");d.className="group-title";d.textContent=t;root.appendChild(d);}
+  function button(body,moon){
+    const b=document.createElement("button");b.type="button";b.className="body-button"+(moon?" moon":"");b.dataset.id=body.id;
+    const dotEl=document.createElement("span");dotEl.className="body-dot";dotEl.style.setProperty("--dot",body.color);
+    const name=document.createElement("span");name.textContent=body.name;
+    const dist=document.createElement("span");dist.className="body-distance";dist.dataset.distance=body.id;dist.textContent=body.id==="sun"?"中心":"— AU";
+    b.append(dotEl,name,dist);b.addEventListener("click",function(){selectBody(body.id);if(innerWidth<850){document.body.classList.remove("show-bodies");}});
+    root.appendChild(b);
+  }
+  title("恒星");button(sun,false);title("行星与卫星");
+  planets.forEach(function(p){button(p,false);moons.filter(function(m){return m.parentId===p.id;}).forEach(function(m){button(m,true);});});
+  title("小天体");button(halley,false);
+}
+function ensureLabels(){
+  const root=$("labels");[sun].concat(planets,moons,[halley]).forEach(function(b){const e=document.createElement("span");e.className="body-label";e.dataset.label=b.id;e.textContent=b.name;root.appendChild(e);});
+}
+buildBodyList();ensureLabels();
+function selectBody(id){
+  const body=bodyById.get(id);if(!body)return;selected=body;
+  const r=displayRadius(body),isSun=id==="sun";camera.desiredDistance=isSun?55:Math.max(6.5,r*(body.parentId?12:10)+5);
+  document.querySelectorAll(".body-button").forEach(function(b){b.classList.toggle("active",b.dataset.id===id);});
+  document.querySelectorAll(".body-label").forEach(function(b){b.classList.toggle("selected",b.dataset.label===id);});
+  fillStaticInfo(body);updateInfo(true);
+}
+function row(label,value){const tr=document.createElement("tr"),a=document.createElement("td"),b=document.createElement("td");a.textContent=label;b.textContent=value;tr.append(a,b);return tr;}
+function fillStaticInfo(body){
+  $("infoName").textContent=body.name;$("infoLatin").textContent=body.latin;$("infoClass").textContent=body.className;
+  const tb=$("staticData");tb.replaceChildren();
+  tb.append(row("平均半径",body.radius>=1000?body.radius.toLocaleString("zh-CN")+" km":body.radius+" km"));
+  tb.append(row("质量",body.mass));
+  tb.append(row(body.parentId?"轨道周期":"公转周期",body.parentId?Math.abs(body.periodDays).toLocaleString("zh-CN")+" 天":body.period));
+  if(!body.parentId)tb.append(row("已知卫星",body.moonCount));
+  tb.append(row("自转 / 轨道倾角",(body.bookTilt==null?body.tilt:body.bookTilt)+"°"));
+  tb.append(row("温度",body.temperature));
+  tb.append(row("大气",body.atmosphere));
+  $("infoText").textContent=body.text;
+}
+function formatAU(v){if(!isFinite(v))return "—";if(v<.001)return (v*149597870.7).toLocaleString("zh-CN",{maximumFractionDigits:0})+" km";return v.toFixed(v<10?4:3)+" AU";}
+function formatLight(au){const minutes=au*8.316746;if(minutes<1)return (minutes*60).toFixed(1)+" 秒";if(minutes<120)return minutes.toFixed(1)+" 分";return (minutes/60).toFixed(2)+" 小时";}
+function updateInfo(force){
+  const now=performance.now();if(!force&&now-lastInfo<130)return;lastInfo=now;
+  const s=currentStates[selected.id];if(!s)return;const earth=currentStates.earth,earthD=earth?len(sub(s.world,earth.world)):0;
+  if(selected.id==="sun"){
+    $("mHelio").textContent="0 AU";$("mEarth").textContent=formatAU(earth?earth.r:1);$("mLonLat").textContent="黄道中心";$("mLight").textContent=formatLight(earth?earth.r:1);$("mApsides").textContent="—";$("mVelocity").textContent="—";
+  }else{
+    $("mHelio").textContent=formatAU(s.r);$("mEarth").textContent=formatAU(selected.id==="earth"?0:earthD);
+    $("mLonLat").textContent=s.lon.toFixed(2)+"° / "+(s.lat>=0?"+":"")+s.lat.toFixed(2)+"°";
+    $("mLight").textContent=formatLight(selected.id==="earth"?0:earthD);
+    if(selected.parentId)$("mApsides").textContent="圆轨道近似";
+    else $("mApsides").textContent=(s.a*(1-s.e)).toFixed(3)+" / "+(s.a*(1+s.e)).toFixed(3)+" AU";
+    $("mVelocity").textContent=s.velocity.toFixed(2)+" km/s";
+  }
+  document.querySelectorAll("[data-distance]").forEach(function(el){const x=currentStates[el.dataset.distance];if(x&&el.dataset.distance!=="sun")el.textContent=x.r.toFixed(x.r<10?2:1)+" AU";});
+}
+fillStaticInfo(sun);selectBody("sun");
+function syncDateInput(force){
+  const now=performance.now();if(!force&&(document.activeElement===$("dateInput")||now-lastInputSync<750))return;lastInputSync=now;
+  const d=new Date(msFromJd(sim.jd));if(!isNaN(d))$("dateInput").value=d.toISOString().slice(0,19);
+  const y=d.getUTCFullYear();$("validityWarning").style.display=(y<1800||y>2050)?"inline":"none";
+}
+$("speedRange").addEventListener("input",function(){sim.slider=Number(this.value);sim.rate=speedFromSlider(sim.slider);$("speedReadout").textContent=speedLabel(sim.rate,sim.slider);});
+function setPlaying(v){sim.playing=v;$("playButton").textContent=v?"Ⅱ":"▶";$("playButton").setAttribute("aria-label",v?"暂停":"播放");}
+$("playButton").addEventListener("click",function(){setPlaying(!sim.playing);});
+$("nowButton").addEventListener("click",function(){sim.jd=jdFromMs(Date.now());syncDateInput(true);});
+$("dateInput").addEventListener("change",function(){const t=Date.parse(this.value+"Z");if(isFinite(t)){sim.jd=jdFromMs(t);updateInfo(true);}});
+const toggleMap={toggleOrbits:"orbits",toggleLabels:"labels",toggleMoons:"moons",toggleBelts:"belts",toggleComet:"comet",toggleReal:"real",toggleBloom:"bloom"};
+Object.keys(toggleMap).forEach(function(id){$(id).addEventListener("change",function(){const key=toggleMap[id];toggles[key]=this.checked;if(key==="real")targetCompress=this.checked?1:.62;if(key==="labels")$("labels").style.display=this.checked?"block":"none";});});
+$("mobileBodies").addEventListener("click",function(){document.body.classList.toggle("show-bodies");document.body.classList.remove("show-info");});
+$("mobileInfo").addEventListener("click",function(){document.body.classList.toggle("show-info");document.body.classList.remove("show-bodies");});
+window.addEventListener("keydown",function(e){
+  if(e.target&&/INPUT/.test(e.target.tagName))return;
+  if(e.code==="Space"){e.preventDefault();setPlaying(!sim.playing);}
+  else if(e.code==="ArrowLeft"){sim.slider=clamp(sim.slider-3,-100,100);$("speedRange").value=sim.slider;sim.rate=speedFromSlider(sim.slider);$("speedReadout").textContent=speedLabel(sim.rate,sim.slider);}
+  else if(e.code==="ArrowRight"){sim.slider=clamp(sim.slider+3,-100,100);$("speedRange").value=sim.slider;sim.rate=speedFromSlider(sim.slider);$("speedReadout").textContent=speedLabel(sim.rate,sim.slider);}
+  else if(e.key==="h"||e.key==="H"){uiHidden=!uiHidden;app.classList.toggle("ui-hidden",uiHidden);}
+});
+const pointers=new Map();let dragStart=null,lastPointer=null,pinchDistance=0,dragged=false;
+canvas.addEventListener("pointerdown",function(e){canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);if(pointers.size===1){dragStart=[e.clientX,e.clientY];lastPointer=dragStart.slice();dragged=false;}else if(pointers.size===2){const p=Array.from(pointers.values());pinchDistance=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);}});
+canvas.addEventListener("pointermove",function(e){
+  if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pointers.size===1&&lastPointer){const dx=e.clientX-lastPointer[0],dy=e.clientY-lastPointer[1];if(Math.hypot(e.clientX-dragStart[0],e.clientY-dragStart[1])>4)dragged=true;camera.yaw-=dx*.0052;camera.pitch=clamp(camera.pitch+dy*.0046,-1.48,1.48);lastPointer=[e.clientX,e.clientY];}
+  else if(pointers.size===2){const p=Array.from(pointers.values()),d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);if(pinchDistance>0){camera.desiredDistance=clamp(camera.desiredDistance*Math.exp((pinchDistance-d)*.006),2.2,5200);dragged=true;}pinchDistance=d;}
+});
+function pointerEnd(e){const p=pointers.get(e.pointerId);pointers.delete(e.pointerId);if(pointers.size===0&&p&&!dragged)pickBody(p[0],p[1]);if(pointers.size===0){lastPointer=null;dragStart=null;}else if(pointers.size===1){lastPointer=Array.from(pointers.values())[0];}}
+canvas.addEventListener("pointerup",pointerEnd);canvas.addEventListener("pointercancel",pointerEnd);
+canvas.addEventListener("wheel",function(e){e.preventDefault();camera.desiredDistance=clamp(camera.desiredDistance*Math.exp(e.deltaY*.00125),2.2,5200);},{passive:false});
+function clipPoint(p,m){const x=p[0],y=p[1],z=p[2],w=m[3]*x+m[7]*y+m[11]*z+m[15];return [(m[0]*x+m[4]*y+m[8]*z+m[12])/w,(m[1]*x+m[5]*y+m[9]*z+m[13])/w,(m[2]*x+m[6]*y+m[10]*z+m[14])/w,w];}
+function projectPoint(p){const q=clipPoint(p,vpMatrix);return {x:(q[0]*.5+.5)*innerWidth,y:(.5-q[1]*.5)*innerHeight,z:q[2],w:q[3],visible:q[3]>0&&Math.abs(q[0])<1.2&&Math.abs(q[1])<1.2};}
+function pickBody(x,y){
+  let best=null,bestD=34;
+  Object.keys(currentStates).forEach(function(id){if(!toggles.moons&&bodyById.get(id).parentId)return;if(id==="halley"&&!toggles.comet)return;const q=projectPoint(currentStates[id].display);if(!q.visible)return;const d=Math.hypot(q.x-x,q.y-y),body=bodyById.get(id),threshold=Math.max(10,Math.min(36,displayRadius(body)*renderHeight/Math.max(q.w,1)*1.2));if(d<Math.max(bestD,threshold)&&d<bestD){best=id;bestD=d;}});
+  if(best)selectBody(best);
+}
+let fb={scene:null,texture:null,depth:null,msaa:null,msColor:null,msDepth:null,hdr:false,samples:0};
+function destroyFb(){
+  if(fb.scene)gl.deleteFramebuffer(fb.scene);if(fb.texture)gl.deleteTexture(fb.texture);if(fb.depth)gl.deleteRenderbuffer(fb.depth);
+  if(fb.msaa)gl.deleteFramebuffer(fb.msaa);if(fb.msColor)gl.deleteRenderbuffer(fb.msColor);if(fb.msDepth)gl.deleteRenderbuffer(fb.msDepth);
+}
+function allocateFb(w,h){
+  destroyFb();const ext=gl.getExtension("EXT_color_buffer_float"),internal=ext?gl.RGBA16F:gl.RGBA8,type=ext?gl.HALF_FLOAT:gl.UNSIGNED_BYTE;fb.hdr=!!ext;
+  fb.scene=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb.scene);
+  fb.texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,fb.texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,internal,w,h,0,gl.RGBA,type,null);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,fb.texture,0);
+  fb.depth=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,fb.depth);gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,w,h);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fb.depth);
+  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE&&ext){gl.deleteTexture(fb.texture);fb.texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,fb.texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,fb.texture,0);fb.hdr=false;}
+  const samples=Math.min(4,gl.getParameter(gl.MAX_SAMPLES));if(samples>0){
+    fb.msaa=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb.msaa);fb.msColor=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,fb.msColor);gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,fb.hdr?gl.RGBA16F:gl.RGBA8,w,h);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.RENDERBUFFER,fb.msColor);
+    fb.msDepth=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,fb.msDepth);gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,gl.DEPTH_COMPONENT24,w,h);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,fb.msDepth);
+    if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)===gl.FRAMEBUFFER_COMPLETE)fb.samples=samples;else{gl.deleteFramebuffer(fb.msaa);gl.deleteRenderbuffer(fb.msColor);gl.deleteRenderbuffer(fb.msDepth);fb.msaa=fb.msColor=fb.msDepth=null;fb.samples=0;}
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+}
+function resize(){
+  const dpr=Math.min(devicePixelRatio||1,1.8),w=Math.max(1,Math.floor(innerWidth*dpr)),h=Math.max(1,Math.floor(innerHeight*dpr));
+  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;renderWidth=w;renderHeight=h;allocateFb(w,h);}
+}
+window.addEventListener("resize",resize);resize();
+function buildStates(){
+  planetStates={};planets.forEach(function(p){planetStates[p.id]=planetState(p,sim.jd);});
+  currentStates={sun:stateFor(sun,sim.jd,compressPower,planetStates)};
+  planets.forEach(function(p){currentStates[p.id]=stateFor(p,sim.jd,compressPower,planetStates);});
+  moons.forEach(function(m){currentStates[m.id]=stateFor(m,sim.jd,compressPower,planetStates);});
+  currentStates.halley=stateFor(halley,sim.jd,compressPower,planetStates);
+}
+function updateCamera(dt){
+  const st=currentStates[selected.id];if(st)camera.desiredTarget=st.display.slice();
+  const k=1-Math.exp(-dt*4.2);camera.target=add(camera.target,mul(sub(camera.desiredTarget,camera.target),k));camera.distance+= (camera.desiredDistance-camera.distance)*k;
+  const cp=Math.cos(camera.pitch);camera.eye=add(camera.target,[camera.distance*cp*Math.cos(camera.yaw),camera.distance*Math.sin(camera.pitch),camera.distance*cp*Math.sin(camera.yaw)]);
+  const near=Math.max(.012,camera.distance*.0035),far=Math.max(camera.distance*14,4200),proj=perspective(48*DEG,renderWidth/renderHeight,near,far),view=lookAt(camera.eye,camera.target,[0,1,0]);vpMatrix=m4mul(proj,view);invVPMatrix=inverse(vpMatrix);
+}
+function buildRibbon(points,closed,customT){
+  const n=points.length,a=new Float32Array(n*16);
+  for(let i=0;i<n;i++){const nx=points[closed?(i+1)%n:Math.min(i+1,n-1)],t=customT?customT(i,n):i/Math.max(1,n-1);for(let side=0;side<2;side++){const o=(i*2+side)*8,p=points[i];a[o]=p[0];a[o+1]=p[1];a[o+2]=p[2];a[o+3]=nx[0];a[o+4]=nx[1];a[o+5]=nx[2];a[o+6]=side?1:-1;a[o+7]=t;}}
+  return a;
+}
+function uploadRibbon(data){gl.bindBuffer(gl.ARRAY_BUFFER,orbitBuffer);if(data.byteLength>131072)gl.bufferData(gl.ARRAY_BUFFER,data.byteLength,gl.DYNAMIC_DRAW);gl.bufferSubData(gl.ARRAY_BUFFER,0,data);return data.length/8;}
+function sunObjectDirection(body,state){
+  const axis=body.parentId?bodyById.get(body.parentId).axis:body.axis||[0,1,0],b=basisFromAxis(axis),L=norm(mul(state.display,-1));return [dot(L,b.x),dot(L,b.y),dot(L,b.z)];
+}
+function drawBody(body,state,time){
+  const r=displayRadius(body),axis=body.parentId?bodyById.get(body.parentId).axis:body.axis||[0,1,0],model=modelMatrix(state.display,axis,rotationPhase[body.id]||0,r);
+  gl.useProgram(programs.body);gl.uniformMatrix4fv(U.body.uModel,false,model);gl.uniformMatrix4fv(U.body.uVP,false,vpMatrix);gl.uniform1i(U.body.uKind,body.kind);gl.uniform1f(U.body.uTime,time);gl.uniform1f(U.body.uDistAU,Math.max(state.r,.18));gl.uniform3fv(U.body.uCamera,camera.eye);gl.uniform3fv(U.body.uSunObj,sunObjectDirection(body,state));gl.uniform1i(U.body.uRingType,ringTypes[body.id]||0);
+  gl.bindVertexArray(sphere.vao);gl.drawElements(gl.TRIANGLES,sphere.count,gl.UNSIGNED_INT,0);
+}
+function drawOrbits(){
+  if(!toggles.orbits)return;gl.useProgram(programs.orbit);gl.uniformMatrix4fv(U.orbit.uVP,false,vpMatrix);gl.uniform2f(U.orbit.uViewport,renderWidth,renderHeight);gl.bindVertexArray(orbitVao);
+  const bodies=planets.concat(toggles.comet?[halley]:[]);
+  bodies.forEach(function(body){const points=[],steps=body.id==="halley"?420:220;for(let i=0;i<steps;i++)points.push(pointOnOrbit(body,sim.jd,i/steps*TAU,compressPower));const data=buildRibbon(points,true);const count=uploadRibbon(data),c=parseHex(body.color);gl.uniform3f(U.orbit.uColor,c[0]*.55,c[1]*.55,c[2]*.55);gl.uniform1f(U.orbit.uPhase,currentStates[body.id].phase);gl.drawArrays(gl.TRIANGLE_STRIP,0,count);});
+}
+function drawParticles(){
+  if(!toggles.belts)return;gl.useProgram(programs.particle);gl.uniformMatrix4fv(U.particle.uVP,false,vpMatrix);gl.uniform1f(U.particle.uDays,sim.jd-J2000);gl.uniform1f(U.particle.uScale,SCALE);gl.uniform1f(U.particle.uCompress,compressPower);gl.bindVertexArray(particles.vao);gl.drawArrays(gl.POINTS,0,particles.count);
+}
+function drawAtmosphere(body,state,color,height){
+  const r=displayRadius(body),axis=body.parentId?bodyById.get(body.parentId).axis:body.axis||[0,1,0],model=modelMatrix(state.display,axis,0,r*(1+height*7.5));
+  gl.useProgram(programs.atmo);gl.uniformMatrix4fv(U.atmo.uModel,false,model);gl.uniformMatrix4fv(U.atmo.uVP,false,vpMatrix);gl.uniform3fv(U.atmo.uCamera,camera.eye);gl.uniform3fv(U.atmo.uCenter,state.display);gl.uniform3fv(U.atmo.uColor,color);gl.uniform1f(U.atmo.uRadius,r);gl.uniform1f(U.atmo.uHeight,height);gl.bindVertexArray(sphere.vao);gl.drawElements(gl.TRIANGLES,sphere.count,gl.UNSIGNED_INT,0);
+}
+function drawRings(time){
+  gl.useProgram(programs.ring);gl.uniformMatrix4fv(U.ring.uVP,false,vpMatrix);gl.uniform3fv(U.ring.uCamera,camera.eye);gl.uniform1f(U.ring.uTime,time);gl.bindVertexArray(ringMesh.vao);
+  [bodyById.get("jupiter"),bodyById.get("saturn"),bodyById.get("uranus")].forEach(function(body){const st=currentStates[body.id],r=displayRadius(body),model=basisModel(st.display,body.axis,r);gl.uniformMatrix4fv(U.ring.uModel,false,model);gl.uniform1i(U.ring.uType,ringTypes[body.id]);gl.uniform3fv(U.ring.uNormal,body.axis);gl.uniform3fv(U.ring.uCenter,st.display);gl.uniform1f(U.ring.uPlanetRadius,r);gl.drawArrays(gl.TRIANGLE_STRIP,0,ringMesh.count);});
+}
+function drawCometTail(){
+  if(!toggles.comet)return;const st=currentStates.halley;if(st.r>6.5)return;const p=st.display,anti=norm(p),strength=Math.min(1,9/(st.r*st.r)),lengthIon=12+strength*62;
+  const ion=[],dust=[];let vel;
+  const before=halleyState(sim.jd-.35),after=halleyState(sim.jd+.35);vel=norm(sub(compressed(after.world,compressPower),compressed(before.world,compressPower)));
+  for(let i=0;i<34;i++){const t=i/33;ion.push(add(p,mul(anti,lengthIon*t)));const bend=add(mul(anti,lengthIon*.72*t),mul(vel,-lengthIon*.28*t*t));dust.push(add(p,bend));}
+  gl.useProgram(programs.orbit);gl.uniformMatrix4fv(U.orbit.uVP,false,vpMatrix);gl.uniform2f(U.orbit.uViewport,renderWidth,renderHeight);gl.uniform1f(U.orbit.uPhase,0);gl.bindVertexArray(orbitVao);
+  let data=buildRibbon(ion,false,function(i,n){return 1-i/(n-1);});let count=uploadRibbon(data);gl.uniform3f(U.orbit.uColor,.18,.62,1.0);gl.drawArrays(gl.TRIANGLE_STRIP,0,count);
+  data=buildRibbon(dust,false,function(i,n){return 1-i/(n-1);});count=uploadRibbon(data);gl.uniform3f(U.orbit.uColor,1.0,.48,.14);gl.drawArrays(gl.TRIANGLE_STRIP,0,count);
+}
+function updateLabels(){
+  const bodies=[sun].concat(planets,toggles.moons?moons:[],toggles.comet?[halley]:[]);
+  document.querySelectorAll(".body-label").forEach(function(el){el.style.opacity="0";});
+  if(!toggles.labels)return;
+  bodies.forEach(function(body){const st=currentStates[body.id],el=document.querySelector('[data-label="'+body.id+'"]'),q=projectPoint(st.display);if(!el||!q.visible||q.z>1||q.x<8||q.x>innerWidth-34||q.y<8||q.y>innerHeight-8)return;const apparent=displayRadius(body)*renderHeight/Math.max(q.w,1),alpha=clamp((apparent-1.2)/4.5,.18,1);el.style.transform="translate("+Math.round(q.x+9)+"px,"+Math.round(q.y-6)+"px)";el.style.opacity=String(alpha);});
+}
+function lensVisibility(){
+  const sunP=projectPoint([0,0,0]);if(!sunP.visible||sunP.z>1)return {screen:[sunP.x/innerWidth*2-1,1-sunP.y/innerHeight*2],vis:0};
+  let vis=1;const sunRad=displayRadius(sun)*renderHeight/Math.max(sunP.w,1);
+  planets.forEach(function(b){const q=projectPoint(currentStates[b.id].display);if(!q.visible)return;const rp=displayRadius(b)*renderHeight/Math.max(q.w,1);if(Math.hypot(q.x-sunP.x,q.y-sunP.y)<sunRad+rp&&len(sub(camera.eye,currentStates[b.id].display))<len(camera.eye))vis*=.08;});
+  return {screen:[sunP.x/innerWidth*2-1,1-sunP.y/innerHeight*2],vis:vis};
+}
+function renderScene(time){
+  const target=fb.samples?fb.msaa:fb.scene;gl.bindFramebuffer(gl.FRAMEBUFFER,target);gl.viewport(0,0,renderWidth,renderHeight);
+  gl.depthMask(true);gl.clearColor(.0012,.0015,.0025,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.disable(gl.DEPTH_TEST);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);gl.useProgram(programs.bg);gl.uniformMatrix4fv(U.bg.uInvVP,false,invVPMatrix);gl.uniform3fv(U.bg.uCamera,camera.eye);gl.uniform1f(U.bg.uTime,time);gl.bindVertexArray(emptyVao);gl.drawArrays(gl.TRIANGLES,0,3);
+  gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.useProgram(programs.star);gl.uniformMatrix4fv(U.star.uVP,false,vpMatrix);gl.uniform3fv(U.star.uCamera,camera.eye);gl.uniform1f(U.star.uTime,time);gl.bindVertexArray(stars.vao);gl.drawArrays(gl.POINTS,0,stars.count);
+  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.depthMask(true);gl.disable(gl.BLEND);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+  drawBody(sun,currentStates.sun,time);planets.forEach(function(b){drawBody(b,currentStates[b.id],time);});
+  if(toggles.moons)moons.forEach(function(b){drawBody(b,currentStates[b.id],time);});
+  if(toggles.comet)drawBody(halley,currentStates.halley,time);
+  gl.depthMask(false);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.disable(gl.CULL_FACE);drawOrbits();drawParticles();drawCometTail();
+  drawAtmosphere(bodyById.get("earth"),currentStates.earth,[.06,.40,1.0],.030);
+  drawAtmosphere(bodyById.get("venus"),currentStates.venus,[.76,.43,.10],.034);
+  drawAtmosphere(bodyById.get("mars"),currentStates.mars,[.42,.12,.035],.021);
+  if(toggles.moons)drawAtmosphere(bodyById.get("titan"),currentStates.titan,[.70,.25,.035],.048);
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);drawRings(time);
+  gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.CULL_FACE);
+  if(fb.samples){gl.bindFramebuffer(gl.READ_FRAMEBUFFER,fb.msaa);gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,fb.scene);gl.blitFramebuffer(0,0,renderWidth,renderHeight,0,0,renderWidth,renderHeight,gl.COLOR_BUFFER_BIT,gl.NEAREST);}
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,renderWidth,renderHeight);gl.disable(gl.DEPTH_TEST);gl.useProgram(programs.post);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,fb.texture);gl.uniform1i(U.post.uScene,0);gl.uniform2f(U.post.uResolution,renderWidth,renderHeight);gl.uniform1f(U.post.uBloom,toggles.bloom?1:0);gl.uniform1f(U.post.uTime,time);const flare=lensVisibility();gl.uniform2f(U.post.uSunScreen,flare.screen[0],flare.screen[1]);gl.uniform1f(U.post.uSunVis,flare.vis);gl.bindVertexArray(emptyVao);gl.drawArrays(gl.TRIANGLES,0,3);
+}
+function updateRotation(deltaDays){
+  [sun].concat(planets,moons,[halley]).forEach(function(b){const p=(b.rotH||24)/24;if(!p)return;const d=clamp(TAU*deltaDays/p,-.22,.22);rotationPhase[b.id]=mod(rotationPhase[b.id]+d,TAU);});
+}
+function frame(now){
+  resize();const dt=Math.min(.1,(now-lastFrame)/1000||.016);lastFrame=now;const deltaDays=sim.playing?sim.rate*dt:0;sim.jd+=deltaDays;updateRotation(deltaDays);
+  const ck=1-Math.exp(-dt*11);compressPower+=(targetCompress-compressPower)*ck;if(Math.abs(compressPower-targetCompress)<.0001)compressPower=targetCompress;
+  buildStates();updateCamera(dt);renderScene(now);updateLabels();updateInfo(false);syncDateInput(false);
+  frameCounter++;if(now-fpsStamp>650){fps=frameCounter*1000/(now-fpsStamp);frameCounter=0;fpsStamp=now;const err=gl.getError();$("status").textContent="WEBGL2 · "+(fb.hdr?"HDR":"RGBA8")+" · "+(fb.samples?fb.samples+"× MSAA":"无 MSAA")+" · "+fps.toFixed(0)+" FPS"+(err===gl.NO_ERROR?"":" · GL "+err);}
+  requestAnimationFrame(frame);
+}
+window.__solarDebug={
+  snapshot:function(iso){const jd=iso?jdFromMs(Date.parse(iso)):sim.jd,ps={};planets.forEach(function(p){ps[p.id]=planetState(p,jd);});return {jd:jd,earth:{r:ps.earth.r,lon:ps.earth.lon,lat:ps.earth.lat,velocity:ps.earth.velocity},saturn:{r:ps.saturn.r,velocity:ps.saturn.velocity},neptune:{r:ps.neptune.r},glError:gl.getError()};},
+  select:selectBody,
+  state:sim
+};
+buildStates();updateCamera(.016);syncDateInput(true);console.info("太阳系实时模型已启动",window.__solarDebug.snapshot("2026-08-07T00:00:00Z"));requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

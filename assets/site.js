@@ -33,6 +33,12 @@
     'GPT5.6Sol(xhigh)V3',
     'GPT5.6Sol(high)V1',
   ];
+  const SOL_EFFORT_DOCUMENT_IDS = [
+    'GPT5.6SolUltra-TasksAssignedByOpus5',
+    'GPT5.6Sol(Max)V1-TasksAssignedByOpus5',
+    'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5',
+    'GPT5.6Sol(high)V1-TasksAssignedByOpus5',
+  ];
   function modelGapComparisons() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return MODEL_GAP_DEFS.map(def => Object.assign({}, def, {
@@ -43,6 +49,10 @@
   function effortComparisonWorks() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return SOL_EFFORT_IDS.map(id => byId.get(id)).filter(Boolean);
+  }
+  function effortDocumentWorks() {
+    const byId = new Map(visibleWorks().map(work => [work.id, work]));
+    return SOL_EFFORT_DOCUMENT_IDS.map(id => byId.get(id)).filter(Boolean);
   }
   const effortComparisonMatches = (works, query) => works.some(work => modelMatches(work, query));
 
@@ -600,7 +610,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     </article>`;
   }
 
-  function effortRunCard(work, index) {
+  function effortRunCard(work, index, brief) {
     const isUltra = index === 0;
     const effort = isUltra ? t('effort.ultra') : (work.model.match(/\(([^)]+)\)/) || [])[1] || 'MODE';
     const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
@@ -624,11 +634,11 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         <span>${esc(renderer)}</span>
         <span>${t('gap.featureCount', { count: work.feats.length })}</span>
       </div>
-      <p>${t('effort.samePrompt')}</p>
+      <p>${t(brief === 'document' ? 'effort.sameDocument' : 'effort.samePrompt')}</p>
     </article>`;
   }
 
-  const effortComparisonBlock = works => works.map(effortRunCard).join('');
+  const effortComparisonBlock = (works, brief = 'prompt') => works.map((work, index) => effortRunCard(work, index, brief)).join('');
 
   function featuredPairProof(a, b) {
     if (a.pair !== 'opus5') return '';
@@ -794,7 +804,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
     environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
-    effortComparisonWorks, effortComparisonMatches, effortComparisonBlock,
+    effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
   };
