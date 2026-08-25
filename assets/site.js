@@ -32,12 +32,16 @@
     'GPT5.6Sol(Max)V1',
     'GPT5.6Sol(xhigh)V3',
     'GPT5.6Sol(high)V1',
+    'GPT5.6Sol(Medium)V1',
+    'GPT5.6Sol(Light)V1',
   ];
   const SOL_EFFORT_DOCUMENT_IDS = [
     'GPT5.6SolUltra-TasksAssignedByOpus5',
     'GPT5.6Sol(Max)V1-TasksAssignedByOpus5',
     'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5',
     'GPT5.6Sol(high)V1-TasksAssignedByOpus5',
+    'GPT5.6Sol(Medium)V1-TasksAssignedByOpus5',
+    'GPT5.6Sol(Light)V1-TasksAssignedByOpus5',
   ];
   function modelGapComparisons() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
@@ -617,7 +621,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const environment = environmentTag(work);
     const displayTags = workText(work, 'tags') || [];
     const extraTags = displayTags.filter(tag => cleanEnvironmentTag(tag) !== environment);
-    return `<article class="effort-run-card${isUltra ? ' is-ultra' : ''}">
+    return `<article class="effort-run-card${isUltra ? ' is-ultra' : ''}" style="--effort-order:${index}">
       <header>
         <div><span>${esc(effort)}</span><h4>${esc(work.model)}</h4></div>
         <b>${String(index + 1).padStart(2, '0')}</b>

@@ -3,6 +3,42 @@
   'use strict';
 
   window.SCORES = {
+    'GPT5.6Sol(Medium)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: .4, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 0, hasEarthMoon: false, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 7,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 的 J2000/开普勒轨道、小行星带、程序化表面与持续聚焦跟随均稳定，默认总览清楚；但没有月球或其他卫星，也没有哈雷、ACES、独立大气层和真正的后处理 Bloom，环系仅为透明几何，重置也不完整。'
+    },
+    'GPT5.6Sol(Medium)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: .4, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 4,
+      interaction: { drag: .5, zoom: .5, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '详细文档版具备 JPL 世纪率、开普勒轨道、八颗卫星、哈雷、三套环和多重小天体带；但太阳颗粒噪声和默认曝光压低了画面层级，没有 ACES、独立大气或真正 Bloom，拖拽释放可能误选，缩放可进入大型天体，聚焦也不会持续跟随。'
+    },
+    'GPT5.6Sol(Light)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 0, bloom: .4, aces: 0, atmo: 0 },
+      orbitModel: { geometry: 1, kepler: 1, elements: .5, orientation: 1, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 6,
+      interaction: { drag: .5, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 总览简洁，开普勒轨道、月球、程序化行星、环系、拖拽缩放和聚焦均可运行；但轨道半长轴是显示尺度、相位未绑定真实历元，没有小行星带、哈雷、ACES、大气和真正 Bloom，拖拽释放还可能误触，聚焦后也不持续跟随。'
+    },
+    'GPT5.6Sol(Light)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: .4, aces: 0, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '详细文档版完整运行 JPL/开普勒轨道、八颗卫星、哈雷、小行星带与柯伊伯带，地球近景细节清楚；但环系只是七条线，没有物理环影，辉光与大气仅为简化近似，没有 ACES，缩放可进入大型天体，聚焦也不持续跟随且没有完整状态重置。'
+    },
     'DoubaoSeedEvolving(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0 },
