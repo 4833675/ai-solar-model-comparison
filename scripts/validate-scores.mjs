@@ -280,11 +280,13 @@ const expectedHiddenIds = [
   'DeepSeek_V4_Pro_high-3',
   'GPT5.6SolUltra',
   'KimiK3(Max)V3',
+  'GLM_5_1_high-1',
+  'Grok4.5',
 ].sort();
-check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'Exactly the five Qwen Preview, four retired DeepSeek V4 Pro, GPT-5.6 Sol Ultra #2, and Kimi K3 #3 works must be hidden');
+check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The historical hidden-work set must include Qwen Preview, retired DeepSeek V4 Pro, GPT-5.6 Sol Ultra #2, Kimi K3 #3, GLM 5.1, and Grok 4.5');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 72, 'Visible WORKS count must be 72');
-check(visibleWorks.filter(w => w.group === 'A').length === 39, 'Visible Group A count must be 39');
+check(visibleWorks.length === 70, 'Visible WORKS count must be 70');
+check(visibleWorks.filter(w => w.group === 'A').length === 37, 'Visible Group A count must be 37');
 check(visibleWorks.filter(w => w.group === 'B').length === 33, 'Visible Group B count must be 33');
 check(visibleWorks.every(w => !w.model.includes('Preview')), 'No Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -731,8 +733,8 @@ check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes(
 check(zhHome.includes('Claude Opus 4.8 则是 (Max → Ultra) 的跨档位例外') && enHome.includes('Claude Opus 4.8 is the (Max → Ultra) cross-level exception'), 'Both pair introductions must retain the Claude Opus 4.8 Max-to-Ultra exception');
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
 check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current subjective tier deductions');
-check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">33') && enHome.includes('id="bAll">33') && zhHome.includes('id="tAll">72') && enHome.includes('id="tAll">72'), 'Both home pages must publish 39/33 and 72-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 39 件和文档组 33 件') && enHome.includes('prefer the 23 paired results over treating all 39 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">37') && enHome.includes('id="aAll">37') && zhHome.includes('id="bAll">33') && enHome.includes('id="bAll">33') && zhHome.includes('id="tAll">70') && enHome.includes('id="tAll">70'), 'Both home pages must publish 37/33 and 70-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 37 件和文档组 33 件') && enHome.includes('prefer the 23 paired results over treating all 37 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('23 组同模型') && enHome.includes('23 same-model') && zhHome.includes('41.86 / 59.5') && enHome.includes('41.86 / 59.5') && zhHome.includes('31.41 / 40.5') && enHome.includes('31.41 / 40.5'), 'Both home pages must publish the current 23-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
@@ -782,10 +784,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 1, decline: 9 }), 'Execution outcomes must be 13 / 1 / 9');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [39, 42.29999999999999, 30.880256410256415, 69.41102564102565], b: [33, 55.03939393939391, 30.08636363636364, 80.1560606060606] },
-  withoutReferences: { a: [36, 41.252777777777766, 30.206388888888892, 67.37583333333333], b: [33, 55.03939393939391, 30.08636363636364, 80.1560606060606] },
-  withoutTier4: { a: [38, 42.64999999999999, 31.109473684210528, 69.89105263157894], b: [30, 55.89999999999998, 31.85333333333334, 84.50499999999998] },
-  withoutReferencesOrTier4: { a: [35, 41.60285714285713, 30.436000000000007, 67.83885714285715], b: [30, 55.89999999999998, 31.85333333333334, 84.50499999999998] },
+  all: { a: [37, 42.79729729729729, 31.05486486486487, 70.14945945945946], b: [33, 55.03939393939391, 30.08636363636364, 80.1560606060606] },
+  withoutReferences: { a: [34, 41.732352941176465, 30.356764705882355, 68.05970588235293], b: [33, 55.03939393939391, 30.08636363636364, 80.1560606060606] },
+  withoutTier4: { a: [36, 43.18055555555555, 31.30166666666667, 70.67666666666668], b: [30, 55.89999999999998, 31.85333333333334, 84.50499999999998] },
+  withoutReferencesOrTier4: { a: [33, 42.11818181818182, 30.60484848484849, 68.57151515151514], b: [30, 55.89999999999998, 31.85333333333334, 84.50499999999998] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -818,4 +820,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 83 audited records, 72 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 83 audited records, 70 visible works, V2 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
