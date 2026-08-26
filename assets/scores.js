@@ -539,6 +539,24 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '真实元素、哈雷、八颗卫星、双向环行为和持续聚焦均稳定；只扣固定角度与偏暖亮的视觉分。'
     },
+    'GPT5.6Luna(Max)V1': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: .4, aces: 0, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: .5, orientation: 1, epoch: .5 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 5,
+      interaction: { drag: 1, zoom: .5, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版具备开普勒轨道、月球、小行星带、程序化行星与持续锁定跟随，运行稳定；但没有哈雷和 ACES，辉光与大气只是简化近似，巨大橙色太阳光层主导总览，锁定视角也不会自动拉近，木星和土星难以形成有效近景。'
+    },
+    'GPT5.6Luna(Max)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: .4, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: .5, orientation: .5, epoch: 0 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 2, integrity: 5 }, visualBase: 3,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版的界面、ACES、大气层、小行星带和聚焦动画较完整，但行星轨道缺少真实升交点、近日点方向和历元，标为 HALLEY 的彗星根数也不是哈雷；默认太阳严重过曝，木星与土星聚焦后几乎只剩黑色轮廓，聚焦不会持续跟随，重置也没有恢复完整模拟状态。'
+    },
     'GPT5.6LunaMax-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
