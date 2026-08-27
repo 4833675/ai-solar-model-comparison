@@ -107,6 +107,7 @@
       'pair.rendering': '渲染方式',
       'pair.codeSize': '代码量',
       'pair.features': '功能点',
+      'pair.scoreGain': '文档 +{delta}',
       'pair.featuredBadge': '特别对照 · 自己出题自己做',
       'pair.featuredEyebrow': '自主校验记录 · SELF-AUDIT LOG',
       'pair.featuredTitle': '它不只照着规格书做，还会主动质疑规格书',
@@ -231,6 +232,7 @@
       'pair.rendering': 'Rendering',
       'pair.codeSize': 'Code size',
       'pair.features': 'Features',
+      'pair.scoreGain': 'Detailed +{delta}',
       'pair.featuredBadge': 'Special comparison · self-authored brief',
       'pair.featuredEyebrow': 'AUTONOMOUS VALIDATION · SELF-AUDIT LOG',
       'pair.featuredTitle': 'It did not merely follow the specification—it challenged it',
@@ -283,6 +285,8 @@
   };
 
   const SCORE_NOTES_EN = {
+    'GLM5.3Flash(Max)V1': 'This offline native-WebGL2 run includes JPL secular elements, a Kepler solver, six moons, ring shadows, an asteroid belt, Bloom/ACES, atmospheres, and continuous focus-follow behavior. The default solar glow obscures much of the inner view and there is no complete state reset. Halley\'s mean motion also divides by the degree-to-radian constant instead of multiplying by it, making the comet run about 3,283 times too fast, so the Halley bonus does not apply.',
+    'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': 'The source covers JPL/Keplerian paths, eight moons, several small-body populations, Bloom/ACES, and atmospheres. However, Halley\'s computed coordinates are written into a temporary array and discarded, leaving the comet at the Sun. After a few seconds the compatibility probe switches paths, rings, and corona to dotted fallbacks that produce a conspicuous checkerboard glow; Jupiter and Saturn also remain too small after focus, so the run is capped at L2.',
     'DoubaoSeedEvolving(Max)V1': 'The offline native-WebGL2 build runs eleven moons, ring shadows, Bloom/ACES, and an asteroid belt. Its planets use coplanar circular paths and hand-tuned speeds rather than Keplerian motion or a real epoch, it has no focus-follow interaction, and the default view is heavily washed out by bright particles.',
     'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': 'The detailed-spec run covers JPL/Keplerian orbits, eight moons, Halley, three ring systems with shadows, Bloom/ACES, atmospheres, and continuous follow. The default scene and orbit lines are strongly overexposed with a gold cast, and there is no complete state reset.',
     'GPT5.6Sol(high)V1': 'The offline native-WebGL2 build stably delivers eight moons, an asteroid belt, Bloom/ACES, atmospheres, and complete interaction, with a clear overview. Every planet starts from perihelion because initial mean anomalies are absent, while Halley and physical ring shadows are also missing.',
@@ -371,6 +375,11 @@
   };
 
   const WORK_TEXT_EN = {
+    'GLM5.3Flash(Max)V1': { title: 'Solar System · Keplerian Motion Model' },
+    'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': {
+      title: 'Solar System · Real-Time Motion Model',
+      issue: 'After compatibility detection switches to dotted fallback rendering, paths, rings, and corona lose their continuous form and a conspicuous checkerboard glow appears around the Sun; focused Jupiter and Saturn also remain too small for useful inspection.'
+    },
     'DoubaoSeedEvolving(Max)V1': { title: 'Solar System · WebGL2' },
     'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
     'GPT5.6Sol(high)V1': { title: 'HELIOS · Dynamic Solar-System Observatory' },

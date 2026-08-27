@@ -668,6 +668,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function pairBlock(w, i) {
     const a = w.a, b = w.b;
     const featured = a.pair === 'opus5';
+    const aScore = scoreFor(a), bScore = scoreFor(b);
+    const gain = aScore && bScore ? bScore.exact - aScore.exact : null;
     const af = a.feats.length;
     const bf = b.feats.length;
     const fmtDiff = (label, va, vb) => I18N.en
@@ -677,6 +679,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <div class="pair-head">
         <span class="seq">${String(i + 1).padStart(2, '0')}</span>
         <h3>${esc(pairTitle(w))}</h3>
+        ${gain != null ? `<span class="pair-score-gain">${t('pair.scoreGain', { delta: scoreNum(gain) })}</span>` : ''}
         ${featured ? `<span class="pair-featured-badge"><span aria-hidden="true">⚑</span> ${t('pair.featuredBadge')}</span>` : ''}
       </div>
       <div class="pair-body">
@@ -727,6 +730,15 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       (matched[w.pair] = matched[w.pair] || {})[w.group === 'A' ? 'a' : 'b'] = w;
     });
     return (window.PAIR_ORDER || Object.keys(matched)).map(key => matched[key]).filter(pair => pair && pair.a && pair.b);
+  }
+
+  function displayPairs() {
+    return scorePairs().map((pair, order) => ({ pair, order,
+      gain: scoreFor(pair.b).exact - scoreFor(pair.a).exact }))
+      .filter(row => row.gain > 0)
+      .sort((a, b) => b.gain - a.gain || a.order - b.order)
+      .slice(0, 6)
+      .map(row => row.pair);
   }
 
   function scoreStats() {
@@ -811,5 +823,6 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
     pairs: scorePairs,
+    displayPairs,
   };
 })();

@@ -3,6 +3,25 @@
   'use strict';
 
   window.SCORES = {
+    'GLM5.3Flash(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 6,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、六颗卫星、环影、小行星带、Bloom/ACES、大气与持续聚焦跟随；但默认太阳辉光明显吞没内侧画面，完整状态不能重置，哈雷的平均运动又把角度转弧度写成了除法，导致运行速度约快 3283 倍，因此不计哈雷加分。'
+    },
+    'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 4, data: 3, integrity: 2 }, visualBase: 3,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: 'L2',
+      fatalReason: '页面可运行，但兼容探测会把轨道、环与日冕切换为点状降级路径，随后出现明显棋盘格光晕；木星、土星聚焦后仍小到无法有效近景观察。',
+      note: '源码覆盖 JPL/开普勒轨道、八颗卫星、多重小天体带、Bloom/ACES 与大气；但哈雷坐标写入临时数组后被丢弃，彗星实际长期停在太阳位置。运行数秒后轨道、环和日冕进入点状降级渲染，太阳周边出现棋盘格，聚焦距离也不足，因此按 L2 封顶。'
+    },
     'GPT5.6Sol(Medium)V1': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: .4, aces: 0, atmo: 0 },
