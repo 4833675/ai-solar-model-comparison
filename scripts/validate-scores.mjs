@@ -801,7 +801,13 @@ for (const stale of ['Flash took', 'Pro took', 'Flash effective', 'Flash elapsed
   check(!enHome.includes(stale), `English static copy still uses bare model shorthand: ${stale}`);
 }
 for (const page of [zhHome, enHome]) check(!page.includes('DeepSeek V4 Pro (Max)'), 'Static home copy must not mention the retired DeepSeek V4 Pro name');
-check(!zhHome.includes('cost-token-case') && !enHome.includes('cost-token-case'), 'The removed DeepSeek Flash/Pro cost comparison must stay absent in both languages');
+check((zhHome.match(/class="cost-token-case cost-plan-case"/g) || []).length === 1 && (enHome.match(/class="cost-token-case cost-plan-case"/g) || []).length === 1, 'Both languages must include exactly one GLM Coding Lite vs Claude Pro allowance case');
+check(zhHome.includes('整整一周额度') && zhHome.includes('一个 5 小时额度内') && zhHome.includes('¥118') && zhHome.includes('$20'), 'Chinese cost case must preserve the supplied plan prices and allowance record');
+check(enHome.includes('the full weekly allowance') && enHome.includes('within one five-hour window') && enHome.includes('¥118') && enHome.includes('$20'), 'English cost case must preserve the supplied plan prices and allowance record');
+for (const page of [zhHome, enHome]) {
+  check(page.includes('view' + (page === enHome ? '.en' : '') + '.html?w=GLM5.3Flash(Max)V1-TasksAssignedByOpus5') && page.includes('view' + (page === enHome ? '.en' : '') + '.html?w=Opus5Ultra-TasksAssignedByOpus5'), 'The new allowance case must link both detailed-spec works');
+  check(!page.includes('同一份文档，少用 Token 也未必更省') && !page.includes('Less Token use does not necessarily mean lower cost'), 'The removed DeepSeek Flash/Pro cost case must stay absent');
+}
 check(zhHome.includes('已收录的 Claude Fable 5 (Max) #1') && enHome.includes('included Claude Fable 5 (Max) #1 entry'), 'Fable Three.js footer reference must include its #1 run number');
 
 const stats = SITE.scoreStats();
