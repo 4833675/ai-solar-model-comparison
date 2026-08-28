@@ -709,14 +709,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   function pairCollection(pairs, expandRest = false) {
-    if (!pairs.length) return '';
-    const first = pairBlock(pairs[0], 0);
-    const rest = pairs.slice(1);
-    if (!rest.length) return first;
-    return `${first}<details class="pair-archive"${expandRest ? ' open' : ''}>
-      <summary><span class="collection-closed">${t('collection.showPairs', { count: rest.length })}</span><span class="collection-open">${t('collection.hidePairs', { count: rest.length })}</span><b aria-hidden="true">⌄</b></summary>
-      <div class="pairs pair-archive-grid">${rest.map((pair, index) => pairBlock(pair, index + 1)).join('')}</div>
-    </details>`;
+    return pairs.map((pair, index) => pairBlock(pair, index)).join('');
   }
 
   function pairTitle(pair) {

@@ -729,8 +729,8 @@ check((effortDocumentHtml.match(/effort\.sameDocument/g) || []).length === 6, 'D
 check(typeof SITE.pairCollection === 'function', 'SITE must expose the collapsible same-model comparison renderer');
 const featuredPairs = SITE.displayPairs();
 const collapsedPairs = SITE.pairCollection(featuredPairs, false);
-check(collapsedPairs.includes('pair-archive') && !collapsedPairs.includes('<details class="pair-archive" open'), 'Same-model comparisons must keep only the first pair open by default');
-check(SITE.pairCollection(featuredPairs, true).includes('<details class="pair-archive" open'), 'Active model search must expand the remaining same-model comparisons');
+check(!collapsedPairs.includes('pair-archive') && (collapsedPairs.match(/class="pair"/g) || []).length === 6, 'All six featured same-model comparisons must render at the same level without a special first card');
+check(!read('assets/site.css').includes('.pairs#pairList>.pair:first-child'), 'The first featured comparison must not span both columns');
 check((collapsedPairs.match(/pair-score-gain/g) || []).length === 6 && collapsedPairs.includes('pair.scoreGain'), 'All six featured comparisons must disclose the directional detailed-spec score gain');
 const collapsedGallery = SITE.tieredGallery(visibleWorks.filter(work => work.group === 'A'), false);
 check(collapsedGallery.includes('tier-archive') && !collapsedGallery.includes('<details class="tier-archive" open'), 'Entry previews must keep only Tier 1 visible by default');
