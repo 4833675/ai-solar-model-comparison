@@ -686,8 +686,14 @@ check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
 check(cssSource.includes('.model-gap-model>div:first-child>span{') && !cssSource.includes('.model-gap-model span{'), 'Model-gap eyebrow styling must not turn nested Ultra or score spans into block elements');
+check(fs.existsSync(new URL('../assets/site-galaxy-bg.jpg', import.meta.url)), 'The generated fixed Milky Way background asset must exist');
+check(cssSource.includes('url("site-galaxy-bg.jpg") center center / cover no-repeat') && cssSource.includes('content:"";position:fixed;inset:0;z-index:-2'), 'The Milky Way image must remain a fixed full-viewport background layer');
+check(cssSource.includes('--r:0;') && cssSource.includes('html *,html *::before,html *::after{border-radius:0!important}'), 'The shared site chrome must use the requested square-corner treatment');
+check(cssSource.includes('.nav-model-search-icon{border-radius:50%!important}'), 'The semantic magnifying-glass icon must stay circular despite square UI chrome');
 const zhHome = read('index.html');
 const enHome = read('index.en.html');
+check(zhHome.includes('<section id="glossary" class="glossary" hidden>') && enHome.includes('<section id="glossary" class="glossary" hidden>'), 'Both glossary sections must stay in source but remain hidden');
+check(zhHome.includes('<h2>关键术语说明</h2>') && enHome.includes('<h2>Key Terms</h2>') && cssSource.includes('.glossary[hidden]{display:none!important}'), 'Hidden glossary content must be preserved and explicitly suppressed');
 const zhSpec = read('spec.html');
 const enSpec = read('spec.en.html');
 const visibleNamingSurface = [
