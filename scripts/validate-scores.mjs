@@ -822,24 +822,24 @@ const expectedRecommendations = {
   'Qwen 3.8 Max (Max)': ['down', 1, '纯属骗钱'],
   'Gemini 3.7 Flash (high)': ['up', 1, '你就说快不快吧'],
   'GLM 5.3 Flash (Max)': ['up', 2, '真便宜啊'],
-  'GLM 5.3 (Max)': ['down', 1, '任务拉胯'],
+  'GLM 5.3 (Max)': ['down', 1, '理解在线干活拉胯'],
   'GPT-5.6 Sol (Max)': ['up', 2, '好好学学Ultra'],
   'GPT-5.6 Sol (xHigh)': ['up', 1, '知道你要干啥吧？'],
   'GPT-5.6 Sol (high)': ['down', 1, '你想干啥？'],
   'GPT-5.6 Sol (Medium)': ['down', 2, '你想干啥？？'],
   'GPT-5.6 Sol (Light)': ['down', 3, '你想干啥？？？'],
-  'GPT-5.5 (xHigh)': ['down', 2, '你不喜欢Sol？'],
+  'GPT-5.5 (xHigh)': ['down', 5, '你不喜欢Sol？'],
   'LongCat 2.0 (high)': ['down', 3, '我外卖到哪了？'],
   'MiniMax M3 (high)': ['down', 3, '你还是老实的做视频吧'],
   'Grok 4.6 (xHigh)': ['up', 1, '平庸的中等生'],
   'Claude Sonnet 5 (Ultra)': ['up', 1, '感觉不值得'],
-  'Claude Opus 4.8 (Ultra)': ['down', 3, '你不喜欢Opus5？'],
+  'Claude Opus 4.8 (Ultra)': ['down', 5, '你不喜欢Opus5？'],
   'MiMo 2.5 Pro (high)': ['down', 1, '小爱同学…'],
   'Gemini 3.6 Flash (high)': ['down', 1, '你就说快不快吧'],
   'Gemini 3.5 Flash (high)': ['down', 2, '你就说快不快吧'],
   'Doubao Seed Evolving (Max)': ['down', 1, '给你一个最直白的'],
   'Gemini 3.1 Pro (high)': ['down', 3, '昔日荣光'],
-  'Claude Opus 4.8 (Max)': ['down', 3, '你不喜欢Opus5？'],
+  'Claude Opus 4.8 (Max)': ['down', 5, '你不喜欢Opus5？'],
 };
 for (const work of visibleWorks) {
   const modelKey = work.model.replace(/ #\d+$/, '');
@@ -926,7 +926,7 @@ for (const page of [zhHome, enHome]) {
   check(page.includes("w.personal.direction==='up'?'▲':'▽'") && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use triangle symbols instead of thumb emoji');
 }
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
-check(siteSource.includes('The absolute ceiling right now') && siteSource.includes('The task delivery fell flat'), 'Personal recommendation reasons must include English translations');
+check(siteSource.includes('The absolute ceiling right now') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
 check(cssSource.includes('.table-personal-rec.is-up{color:var(--good)}') && cssSource.includes('.table-personal-rec.is-down{color:var(--bad)}'), 'Recommendation triangles must use distinct positive and negative colors');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
