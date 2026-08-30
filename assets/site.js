@@ -37,6 +37,20 @@
     'Gemini 3.7 Flash (high)': { direction: 'up', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
     'GLM 5.3 Flash (Max)': { direction: 'up', count: 2, zh: '真便宜啊', en: 'Seriously cheap' },
     'GLM 5.3 (Max)': { direction: 'down', count: 1, zh: '任务拉胯', en: 'The task delivery fell flat' },
+    'GPT-5.6 Sol (Max)': { direction: 'up', count: 2, zh: '好好学学Ultra', en: 'Learn from Ultra' },
+    'GPT-5.6 Sol (xHigh)': { direction: 'up', count: 1, zh: '知道你要干啥吧？', en: 'You know what you are supposed to do, right?' },
+    'GPT-5.6 Sol (high)': { direction: 'down', count: 1, zh: '你想干啥？', en: 'What are you trying to do?' },
+    'GPT-5.6 Sol (Medium)': { direction: 'down', count: 2, zh: '你想干啥？？', en: 'What exactly are you trying to do??' },
+    'GPT-5.6 Sol (Light)': { direction: 'down', count: 3, zh: '你想干啥？？？', en: 'What exactly are you trying to do???' },
+    'GPT-5.5 (xHigh)': { direction: 'down', count: 2, zh: '你不喜欢Sol？', en: 'You do not like Sol?' },
+    'LongCat 2.0 (high)': { direction: 'down', count: 3, zh: '我外卖到哪了？', en: 'Where is my food delivery?' },
+    'MiniMax M3 (high)': { direction: 'down', count: 3, zh: '你还是老实的做视频吧', en: 'You should probably stick to making videos' },
+    'Grok 4.6 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
+    'Claude Sonnet 5 (Ultra)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
+    'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 3, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
+    'MiMo 2.5 Pro (high)': { direction: 'down', count: 1, zh: '小爱同学…', en: 'XiaoAi…' },
+    'Gemini 3.6 Flash (high)': { direction: 'down', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
+    'Gemini 3.5 Flash (high)': { direction: 'down', count: 2, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
   };
   const recommendationModelKey = model => String(model || '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
