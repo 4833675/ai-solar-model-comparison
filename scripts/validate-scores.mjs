@@ -810,9 +810,9 @@ check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
 check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
 const expectedRecommendations = {
-  'Claude Opus 5 (Ultra)': ['up', 3, '当下绝对天花板'],
+  'Claude Opus 5 (Ultra)': ['up', 5, '当下绝对天花板'],
   'Hy 4 Preview (high)': ['up', 3, '出乎意料！'],
-  'GPT-5.6 Sol (Ultra)': ['up', 3, '甩手掌柜'],
+  'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
   'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
   'GPT-5.6 Luna (Max)': ['down', 1, '别浪费token'],
   'Claude Fable 5 (Max)': ['down', 2, '性价比太低'],
