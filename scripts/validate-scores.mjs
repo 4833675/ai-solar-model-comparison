@@ -837,6 +837,9 @@ const expectedRecommendations = {
   'MiMo 2.5 Pro (high)': ['down', 1, '小爱同学…'],
   'Gemini 3.6 Flash (high)': ['down', 1, '你就说快不快吧'],
   'Gemini 3.5 Flash (high)': ['down', 2, '你就说快不快吧'],
+  'Doubao Seed Evolving (Max)': ['down', 1, '给你一个最直白的'],
+  'Gemini 3.1 Pro (high)': ['down', 3, '昔日荣光'],
+  'Claude Opus 4.8 (Max)': ['down', 3, '你不喜欢Opus5？'],
 };
 for (const work of visibleWorks) {
   const modelKey = work.model.replace(/ #\d+$/, '');
