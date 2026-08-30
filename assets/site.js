@@ -377,9 +377,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   /* ---------------------------------------------------------- 评分 */
   const FEATURE_KEYS = ['rings', 'belt', 'bloom', 'aces', 'atmo'];
-  const ORBIT_WEIGHTS = { geometry: 3, kepler: 5, elements: 4, orientation: 3, epoch: 3 };
+  const ORBIT_WEIGHTS = { geometry: 4, kepler: 6, elements: 5, orientation: 4, epoch: 4 };
   const ORBIT_RUNTIME_WEIGHTS = { pathFit: 4, stability: 3 };
   const INTERACTION_KEYS = ['drag', 'zoom', 'focus', 'follow', 'pauseReset'];
+  const INTERACTION_WEIGHTS = { drag: 2.5, zoom: 2.5, focus: 3, follow: 3, pauseReset: 2 };
   const FATAL_CAPS = { L1: 25, L2: 60 };
   const scoreNum = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1);
   const weighted = (values, weights) => Object.keys(weights)
@@ -389,25 +390,28 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreFor(w) {
     const r = (window.SCORES || {})[w.id];
     if (!r) return null;
+    const effectiveMoons = r.moons * (r.moonQuality ?? 1);
+    const earthMoonValid = r.earthMoonValid ?? r.hasEarthMoon;
+    const moonCore = Math.max(0, Math.min(12, effectiveMoons * 1.5) - (earthMoonValid ? 0 : 2));
+    const moonBonus = Math.min(3, Math.max(0, effectiveMoons - 8) * .75);
+    const independenceMode = w.net.length ? 'online' : w.tech === 'Three.js' ? 'bundled' : 'native';
     const parts = {
-      features: summed(r.featureMap, FEATURE_KEYS) * 2.5,
+      features: summed(r.featureMap, FEATURE_KEYS) * 2.4,
       orbit: weighted(r.orbitModel, ORBIT_WEIGHTS) + weighted(r.orbitRuntime, ORBIT_RUNTIME_WEIGHTS),
-      moons: r.hasEarthMoon ? Math.min(12, 4 + .8 * Math.max(0, r.moons - 1)) : 0,
-      offline: w.net.length === 0 ? 7 : 0,
+      moons: moonCore,
+      moonBonus,
+      independence: independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5,
       halley: r.halley ? 3 : 0,
-      correctness: r.correctness.runtime + r.correctness.data + r.correctness.integrity,
-      visual: r.visualBase * 1.6,
-      interaction: summed(r.interaction, INTERACTION_KEYS) * 1.9,
+      correctness: summed(r.correctness, ['runtime', 'data', 'integrity']) * (20 / 15),
+      interaction: weighted(r.interaction, INTERACTION_WEIGHTS),
     };
     const evidenceBase = Object.values(parts).reduce((sum, value) => sum + value, 0);
-    const penalty = w.tech === 'Canvas2D' ? 10 : 0;
-    const raw = evidenceBase - penalty;
     const manualAdjustment = r.reference ? 0 : w.tier === 2 ? -2 : w.tier === 3 ? -5 : 0;
-    const preCap = Math.max(0, Math.min(100, raw + manualAdjustment));
+    const preCap = Math.max(0, Math.min(100, evidenceBase + manualAdjustment));
     const fatalCap = r.fatal ? FATAL_CAPS[r.fatal] : null;
     const exact = fatalCap == null ? preCap : Math.min(preCap, fatalCap);
     const total = Math.round(exact);
-    return Object.assign({}, r, { parts, evidenceBase, penalty, raw, manualAdjustment, preCap, fatalCap, exact, adjusted: exact, total });
+    return Object.assign({}, r, { parts, effectiveMoons, earthMoonValid, independenceMode, evidenceBase, manualAdjustment, preCap, fatalCap, exact, adjusted: exact, total });
   }
 
   function scoreOrder(a, b, direction = -1) {
@@ -437,18 +441,19 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
           ? t('score.adjustedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap) })
           : t('score.baseMeta', { base: scoreNum(s.evidenceBase) })}</p>
       <div class="score-tip-grid">
-        ${part(t('score.features'), 'features', 12.5)}
-        ${part(t('score.orbit'), 'orbit', 25)}
+        ${part(t('score.features'), 'features', 12)}
+        ${part(t('score.orbit'), 'orbit', 30)}
         ${part(t('score.moons'), 'moons', 12)}
-        ${part(t('score.offline'), 'offline', 7)}
+        ${part(t('score.moonBonus'), 'moonBonus', 3)}
+        ${part(t('score.independence'), 'independence', 7)}
         ${part(t('score.halley'), 'halley', 3)}
-        ${part(t('score.correctness'), 'correctness', 15)}
-        ${part(t('score.visual'), 'visual', 16)}
-        ${part(t('score.interaction'), 'interaction', 9.5)}
+        ${part(t('score.correctness'), 'correctness', 20)}
+        ${part(t('score.interaction'), 'interaction', 13)}
       </div>
-      <div class="score-tip-detail"><span>${t('score.visualFormula')}</span><b>${scoreNum(s.visualBase)} × 1.6</b></div>
+      <div class="score-tip-detail"><span>${t('score.moonEvidence')}</span><b>${scoreNum(s.effectiveMoons)} / ${scoreNum(s.moons)}</b></div>
+      <div class="score-tip-detail"><span>${t('score.independenceMode')}</span><b>${t(`score.independence.${s.independenceMode}`)}</b></div>
+      <div class="score-tip-subtitle">${t('score.correctnessEvidence')}</div><div class="score-tip-subgrid">${['runtime', 'data', 'integrity'].map(key => `<div><span>${t(`score.correctness.${key}`)}</span><b>${scoreNum(s.correctness[key])}</b></div>`).join('')}</div>
       <div class="score-tip-subtitle">${t('score.interactionEvidence')}</div><div class="score-tip-subgrid">${interaction}</div>
-      <div class="score-tip-penalty"><span>${t('score.canvasPenalty')}</span><b>${s.penalty ? '−10' : '0'}</b></div>
       <div class="score-tip-adjustment"><span>${t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${scoreNum(s.manualAdjustment)}</b></div>
       ${s.fatal ? `<div class="score-tip-fatal"><span>${t('score.fatalLevel', { level: s.fatal })}</span><b>${t('score.fatalCapValue', { cap: scoreNum(s.fatalCap) })}</b></div>
         ${I18N.en ? '' : `<p class="score-tip-fatal-reason"><b>${t('score.fatalReason')}</b>${esc(s.fatalReason || '')}</p>`}` : ''}
@@ -737,8 +742,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreStats() {
     const works = visibleWorks().map(work => ({ work, score: scoreFor(work) })).filter(row => row.score);
     const mean = (rows, getter) => rows.length ? rows.reduce((sum, row) => sum + getter(row), 0) / rows.length : 0;
-    const coverage = score => score.parts.features + score.parts.orbit + score.parts.moons + score.parts.offline + score.parts.halley;
-    const execution = score => score.parts.correctness + score.parts.visual + score.parts.interaction;
+    const coverage = score => score.parts.features + score.parts.orbit + score.parts.moons + score.parts.moonBonus + score.parts.independence + score.parts.halley;
+    const execution = score => score.parts.correctness + score.parts.interaction;
     const summarize = rows => ({
       n: rows.length,
       coverage: mean(rows, row => coverage(row.score)),
@@ -761,8 +766,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const pairMetric = key => paired.map(row => ({ a: row.a[key], b: row.b[key] }));
     const pairedSummary = {
       n: paired.length,
-      coverage: { a: mean(paired, row => row.a.coverage), b: mean(paired, row => row.b.coverage), max: 59.5, outcomes: outcomes(pairMetric('coverage')) },
-      execution: { a: mean(paired, row => row.a.execution), b: mean(paired, row => row.b.execution), max: 40.5, outcomes: outcomes(pairMetric('execution')) },
+      coverage: { a: mean(paired, row => row.a.coverage), b: mean(paired, row => row.b.coverage), max: 67, outcomes: outcomes(pairMetric('coverage')) },
+      execution: { a: mean(paired, row => row.a.execution), b: mean(paired, row => row.b.execution), max: 33, outcomes: outcomes(pairMetric('execution')) },
       exact: { a: mean(paired, row => row.a.exact), b: mean(paired, row => row.b.exact), outcomes: outcomes(pairMetric('exact')) },
     };
     const population = predicate => works.filter(predicate);
@@ -771,7 +776,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
     });
     return {
-      maxima: { coverage: 59.5, execution: 40.5, total: 100 },
+      maxima: { coverage: 67, execution: 33, total: 100 },
       paired,
       pairedSummary,
       wholeGroup: {

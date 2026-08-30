@@ -1,4 +1,4 @@
-/* 证据值来自源码审计、统一浏览器实跑与人工视觉复核；公式与排序自动执行。 */
+/* 证据值来自源码审计与统一浏览器实跑；旧 visualBase 仅保留为历史审计记录，不再参与评分。 */
 (function () {
   'use strict';
 
@@ -205,6 +205,7 @@
     },
     'GLM5.3(Max)V1': {
       reference: false,
+      moonQuality: .5,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 15, hasEarthMoon: true, halley: false,
@@ -291,7 +292,7 @@
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: false,
       correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 7.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: 'Canvas2D 总览的十三颗卫星、开普勒轨道与完整交互均稳定，视觉完成度也较高；但相位并非真实历元，且无哈雷、Bloom、ACES 与物理环影，另计 Canvas2D 扣分。'
+      note: 'Canvas2D 总览的十三颗卫星、开普勒轨道与完整交互均稳定；但相位并非真实历元，且无哈雷、Bloom、ACES 与物理环影。Canvas2D 技术路线本身不再额外扣分。'
     },
     'GPT5.6Sol(xhigh)V2': {
       reference: false,
@@ -349,6 +350,7 @@
     },
     'Grok4.6(xhigh)V1': {
       reference: false,
+      moonQuality: .5,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 0 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 12, hasEarthMoon: true, halley: true,
@@ -376,6 +378,7 @@
     },
     'KimiK3(Max)V2': {
       reference: false,
+      moonQuality: .5, earthMoonValid: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false,
@@ -399,7 +402,7 @@
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false,
       correctness: { runtime: 5, data: 2.5, integrity: 5 }, visualBase: 4.6,
       interaction: { drag: .5, zoom: 1, focus: 0, follow: 0, pauseReset: .5 }, fatal: null,
-      note: 'Canvas2D 总览稳定，但拖拽是平移而非 3D 环绕，“双击聚焦”也不移动视角；功能有效性有限并受 Canvas2D 扣分。'
+      note: 'Canvas2D 总览稳定，但拖拽是平移而非 3D 环绕，“双击聚焦”也不移动视角；功能与交互证据有限，但 Canvas2D 技术路线本身不再额外扣分。'
     },
     'Mimo_2_5_Pro_high-1': {
       reference: false,
@@ -481,7 +484,7 @@
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true,
       correctness: { runtime: 5, data: 3.5, integrity: 5 }, visualBase: 6.5,
       interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: 'Canvas2D 总览稳定且聚焦跟随可用；拖拽只是平移，哈雷轨道根数高度简化，没有 Bloom、ACES 或完整重置，并承受 Canvas2D 扣分。'
+      note: 'Canvas2D 总览稳定且聚焦跟随可用；拖拽只是平移，哈雷轨道根数高度简化，没有 Bloom、ACES 或完整重置；Canvas2D 技术路线本身不再额外扣分。'
     },
     'Qwen3.8Max(Max)V2': {
       reference: false,
@@ -523,6 +526,7 @@
     },
     'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': {
       reference: false,
+      moonQuality: .5,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
@@ -542,6 +546,7 @@
     },
     'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': {
       reference: false,
+      moonQuality: .5,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: .5, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
@@ -815,6 +820,7 @@
     },
     'Qwen3.8Max-TasksAssignedByOpus5': {
       reference: false,
+      moonQuality: .5,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
