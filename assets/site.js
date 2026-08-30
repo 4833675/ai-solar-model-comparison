@@ -24,8 +24,8 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const MODEL_GAP_DEFS = [
-    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy3', rightId: 'DoubaoSeedEvolving(Max)V1' },
-    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy3-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
+    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving(Max)V1' },
+    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy4Preview(high)V2-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
   ];
   const SOL_EFFORT_IDS = [
     'GPT5.6SolUltra-WebGL2',
@@ -578,7 +578,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function modelGapSide(work, role) {
     const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
-    const family = role === 'opus' ? 'CLAUDE OPUS 5' : role === 'hy' ? 'HY 3' : 'DOUBAO SEED EVOLVING';
+    const family = role === 'opus' ? 'CLAUDE OPUS 5' : role === 'hy' ? 'HY 4 PREVIEW' : 'DOUBAO SEED EVOLVING';
     return `<div class="model-gap-side ${role}">
       <div class="model-gap-model">
         <div><span>${family}</span><h5>${esc(work.model)}</h5></div>

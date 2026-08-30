@@ -285,6 +285,12 @@
   };
 
   const SCORE_NOTES_EN = {
+    'Hy4Preview(high)V1': 'This network-dependent Three.js run includes JPL/Keplerian orbits, eighteen moons, Halley, three ring systems, small-body belts, Bloom/ACES, atmospheres, and continuous follow, sustaining roughly 88–144 FPS. Jupiter lacks a clear Great Red Spot, Saturn close-up is crowded by moon paths and labels, the density panel labels kg/m³ values as g/cm³, and there is no complete view reset.',
+    'Hy4Preview(high)V2': 'This network-dependent Three.js run includes JPL/Keplerian orbits, thirteen moons, Halley, ring shadows, several small-body populations, Bloom/ACES, atmospheres, plus complete focus, follow, and reset behavior. Earth’s night side and Saturn’s ring shadow are clear; deductions remain for a dense default star field and orbit overlay, slightly blocky bright stars, and no prominent Great Red Spot on Jupiter.',
+    'Hy4Preview(high)V1-TasksAssignedByOpus5': 'This offline native-WebGL2 run covers JPL/Keplerian paths, eight moons, Halley, several small-body populations, Bloom/ACES, atmospheres, and continuous follow at roughly 90–144 FPS. Jupiter’s faint ring becomes far too prominent, Saturn’s rings break into hard black-and-white bands with bright cone artifacts, the Great Red Spot is unclear, and there is no complete view reset.',
+    'Hy4Preview(high)V2-TasksAssignedByOpus5': 'This offline native-WebGL2 run covers JPL/Keplerian paths, eight moons, Halley, several small-body populations, Bloom/ACES, atmospheres, and complete focus-follow-reset behavior. The overview glow is too strong, oversized Moon and Titan displays obscure Earth and Saturn, Jupiter lacks a clear Great Red Spot, and the rings still contain hard black-and-white bands.',
+    'GLM5.3Flash(Max)V2': 'This network-dependent Three.js #2 run stably delivers JPL/Keplerian paths, nine moons, Halley, Bloom/ACES, atmospheres, focus-follow behavior, and reset, with an overview far cleaner than #1. Foreground asteroids badly obstruct Jupiter in close-up, the Great Red Spot remains unclear, and Saturn’s layered rings lack convincing bidirectional physical shadows.',
+    'GLM5.3Flash(Max)V2-TasksAssignedByOpus5': 'This offline native-WebGL2 #2 detailed-spec run covers JPL/Keplerian paths, eight moons, Halley, ring systems, small-body belts, Bloom/ACES, and atmospheres at roughly 140 FPS. Default glow remains overexposed, particles and orbit lines overwhelm the Earth close-up, Jupiter stays too small with no red spot, Saturn’s rings collapse to thin lines, and focus distance plus reset are incomplete.',
     'GLM5.3Flash(Max)V1': 'This offline native-WebGL2 run includes JPL secular elements, a Kepler solver, six moons, ring shadows, an asteroid belt, Bloom/ACES, atmospheres, and continuous focus-follow behavior. The default solar glow obscures much of the inner view and there is no complete state reset. Halley\'s mean motion also divides by the degree-to-radian constant instead of multiplying by it, making the comet run about 3,283 times too fast, so the Halley bonus does not apply.',
     'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': 'The source covers JPL/Keplerian paths, eight moons, several small-body populations, Bloom/ACES, and atmospheres. However, Halley\'s computed coordinates are written into a temporary array and discarded, leaving the comet at the Sun. After a few seconds the compatibility probe switches paths, rings, and corona to dotted fallbacks that produce a conspicuous checkerboard glow; Jupiter and Saturn also remain too small after focus, so the run is capped at L2.',
     'DoubaoSeedEvolving(Max)V1': 'The offline native-WebGL2 build runs eleven moons, ring shadows, Bloom/ACES, and an asteroid belt. Its planets use coplanar circular paths and hand-tuned speeds rather than Keplerian motion or a real epoch, it has no focus-follow interaction, and the default view is heavily washed out by bright particles.',
@@ -375,6 +381,12 @@
   };
 
   const WORK_TEXT_EN = {
+    'Hy4Preview(high)V1': { title: 'Hy4 · Solar-System Motion Model (High) V1' },
+    'Hy4Preview(high)V2': { title: 'Solar System · Real-Time Orbital Model · Hy4 V2' },
+    'Hy4Preview(high)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar-System Motion Model' },
+    'Hy4Preview(high)V2-TasksAssignedByOpus5': { title: 'Real-Time Solar-System Motion Model' },
+    'GLM5.3Flash(Max)V2': { title: 'Solar System · V2', tags: ['in Zcode', 'Suddenly smarter'] },
+    'GLM5.3Flash(Max)V2-TasksAssignedByOpus5': { title: 'Solar System · Real-Time Motion Model', tags: ['in Zcode', 'Suddenly smarter'] },
     'GLM5.3Flash(Max)V1': { title: 'Solar System · Keplerian Motion Model' },
     'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': {
       title: 'Solar System · Real-Time Motion Model',

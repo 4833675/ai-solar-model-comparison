@@ -3,6 +3,60 @@
   'use strict';
 
   window.SCORES = {
+    'Hy4Preview(high)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 18, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版具备 JPL/开普勒轨道、十八颗卫星、哈雷、三套环、小天体带、Bloom/ACES、大气和持续跟随，实跑约 88–144 FPS；但木星大红斑不清晰，土星近景被卫星轨道和标签明显干扰，密度面板还把 kg/m³ 数值误标成 g/cm³，且没有完整视图复位。'
+    },
+    'Hy4Preview(high)V2': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '联网 Three.js 版具备 JPL/开普勒轨道、十三颗卫星、哈雷、环影、多重小天体带、Bloom/ACES、大气以及完整聚焦跟随与复位。地球夜面和土星环影清楚；主要问题是默认星空与轨道线偏密、亮星略显方块化，木星仍缺少醒目的大红斑。'
+    },
+    'Hy4Preview(high)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、多重小天体带、Bloom/ACES、大气和持续跟随，实跑约 90–144 FPS；但 Jupiter 的暗环被渲染得过强，Saturn 环出现大块黑白分带和亮锥伪影，木星大红斑也不清晰，且没有完整视图复位。'
+    },
+    'Hy4Preview(high)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 5.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、多重小天体带、Bloom/ACES、大气以及完整聚焦跟随与复位；但默认总览辉光偏强，Earth 与 Saturn 近景被过大的 Moon/Titan 遮挡，木星没有清楚的大红斑，环系仍存在黑白硬分带。'
+    },
+    'GLM5.3Flash(Max)V2': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '联网 Three.js #2 版的 JPL/开普勒轨道、九颗卫星、哈雷、Bloom/ACES、大气、聚焦跟随和复位均稳定，默认总览也明显优于 #1；但近景小行星会严重遮挡 Jupiter，木星仍无清楚大红斑，Saturn 环虽有层次却缺少可信的双向物理阴影。'
+    },
+    'GLM5.3Flash(Max)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 4.5,
+      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 #2 文档版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环系、小天体带、Bloom/ACES 与大气，实跑稳定在约 140 FPS；但默认辉光仍明显过曝，Earth 近景背景被粒子和轨道线淹没，Jupiter 过小且没有大红斑，Saturn 环在近景几乎只剩细线，聚焦距离与复位也不完整。'
+    },
     'GLM5.3Flash(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
