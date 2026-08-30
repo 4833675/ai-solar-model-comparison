@@ -243,7 +243,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'DeepSeek_V4_Pro_high-2': '0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-',
   'DeepSeek_V4_Pro_high-3': '0|0.4|1|0|1|1|1|0|0.5|1|0|1|1|1|1|0|5|3|5|5.8|1|1|1|0|0.5|-|-',
   'Fable5Max-Three': '0|0.4|1|1|0|1|1|1|1|1|1|1|0.5|6|1|1|5|5|4|7.5|1|0.5|1|1|0.5|-|-',
-  'Fable5Max-WebGL2': '1|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|5|5|4|9.5|1|1|1|1|1|-|-',
+  'Fable5Max-WebGL2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|5|5|4|9.5|1|1|1|1|1|-|-',
   'GLM5.2Max': '0|0.4|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|5|3|5|4|1|1|1|1|1|-|-',
   'GLM5.3(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|15|1|0|5|4|4.5|7.5|1|1|1|1|1|-|-',
   'GLM5.3(Max)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|5|4|4.5|8|1|1|1|1|1|-|-',
@@ -252,7 +252,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'GLM5.3(Max)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|4.5|4|1|1|1|1|1|-|-',
   'GLM_5_1_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|5|3|5|3|1|1|1|0|0.5|-|-',
   'GPT5.6Sol(Max)V1': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|10|1|0|5|5|5|8|1|0.5|1|1|0.5|-|-',
-  'GPT5.6SolUltra-WebGL2': '1|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|4|5|4|9.5|1|1|1|1|1|-|-',
+  'GPT5.6SolUltra-WebGL2': '0|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|4|5|4|9.5|1|1|1|1|1|-|-',
   'GPT5.6SolUltra': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|5|5|5|6|1|1|1|1|1|-|-',
   'GPT5.6Sol(xhigh)V1': '0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|5|4|5|7.5|1|1|1|1|1|-|-',
   'GPT5.6Sol(xhigh)V2': '0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|11|1|0|5|5|5|8|1|1|1|1|0.5|-|-',
@@ -375,8 +375,8 @@ check(PAIR_ORDER[16] === 'gemini36flash', 'Gemini 3.6 Flash must occupy comparis
 check(PAIR_ORDER[18] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 19 after inserting Grok 4.6');
 check(PAIR_ORDER[21] === 'doubao' && PAIR_ORDER[22] === 'hy4v1' && PAIR_ORDER[23] === 'hy4v2' && PAIR_ORDER[24] === 'glm53flashv2' && PAIR_ORDER[25] === 'minimax', 'Doubao, Hy 4 #1/#2, GLM 5.3 Flash #2, and MiniMax must occupy the final five comparison positions');
 
-const referenceIds = ['Opus5Ultra-WebGL2', 'GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2'].sort();
-check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Exactly the three approved references must be flagged');
+const referenceIds = ['Opus5Ultra-WebGL2'];
+check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Only Claude Opus 5 (Ultra) may be flagged as the benchmark');
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
@@ -880,7 +880,7 @@ check(zhHome.includes('id="aAll">43') && enHome.includes('id="aAll">43') && zhHo
 check(zhHome.includes('一句话组 43 件和文档组 37 件') && enHome.includes('prefer the 26 paired results over treating all 43 one-line and 37 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('26 组同模型') && enHome.includes('26 same-model') && zhHome.includes('49.52 / 67') && enHome.includes('49.52 / 67') && zhHome.includes('28.72 / 33') && enHome.includes('28.72 / 33'), 'Both home pages must publish the current V3 26-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
-check(zhHome.includes('其中三件经单独确认标为') && enHome.includes('Three have been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Tier 1 as containing exactly three benchmarks rather than making the whole tier a benchmark');
+check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
 check(zhHome.includes('一句话组的非标杆最终分大于等于 80') && zhHome.includes('详细文档组则需大于等于 91') && enHome.includes('one-line entries turn green at 80 or higher') && enHome.includes('detailed-spec entries turn green at 91 or higher'), 'Both home pages must publish the group-specific inclusive green thresholds');
 for (const id of referenceIds) {
@@ -892,6 +892,12 @@ for (const id of referenceIds) {
   check(cell.includes('⚑') && cell.includes('<button') && cell.includes('score-trigger') && cell.includes('data-score-id'), `${id}: benchmark score cell must remain a gold flag button with a tooltip trigger`);
   check(!/\d/.test(visibleText), `${id}: benchmark score cell must not render the numeric score directly`);
   check(tip.includes(`${score.total}<i>/100</i>`) && tip.includes('score-tip-grid') && tip.includes('is-reference'), `${id}: benchmark tooltip must expose its score and breakdown`);
+}
+for (const id of ['GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2']) {
+  const work = SITE.byId(id);
+  const score = SITE.scoreFor(work);
+  const cell = SITE.scoreCell(work);
+  check(!SCORES[id].reference && cell.includes(`>${score.total}<`) && !cell.includes('score-benchmark') && !cell.includes('⚑'), `${id}: former benchmark must render its ordinary numeric Evidence Score`);
 }
 const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
 check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('78') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
@@ -934,9 +940,9 @@ check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify(
 
 const EXPECTED_WHOLE_GROUP = {
   all: { a: [43, 49.16116279069766, 28.40503875968993, 74.68248062015502], b: [37, 61.603783783783776, 27.637387387387392, 83.36585585585586] },
-  withoutReferences: { a: [40, 48.23424999999999, 28.160416666666674, 73.29466666666664], b: [37, 61.603783783783776, 27.637387387387392, 83.36585585585586] },
+  withoutReferences: { a: [42, 48.80785714285713, 28.295634920634928, 74.15111111111109], b: [37, 61.603783783783776, 27.637387387387392, 83.36585585585586] },
   withoutTier4: { a: [42, 49.48261904761904, 28.613095238095244, 75.14333333333332], b: [34, 62.31588235294117, 28.87009803921569, 87.48637254901962] },
-  withoutReferencesOrTier4: { a: [39, 48.55666666666665, 28.378205128205135, 73.7553846153846], b: [34, 62.31588235294117, 28.87009803921569, 87.48637254901962] },
+  withoutReferencesOrTier4: { a: [41, 49.128536585365836, 28.506097560975615, 74.610243902439], b: [34, 62.31588235294117, 28.87009803921569, 87.48637254901962] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {

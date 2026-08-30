@@ -186,7 +186,7 @@
       note: '哈雷与六颗卫星均成立；没有实际 ACES，环影仅单向，最小缩放可进入大型天体内部。'
     },
     'Fable5Max-WebGL2': {
-      reference: true,
+      reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false,
@@ -268,7 +268,7 @@
       note: '离线原生 WebGL2 版的 J2000/开普勒轨道、十颗卫星、小行星带、Bloom/ACES、大气与持续跟随均稳定，地球昼夜面、木星条纹和土星近景层次清楚；但没有哈雷，土星环缺少物理环影，缩放下限可进入大型天体，也没有一次完整状态重置。'
     },
     'GPT5.6SolUltra-WebGL2': {
-      reference: true,
+      reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 14, hasEarthMoon: true, halley: false,
