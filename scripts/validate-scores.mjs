@@ -803,6 +803,32 @@ const visibleNamingSurface = [
 ].join('\n');
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
+check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
+const expectedRecommendations = {
+  'Claude Opus 5 (Ultra)': ['up', 3, '当下绝对天花板'],
+  'Hy 4 Preview (high)': ['up', 3, '出乎意料！'],
+  'GPT-5.6 Sol (Ultra)': ['up', 3, '甩手掌柜'],
+  'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
+  'GPT-5.6 Luna (Max)': ['down', 1, '别浪费token'],
+  'Claude Fable 5 (Max)': ['down', 2, '性价比太低'],
+  'Kimi K3 (Max)': ['up', 1, '性价比不够'],
+  'DeepSeek V4 Pro 0813 (Max)': ['down', 1, '梁子要加油啊'],
+  'DeepSeek V4 Flash 0731 (Max)': ['down', 3, '看看GLM Flash？'],
+  'Qwen 3.8 Max (Max)': ['down', 1, '纯属骗钱'],
+  'Gemini 3.7 Flash (high)': ['up', 1, '你就说快不快吧'],
+  'GLM 5.3 Flash (Max)': ['up', 2, '真便宜啊'],
+  'GLM 5.3 (Max)': ['down', 1, '任务拉胯'],
+};
+for (const work of visibleWorks) {
+  const modelKey = work.model.replace(/ #\d+$/, '');
+  const expected = expectedRecommendations[modelKey];
+  const recommendation = SITE.personalRecommendationFor(work);
+  if (!expected) {
+    check(recommendation === null, `${work.id}: unlisted model must not receive a personal recommendation`);
+    continue;
+  }
+  check(recommendation.direction === expected[0] && recommendation.count === expected[1] && recommendation.reason === expected[2], `${work.id}: personal recommendation mismatch`);
+}
 const searchKimi3 = WORKS.find(w => w.id === 'KimiK3(Max)V3');
 check(SITE.modelMatches(searchKimi3, 'kimi k3 max #3'), 'Model search must ignore case, spaces, and display punctuation');
 check(SITE.modelMatches(searchKimi3, 'KIMI'), 'Model search must support model-family queries');
@@ -869,8 +895,15 @@ check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.in
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
 check(!enHome.includes('What it cannot demonstrate: an overall ranking of model capability') && !enHome.includes('Claude Fable 5 (Max) still has no specification-based version') && !enHome.includes('Reasoning-level note:'), 'English method section must remove the corresponding three explanatory paragraphs');
 check(enHome.includes("works.length===1?'entry':'entries'") && enHome.includes("pairs.length===1?'comparison':'comparisons'"), 'English live search status must use singular nouns for one result');
-check(zhHome.includes('<th data-k="model">模型</th><th data-k="environment">运行环境</th>'), 'Chinese total table must show Environment as the second column');
-check(enHome.includes('<th data-k="model">Model</th><th data-k="environment">Environment</th>'), 'English total table must show Environment as the second column');
+check(zhHome.includes('<th data-k="model">模型</th><th data-k="recommendation">个人推荐</th><th>理由</th><th data-k="environment">运行环境</th>'), 'Chinese table must place Personal Recommendation and Reason between Model and Environment');
+check(enHome.includes('<th data-k="model">Model</th><th data-k="recommendation">Personal Pick</th><th>Reason</th><th data-k="environment">Environment</th>'), 'English table must place Personal Pick and Reason between Model and Environment');
+for (const page of [zhHome, enHome]) {
+  check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
+  check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
+  check(page.includes('S.personalRecommendationFor(w)') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
+}
+check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
+check(siteSource.includes('The absolute ceiling right now') && siteSource.includes('The task delivery fell flat'), 'Personal recommendation reasons must include English translations');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
 check(zhHome.includes('不能单凭筛选后的六组证明因果') && enHome.includes('not causal proof on their own'), 'Both pair introductions must disclose the selected-case evidence limit');

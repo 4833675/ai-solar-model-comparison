@@ -23,6 +23,26 @@
     const key = modelSearchKey(query);
     return !key || modelSearchKey(work && work.model).includes(key);
   };
+  const PERSONAL_RECOMMENDATIONS = {
+    'Claude Opus 5 (Ultra)': { direction: 'up', count: 3, zh: '当下绝对天花板', en: 'The absolute ceiling right now' },
+    'Hy 4 Preview (high)': { direction: 'up', count: 3, zh: '出乎意料！', en: 'A genuine surprise!' },
+    'GPT-5.6 Sol (Ultra)': { direction: 'up', count: 3, zh: '甩手掌柜', en: 'Hands-off delivery' },
+    'GPT-5.6 Terra (Ultra)': { direction: 'up', count: 2, zh: '感谢那个男人', en: 'Thanks to that man' },
+    'GPT-5.6 Luna (Max)': { direction: 'down', count: 1, zh: '别浪费token', en: 'Do not waste your tokens' },
+    'Claude Fable 5 (Max)': { direction: 'down', count: 2, zh: '性价比太低', en: 'Poor value for money' },
+    'Kimi K3 (Max)': { direction: 'up', count: 1, zh: '性价比不够', en: 'Not cost-effective enough' },
+    'DeepSeek V4 Pro 0813 (Max)': { direction: 'down', count: 1, zh: '梁子要加油啊', en: 'Liangzi needs to step it up' },
+    'DeepSeek V4 Flash 0731 (Max)': { direction: 'down', count: 3, zh: '看看GLM Flash？', en: 'Maybe look at GLM Flash?' },
+    'Qwen 3.8 Max (Max)': { direction: 'down', count: 1, zh: '纯属骗钱', en: 'A pure rip-off' },
+    'Gemini 3.7 Flash (high)': { direction: 'up', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
+    'GLM 5.3 Flash (Max)': { direction: 'up', count: 2, zh: '真便宜啊', en: 'Seriously cheap' },
+    'GLM 5.3 (Max)': { direction: 'down', count: 1, zh: '任务拉胯', en: 'The task delivery fell flat' },
+  };
+  const recommendationModelKey = model => String(model || '').replace(/ #\d+$/, '');
+  const personalRecommendationFor = work => {
+    const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
+    return value ? Object.assign({ reason: I18N.en ? value.en : value.zh }, value) : null;
+  };
   const MODEL_GAP_DEFS = [
     { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving(Max)V1' },
     { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy4Preview(high)V2-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
@@ -816,7 +836,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, personalRecommendationFor, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
