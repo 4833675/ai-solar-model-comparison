@@ -50,7 +50,6 @@
     'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
     'MiMo 2.5 Pro (high)': { direction: 'down', count: 1, zh: '小爱同学…', en: 'XiaoAi…' },
     'Gemini 3.6 Flash (high)': { direction: 'down', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
-    'Gemini 3.5 Flash (high)': { direction: 'down', count: 2, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
     'Doubao Seed Evolving (Max)': { direction: 'down', count: 1, zh: '给你一个最直白的', en: 'Here is the most straightforward one' },
     'Gemini 3.1 Pro (high)': { direction: 'down', count: 3, zh: '昔日荣光', en: 'Former glory' },
     'Claude Opus 4.8 (Max)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
