@@ -809,7 +809,7 @@ check(siteSource.includes("* 2.4") && siteSource.includes("geometry: 4, kepler: 
 check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effectiveMoons - 8") && siteSource.includes("* .75"), 'V3 moon baseline and extra-moon bonus must remain explicit');
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
 check(!siteSource.includes("w.tech === 'Canvas2D' ? 10") && !siteSource.includes("parts.visual"), 'Canvas2D and legacy visual evidence must not receive score deductions or points');
-check((siteSource.match(/s\.total >= \(w\.group === 'B' \? 91 : 80\)/g) || []).length === 2, 'Both score badge and tooltip must use 80 for one-line entries and 91 for detailed-spec entries');
+check((siteSource.match(/s\.total >= 91/g) || []).length === 2, 'Both score badge and tooltip must use the inclusive 91-point green threshold for every non-benchmark entry');
 check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
@@ -961,7 +961,7 @@ check(zhHome.includes('24 组同模型') && enHome.includes('24 same-model') && 
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
-check(zhHome.includes('一句话组的非标杆最终分大于等于 80') && zhHome.includes('详细文档组则需大于等于 91') && enHome.includes('one-line entries turn green at 80 or higher') && enHome.includes('detailed-spec entries turn green at 91 or higher'), 'Both home pages must publish the group-specific inclusive green thresholds');
+check(zhHome.includes('两组非标杆作品的最终分均需大于等于 91') && enHome.includes('entries in both groups turn green only at 91 or higher'), 'Both home pages must publish the shared inclusive 91-point green threshold');
 for (const id of referenceIds) {
   const work = WORKS.find(item => item.id === id);
   const score = SITE.scoreFor(work);

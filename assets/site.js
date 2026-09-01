@@ -466,7 +466,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
     const tier = tierLabel(w.tier);
     const capped = s.exact < s.preCap;
-    const high = !s.reference && s.total >= (w.group === 'B' ? 91 : 80);
+    const high = !s.reference && s.total >= 91;
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
     return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
@@ -506,7 +506,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     </button>`;
     const label = t('score.evidenceAria', { name: w.model, score: s.total });
     const capped = s.exact < s.preCap;
-    const high = s.total >= (w.group === 'B' ? 91 : 80);
+    const high = s.total >= 91;
     return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
       <b>${scoreNum(s.total)}</b>
