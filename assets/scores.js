@@ -3,6 +3,24 @@
   'use strict';
 
   window.SCORES = {
+    'Qwen3.8Flash(xhigh)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: .5 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: false,
+      correctness: { runtime: 5, data: 3.5, integrity: 4.5 }, visualBase: 7.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '联网 Three.js 版具备真实行星根数、开普勒求解、九颗卫星、环影、程序化表面、Bloom/ACES、大气与持续跟随；但彗星只是自拟的 25 年周期模型，并非哈雷，起始历元也仅用近似天数硬编码，复位只恢复视角。'
+    },
+    'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 2.5, integrity: 4.5 }, visualBase: 6.5,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '离线原生 WebGL2 版覆盖 JPL 世纪率、开普勒求解、八颗卫星、哈雷、环影、Bloom/ACES、大气和完整交互；但升交点计算把基准角度直接当弧度使用，同时遗漏变化率的世纪因子，导致全部行星的绝对轨道方向错误。哈雷仍按密切周期外推，却标注 2061-07-28。'
+    },
     'Hy4Preview(high)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },

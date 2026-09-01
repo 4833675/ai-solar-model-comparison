@@ -357,6 +357,8 @@
     'Qwen3.8Max(Max)V1': 'The Canvas2D overview is stable and click focus with continuous follow works. Dragging only pans the scene, Halley’s elements are heavily simplified, and Bloom, ACES, and a complete reset are absent. Canvas2D itself no longer incurs a blanket penalty.',
     'Qwen3.8Max(Max)V2': 'The Three.js overview, Kepler solver, Halley, and continuous follow all run. It requires a network connection, the Sun and square star sprites are visibly overexposed, Saturn has no physical ring shadows, only the Moon is modeled, and there is no complete reset.',
     'Qwen3.8Max(Max)V3': 'Native WebGL2, offline post-processing, and complete focus-follow behavior run stably. Halley’s elements and orbital orientation are heavily simplified, Saturn’s ring is nearly invisible in close-up, planetary surfaces remain coarse, and there is no complete reset.',
+    'Qwen3.8Flash(xhigh)V1': 'The network-dependent Three.js build includes real planetary elements, a Kepler solver, nine moons, ring shadows, procedural surfaces, Bloom/ACES, atmospheres, and continuous follow. However, its comet is an invented 25-year-period model rather than Halley, the start epoch is only a hard-coded day-count approximation, and reset restores only the camera.',
+    'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': 'The offline native-WebGL2 build covers JPL secular rates, a Kepler solver, eight moons, Halley, ring shadows, Bloom/ACES, atmospheres, and complete interaction. However, the ascending-node calculation treats the base angle as radians and omits the century factor from its rate, so every planet has the wrong absolute orbital orientation. Halley is also projected with the osculating period while the panel labels 2061-07-28.',
     'LongCat2.0': 'The overview is clear, but features and realism are limited. Its “focus” only draws a marker without moving the camera; Canvas2D itself no longer incurs a blanket penalty.',
     'Hy3': 'Surfaces, the red spot, and the procedural Saturn ring are comparatively rich. Selection does not pull the camera closer, but subsequent body displacement is followed continuously. Orbital realism remains low, it requires a network connection, and real ring shadows are absent.',
     'MiniMax_M3_thinking-1': 'The outer planets visibly drift away from their orbit lines, low speed settings can produce NaN values, and reset does not restore the view. The main view remains visible, so this is L2 rather than L1.',
@@ -506,6 +508,8 @@
     'Qwen3.8Max(Max)V2': { title: 'Solar System Motion Model · Three.js 3D' },
     'Qwen3.8Max(Max)V3': { title: 'Solar System Motion Model · WebGL2' },
     'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'Qwen3.8Flash(xhigh)V1': { title: 'Solar System · Real-Orbit Motion Model' },
+    'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model · WebGL2' },
     'Sonnet5Ultra': { title: 'Solar System Motion Model · Claude Sonnet 5 (Ultra)' },
     'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' }
   };
