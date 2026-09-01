@@ -439,12 +439,12 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       moonBonus,
       independence: independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5,
       halley: r.halley ? 3 : 0,
-      correctness: summed(r.correctness, ['runtime', 'data', 'integrity']) * (20 / 15),
+      correctness: summed(r.correctness, ['runtime', 'data', 'integrity']) * (23 / 15),
       interaction: weighted(r.interaction, INTERACTION_WEIGHTS),
     };
     const evidenceBase = Object.values(parts).reduce((sum, value) => sum + value, 0);
-    const manualAdjustment = r.reference ? 0 : w.tier === 2 ? -2 : w.tier === 3 ? -5 : 0;
-    const preCap = Math.max(0, Math.min(100, evidenceBase + manualAdjustment));
+    const manualAdjustment = r.reference ? 0 : w.tier === 2 ? -3 : w.tier === 3 ? -6 : 0;
+    const preCap = Math.max(0, Math.min(103, evidenceBase + manualAdjustment));
     const fatalCap = r.fatal ? FATAL_CAPS[r.fatal] : null;
     const exact = fatalCap == null ? preCap : Math.min(preCap, fatalCap);
     const total = Math.round(exact);
@@ -470,7 +470,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
     return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
-        <b>${scoreNum(s.total)}<i>/100</i></b>
+        <b>${scoreNum(s.total)}<i>/103</i></b>
       </div>
       <p class="score-tip-meta">${capped
         ? t('score.cappedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap), cap: scoreNum(s.fatalCap) })
@@ -484,7 +484,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         ${part(t('score.moonBonus'), 'moonBonus', 3)}
         ${part(t('score.independence'), 'independence', 7)}
         ${part(t('score.halley'), 'halley', 3)}
-        ${part(t('score.correctness'), 'correctness', 20)}
+        ${part(t('score.correctness'), 'correctness', 23)}
         ${part(t('score.interaction'), 'interaction', 13)}
       </div>
       <div class="score-tip-detail"><span>${t('score.moonEvidence')}</span><b>${scoreNum(s.effectiveMoons)} / ${scoreNum(s.moons)}</b></div>
@@ -804,7 +804,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const pairedSummary = {
       n: paired.length,
       coverage: { a: mean(paired, row => row.a.coverage), b: mean(paired, row => row.b.coverage), max: 67, outcomes: outcomes(pairMetric('coverage')) },
-      execution: { a: mean(paired, row => row.a.execution), b: mean(paired, row => row.b.execution), max: 33, outcomes: outcomes(pairMetric('execution')) },
+      execution: { a: mean(paired, row => row.a.execution), b: mean(paired, row => row.b.execution), max: 36, outcomes: outcomes(pairMetric('execution')) },
       exact: { a: mean(paired, row => row.a.exact), b: mean(paired, row => row.b.exact), outcomes: outcomes(pairMetric('exact')) },
     };
     const population = predicate => works.filter(predicate);
@@ -813,7 +813,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
     });
     return {
-      maxima: { coverage: 67, execution: 33, total: 100 },
+      maxima: { coverage: 67, execution: 36, total: 103 },
       paired,
       pairedSummary,
       wholeGroup: {

@@ -120,101 +120,101 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
-  "Hy4Preview(high)V1": 95,
-  "Hy4Preview(high)V2": 96.666666666667,
-  "Hy4Preview(high)V1-TasksAssignedByOpus5": 91.226666666667,
-  "Hy4Preview(high)V2-TasksAssignedByOpus5": 92.226666666667,
-  "GLM5.3Flash(Max)V2": 90.31,
-  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 88.393333333333,
-  "GLM5.3Flash(Max)V1": 83.666666666667,
+  "Hy4Preview(high)V1": 97.7,
+  "Hy4Preview(high)V2": 99.466666666667,
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": 93.726666666667,
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": 94.726666666667,
+  "GLM5.3Flash(Max)V2": 92.01,
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 89.993333333333,
+  "GLM5.3Flash(Max)V1": 85.466666666667,
   "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 60,
-  "DoubaoSeedEvolving(Max)V1": 61.183333333333,
-  "DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5": 89.666666666667,
-  "GPT5.6Sol(high)V1": 83.893333333333,
-  "Opus5Ultra-TasksAssignedByOpus5": 97,
-  "DeepSeek-V4-Flash-0731": 54.846666666667,
-  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 80.583333333333,
+  "DoubaoSeedEvolving(Max)V1": 62.783333333333,
+  "DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5": 91.466666666667,
+  "GPT5.6Sol(high)V1": 85.493333333333,
+  "Opus5Ultra-TasksAssignedByOpus5": 100,
+  "DeepSeek-V4-Flash-0731": 56.046666666667,
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 82.183333333333,
   "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 60,
-  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 78.083333333333,
-  "DeepSeek-V4-Pro-0813-V1": 78.06,
-  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 92.333333333333,
-  "DeepSeekV4Pro0813(Max)V2": 82.726666666667,
-  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 91.333333333333,
-  "DeepSeekProMax-TasksAssignedByOpus5": 83.643333333333,
-  "DeepSeek_V4_Pro_high-1": 45.493333333333,
-  "DeepSeek_V4_Pro_high-2": 57.06,
-  "DeepSeek_V4_Pro_high-3": 53.493333333333,
-  "Fable5Max-Three": 84.076666666667,
-  "Fable5Max-WebGL2": 88.226666666667,
-  "GLM5.2Max-TasksAssignedByOpus5": 86.643333333333,
-  "GLM5.2Max": 58.893333333333,
-  "GLM5.3(Max)V1": 87.25,
-  "GLM5.3(Max)V2": 88.06,
-  "GLM5.3(Max)V3": 91.166666666667,
-  "GLM5.3(Max)V1-TasksAssignedByOpus5": 89.333333333333,
-  "GLM5.3(Max)V2-TasksAssignedByOpus5": 90,
-  "GLM_5_1_high-1": 49.493333333333,
-  "GPT5.5xHigh-TasksAssignedByOpus5": 95,
-  "GPT5.6Luna(Max)V1": 60.863333333333,
-  "GPT5.6Luna(Max)V2": 57.12,
-  "GPT5.6LunaMax-TasksAssignedByOpus5": 89.226666666667,
-  "GPT5.6Sol(Max)V1": 91.81,
-  "GPT5.6SolUltra-TasksAssignedByOpus5": 97,
-  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 96,
-  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 94,
-  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 87.333333333333,
-  "GPT5.6Sol(Medium)V1": 66.986666666667,
-  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": 77.82,
-  "GPT5.6Sol(Light)V1": 54.003333333333,
-  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": 80.03,
-  "GPT5.6SolUltra-WebGL2": 94.333333333333,
-  "GPT5.6SolUltra": 85.66,
-  "GPT5.6Sol(xhigh)V1": 78.986666666667,
-  "GPT5.6Sol(xhigh)V2": 90.37,
-  "GPT5.6Sol(xhigh)V3": 86.62,
-  "GPT5.6TerraUltra-Three": 75.393333333333,
-  "GPT5.6TerraUltra-TasksAssignedByOpus5": 97,
-  "GPT_5_5_xhigh": 80.826666666667,
-  "Gemini3.1Pro-TasksAssignedByOpus5": 81.183333333333,
-  "Gemini3.5Flash-TasksAssignedByOpus5": 80.953333333333,
-  "Gemini3.6Flash(high)V0": 40.843333333333,
-  "Gemini3.6Flash-TasksAssignedByOpus5": 86.5,
-  "Gemini3.7Flash(high)V1": 54.31,
-  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 85.333333333333,
-  "Gemini_3_5_flash_high": 81.553333333333,
-  "Grok4.5": 71.893333333333,
-  "Grok4.6(xhigh)V1": 77.393333333333,
-  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 91,
-  "Hy3-TasksAssignedByOpus5": 77.333333333333,
-  "Hy3": 51.993333333333,
-  "KimiK3Max-TasksAssignedByOpus5": 94,
-  "KimiK3Max": 88.726666666667,
-  "KimiK3(Max)V2-TasksAssignedByOpus5": 94,
-  "KimiK3(Max)V2": 78.333333333333,
-  "KimiK3(Max)V3": 78.726666666667,
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 79.383333333333,
+  "DeepSeek-V4-Pro-0813-V1": 79.46,
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 93.933333333333,
+  "DeepSeekV4Pro0813(Max)V2": 84.226666666667,
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 92.933333333333,
+  "DeepSeekProMax-TasksAssignedByOpus5": 85.243333333333,
+  "DeepSeek_V4_Pro_high-1": 47.093333333333,
+  "DeepSeek_V4_Pro_high-2": 58.46,
+  "DeepSeek_V4_Pro_high-3": 55.093333333333,
+  "Fable5Max-Three": 86.876666666667,
+  "Fable5Max-WebGL2": 91.026666666667,
+  "GLM5.2Max-TasksAssignedByOpus5": 88.243333333333,
+  "GLM5.2Max": 60.493333333333,
+  "GLM5.3(Max)V1": 88.95,
+  "GLM5.3(Max)V2": 89.76,
+  "GLM5.3(Max)V3": 92.366666666667,
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": 90.933333333333,
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": 91.7,
+  "GLM_5_1_high-1": 51.093333333333,
+  "GPT5.5xHigh-TasksAssignedByOpus5": 97,
+  "GPT5.6Luna(Max)V1": 62.463333333333,
+  "GPT5.6Luna(Max)V2": 58.52,
+  "GPT5.6LunaMax-TasksAssignedByOpus5": 91.026666666667,
+  "GPT5.6Sol(Max)V1": 94.81,
+  "GPT5.6SolUltra-TasksAssignedByOpus5": 100,
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 99,
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 96,
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 88.933333333333,
+  "GPT5.6Sol(Medium)V1": 68.786666666667,
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": 79.82,
+  "GPT5.6Sol(Light)V1": 55.603333333333,
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": 82.03,
+  "GPT5.6SolUltra-WebGL2": 96.933333333333,
+  "GPT5.6SolUltra": 87.66,
+  "GPT5.6Sol(xhigh)V1": 80.786666666667,
+  "GPT5.6Sol(xhigh)V2": 92.37,
+  "GPT5.6Sol(xhigh)V3": 88.62,
+  "GPT5.6TerraUltra-Three": 76.993333333333,
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": 100,
+  "GPT_5_5_xhigh": 82.626666666667,
+  "Gemini3.1Pro-TasksAssignedByOpus5": 82.783333333333,
+  "Gemini3.5Flash-TasksAssignedByOpus5": 81.953333333333,
+  "Gemini3.6Flash(high)V0": 41.843333333333,
+  "Gemini3.6Flash-TasksAssignedByOpus5": 87.9,
+  "Gemini3.7Flash(high)V1": 55.71,
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 86.933333333333,
+  "Gemini_3_5_flash_high": 83.153333333333,
+  "Grok4.5": 73.493333333333,
+  "Grok4.6(xhigh)V1": 78.693333333333,
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 92.4,
+  "Hy3-TasksAssignedByOpus5": 78.333333333333,
+  "Hy3": 53.593333333333,
+  "KimiK3Max-TasksAssignedByOpus5": 96,
+  "KimiK3Max": 90.526666666667,
+  "KimiK3(Max)V2-TasksAssignedByOpus5": 96.7,
+  "KimiK3(Max)V2": 79.633333333333,
+  "KimiK3(Max)V3": 80.526666666667,
   "LongCat2.0-TasksAssignedByOpus5": 60,
-  "LongCat2.0": 43.776666666667,
-  "Mimo_2_5_Pro_high-1": 44.72,
+  "LongCat2.0": 45.276666666667,
+  "Mimo_2_5_Pro_high-1": 46.12,
   "MiniMaxM3-TasksAssignedByOpus5": 25,
   "MiniMaxM3(high)V2-TasksAssignedByOpus5": 25,
-  "MiniMax_M3_thinking-1": 55.326666666667,
-  "Opus5Ultra-WebGL2": 97,
-  "Opus_4_8_Max": 89.56,
-  "Opus4.8Ultra-TasksAssignedByOpus5": 96.333333333333,
-  "Qwen3.7Max": 60.726666666667,
-  "Qwen3.8Max-TasksAssignedByOpus5": 75.06,
-  "Qwen3.8MaxV2-TasksAssignedByOpus5": 82.726666666667,
-  "Qwen3.8MaxV2": 49.86,
-  "Qwen3.8Max-inQoder": 56.766666666667,
-  "Qwen3.8MaxV1-inQoder": 51.61,
-  "Qwen3.8Max(Max)V1": 61.57,
-  "Qwen3.8Max(Max)V2": 68.326666666667,
-  "Qwen3.8Max(Max)V3": 70.62,
-  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 92,
-  "Qwen3.8Flash(xhigh)V1": 82.083333333333,
-  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 86,
-  "Sonnet5Ultra": 85.226666666667,
-  "Sonnet5Ultra-TasksAssignedByOpus5": 95.666666666667,
+  "MiniMax_M3_thinking-1": 56.926666666667,
+  "Opus5Ultra-WebGL2": 100,
+  "Opus_4_8_Max": 91.56,
+  "Opus4.8Ultra-TasksAssignedByOpus5": 99.233333333333,
+  "Qwen3.7Max": 62.526666666667,
+  "Qwen3.8Max-TasksAssignedByOpus5": 75.86,
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": 83.926666666667,
+  "Qwen3.8MaxV2": 51.56,
+  "Qwen3.8Max-inQoder": 58.566666666667,
+  "Qwen3.8MaxV1-inQoder": 53.31,
+  "Qwen3.8Max(Max)V1": 63.27,
+  "Qwen3.8Max(Max)V2": 69.826666666667,
+  "Qwen3.8Max(Max)V3": 72.02,
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 93.7,
+  "Qwen3.8Flash(xhigh)V1": 83.683333333333,
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 87.4,
+  "Sonnet5Ultra": 87.026666666667,
+  "Sonnet5Ultra-TasksAssignedByOpus5": 98.466666666667,
 };
 
 // Audit-authored field oracle. Order:
@@ -449,9 +449,9 @@ for (const work of WORKS) {
   for (const key of ['effectiveMoons', 'evidenceBase', 'manualAdjustment', 'preCap', 'exact', 'adjusted', 'total']) check(Number.isFinite(computed[key]), `${id}.${key} is not finite`);
   check(!Object.hasOwn(computed.parts, 'visual'), `${id}: legacy visual evidence must not enter scoring`);
   close(computed.evidenceBase, Object.values(computed.parts).reduce((sum, value) => sum + value, 0), `${id}.evidenceBase`);
-  const expectedAdjustment = score.reference ? 0 : work.tier === 2 ? -2 : work.tier === 3 ? -5 : 0;
+  const expectedAdjustment = score.reference ? 0 : work.tier === 2 ? -3 : work.tier === 3 ? -6 : 0;
   close(computed.manualAdjustment, expectedAdjustment, `${id}.human-experience tier adjustment`);
-  finiteRange(computed.total, 0, 100, `${id}.total`);
+  finiteRange(computed.total, 0, 103, `${id}.total`);
   close(computed.exact, EXPECTED_EXACT[id], `${id}.exact oracle`);
   check(computed.total === Math.round(EXPECTED_EXACT[id]), `${id}.total oracle: expected ${Math.round(EXPECTED_EXACT[id])}, got ${computed.total}`);
 }
@@ -510,7 +510,7 @@ check(solHigh?.bytes === 48544 && solHigh?.lines === 407 && solHigh?.tech === 'W
 check(solMaxOneLine?.group === 'A' && solMaxOneLine?.tier === 1 && solMaxOneLine?.pair === null && SITE.environmentTag(solMaxOneLine) === 'in Codex', 'GPT-5.6 Sol Max replacement must be an unpaired Tier 1 in Codex run');
 check(solMaxOneLine?.file === 'models/GPT5.6Sol(Max)V1.html' && solMaxOneLine?.bytes === 102251 && solMaxOneLine?.lines === 2737 && solMaxOneLine?.tech === 'WebGL2' && solMaxOneLine?.msaa === false, 'GPT-5.6 Sol Max replacement metadata must match the supplied file');
 for (const work of [doubaoOneLine, doubaoDetailed, solHigh, solMaxOneLine]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
-check(SITE.scoreFor(doubaoOneLine).total === 61 && SITE.scoreFor(doubaoDetailed).total === 90 && SITE.scoreFor(solHigh).total === 84, 'V3 evidence scores must be 61, 90, and 84');
+check(SITE.scoreFor(doubaoOneLine).total === 63 && SITE.scoreFor(doubaoDetailed).total === 91 && SITE.scoreFor(solHigh).total === 85, 'V3 evidence scores must be 63, 91, and 85');
 check(solMaxDetailed?.group === 'B' && solMaxDetailed?.tier === 1 && solMaxDetailed?.pair === null, 'GPT-5.6 Sol Max must be an unpaired Tier 1 detailed-spec run');
 check(JSON.stringify(solMaxDetailed?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${solMaxDetailed.shot}`, import.meta.url)), 'GPT-5.6 Sol Max detailed must show in Codex and have a screenshot');
 for (const work of [solXHighDetailed, solHighDetailed]) {
@@ -520,7 +520,7 @@ for (const work of [solXHighDetailed, solHighDetailed]) {
 check(solMaxDetailed?.bytes === 86118 && solMaxDetailed?.lines === 1061 && solMaxDetailed?.msaa === true, 'GPT-5.6 Sol Max detailed metadata must match the supplied file');
 check(solXHighDetailed?.bytes === 76202 && solXHighDetailed?.lines === 283 && solXHighDetailed?.msaa === true, 'GPT-5.6 Sol xHigh detailed metadata must match the supplied file');
 check(solHighDetailed?.bytes === 45296 && solHighDetailed?.lines === 172 && solHighDetailed?.msaa === false, 'GPT-5.6 Sol high detailed metadata must match the supplied file');
-check(SITE.scoreFor(solMaxOneLine).total === 92 && SITE.scoreFor(solMaxDetailed).total === 96 && SITE.scoreFor(solXHighDetailed).total === 94 && SITE.scoreFor(solHighDetailed).total === 87, 'Updated Sol effort scores must be 92, 96, 94, and 87');
+check(SITE.scoreFor(solMaxOneLine).total === 95 && SITE.scoreFor(solMaxDetailed).total === 99 && SITE.scoreFor(solXHighDetailed).total === 96 && SITE.scoreFor(solHighDetailed).total === 89, 'Updated Sol effort scores must be 95, 99, 96, and 89');
 const lowerEffortRuns = [solMediumOneLine, solMediumDetailed, solLightOneLine, solLightDetailed];
 for (const work of lowerEffortRuns) {
   check(work?.tier === 3 && work?.pair === null && JSON.stringify(work?.tags) === JSON.stringify(['in Codex']), `${work?.id || 'GPT-5.6 Sol lower effort'} must be an unpaired Tier 3 in Codex run`);
@@ -530,21 +530,21 @@ check(solMediumOneLine?.group === 'A' && solMediumOneLine?.bytes === 22057 && so
 check(solMediumDetailed?.group === 'B' && solMediumDetailed?.bytes === 37827 && solMediumDetailed?.lines === 111 && solMediumDetailed?.msaa === false, 'GPT-5.6 Sol Medium detailed metadata must match the supplied file');
 check(solLightOneLine?.group === 'A' && solLightOneLine?.bytes === 20733 && solLightOneLine?.lines === 127 && solLightOneLine?.msaa === true, 'GPT-5.6 Sol Light one-line metadata must match the supplied file');
 check(solLightDetailed?.group === 'B' && solLightDetailed?.bytes === 31891 && solLightDetailed?.lines === 79 && solLightDetailed?.msaa === true, 'GPT-5.6 Sol Light detailed metadata must match the supplied file');
-check(SITE.scoreFor(solMediumOneLine).total === 67 && SITE.scoreFor(solMediumDetailed).total === 78 && SITE.scoreFor(solLightOneLine).total === 54 && SITE.scoreFor(solLightDetailed).total === 80, 'Medium and Light evidence scores must be 67, 78, 54, and 80');
+check(SITE.scoreFor(solMediumOneLine).total === 69 && SITE.scoreFor(solMediumDetailed).total === 80 && SITE.scoreFor(solLightOneLine).total === 56 && SITE.scoreFor(solLightDetailed).total === 82, 'Medium and Light evidence scores must be 69, 80, 56, and 82');
 for (const work of [lunaMax1, lunaMax2]) {
   check(work?.group === 'A' && work?.tier === 3 && work?.pair === null && JSON.stringify(work?.tags) === JSON.stringify(['in Codex']), `${work?.id || 'GPT-5.6 Luna Max'} must be an unpaired Tier 3 in Codex run`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Luna Max'} screenshot asset must exist`);
 }
 check(lunaMax1?.model === 'GPT-5.6 Luna (Max) #1' && lunaMax1?.tech === 'WebGL2' && lunaMax1?.bytes === 75455 && lunaMax1?.lines === 1944 && lunaMax1?.net.length === 0, 'GPT-5.6 Luna Max #1 metadata must match the supplied file');
 check(lunaMax2?.model === 'GPT-5.6 Luna (Max) #2' && lunaMax2?.tech === 'Three.js' && lunaMax2?.bytes === 64120 && lunaMax2?.lines === 876 && JSON.stringify(lunaMax2?.net) === JSON.stringify(['cdn.jsdelivr.net', 'fonts.googleapis.com']), 'GPT-5.6 Luna Max #2 metadata must match the supplied file and disclose network dependencies');
-check(SITE.scoreFor(lunaMax1).total === 61 && SITE.scoreFor(lunaMax2).total === 57, 'GPT-5.6 Luna Max #1 and #2 evidence scores must be 61 and 57');
+check(SITE.scoreFor(lunaMax1).total === 62 && SITE.scoreFor(lunaMax2).total === 59, 'GPT-5.6 Luna Max #1 and #2 evidence scores must be 62 and 59');
 for (const work of [glm53FlashOneLine, glm53FlashDetailed]) {
   check(work?.tier === 3 && work?.pair === null && work?.tech === 'WebGL2' && work?.net.length === 0, `${work?.id || 'GLM 5.3 Flash'} must be an unpaired offline Tier 3 WebGL2 run`);
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Zcode']) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3 Flash'} must show in Zcode and have a screenshot`);
 }
 check(glm53FlashOneLine?.group === 'A' && glm53FlashOneLine?.bytes === 75687 && glm53FlashOneLine?.lines === 1738 && glm53FlashOneLine?.msaa === false, 'GLM 5.3 Flash one-line metadata must match the supplied file');
 check(glm53FlashDetailed?.group === 'B' && glm53FlashDetailed?.bytes === 113486 && glm53FlashDetailed?.lines === 2699 && glm53FlashDetailed?.msaa === true, 'GLM 5.3 Flash detailed metadata must match the supplied file');
-check(SITE.scoreFor(glm53FlashOneLine).total === 84 && SITE.scoreFor(glm53FlashDetailed).total === 60 && SITE.scoreFor(glm53FlashDetailed).fatal === 'L2', 'GLM 5.3 Flash evidence scores must be 84 and L2-capped 60');
+check(SITE.scoreFor(glm53FlashOneLine).total === 85 && SITE.scoreFor(glm53FlashDetailed).total === 60 && SITE.scoreFor(glm53FlashDetailed).fatal === 'L2', 'GLM 5.3 Flash evidence scores must be 85 and L2-capped 60');
 for (const work of [hy4OneLine1, hy4OneLine2, hy4Detailed1, hy4Detailed2]) {
   check(work?.tier === 1 && JSON.stringify(work?.tags) === JSON.stringify(['in WorkBuddy']), `${work?.id || 'Hy 4 Preview'} must be Tier 1 and show in WorkBuddy`);
   check(fs.existsSync(new URL(`../${work.file}`, import.meta.url)) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Hy 4 Preview'} source and screenshot must exist`);
@@ -554,14 +554,14 @@ check(hy4OneLine2?.group === 'A' && hy4OneLine2?.pair === 'hy4v2' && hy4OneLine2
 check(hy4Detailed1?.group === 'B' && hy4Detailed1?.pair === 'hy4v1' && hy4Detailed1?.tech === 'WebGL2' && hy4Detailed1?.bytes === 126382 && hy4Detailed1?.lines === 2898 && hy4Detailed1?.net.length === 0, 'Hy 4 Preview #1 detailed metadata must match the supplied file');
 check(hy4Detailed2?.group === 'B' && hy4Detailed2?.pair === 'hy4v2' && hy4Detailed2?.tech === 'WebGL2' && hy4Detailed2?.bytes === 126917 && hy4Detailed2?.lines === 2864 && hy4Detailed2?.net.length === 0, 'Hy 4 Preview #2 detailed metadata must match the supplied file');
 check(!fs.existsSync(new URL('../models/Hy4Preview(high)V3.html', import.meta.url)) && !read('models/Hy4Preview(high)V2.html').includes('HY4 PREVIEW · V3'), 'The former Hy 4 V3 source and visible V3 branding must be removed after renaming it to V2');
-check(SITE.scoreFor(hy4OneLine1).total === 95 && SITE.scoreFor(hy4OneLine2).total === 97 && SITE.scoreFor(hy4Detailed1).total === 91 && SITE.scoreFor(hy4Detailed2).total === 92, 'Hy 4 Preview evidence scores must be 95, 97, 91, and 92');
+check(SITE.scoreFor(hy4OneLine1).total === 98 && SITE.scoreFor(hy4OneLine2).total === 99 && SITE.scoreFor(hy4Detailed1).total === 94 && SITE.scoreFor(hy4Detailed2).total === 95, 'Hy 4 Preview evidence scores must be 98, 99, 94, and 95');
 for (const work of [glm53Flash2OneLine, glm53Flash2Detailed]) {
   check(work?.tier === 2 && work?.pair === 'glm53flashv2' && JSON.stringify(work?.tags) === JSON.stringify(['in Zcode', '突然聪明了']), `${work?.id || 'GLM 5.3 Flash #2'} must be paired Tier 2 in Zcode with the requested note tag`);
   check(fs.existsSync(new URL(`../${work.file}`, import.meta.url)) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3 Flash #2'} source and screenshot must exist`);
 }
 check(glm53Flash2OneLine?.group === 'A' && glm53Flash2OneLine?.tech === 'Three.js' && glm53Flash2OneLine?.bytes === 64541 && glm53Flash2OneLine?.lines === 1504 && JSON.stringify(glm53Flash2OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'GLM 5.3 Flash #2 one-line metadata must match the supplied file');
 check(glm53Flash2Detailed?.group === 'B' && glm53Flash2Detailed?.tech === 'WebGL2' && glm53Flash2Detailed?.bytes === 102402 && glm53Flash2Detailed?.lines === 2390 && glm53Flash2Detailed?.net.length === 0, 'GLM 5.3 Flash #2 detailed metadata must match the supplied file');
-check(SITE.scoreFor(glm53Flash2OneLine).total === 90 && SITE.scoreFor(glm53Flash2Detailed).total === 88, 'GLM 5.3 Flash #2 evidence scores must be 90 and 88');
+check(SITE.scoreFor(glm53Flash2OneLine).total === 92 && SITE.scoreFor(glm53Flash2Detailed).total === 90, 'GLM 5.3 Flash #2 evidence scores must be 92 and 90');
 const doubaoPair = SITE.pairs()[18];
 check(doubaoPair?.a?.id === doubaoOneLine.id && doubaoPair?.b?.id === doubaoDetailed.id, 'Visible comparison position 19 must be the Doubao pair');
 check(SITE.pairs()[19]?.a?.id === hy4OneLine1.id && SITE.pairs()[19]?.b?.id === hy4Detailed1.id && SITE.pairs()[20]?.a?.id === hy4OneLine2.id && SITE.pairs()[20]?.b?.id === hy4Detailed2.id, 'Visible comparison positions 20 and 21 must be Hy 4 Preview #1 and #2');
@@ -581,7 +581,7 @@ check(solXHigh3?.bytes === 63449 && solXHigh3?.lines === 1688 && solXHigh3?.net.
 for (const work of [solXHigh1, solXHigh2, solXHigh3]) {
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
 }
-check(SITE.scoreFor(solXHigh1).total === 79 && SITE.scoreFor(solXHigh2).total === 90 && SITE.scoreFor(solXHigh3).total === 87, 'GPT-5.6 Sol xHigh evidence scores must be 79, 90, and 87');
+check(SITE.scoreFor(solXHigh1).total === 81 && SITE.scoreFor(solXHigh2).total === 92 && SITE.scoreFor(solXHigh3).total === 89, 'GPT-5.6 Sol xHigh evidence scores must be 81, 92, and 89');
 
 const grok45 = WORKS.find(w => w.id === 'Grok4.5');
 const grok46 = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1');
@@ -598,7 +598,7 @@ for (const work of [grok45, grok46, grok46Detailed]) {
   check(SITE.environmentTag(work) === 'in build' && SITE.chips(work, null).includes('in build'), `${work?.id || 'Grok'} environment tag must render as in build`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Grok'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(grok46).total === 77 && SITE.scoreFor(grok46Detailed).total === 91, 'Grok 4.6 evidence scores must be 77 and 91 after Tier 2 adjustments');
+check(SITE.scoreFor(grok46).total === 79 && SITE.scoreFor(grok46Detailed).total === 92, 'Grok 4.6 evidence scores must be 79 and 92 after Tier 2 adjustments');
 
 const deepSeek2 = WORKS.find(w => w.id === 'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5');
 check(deepSeek2?.tier === 4, 'DeepSeek detailed #2 must remain Tier 4');
@@ -638,7 +638,7 @@ for (const work of [deepSeekPro0813V2OneLine, deepSeekPro0813V2]) {
   check(SITE.environmentTag(work) === 'in dsh' && SITE.chips(work, null).includes('in dsh'), `${work?.id || 'DeepSeek V4 Pro 0813 #2'} environment tag must render as in dsh`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'DeepSeek V4 Pro 0813 #2'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(deepSeekPro0813V2OneLine).total === 83 && SITE.scoreFor(deepSeekPro0813V2).total === 91, 'DeepSeek V4 Pro 0813 #2 evidence scores must be 83 and 91');
+check(SITE.scoreFor(deepSeekPro0813V2OneLine).total === 84 && SITE.scoreFor(deepSeekPro0813V2).total === 93, 'DeepSeek V4 Pro 0813 #2 evidence scores must be 84 and 93');
 const glm53OneLine1 = WORKS.find(w => w.id === 'GLM5.3(Max)V1');
 const glm53OneLine2 = WORKS.find(w => w.id === 'GLM5.3(Max)V2');
 const glm53OneLine3 = WORKS.find(w => w.id === 'GLM5.3(Max)V3');
@@ -664,8 +664,8 @@ for (const work of [glm53OneLine1, glm53OneLine2, glm53OneLine3, glm53Detailed1,
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3'} screenshot asset must exist`);
   check(!SCORES[work.id].reference && !SITE.card(work).includes('is-benchmark'), `${work?.id || 'GLM 5.3'} must remain a scored non-benchmark`);
 }
-check(SITE.scoreFor(glm53OneLine1).total === 87 && SITE.scoreFor(glm53OneLine2).total === 88 && SITE.scoreFor(glm53OneLine3).total === 91, 'GLM 5.3 one-line evidence scores must be 87, 88, and 91');
-check(SITE.scoreFor(glm53Detailed1).total === 89 && SITE.scoreFor(glm53Detailed2).total === 90, 'GLM 5.3 detailed evidence scores must be 89 and 90');
+check(SITE.scoreFor(glm53OneLine1).total === 89 && SITE.scoreFor(glm53OneLine2).total === 90 && SITE.scoreFor(glm53OneLine3).total === 92, 'GLM 5.3 one-line evidence scores must be 89, 90, and 92');
+check(SITE.scoreFor(glm53Detailed1).total === 91 && SITE.scoreFor(glm53Detailed2).total === 92, 'GLM 5.3 detailed evidence scores must be 91 and 92');
 const miniMax2 = WORKS.find(w => w.id === 'MiniMaxM3(high)V2-TasksAssignedByOpus5');
 check(miniMax2?.group === 'B' && miniMax2?.tier === 4, 'MiniMax detailed #2 must remain in the Incomplete group');
 check(!Object.hasOwn(miniMax2, 'incomplete'), 'MiniMax detailed #2 must not duplicate Tier 4 with an inline Incomplete marker');
@@ -701,7 +701,7 @@ for (const work of [qwenFlashOneLine, qwenFlashDetailed]) {
 }
 check(qwenFlashOneLine?.group === 'A' && qwenFlashOneLine?.tech === 'Three.js' && qwenFlashOneLine?.bytes === 47293 && qwenFlashOneLine?.lines === 912 && qwenFlashOneLine?.needsFloat === false && qwenFlashOneLine?.msaa === true && JSON.stringify(qwenFlashOneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Qwen 3.8 Flash one-line metadata must match the supplied file');
 check(qwenFlashDetailed?.group === 'B' && qwenFlashDetailed?.tech === 'WebGL2' && qwenFlashDetailed?.bytes === 97214 && qwenFlashDetailed?.lines === 1826 && qwenFlashDetailed?.needsFloat === true && qwenFlashDetailed?.msaa === true && qwenFlashDetailed?.net.length === 0, 'Qwen 3.8 Flash detailed metadata must match the supplied file');
-check(SITE.scoreFor(qwenFlashOneLine).total === 82 && SITE.scoreFor(qwenFlashDetailed).total === 86, 'Qwen 3.8 Flash evidence scores must be 82 and 86');
+check(SITE.scoreFor(qwenFlashOneLine).total === 84 && SITE.scoreFor(qwenFlashDetailed).total === 87, 'Qwen 3.8 Flash evidence scores must be 84 and 87');
 const qwenFlashPair = SITE.pairs()[23];
 check(qwenFlashPair?.a?.id === qwenFlashOneLine.id && qwenFlashPair?.b?.id === qwenFlashDetailed.id, 'The final visible same-model comparison must pair the two Qwen 3.8 Flash runs');
 check(context.window.PAIR_TITLES.qwen38flash === 'Qwen 3.8 Flash (xHigh)', 'Qwen 3.8 Flash comparison title must use canonical xHigh casing');
@@ -727,7 +727,7 @@ for (const work of [kimi2OneLine, kimi2Detailed]) {
 check(JSON.stringify(kimi3OneLine?.tags) === JSON.stringify(['in KimiCode']), 'Kimi K3 #3 must show the exact in KimiCode tag');
 check(SITE.environmentTag(kimi3OneLine) === 'in KimiCode' && SITE.chips(kimi3OneLine, null).includes('in KimiCode'), 'Kimi K3 #3 environment tag must render as in KimiCode');
 check(fs.existsSync(new URL(`../${kimi3OneLine.shot}`, import.meta.url)), 'Kimi K3 #3 screenshot asset must exist');
-check(!SCORES[kimi3OneLine.id].reference && SITE.scoreFor(kimi3OneLine).total === 79, 'Kimi K3 #3 must remain a scored non-benchmark with evidence score 79');
+check(!SCORES[kimi3OneLine.id].reference && SITE.scoreFor(kimi3OneLine).total === 81, 'Kimi K3 #3 must remain a scored non-benchmark with evidence score 81');
 const kimi2Pair = SITE.pairs()[5];
 check(kimi2Pair?.a?.id === 'KimiK3(Max)V2' && kimi2Pair?.b?.id === 'KimiK3(Max)V2-TasksAssignedByOpus5', 'Comparison position 06 must pair the two Kimi K3 #2 runs');
 const pro0813Pair = SITE.pairs()[7];
@@ -757,7 +757,7 @@ for (const work of [gemini36OneLine, gemini36Detailed]) {
   check(SITE.environmentTag(work) === 'in Antigravity' && SITE.chips(work, null).includes('in Antigravity'), `${work?.id || 'Gemini 3.6 Flash'} must render the in Antigravity tag`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Gemini 3.6 Flash'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(gemini36OneLine).total === 41, 'Gemini 3.6 Flash V0 must score 41 after the Tier 3 adjustment');
+check(SITE.scoreFor(gemini36OneLine).total === 42, 'Gemini 3.6 Flash V0 must score 42 after the Tier 3 adjustment');
 const gemini36Pair = SITE.pairs()[14];
 check(gemini36Pair?.a?.id === 'Gemini3.6Flash(high)V0' && gemini36Pair?.b?.id === 'Gemini3.6Flash-TasksAssignedByOpus5', 'Comparison position 17 must pair the two Gemini 3.6 Flash runs');
 const gemini37OneLine = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1');
@@ -804,7 +804,8 @@ check(!i18nSource.includes('above Luna, though still below Sol'), 'English score
 check(!source.includes('低于 Sol。'), 'Chinese score note still uses bare Sol name');
 const siteSource = read('assets/site.js');
 const cssSource = read('assets/site.css');
-check(siteSource.includes("w.tier === 2 ? -2 : w.tier === 3 ? -5"), 'Scoring formula must use Tier 2 −2 and Tier 3 −5');
+check(siteSource.includes("w.tier === 2 ? -3 : w.tier === 3 ? -6"), 'Scoring formula must use Tier 2 −3 and Tier 3 −6');
+check(siteSource.includes("* (23 / 15)") && siteSource.includes("Math.min(103, evidenceBase + manualAdjustment)"), 'Correctness must convert to 23 points and the true bonus-aware ceiling must be 103');
 check(siteSource.includes("* 2.4") && siteSource.includes("geometry: 4, kepler: 6, elements: 5, orientation: 4, epoch: 4"), 'V3 feature and 30-point orbit weights must remain explicit');
 check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effectiveMoons - 8") && siteSource.includes("* .75"), 'V3 moon baseline and extra-moon bonus must remain explicit');
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
@@ -954,10 +955,12 @@ check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes(
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
 check(zhHome.includes('不能单凭筛选后的六组证明因果') && enHome.includes('not causal proof on their own'), 'Both pair introductions must disclose the selected-case evidence limit');
 check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pairs'), 'Paired statistics must not be described as uniformly strict controls');
-check(zhHome.includes('第二梯队扣 2 分，第三梯队扣 5 分') && enHome.includes('Tier 2 receives −2, Tier 3 receives −5'), 'Both home pages must publish the current human-experience tier deductions');
+check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
+check(zhHome.includes('基础 100 分 + 超额卫星奖励 3 分') && zhHome.includes('理论最高分为 103') && zhHome.includes('三个证据项的满分贡献各增加 1 分'), 'Chinese scoring rules must explain the 100+3 structure and correctness reallocation');
+check(enHome.includes('100 Base Points + 3 Extra-Moon Bonus') && enHome.includes('the theoretical maximum is 103') && enHome.includes('each evidence item now contributes one additional point'), 'English scoring rules must explain the 100+3 structure and correctness reallocation');
 check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">35') && enHome.includes('id="bAll">35') && zhHome.includes('id="tAll">75') && enHome.includes('id="tAll">75'), 'Both home pages must publish 40/35 and 75-entry visible counts before JavaScript runs');
 check(zhHome.includes('一句话组 40 件和文档组 35 件') && enHome.includes('prefer the 24 paired results over treating all 40 one-line and 35 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('24 组同模型') && enHome.includes('24 same-model') && zhHome.includes('51.27 / 67') && enHome.includes('51.27 / 67') && zhHome.includes('29.33 / 33') && enHome.includes('29.33 / 33'), 'Both home pages must publish the current V3 24-pair statistics');
+check(zhHome.includes('24 组同模型') && enHome.includes('24 same-model') && zhHome.includes('51.27 / 67') && enHome.includes('51.27 / 67') && zhHome.includes('31.90 / 36') && enHome.includes('31.90 / 36'), 'Both home pages must publish the current V3 24-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -970,7 +973,7 @@ for (const id of referenceIds) {
   const tip = SITE.scoreTipHtml(work, score);
   check(cell.includes('⚑') && cell.includes('<button') && cell.includes('score-trigger') && cell.includes('data-score-id'), `${id}: benchmark score cell must remain a gold flag button with a tooltip trigger`);
   check(!/\d/.test(visibleText), `${id}: benchmark score cell must not render the numeric score directly`);
-  check(tip.includes(`${score.total}<i>/100</i>`) && tip.includes('score-tip-grid') && tip.includes('is-reference'), `${id}: benchmark tooltip must expose its score and breakdown`);
+  check(tip.includes(`${score.total}<i>/103</i>`) && tip.includes('score-tip-grid') && tip.includes('is-reference'), `${id}: benchmark tooltip must expose its score and breakdown`);
 }
 for (const id of ['GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2']) {
   const work = SITE.byId(id);
@@ -979,9 +982,9 @@ for (const id of ['GPT5.6SolUltra-WebGL2', 'Fable5Max-WebGL2']) {
   check(!SCORES[id].reference && cell.includes(`>${score.total}<`) && !cell.includes('score-benchmark') && !cell.includes('⚑'), `${id}: former benchmark must render its ordinary numeric Evidence Score`);
 }
 const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
-check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('78') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
+check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('80') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
 const fableThreeScoreCell = SITE.scoreCell(SITE.byId('Fable5Max-Three'));
-check(!SCORES['Fable5Max-Three'].reference && fableThreeScoreCell.includes('84') && fableThreeScoreCell.includes('<button'), 'Claude Fable 5 #1 must show its numeric evidence score instead of a benchmark flag');
+check(!SCORES['Fable5Max-Three'].reference && fableThreeScoreCell.includes('87') && fableThreeScoreCell.includes('<button'), 'Claude Fable 5 #1 must show its numeric evidence score instead of a benchmark flag');
 check(!SITE.card(SITE.byId('Fable5Max-Three')).includes('is-benchmark'), 'Claude Fable 5 #1 card must not retain benchmark presentation');
 check(i18nSource.includes("'score.referenceAria': '{name}，标杆，证据评分 {score} 分，查看分项得分'") && i18nSource.includes("'score.referenceAria': '{name}, benchmark, Evidence Score {score}. View score breakdown.'"), 'Benchmark tooltip triggers must expose their scores to assistive technology in both languages');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
@@ -1004,24 +1007,24 @@ for (const page of [zhHome, enHome]) {
 check(zhHome.includes('已收录的 Claude Fable 5 (Max) #1') && enHome.includes('included Claude Fable 5 (Max) #1 entry'), 'Fable Three.js footer reference must include its #1 run number');
 
 const stats = SITE.scoreStats();
-close(stats.maxima.coverage + stats.maxima.execution, 100, 'Score maxima');
-check(stats.maxima.coverage === 67 && stats.maxima.execution === 33 && stats.maxima.total === 100, 'Max definition must be 67 + 33 = 100');
+close(stats.maxima.coverage + stats.maxima.execution, 103, 'Score maxima');
+check(stats.maxima.coverage === 67 && stats.maxima.execution === 36 && stats.maxima.total === 103, 'Max definition must be 67 coverage + 36 execution = 103, including the 3-point extra-moon bonus');
 check(stats.pairedSummary.n === 24, 'Paired statistics must use 24 visible pairs');
 close(stats.pairedSummary.coverage.a, 51.26625000000001, 'Paired A coverage mean');
 close(stats.pairedSummary.coverage.b, 62.66833333333332, 'Paired B coverage mean');
-close(stats.pairedSummary.execution.a, 28.059027777777775, 'Paired A execution mean');
-close(stats.pairedSummary.execution.b, 29.329861111111104, 'Paired B execution mean');
-close(stats.pairedSummary.exact.a, 76.61694444444443, 'Paired A exact-score mean');
-close(stats.pairedSummary.exact.b, 87.37208333333335, 'Paired B exact-score mean');
+close(stats.pairedSummary.execution.a, 30.613194444444442, 'Paired A execution mean');
+close(stats.pairedSummary.execution.b, 31.896527777777774, 'Paired B execution mean');
+close(stats.pairedSummary.exact.a, 78.37944444444446, 'Paired A exact-score mean');
+close(stats.pairedSummary.exact.b, 89.26375000000003, 'Paired B exact-score mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({ improve: 19, tie: 1, decline: 4 }), 'Final paired outcomes must be 19 improve / 1 tie / 4 decline');
 check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({ improve: 20, tie: 2, decline: 2 }), 'Coverage outcomes must be 20 / 2 / 2');
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 3, decline: 8 }), 'Execution outcomes must be 13 / 3 / 8');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [40, 50.39199999999998, 28.414583333333336, 76.00658333333332], b: [35, 61.604571428571425, 27.995238095238097, 83.5887619047619] },
-  withoutReferences: { a: [39, 50.04307692307691, 28.297008547008552, 75.46829059829058], b: [35, 61.604571428571425, 27.995238095238097, 83.5887619047619] },
-  withoutTier4: { a: [39, 50.76974358974357, 28.638888888888896, 76.5368376068376], b: [32, 62.36124999999999, 29.338541666666668, 87.98770833333334] },
-  withoutReferencesOrTier4: { a: [38, 50.4215789473684, 28.524122807017545, 75.99833333333332], b: [32, 62.36124999999999, 29.338541666666668, 87.98770833333334] },
+  all: { a: [40, 50.39199999999998, 31.01458333333334, 77.80658333333331], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutReferences: { a: [39, 50.04307692307691, 30.886752136752147, 77.23752136752134], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutTier4: { a: [39, 50.76974358974357, 31.264529914529923, 78.34196581196579], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
+  withoutReferencesOrTier4: { a: [38, 50.4215789473684, 31.139912280701765, 77.77201754385962], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -1044,7 +1047,7 @@ console.log('\nEvidence Score V3 — final score table');
 console.table(rows);
 const p = stats.pairedSummary;
 console.log(`Paired means (n=${p.n}): coverage A ${p.coverage.a.toFixed(4)} /67, B ${p.coverage.b.toFixed(4)} /67, delta ${(p.coverage.b - p.coverage.a).toFixed(4)}`);
-console.log(`Paired means (n=${p.n}): execution A ${p.execution.a.toFixed(4)} /33, B ${p.execution.b.toFixed(4)} /33, delta ${(p.execution.b - p.execution.a).toFixed(4)}`);
+console.log(`Paired means (n=${p.n}): execution A ${p.execution.a.toFixed(4)} /36, B ${p.execution.b.toFixed(4)} /36, delta ${(p.execution.b - p.execution.a).toFixed(4)}`);
 console.log(`Outcomes: final ${p.exact.outcomes.improve}/${p.exact.outcomes.tie}/${p.exact.outcomes.decline} improve/tie/decline; coverage ${p.coverage.outcomes.improve}/${p.coverage.outcomes.tie}/${p.coverage.outcomes.decline}; execution ${p.execution.outcomes.improve}/${p.execution.outcomes.tie}/${p.execution.outcomes.decline}`);
 console.log(`Mean exact post-cap score: A ${p.exact.a.toFixed(4)}, B ${p.exact.b.toFixed(4)}, delta ${(p.exact.b - p.exact.a).toFixed(4)}`);
 console.log('\nWhole-group sensitivity (coverage / execution / exact)');
@@ -1054,4 +1057,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 95 audited records, 75 visible works, V3 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=100.');
+console.log('\nScore validation passed: 95 audited records, 75 visible works, V3 fields/formula, canonical metadata, oracle totals, pairs, sensitivity, and max=103.');
