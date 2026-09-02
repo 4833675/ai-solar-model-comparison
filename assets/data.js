@@ -7,6 +7,31 @@ window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ult
 window.HIDDEN_WORK_IDS=["Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","KimiK3(Max)V3","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5"];
 window.WORKS=[
  {
+  "id": "Opus5(Max)V1",
+  "file": "models/Opus5(Max)V1.html",
+  "model": "Claude Opus 5 (Max)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 144618,
+  "lines": 3116,
+  "title": "太阳系 · Solar System Orrery",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "weight": "medium",
+  "shot": "assets/shots/Opus5(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": "原生离线 WebGL2，真实默认比例、21 颗卫星、3 颗彗星与多组显示、成像和画质控制。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": ["in Claude Code"],
+  "tier": 1,
+  "rank": 0
+ },
+ {
   "id": "Fable5.1(Max)V1",
   "file": "models/Fable5.1(Max)V1.html",
   "model": "Claude Fable 5.1 (Max)",

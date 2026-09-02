@@ -304,6 +304,7 @@
   };
 
   const SCORE_NOTES_EN = {
+    'Opus5(Max)V1': 'The offline native-WebGL2 build uses JPL secular elements and a Kepler solver, with 21 moons, three comets including Halley, planetary rings, small-body belts, Bloom/ACES, atmospheres, and controls for display, scale, imaging, and quality.',
     'Fable5.1(Max)V1': 'The offline native-WebGL2 build implements true scale, eighteen moons, four comets, continent outlines, Bloom/ACES, ring shadows, and atmospheres, with event jumps and rendering-performance controls. Tier 0 adds a supplementary +3.',
     'Hy4Preview(high)V1': 'This network-dependent Three.js run includes JPL/Keplerian orbits, eighteen moons, Halley, three ring systems, small-body belts, Bloom/ACES, atmospheres, and continuous follow, sustaining roughly 88–144 FPS. Jupiter lacks a clear Great Red Spot, Saturn close-up is crowded by moon paths and labels, the density panel labels kg/m³ values as g/cm³, and there is no complete view reset.',
     'Hy4Preview(high)V2': 'This network-dependent Three.js run includes JPL/Keplerian orbits, thirteen moons, Halley, ring shadows, several small-body populations, Bloom/ACES, atmospheres, plus complete focus, follow, and reset behavior. Earth’s night side and Saturn’s ring shadow are clear; deductions remain for a dense default star field and orbit overlay, slightly blocky bright stars, and no prominent Great Red Spot on Jupiter.',
@@ -403,6 +404,7 @@
   };
 
   const WORK_TEXT_EN = {
+    'Opus5(Max)V1': { title: 'Solar System · Orrery', note: 'Offline native WebGL2 with true default scale, 21 moons, three comets, and display, imaging, and quality controls.' },
     'Fable5.1(Max)V1': { title: 'Solar System · True-Scale Motion Model', note: 'True scale, eighteen moons, and four comets, with event jumps, rendering-performance controls, and Earth generated from continent outlines.', tags: ['in Claude Code', 'True scale · 18 moons · 4 comets'] },
     'Hy4Preview(high)V1': { title: 'Hy4 · Solar-System Motion Model (High) V1' },
     'Hy4Preview(high)V2': { title: 'Solar System · Real-Time Orbital Model · Hy4 V2' },

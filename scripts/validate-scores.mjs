@@ -5,7 +5,7 @@ const read = path => fs.readFileSync(new URL(`../${path}`, import.meta.url), 'ut
 const context = { window: {} };
 context.window.window = context.window;
 vm.createContext(context);
-for (const file of ['assets/data.js', 'assets/scores.js', 'assets/site.js']) {
+for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'assets/site.js']) {
   vm.runInContext(read(file), context, { filename: file });
 }
 
@@ -22,6 +22,7 @@ const allowed = (value, values, label) => check(values.includes(value), `${label
 const finiteRange = (value, min, max, label) => check(Number.isFinite(value) && value >= min && value <= max, `${label}: expected finite ${min}..${max}, got ${value}`);
 
 const CANONICAL_NAMES = {
+  'Opus5(Max)V1': 'Claude Opus 5 (Max)',
   'Fable5.1(Max)V1': 'Claude Fable 5.1 (Max)',
   'Hy4Preview(high)V1': 'Hy 4 Preview (high) #1',
   'Hy4Preview(high)V2': 'Hy 4 Preview (high) #2',
@@ -121,6 +122,7 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  'Opus5(Max)V1': 103,
   'Fable5.1(Max)V1': 106,
   "Hy4Preview(high)V1": 97.7,
   "Hy4Preview(high)V2": 99.466666666667,
@@ -224,6 +226,7 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  'Opus5(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|5|5|5|-|1|1|1|1|1|-|-',
   'Fable5.1(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|5|5|5|-|1|1|1|1|1|-|-',
   'Hy4Preview(high)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|5|4|4.5|7|1|1|1|1|0.5|-|-',
   'Hy4Preview(high)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|5|4|5|7.5|1|1|1|1|1|-|-',
@@ -334,17 +337,17 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 96, `WORKS count must be 96, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 96, `SCORES count must be 96, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 96, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 96, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 97, `WORKS count must be 97, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 97, `SCORES count must be 97, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 97, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 97, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 55, 'Audited Group A count must be 55 after adding Claude Fable 5.1');
+check(WORKS.filter(w => w.group === 'A').length === 56, 'Audited Group A count must be 56 after adding Claude Opus 5 (Max)');
 check(WORKS.filter(w => w.group === 'B').length === 41, 'Audited Group B count must be 41 after adding Qwen 3.8 Flash');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
@@ -370,8 +373,8 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 76, 'Visible WORKS count must be 76');
-check(visibleWorks.filter(w => w.group === 'A').length === 41, 'Visible Group A count must be 41');
+check(visibleWorks.length === 77, 'Visible WORKS count must be 77');
+check(visibleWorks.filter(w => w.group === 'A').length === 42, 'Visible Group A count must be 42');
 check(visibleWorks.filter(w => w.group === 'B').length === 35, 'Visible Group B count must be 35');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -411,6 +414,47 @@ for (const [fatal, cap] of [['L1', 25], ['L2', 60]]) {
   check(SITE.scoreFor({ ...fable51, id: 'testTier0Cap' }).total === cap, 'Tier 0 bonus must not bypass fatal caps');
   delete SCORES.testTier0Cap;
 }
+
+
+const opusMax = SITE.byId('Opus5(Max)V1');
+const opusMaxScore = SITE.scoreFor(opusMax);
+check(opusMax?.tier === 1 && opusMax.group === 'A' && opusMax.pair === null && !opusMaxScore.reference, 'Opus 5 (Max) must be an unpaired Tier 1 non-benchmark');
+check(opusMax.bytes === 144618 && opusMax.lines === 3116 && opusMax.tech === 'WebGL2' && !opusMax.msaa && !opusMax.needsFloat && opusMax.net.length === 0, 'Opus 5 (Max) metadata must match its supplied original');
+check(SITE.environmentTag(opusMax) === 'in Claude Code' && fs.existsSync(new URL('../' + opusMax.shot, import.meta.url)), 'Opus 5 (Max) must use Claude Code and have a screenshot');
+close(opusMaxScore.evidenceBase, 103, 'Opus 5 (Max) full evidence base');
+check(opusMaxScore.total === 103 && opusMaxScore.manualAdjustment === 0 && opusMaxScore.fatalCap === null, 'Opus 5 (Max) must show an ordinary 103 without adjustments or caps');
+for (const [part, maximum] of Object.entries({features:12, orbit:30, moons:12, moonBonus:3, independence:7, halley:3, correctness:23, interaction:13}))
+  close(opusMaxScore.parts[part], maximum, 'Opus 5 (Max) full ' + part);
+check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SITE.scoreTipHtml(opusMax, opusMaxScore)), 'Opus 5 (Max) tooltip must contain only the current scoring treatment');
+
+const expectedPrices = {
+  'Claude Fable 5.1':[10,50,.25], 'Claude Fable 5':[10,50,1], 'Claude Opus 5':[5,25,.5],
+  'Claude Opus 4.8':[5,25,.5], 'Claude Sonnet 5':[2,10,.2], 'GPT-5.6 Sol':[10,45,1],
+  'GPT-5.6 Terra':[4,18,.4], 'GPT-5.6 Luna':[.4,1.8,.04], 'GPT-5.5':[10,45,1],
+  'Gemini 3.1 Pro':[4,18,.4], 'Gemini 3.6 Flash':[1.5,7.5,.15], 'Gemini 3.7 Flash':[1.5,7.5,.15],
+  'Grok 4.6':[4,12,1], 'Hy 4 Preview':[.834,2.501,.042], 'Kimi K3':[3,15,.3],
+  'DeepSeek V4 Pro 0813':[1.32,3.96,.044], 'DeepSeek V4 Flash 0731':[.44,1.32,.014],
+  'Qwen 3.8 Max':[2,6,.25], 'Qwen 3.8 Flash':[.15,.47,.016], 'GLM 5.3':[1.4,4.4,.26],
+  'GLM 5.3 Flash':[.15,.5,.03], 'Doubao Seed Evolving':[.9,4.47,.18],
+  'LongCat 2.0':[.75,2.95,.015], 'MiMo 2.5 Pro':[.435,.87,.0036], 'MiniMax M3':[1.2,4.8,.24],
+};
+check(context.window.MODEL_PRICE_DATE === '2026-09-02', 'Price snapshot must disclose its saved date');
+exactKeys(context.window.MODEL_PRICES, Object.keys(expectedPrices), 'Price families');
+for (const [model, values] of Object.entries(expectedPrices)) {
+  const actual = context.window.MODEL_PRICES[model];
+  ['input','output','cache'].forEach((key,i)=>close(actual[key],values[i],model+' '+key));
+}
+check(visibleWorks.every(work=>SITE.priceFor(work)), 'Every visible work must map to a saved price family');
+for (const key of ['priceInput','priceOutput','priceCache']) for (const direction of [1,-1]) {
+  const sorted = SITE.tableRows(visibleWorks, key, direction, 'zh');
+  check(sorted.length === visibleWorks.length, 'Price sorting must preserve all rows');
+  for (let i=1;i<sorted.length;i++) check((sorted[i][key]-sorted[i-1][key])*direction >= -1e-9, key+' must sort numerically in both directions');
+  const withMissing = SITE.tableRows([...visibleWorks,{...opusMax,id:'missingPrice',model:'Unknown (Max)'}],key,direction,'zh');
+  check(withMissing.at(-1).id === 'missingPrice', 'Missing prices must sort last in either direction');
+}
+check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
+check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao prices must remain explicitly approximate');
+check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
@@ -481,7 +525,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 96, `scores.js source key ${key} must occur exactly 96 times; duplicate/missing key detected (${count})`);
+  check(count === 97, `scores.js source key ${key} must occur exactly 97 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -845,7 +889,7 @@ const enHome = read('index.en.html');
 for (const lang of ['zh', 'en']) {
   const localized = { window: {}, document: { documentElement: { lang }, readyState: 'loading', addEventListener() {} } };
   vm.createContext(localized);
-  for (const file of ['assets/data.js', 'assets/scores.js', 'assets/i18n.js', 'assets/site.js']) vm.runInContext(read(file), localized, { filename: file });
+  for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'assets/i18n.js', 'assets/site.js']) vm.runInContext(read(file), localized, { filename: file });
   const localizedSite = localized.window.SITE;
   const work = localizedSite.byId('Fable5.1(Max)V1');
   const tip = localizedSite.scoreTipHtml(work, localizedSite.scoreFor(work));
@@ -857,6 +901,60 @@ check(enHome.includes("0:'Tier 0'") && i18nSource.includes("'tier.0': 'Tier 0'")
 check(zhHome.includes('<section id="glossary" class="glossary" hidden>') && enHome.includes('<section id="glossary" class="glossary" hidden>'), 'Both glossary sections must stay in source but remain hidden');
 check(zhHome.includes('<h2>关键术语说明</h2>') && enHome.includes('<h2>Key Terms</h2>') && cssSource.includes('.glossary[hidden]{display:none!important}'), 'Hidden glossary content must be preserved and explicitly suppressed');
 const zhSpec = read('spec.html');
+// Exercise the actual home-page handlers in a small DOM substitute (no browser).
+for (const lang of ['zh', 'en']) {
+  const nodes = new Map();
+  function node(dataset = {}, classes = []) {
+    const names = new Set(classes);
+    return { dataset, attributes: {}, listeners: {}, innerHTML: '', textContent: '', value: '', hidden: false,
+      classList: { contains: key => names.has(key), add: (...keys) => keys.forEach(key => names.add(key)), remove: (...keys) => keys.forEach(key => names.delete(key)) },
+      setAttribute(key, value) { this.attributes[key] = value; },
+      addEventListener(key, listener) { this.listeners[key] = listener; }, focus() {} };
+  }
+  const headers = ['model','recommendation','environment','group','tier','score','tech'].map(key => node({ k: key }));
+  const priceHeader = node({}, ['price-head']);
+  const buttons = ['priceInput','priceOutput','priceCache'].map(key => node({ priceSort: key }));
+  const one = selector => { if (!nodes.has(selector)) nodes.set(selector, node()); return nodes.get(selector); };
+  const many = selector => selector === '#tbl th' ? [...headers, priceHeader]
+    : selector === '#tbl th[data-k]' ? headers : selector === '#tbl [data-price-sort]' ? buttons : [];
+  const sandbox = { window: {}, document: { documentElement: { lang }, readyState: 'loading',
+    addEventListener() {}, querySelector: one, querySelectorAll: many } };
+  vm.createContext(sandbox);
+  for (const file of ['assets/data.js','assets/scores.js','assets/prices.js','assets/i18n.js','assets/site.js'])
+    vm.runInContext(read(file), sandbox, { filename: file });
+  const localSite = sandbox.window.SITE;
+  localSite.installScoreTooltip = () => {};
+  localSite.renderProbe = () => {};
+  const home = lang === 'zh' ? zhHome : enHome;
+  const inline = [...home.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(match => match[1].includes('const S=window.SITE'));
+  check(Boolean(inline), lang + ': home behavior script must exist');
+  vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
+  const body = () => one('#tbl tbody').innerHTML;
+  const countRows = () => (body().match(/<tr>/g) || []).length;
+  check(countRows() === 77 && body().includes('Claude Opus 5 (Max)'), lang + ': home must render 77 works and the new Opus');
+  if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
+  for (const button of buttons) {
+    for (const direction of [1,-1]) {
+      button.onclick();
+      check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
+      check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
+      const first = localSite.tableRows(localSite.visibleWorks(),button.dataset.priceSort,direction,lang)[0];
+      check(body().startsWith('<tr>\n      <td>' + localSite.esc(first.model) + '</td>'), lang + ': handler must actually reorder table rows');
+    }
+  }
+  one('#modelSearchInput').value = 'Opus 5';
+  one('#modelSearchInput').listeners.input();
+  check(countRows() === 3, lang + ': model search must filter while retaining price sorting');
+  check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
+  one('#modelSearchInput').value = 'no-such-model';
+  one('#modelSearchInput').listeners.input();
+  check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
+  one('#modelSearchClear').listeners.click();
+  check(countRows() === 77, lang + ': clearing search must restore all works');
+  const work = localSite.byId('Opus5(Max)V1');
+  const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
+  check(tooltip.includes('103') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current full score');
+}
 const enSpec = read('spec.en.html');
 const visibleNamingSurface = [
   read('assets/data.js'), i18nSource, zhHome, enHome, zhSpec, enSpec,
@@ -866,6 +964,7 @@ check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
 check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
 const expectedRecommendations = {
+  'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
   'Claude Opus 5 (Ultra)': ['up', 5, '202609前，天下第一'],
   'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
@@ -975,14 +1074,28 @@ check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.in
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
 check(!enHome.includes('What it cannot demonstrate: an overall ranking of model capability') && !enHome.includes('Claude Fable 5 (Max) still has no specification-based version') && !enHome.includes('Reasoning-level note:'), 'English method section must remove the corresponding three explanatory paragraphs');
 check(enHome.includes("works.length===1?'entry':'entries'") && enHome.includes("pairs.length===1?'comparison':'comparisons'"), 'English live search status must use singular nouns for one result');
-check(zhHome.includes('<th data-k="model">模型</th><th data-k="recommendation">个人推荐</th><th>理由</th><th data-k="environment">运行环境</th>'), 'Chinese table must place Personal Recommendation and Reason between Model and Environment');
-check(enHome.includes('<th data-k="model">Model</th><th data-k="recommendation">Personal Pick</th><th>Reason</th><th data-k="environment">Environment</th>'), 'English table must place Personal Pick and Reason between Model and Environment');
+check(zhHome.includes('<th data-k="model">模型</th><th data-k="recommendation">个人推荐</th><th>理由</th><th class="price-head"'), 'Chinese table must place recommendation, reason, and price after Model');
+check(enHome.includes('<th data-k="model">Model</th><th data-k="recommendation">Personal Pick</th><th>Reason</th><th class="price-head"'), 'English table must place recommendation, reason, and price after Model');
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
-  check(page.includes('S.personalRecommendationFor(w)') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
+  check(page.includes('S.tableRows(works,sk,sd,') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
   check(page.includes("w.personal.direction==='up'?'▲':'▽'") && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use triangle symbols instead of thumb emoji');
 }
+
+check(zhHome.includes("0:'T0',1:'T1',2:'T2',3:'T3'"), 'Chinese table must use T0–T3 while preserving other tier labels');
+for (const page of [zhHome,enHome]) {
+  const table = page.slice(page.indexOf('<table id="tbl">'),page.indexOf('</table>',page.indexOf('<table id="tbl">'))+8);
+  check(!/data-k="(?:bytes|lines)"/.test(table), 'Size and Lines columns must be hidden');
+  check((table.match(/<th[ >]/g)||[]).length === 10, 'Revised table must have ten columns');
+  check(table.indexOf('data-price-sort') < table.indexOf('data-k="environment"'), 'Price must appear before Environment');
+  check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
+  check(page.includes('colspan="10"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
+  check(page.includes('button.dataset.priceSort') && page.includes('tbl(searchWorks())'), 'Price sorting must preserve active model search');
+  check(page.includes('2026-09-02') && page.includes('$0.90 / $4.47 / $0.18'), 'Price notes must disclose the saved date and Doubao estimate');
+  for (const match of page.matchAll(/<script>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
+}
+
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
 check(siteSource.includes('No. 1 before September 2026') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
 check(cssSource.includes('.table-personal-rec.is-up{color:var(--good)}') && cssSource.includes('.table-personal-rec.is-down{color:var(--bad)}'), 'Recommendation triangles must use distinct positive and negative colors');
@@ -993,8 +1106,8 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星奖励 3 分') && zhHome.includes('理论最高分为 103') && zhHome.includes('三个证据项的满分贡献各增加 1 分'), 'Chinese scoring rules must explain the 100+3 structure and correctness reallocation');
 check(enHome.includes('100 Base Points + 3 Extra-Moon Bonus') && enHome.includes('the theoretical maximum is 103') && enHome.includes('each evidence item now contributes one additional point'), 'English scoring rules must explain the 100+3 structure and correctness reallocation');
-check(zhHome.includes('id="aAll">41') && enHome.includes('id="aAll">41') && zhHome.includes('id="bAll">35') && enHome.includes('id="bAll">35') && zhHome.includes('id="tAll">76') && enHome.includes('id="tAll">76'), 'Both home pages must publish 41/35 and 76-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 41 件和文档组 35 件') && enHome.includes('prefer the 24 paired results over treating all 41 one-line and 35 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">42') && enHome.includes('id="aAll">42') && zhHome.includes('id="bAll">35') && enHome.includes('id="bAll">35') && zhHome.includes('id="tAll">77') && enHome.includes('id="tAll">77'), 'Both home pages must publish 42/35 and 77-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 42 件和文档组 35 件') && enHome.includes('prefer the 24 paired results over treating all 42 one-line and 35 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('24 组同模型') && enHome.includes('24 same-model') && zhHome.includes('51.27 / 67') && enHome.includes('51.27 / 67') && zhHome.includes('31.90 / 36') && enHome.includes('31.90 / 36'), 'Both home pages must publish the current V3 24-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
@@ -1057,10 +1170,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 3, decline: 8 }), 'Execution outcomes must be 13 / 3 / 8');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [41, 50.79707317073169, 31.136178861788622, 78.4942276422764], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
-  withoutReferences: { a: [40, 50.466999999999985, 31.014583333333338, 77.95658333333331], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
-  withoutTier4: { a: [40, 51.175499999999985, 31.38291666666667, 79.03341666666664], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
-  withoutReferencesOrTier4: { a: [39, 50.84666666666665, 31.26452991452992, 78.49581196581194], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
+  all: { a: [42, 51.18285714285713, 31.25198412698413, 79.0776984126984], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutReferences: { a: [41, 50.87024390243901, 31.136178861788622, 78.56739837398372], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutTier4: { a: [41, 51.56146341463413, 31.495528455284557, 79.61796747967477], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
+  withoutReferencesOrTier4: { a: [40, 51.25049999999999, 31.38291666666667, 79.10841666666664], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -1093,4 +1206,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 96 audited records, 76 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');
+console.log('\nScore validation passed: 97 audited records, 77 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');

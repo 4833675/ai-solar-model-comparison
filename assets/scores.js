@@ -3,6 +3,15 @@
   'use strict';
 
   window.SCORES = {
+    'Opus5(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 21, hasEarthMoon: true, halley: true,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '原生离线 WebGL2，采用 JPL 世纪率与开普勒求解，包含 21 颗卫星、哈雷等 3 颗彗星、行星环、小天体带、Bloom/ACES 与大气，并提供显示、比例、成像及画质控制。'
+    },
     'Fable5.1(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },

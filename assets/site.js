@@ -24,6 +24,7 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+    'Claude Opus 5 (Max)': { direction: 'up', count: 5, zh: '天下第一(天↑)', en: 'No. 1 under heaven (heaven ↑)' },
     'Claude Fable 5.1 (Max)': { direction: 'down', count: 3, zh: '在座的各位都是垃圾', en: 'Everyone here is trash' },
     'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '202609前，天下第一', en: 'No. 1 before September 2026' },
     'Hy 4 Preview (high)': { direction: 'down', count: 5, zh: '绝版测试。已经降智。', en: 'Archived test. The model has since regressed.' },
@@ -61,6 +62,56 @@
     const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
     return value ? Object.assign({ reason: I18N.en ? value.en : value.zh }, value) : null;
   };
+  const PRICE_KEYS = ['priceInput', 'priceOutput', 'priceCache'];
+  const priceFor = work => (window.MODEL_PRICES || {})[
+    recommendationModelKey(work && work.model).replace(/\s+\([^()]*\)$/, '')] || null;
+  function priceCell(work) {
+    const value = priceFor(work);
+    if (!value) return '<span class="table-price table-recommend-empty">—</span>';
+    const notes = I18N.en ? {
+      solReference: 'Pre-promotion long-context reference; current promotional input/output/cache rates at lookup were $8/$30/$0.80. Not a guaranteed future price.',
+      estimated: 'Approximate reference selected by the site author, not a verified official USD quote.',
+      minimaxList: 'Crossed-out list price above 512K, before the advertised permanent 50% discount.',
+      qwenCache: 'Implicit cache hit: $0.25/M. Explicit cache read is separately priced at $0.17/M.',
+    } : {
+      solReference: '促销前长上下文参考价；查询时实际促销读/写/缓存读为 $8/$30/$0.80，不代表承诺恢复的未来价格。',
+      estimated: '站点作者采用的估算参考，非已核实的官方美元报价。',
+      minimaxList: '超过 512K 的划线原价，未计官网标注的永久五折。',
+      qwenCache: '隐式缓存命中 $0.25/M；显式缓存读取另为 $0.17/M。',
+    };
+    const title = (I18N.en ? 'USD / 1M tokens · Input / Output / Cache read · ' : '美元 / 百万 Token · 读 / 写 / 缓存读 · ') +
+      window.MODEL_PRICE_DATE + (value.note ? '\n' + notes[value.note] : '');
+    const text = [value.input, value.output, value.cache].map(number =>
+      (value.note === 'estimated' ? '≈' : '') + number).join(' / ') +
+      (value.note === 'solReference' || value.note === 'minimaxList' ? '*' : '');
+    return value.source
+      ? `<a class="table-price" href="${esc(value.source)}" target="_blank" rel="noopener noreferrer" title="${esc(title)}" aria-label="${esc(work.model + ': ' + text + '. ' + title)}">${text}</a>`
+      : `<span class="table-price" title="${esc(title)}">${text}</span>`;
+  }
+  function tableRows(works, key, direction, locale) {
+    const rows = works.map(work => {
+      const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
+      return Object.assign({}, work, { environment: environmentTag(work), personal,
+        recommendation: personal ? (personal.direction === 'up' ? personal.count : -personal.count) : 0,
+        score: score ? score.total : -1,
+        priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
+    });
+    return rows.sort((a, b) => {
+      const x = a[key], y = b[key];
+      if (PRICE_KEYS.includes(key)) {
+        if (x == null || y == null) return x == null && y == null ? a.model.localeCompare(b.model, locale) : x == null ? 1 : -1;
+        for (const metric of [key, ...PRICE_KEYS.filter(value => value !== key)]) {
+          const difference = (a[metric] - b[metric]) * direction;
+          if (difference) return difference;
+        }
+      } else {
+        const difference = (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), locale)) * direction;
+        if (difference) return difference;
+        if (key === 'score') return scoreOrder(a, b, direction);
+      }
+      return a.tier - b.tier || scoreOrder(a, b);
+    });
+  }
   const MODEL_GAP_DEFS = [
     { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving(Max)V1' },
     { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy4Preview(high)V2-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
@@ -855,7 +906,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, personalRecommendationFor, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, personalRecommendationFor, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
