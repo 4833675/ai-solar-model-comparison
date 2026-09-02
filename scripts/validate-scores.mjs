@@ -868,7 +868,7 @@ check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose th
 const expectedRecommendations = {
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
   'Claude Opus 5 (Ultra)': ['up', 5, '202609前，天下第一'],
-  'Hy 4 Preview (high)': ['up', 3, '出乎意料！'],
+  'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
   'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
   'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
   'GPT-5.6 Luna (Max)': ['down', 1, '别浪费token'],
