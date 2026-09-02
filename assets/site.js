@@ -24,6 +24,7 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+    'Claude Fable 5.1 (Max)': { direction: 'down', count: 3, zh: '在座的各位都是垃圾', en: 'Everyone here is trash' },
     'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '当下绝对天花板', en: 'The absolute ceiling right now' },
     'Hy 4 Preview (high)': { direction: 'up', count: 3, zh: '出乎意料！', en: 'A genuine surprise!' },
     'GPT-5.6 Sol (Ultra)': { direction: 'up', count: 4, zh: '甩手掌柜', en: 'Hands-off delivery' },
@@ -443,12 +444,15 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       interaction: weighted(r.interaction, INTERACTION_WEIGHTS),
     };
     const evidenceBase = Object.values(parts).reduce((sum, value) => sum + value, 0);
-    const manualAdjustment = r.reference ? 0 : w.tier === 2 ? -3 : w.tier === 3 ? -6 : 0;
-    const preCap = Math.max(0, Math.min(103, evidenceBase + manualAdjustment));
+    const scoringBase = r.authorOverride ? r.authorOverride.score : evidenceBase;
+    const authorCorrection = scoringBase - evidenceBase;
+    const manualAdjustment = r.reference ? 0 : w.tier === 0 ? 3 : w.tier === 2 ? -3 : w.tier === 3 ? -6 : 0;
+    const scoreCeiling = w.tier === 0 ? 106 : 103;
+    const preCap = Math.max(0, Math.min(scoreCeiling, scoringBase + manualAdjustment));
     const fatalCap = r.fatal ? FATAL_CAPS[r.fatal] : null;
     const exact = fatalCap == null ? preCap : Math.min(preCap, fatalCap);
     const total = Math.round(exact);
-    return Object.assign({}, r, { parts, effectiveMoons, earthMoonValid, independenceMode, evidenceBase, manualAdjustment, preCap, fatalCap, exact, adjusted: exact, total });
+    return Object.assign({}, r, { parts, effectiveMoons, earthMoonValid, independenceMode, evidenceBase, scoringBase, authorCorrection, manualAdjustment, scoreCeiling, preCap, fatalCap, exact, adjusted: exact, total });
   }
 
   function scoreOrder(a, b, direction = -1) {
@@ -470,13 +474,16 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
     return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
-        <b>${scoreNum(s.total)}<i>/103</i></b>
+        <b>${scoreNum(s.total)}<i>/${s.scoreCeiling}</i></b>
       </div>
-      <p class="score-tip-meta">${capped
+      <p class="score-tip-meta">${s.authorOverride
+        ? t('score.authorOverrideMeta', { raw: s.evidenceBase.toFixed(2), base: scoreNum(s.scoringBase), adjusted: scoreNum(s.preCap) })
+        : capped
         ? t('score.cappedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap), cap: scoreNum(s.fatalCap) })
         : s.manualAdjustment
           ? t('score.adjustedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap) })
           : t('score.baseMeta', { base: scoreNum(s.evidenceBase) })}</p>
+      ${s.authorOverride ? `<div class="score-tip-subtitle">${t('score.rawParts')}</div>` : ''}
       <div class="score-tip-grid">
         ${part(t('score.features'), 'features', 12)}
         ${part(t('score.orbit'), 'orbit', 30)}
@@ -491,7 +498,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <div class="score-tip-detail"><span>${t('score.independenceMode')}</span><b>${t(`score.independence.${s.independenceMode}`)}</b></div>
       <div class="score-tip-subtitle">${t('score.correctnessEvidence')}</div><div class="score-tip-subgrid">${['runtime', 'data', 'integrity'].map(key => `<div><span>${t(`score.correctness.${key}`)}</span><b>${scoreNum(s.correctness[key])}</b></div>`).join('')}</div>
       <div class="score-tip-subtitle">${t('score.interactionEvidence')}</div><div class="score-tip-subgrid">${interaction}</div>
-      <div class="score-tip-adjustment"><span>${t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${scoreNum(s.manualAdjustment)}</b></div>
+      ${s.authorOverride ? `<div class="score-tip-adjustment"><span>${t('score.authorBase')}</span><b>${scoreNum(s.scoringBase)}</b></div><p class="score-tip-note">${esc(I18N.en ? s.authorOverride.en : s.authorOverride.zh)}</p>` : ''}
+      <div class="score-tip-adjustment"><span>${w.tier === 0 ? t('score.tier0Bonus') : t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${s.manualAdjustment > 0 ? '+' : ''}${scoreNum(s.manualAdjustment)}</b></div>
       ${s.fatal ? `<div class="score-tip-fatal"><span>${t('score.fatalLevel', { level: s.fatal })}</span><b>${t('score.fatalCapValue', { cap: scoreNum(s.fatalCap) })}</b></div>
         ${I18N.en ? '' : `<p class="score-tip-fatal-reason"><b>${t('score.fatalReason')}</b>${esc(s.fatalReason || '')}</p>`}` : ''}
       ${s.note ? `<p class="score-tip-note">${esc(scoreNote(w, s.note))}</p>` : ''}`;
@@ -504,12 +512,12 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       aria-label="${esc(t('score.referenceAria', { name: w.model, score: s.total }))}" aria-expanded="false">
       <span aria-hidden="true">⚑</span><b>${t('benchmark.badge')}</b>
     </button>`;
-    const label = t('score.evidenceAria', { name: w.model, score: s.total });
+    const label = t(s.authorOverride ? 'score.authorAria' : 'score.evidenceAria', { name: w.model, score: s.total });
     const capped = s.exact < s.preCap;
     const high = s.total >= 95;
     return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
-      <b>${scoreNum(s.total)}</b>
+      <b>${scoreNum(s.total)}</b>${s.authorOverride ? '<span class="score-author-marker" aria-hidden="true">†</span>' : ''}
     </button>`;
   }
 
@@ -813,7 +821,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
     });
     return {
-      maxima: { coverage: 67, execution: 36, total: 103 },
+      maxima: { coverage: 67, execution: 36, total: 103, final: 106 },
       paired,
       pairedSummary,
       wholeGroup: {
@@ -839,8 +847,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         </div>`;
     };
     const tiers = Object.keys(byTier).sort((a, b) => a - b);
-    const primary = tiers.includes('1') ? tierBlock('1') : '';
-    const rest = tiers.filter(tier => tier !== '1');
+    const primary = tiers.filter(tier => tier === '0' || tier === '1').map(tierBlock).join('');
+    const rest = tiers.filter(tier => tier !== '0' && tier !== '1');
     if (!rest.length) return primary;
     const restCount = rest.reduce((sum, tier) => sum + byTier[tier].length, 0);
     return `${primary}<details class="tier-archive"${expandRest ? ' open' : ''}>
