@@ -30,7 +30,7 @@
     'GPT-5.6 Sol (Ultra)': { direction: 'up', count: 4, zh: '甩手掌柜', en: 'Hands-off delivery' },
     'GPT-5.6 Terra (Ultra)': { direction: 'up', count: 2, zh: '感谢那个男人', en: 'Thanks to that man' },
     'GPT-5.6 Luna (Max)': { direction: 'down', count: 1, zh: '别浪费token', en: 'Do not waste your tokens' },
-    'Claude Fable 5 (Max)': { direction: 'down', count: 2, zh: '性价比太低', en: 'Poor value for money' },
+    'Claude Fable 5 (Max)': { direction: 'down', count: 5, zh: '性价比太低', en: 'Poor value for money' },
     'Kimi K3 (Max)': { direction: 'up', count: 1, zh: '性价比不够', en: 'Not cost-effective enough' },
     'DeepSeek V4 Pro 0813 (Max)': { direction: 'down', count: 1, zh: '梁子要加油啊', en: 'Liangzi needs to step it up' },
     'DeepSeek V4 Flash 0731 (Max)': { direction: 'down', count: 3, zh: '看看GLM Flash？', en: 'Maybe look at GLM Flash?' },

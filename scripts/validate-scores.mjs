@@ -872,7 +872,7 @@ const expectedRecommendations = {
   'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
   'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
   'GPT-5.6 Luna (Max)': ['down', 1, '别浪费token'],
-  'Claude Fable 5 (Max)': ['down', 2, '性价比太低'],
+  'Claude Fable 5 (Max)': ['down', 5, '性价比太低'],
   'Kimi K3 (Max)': ['up', 1, '性价比不够'],
   'DeepSeek V4 Pro 0813 (Max)': ['down', 1, '梁子要加油啊'],
   'DeepSeek V4 Flash 0731 (Max)': ['down', 3, '看看GLM Flash？'],
