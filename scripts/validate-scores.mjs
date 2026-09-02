@@ -861,7 +861,7 @@ check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose th
 check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
 const expectedRecommendations = {
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
-  'Claude Opus 5 (Ultra)': ['up', 5, '当下绝对天花板'],
+  'Claude Opus 5 (Ultra)': ['up', 5, '202609前，天下第一'],
   'Hy 4 Preview (high)': ['up', 3, '出乎意料！'],
   'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
   'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
@@ -978,7 +978,7 @@ for (const page of [zhHome, enHome]) {
   check(page.includes("w.personal.direction==='up'?'▲':'▽'") && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use triangle symbols instead of thumb emoji');
 }
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
-check(siteSource.includes('The absolute ceiling right now') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
+check(siteSource.includes('No. 1 before September 2026') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
 check(cssSource.includes('.table-personal-rec.is-up{color:var(--good)}') && cssSource.includes('.table-personal-rec.is-down{color:var(--bad)}'), 'Recommendation triangles must use distinct positive and negative colors');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
