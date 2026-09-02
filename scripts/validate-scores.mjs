@@ -886,6 +886,10 @@ check(cssSource.includes('--r:0;') && cssSource.includes('html *,html *::before,
 check(cssSource.includes('.nav-model-search-icon{border-radius:50%!important}'), 'The semantic magnifying-glass icon must stay circular despite square UI chrome');
 const zhHome = read('index.html');
 const enHome = read('index.en.html');
+for (const home of [zhHome, enHome]) {
+  check(!/#data|id="data"|id="stats"|statpair|const PAIRS/.test(home), 'The removed quantitative section must have no markup, navigation, or rendering code');
+  check(!home.includes('量化对比') && !home.includes('Turning the Differences into Numbers'), 'The quantitative comparison heading must be removed in both languages');
+}
 for (const lang of ['zh', 'en']) {
   const localized = { window: {}, document: { documentElement: { lang }, readyState: 'loading', addEventListener() {} } };
   vm.createContext(localized);
