@@ -1089,6 +1089,7 @@ for (const page of [zhHome,enHome]) {
   check(!/data-k="(?:bytes|lines)"/.test(table), 'Size and Lines columns must be hidden');
   check((table.match(/<th[ >]/g)||[]).length === 10, 'Revised table must have ten columns');
   check(table.indexOf('data-price-sort') < table.indexOf('data-k="environment"'), 'Price must appear before Environment');
+  check(table.includes(') $/M</th>'), 'Both price headings must visibly include the dollar symbol');
   check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
   check(page.includes('colspan="10"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
   check(page.includes('button.dataset.priceSort') && page.includes('tbl(searchWorks())'), 'Price sorting must preserve active model search');
