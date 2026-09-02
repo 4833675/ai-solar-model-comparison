@@ -8,14 +8,9 @@
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 18, hasEarthMoon: true, halley: true,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
-      authorOverride: {
-        score: 103,
-        zh: '站点作者认为日期与镜头状态问题较小，人工定为满分 103；另以真实比例、四颗彗星、天象与性能功能补证，给予第0梯队 +3。原始证据记录保留，源码未修复。',
-        en: 'The site author considers the date and camera-state issues minor and assigns 103 points, then adds the Tier 0 +3 supplement for true scale, four comets, events, and performance controls. Original audit evidence is retained; the source has not been fixed.'
-      },
-      note: '原生离线 WebGL2 实现真实比例、18 颗卫星、4 颗彗星、大陆轮廓、Bloom/ACES、环影与大气，实跑约 60 FPS，加速推进约 25 个模拟年后持续跟随稳定。原始审查分为 98.97：哈雷的计算近日点为 2061-06-03，却把回归事件标在 07-28；12P 菜单日期与根数相差约 10 天；金星凌日后切换天体并复位仍保留 0.8° FOV。'
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: '原生离线 WebGL2 实现真实比例、18 颗卫星、4 颗彗星、大陆轮廓、Bloom/ACES、环影与大气，提供天象跳转和渲染性能设置。第0梯队额外补证 +3。'
     },
     'Qwen3.8Flash(xhigh)V1': {
       reference: false,

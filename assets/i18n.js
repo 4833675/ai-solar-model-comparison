@@ -62,11 +62,7 @@
       'score.cappedMeta': '证据基础分 {base} · 人工体验修正后 {adjusted} · 致命等级封顶 {cap}',
       'score.adjustedMeta': '证据基础分 {base} · 人工体验修正后 {adjusted}',
       'score.baseMeta': '证据基础分 {base} · 无人工体验扣减',
-      'score.authorOverrideMeta': '审查原始分 {raw} → 作者人工定分 {base} → 补证后 {adjusted}',
-      'score.rawParts': '原始证据分项 · 人工定分前',
-      'score.authorBase': '站点作者人工定分 †',
       'score.tier0Bonus': '第0梯队 · 额外补证',
-      'score.authorAria': '{name}，作者人工修正后 {score} 分，查看原始证据与修正明细',
       'score.features': '功能有效性',
       'score.orbit': '轨道真实度',
       'score.moons': '卫星系统',
@@ -200,11 +196,7 @@
       'score.cappedMeta': 'Evidence base {base} · {adjusted} after human-experience adjustment · Fatal-level cap {cap}',
       'score.adjustedMeta': 'Evidence base {base} · {adjusted} after human-experience adjustment',
       'score.baseMeta': 'Evidence base {base} · No human-experience deduction',
-      'score.authorOverrideMeta': 'Audit score {raw} → Author-assigned {base} → With supplement {adjusted}',
-      'score.rawParts': 'Original evidence · Before author override',
-      'score.authorBase': 'Author-assigned score †',
       'score.tier0Bonus': 'Tier 0 · Supplementary bonus',
-      'score.authorAria': '{name}, author-adjusted score {score}. View original evidence and adjustments.',
       'score.features': 'Feature effectiveness',
       'score.orbit': 'Orbital realism',
       'score.moons': 'Moon system',
@@ -312,7 +304,7 @@
   };
 
   const SCORE_NOTES_EN = {
-    'Fable5.1(Max)V1': 'The offline native-WebGL2 build implements true scale, eighteen moons, four comets, continent outlines, Bloom/ACES, ring shadows, and atmospheres. It held about 60 FPS and stable follow during roughly 25 simulated years of accelerated testing. The original audit score is 98.97: computed Halley perihelion is 2061-06-03 although the event is labeled July 28; the 12P event is about ten days from its elements; selecting another body and resetting after the Venus transit retains the 0.8-degree FOV.',
+    'Fable5.1(Max)V1': 'The offline native-WebGL2 build implements true scale, eighteen moons, four comets, continent outlines, Bloom/ACES, ring shadows, and atmospheres, with event jumps and rendering-performance controls. Tier 0 adds a supplementary +3.',
     'Hy4Preview(high)V1': 'This network-dependent Three.js run includes JPL/Keplerian orbits, eighteen moons, Halley, three ring systems, small-body belts, Bloom/ACES, atmospheres, and continuous follow, sustaining roughly 88–144 FPS. Jupiter lacks a clear Great Red Spot, Saturn close-up is crowded by moon paths and labels, the density panel labels kg/m³ values as g/cm³, and there is no complete view reset.',
     'Hy4Preview(high)V2': 'This network-dependent Three.js run includes JPL/Keplerian orbits, thirteen moons, Halley, ring shadows, several small-body populations, Bloom/ACES, atmospheres, plus complete focus, follow, and reset behavior. Earth’s night side and Saturn’s ring shadow are clear; deductions remain for a dense default star field and orbit overlay, slightly blocky bright stars, and no prominent Great Red Spot on Jupiter.',
     'Hy4Preview(high)V1-TasksAssignedByOpus5': 'This offline native-WebGL2 run covers JPL/Keplerian paths, eight moons, Halley, several small-body populations, Bloom/ACES, atmospheres, and continuous follow at roughly 90–144 FPS. Jupiter’s faint ring becomes far too prominent, Saturn’s rings break into hard black-and-white bands with bright cone artifacts, the Great Red Spot is unclear, and there is no complete view reset.',

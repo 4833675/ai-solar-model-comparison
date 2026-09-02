@@ -219,12 +219,12 @@ const EXPECTED_EXACT = {
   "Sonnet5Ultra-TasksAssignedByOpus5": 98.466666666667,
 };
 
-// Audit-authored field oracle. Order:
+// Current scoring-input field oracle. Order:
 // reference | featureMap(5) | orbitModel(5) | orbitRuntime(2) | moons | Earth Moon | Halley |
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
-  'Fable5.1(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|5|4|5|-|1|1|0.5|1|0.5|-|-',
+  'Fable5.1(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|5|5|5|-|1|1|1|1|1|-|-',
   'Hy4Preview(high)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|5|4|4.5|7|1|1|1|1|0.5|-|-',
   'Hy4Preview(high)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|5|4|5|7.5|1|1|1|1|1|-|-',
   'Hy4Preview(high)V1-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|3.5|5.5|1|1|1|1|0.5|-|-',
@@ -399,18 +399,21 @@ const fable51Score = SITE.scoreFor(fable51);
 check(fable51?.group === 'A' && fable51?.tier === 0 && fable51?.pair === null && fable51?.model === 'Claude Fable 5.1 (Max)', 'Claude Fable 5.1 must be an unpaired Tier 0 one-line work');
 check(fable51.bytes === 156068 && fable51.lines === 1373 && fable51.tech === 'WebGL2' && fable51.net.length === 0 && fable51.msaa && !fable51.needsFloat, 'Claude Fable 5.1 metadata must match the unchanged audited file');
 check(SITE.environmentTag(fable51) === 'in Claude Code' && fs.existsSync(new URL(`../${fable51.shot}`, import.meta.url)), 'Claude Fable 5.1 must expose its environment and real screenshot');
-close(fable51Score.evidenceBase, 98.96666666666667, 'Claude Fable 5.1 preserved audit score');
-check(fable51Score.scoringBase === 103 && fable51Score.manualAdjustment === 3 && fable51Score.total === 106 && !fable51Score.reference, 'Claude Fable 5.1 must show author-assigned 103 plus Tier 0 supplement 3 without benchmark status');
-check(SITE.scoreCell(fable51).includes('106') && SITE.scoreCell(fable51).includes('score-author-marker') && !SITE.scoreCell(fable51).includes('⚑'), 'Claude Fable 5.1 must expose its manually corrected number, not a benchmark label');
-check(SITE.scoreTipHtml(fable51, fable51Score).includes('98.97') && SITE.scoreTipHtml(fable51, fable51Score).includes('106<i>/106</i>') && SITE.scoreTipHtml(fable51, fable51Score).includes('>+3<'), 'The Tier 0 tooltip must preserve audit evidence and display the supplementary bonus');
+close(fable51Score.evidenceBase, 103, 'Claude Fable 5.1 full base score');
+for (const [part, maximum] of Object.entries({ features: 12, orbit: 30, moons: 12, moonBonus: 3, independence: 7, halley: 3, correctness: 23, interaction: 13 })) {
+  close(fable51Score.parts[part], maximum, `Claude Fable 5.1 full ${part} score`);
+}
+check(fable51Score.manualAdjustment === 3 && fable51Score.total === 106 && !fable51Score.reference, 'Claude Fable 5.1 must show full base 103 plus Tier 0 supplement 3 without benchmark status');
+check(SITE.scoreCell(fable51).includes('106') && !SITE.scoreCell(fable51).includes('†') && !SITE.scoreCell(fable51).includes('⚑'), 'Claude Fable 5.1 must show an ordinary numeric score without extra markers');
+check(!SITE.scoreTipHtml(fable51, fable51Score).includes('98.97') && SITE.scoreTipHtml(fable51, fable51Score).includes('106<i>/106</i>') && SITE.scoreTipHtml(fable51, fable51Score).includes('>+3<'), 'The Tier 0 tooltip must show only the current full score and supplementary bonus');
 for (const [fatal, cap] of [['L1', 25], ['L2', 60]]) {
-  SCORES.testAuthorCap = { ...SCORES[fable51.id], fatal };
-  check(SITE.scoreFor({ ...fable51, id: 'testAuthorCap' }).total === cap, 'Author override and Tier 0 bonus must not bypass fatal caps');
-  delete SCORES.testAuthorCap;
+  SCORES.testTier0Cap = { ...SCORES[fable51.id], fatal };
+  check(SITE.scoreFor({ ...fable51, id: 'testTier0Cap' }).total === cap, 'Tier 0 bonus must not bypass fatal caps');
+  delete SCORES.testTier0Cap;
 }
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
-const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'authorOverride'];
+const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
 const expectedMoonAdjustments = {
   'GLM5.3(Max)V1': { moonQuality: .5 },
   'Grok4.6(xhigh)V1': { moonQuality: .5 },
@@ -457,12 +460,6 @@ for (const work of WORKS) {
   check((score.earthMoonValid ?? score.hasEarthMoon) === (expectedMoonAdjustment.earthMoonValid ?? score.hasEarthMoon), `${id}: Earth Moon validity evidence drift`);
   check(typeof score.halley === 'boolean', `${id}.halley must be boolean`);
   if (score.visualBase !== null) finiteRange(score.visualBase, 0, 10, `${id}.visualBase legacy audit value`);
-  if (score.authorOverride) {
-    exactKeys(score.authorOverride, ['score', 'zh', 'en'], `${id}.authorOverride`);
-    finiteRange(score.authorOverride.score, 0, 103, `${id}.authorOverride.score`);
-    check(id === 'Fable5.1(Max)V1' && score.authorOverride.score === 103, `${id}: unapproved author score override`);
-    check(score.authorOverride.zh.length > 20 && score.authorOverride.en.length > 20, `${id}: author override requires bilingual attribution`);
-  }
   allowed(score.fatal, [null, 'L1', 'L2'], `${id}.fatal`);
   check(typeof score.note === 'string' && /[\u3400-\u9fff]/u.test(score.note), `${id}.note must be concise Chinese text`);
   if (score.fatal) check(typeof score.fatalReason === 'string' && score.fatalReason.length > 5, `${id}.fatalReason required`);
@@ -476,8 +473,6 @@ for (const work of WORKS) {
   const expectedAdjustment = score.reference ? 0 : work.tier === 0 ? 3 : work.tier === 2 ? -3 : work.tier === 3 ? -6 : 0;
   close(computed.manualAdjustment, expectedAdjustment, `${id}.human-experience tier adjustment`);
   finiteRange(computed.total, 0, work.tier === 0 ? 106 : 103, `${id}.total`);
-  close(computed.scoringBase, score.authorOverride?.score ?? computed.evidenceBase, `${id}.scoringBase`);
-  close(computed.authorCorrection, computed.scoringBase - computed.evidenceBase, `${id}.authorCorrection`);
   close(computed.exact, EXPECTED_EXACT[id], `${id}.exact oracle`);
   check(computed.total === Math.round(EXPECTED_EXACT[id]), `${id}.total oracle: expected ${Math.round(EXPECTED_EXACT[id])}, got ${computed.total}`);
 }
@@ -831,7 +826,7 @@ check(!source.includes('低于 Sol。'), 'Chinese score note still uses bare Sol
 const siteSource = read('assets/site.js');
 const cssSource = read('assets/site.css');
 check(siteSource.includes("w.tier === 2 ? -3 : w.tier === 3 ? -6"), 'Scoring formula must use Tier 2 −3 and Tier 3 −6');
-check(siteSource.includes("* (23 / 15)") && siteSource.includes("w.tier === 0 ? 106 : 103") && siteSource.includes("Math.min(scoreCeiling, scoringBase + manualAdjustment)"), 'Correctness must convert to 23 points, with ordinary ceiling 103 and Tier 0 ceiling 106');
+check(siteSource.includes("* (23 / 15)") && siteSource.includes("w.tier === 0 ? 106 : 103") && siteSource.includes("Math.min(scoreCeiling, evidenceBase + manualAdjustment)"), 'Correctness must convert to 23 points, with ordinary ceiling 103 and Tier 0 ceiling 106');
 check(siteSource.includes("* 2.4") && siteSource.includes("geometry: 4, kepler: 6, elements: 5, orientation: 4, epoch: 4"), 'V3 feature and 30-point orbit weights must remain explicit');
 check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effectiveMoons - 8") && siteSource.includes("* .75"), 'V3 moon baseline and extra-moon bonus must remain explicit');
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
@@ -847,6 +842,17 @@ check(cssSource.includes('--r:0;') && cssSource.includes('html *,html *::before,
 check(cssSource.includes('.nav-model-search-icon{border-radius:50%!important}'), 'The semantic magnifying-glass icon must stay circular despite square UI chrome');
 const zhHome = read('index.html');
 const enHome = read('index.en.html');
+for (const lang of ['zh', 'en']) {
+  const localized = { window: {}, document: { documentElement: { lang }, readyState: 'loading', addEventListener() {} } };
+  vm.createContext(localized);
+  for (const file of ['assets/data.js', 'assets/scores.js', 'assets/i18n.js', 'assets/site.js']) vm.runInContext(read(file), localized, { filename: file });
+  const localizedSite = localized.window.SITE;
+  const work = localizedSite.byId('Fable5.1(Max)V1');
+  const tip = localizedSite.scoreTipHtml(work, localizedSite.scoreFor(work));
+  const expectedMeta = lang === 'zh' ? '证据基础分 103 · 人工体验修正后 106' : 'Evidence base 103 · 106 after human-experience adjustment';
+  check(tip.includes(expectedMeta), `${lang}: Fable 5.1 must use the standard 103-to-106 scoring summary`);
+  check(!/98\.97|†|作者|Author|author|原始审查|审查原始/.test(tip), `${lang}: Fable 5.1 must not render superseded score explanations`);
+}
 check(enHome.includes("0:'Tier 0'") && i18nSource.includes("'tier.0': 'Tier 0'") && cssSource.includes('.tier-cell-0') && cssSource.includes('.tier.tier-0 .tier-hd'), 'Tier 0 must have an English table label, localized gallery label, and distinct color');
 check(zhHome.includes('<section id="glossary" class="glossary" hidden>') && enHome.includes('<section id="glossary" class="glossary" hidden>'), 'Both glossary sections must stay in source but remain hidden');
 check(zhHome.includes('<h2>关键术语说明</h2>') && enHome.includes('<h2>Key Terms</h2>') && cssSource.includes('.glossary[hidden]{display:none!important}'), 'Hidden glossary content must be preserved and explicitly suppressed');
@@ -1051,10 +1057,10 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({ improve: 13, tie: 3, decline: 8 }), 'Execution outcomes must be 13 / 3 / 8');
 
 const EXPECTED_WHOLE_GROUP = {
-  all: { a: [41, 50.79707317073169, 31.037804878048785, 78.4942276422764], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
-  withoutReferences: { a: [40, 50.466999999999985, 30.913750000000004, 77.95658333333331], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
-  withoutTier4: { a: [40, 51.175499999999985, 31.28208333333334, 79.03341666666664], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
-  withoutReferencesOrTier4: { a: [39, 50.84666666666665, 31.161111111111115, 78.49581196581194], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
+  all: { a: [41, 50.79707317073169, 31.136178861788622, 78.4942276422764], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutReferences: { a: [40, 50.466999999999985, 31.014583333333338, 77.95658333333331], b: [35, 61.604571428571425, 30.47809523809524, 85.32304761904761] },
+  withoutTier4: { a: [40, 51.175499999999985, 31.38291666666667, 79.03341666666664], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
+  withoutReferencesOrTier4: { a: [39, 50.84666666666665, 31.26452991452992, 78.49581196581194], b: [32, 62.36124999999999, 31.997916666666665, 89.88458333333332] },
 };
 for (const [label, groups] of Object.entries(EXPECTED_WHOLE_GROUP)) {
   for (const side of ['a', 'b']) {
@@ -1087,4 +1093,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 96 audited records, 76 visible works, V3 fields/formula, canonical metadata, author override, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');
+console.log('\nScore validation passed: 96 audited records, 76 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');
