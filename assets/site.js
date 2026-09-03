@@ -26,7 +26,7 @@
   const PERSONAL_RECOMMENDATIONS = {
     'Claude Opus 5 (Max)': { direction: 'up', count: 5, zh: '天下第一(天↑)', en: 'No. 1 under heaven (heaven ↑)' },
     'Claude Fable 5.1 (Max)': { direction: 'down', count: 3, zh: '在座的各位都是垃圾', en: 'Everyone here is trash' },
-    'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '202609前，天下第一', en: 'No. 1 before September 2026' },
+    'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '又快、又稳、又贵', en: 'Fast, reliable, and expensive' },
     'Hy 4 Preview (high)': { direction: 'down', count: 5, zh: '绝版测试。已经降智。', en: 'Archived test. The model has since regressed.' },
     'GPT-5.6 Sol (Ultra)': { direction: 'up', count: 4, zh: '甩手掌柜', en: 'Hands-off delivery' },
     'GPT-5.6 Terra (Ultra)': { direction: 'up', count: 2, zh: '感谢那个男人', en: 'Thanks to that man' },

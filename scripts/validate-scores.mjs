@@ -915,12 +915,14 @@ for (const lang of ['zh', 'en']) {
       setAttribute(key, value) { this.attributes[key] = value; },
       addEventListener(key, listener) { this.listeners[key] = listener; }, focus() {} };
   }
-  const headers = ['model','recommendation','environment','group','tier','score','tech'].map(key => node({ k: key }));
+  const headers = ['model','recommendation','environment','tier','score','tech'].map(key => node({ k: key }));
   const priceHeader = node({}, ['price-head']);
   const buttons = ['priceInput','priceOutput','priceCache'].map(key => node({ priceSort: key }));
+  const tabs = ['A','B'].map(group => node({ tableGroup: group }));
   const one = selector => { if (!nodes.has(selector)) nodes.set(selector, node()); return nodes.get(selector); };
   const many = selector => selector === '#tbl th' ? [...headers, priceHeader]
-    : selector === '#tbl th[data-k]' ? headers : selector === '#tbl [data-price-sort]' ? buttons : [];
+    : selector === '#tbl th[data-k]' ? headers : selector === '#tbl [data-price-sort]' ? buttons
+    : selector === '[data-table-group]' ? tabs : [];
   const sandbox = { window: {}, document: { documentElement: { lang }, readyState: 'loading',
     addEventListener() {}, querySelector: one, querySelectorAll: many } };
   vm.createContext(sandbox);
@@ -935,26 +937,46 @@ for (const lang of ['zh', 'en']) {
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
   const countRows = () => (body().match(/<tr>/g) || []).length;
-  check(countRows() === 77 && body().includes('Claude Opus 5 (Max)'), lang + ': home must render 77 works and the new Opus');
+  check(countRows() === 42 && body().includes('Claude Opus 5 (Max)'), lang + ': table must default to the 42 one-line works');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
-  for (const button of buttons) {
-    for (const direction of [1,-1]) {
-      button.onclick();
-      check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
-      check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
-      const first = localSite.tableRows(localSite.visibleWorks(),button.dataset.priceSort,direction,lang)[0];
-      check(body().startsWith('<tr>\n      <td>' + localSite.esc(first.model) + '</td>'), lang + ': handler must actually reorder table rows');
+  for (const [index,group] of ['A','B'].entries()) {
+    tabs[index].listeners.click();
+    const works = localSite.visibleWorks().filter(work => work.group === group);
+    check(countRows() === works.length, lang + ': tab must show only its own group');
+    check(tabs[index].attributes['aria-selected'] === 'true' && tabs[index].tabIndex === 0 && tabs[1-index].tabIndex === -1, lang + ': selected tab must expose accessible state');
+    check(one('#tablePanel').attributes['aria-labelledby'] === 'tableTab'+group, lang + ': panel must be named by the selected tab');
+    for (const button of buttons) {
+      for (const direction of [1,-1]) {
+        button.onclick();
+        check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
+        check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
+        const first = localSite.tableRows(works,button.dataset.priceSort,direction,lang)[0];
+        check(body().startsWith('<tr>\n      <td>' + localSite.esc(first.model) + '</td>'), lang + ': sort must reorder only the selected group');
+      }
     }
   }
+  for (const [from,key,to] of [[1,'Home',0],[0,'End',1],[1,'ArrowRight',0],[0,'ArrowLeft',1]]) {
+    let prevented=false;
+    tabs[from].listeners.keydown({key,preventDefault(){prevented=true;}});
+    check(prevented && tabs[to].attributes['aria-selected'] === 'true', lang + ': tabs must support '+key);
+  }
+  tabs[0].listeners.click();
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
-  check(countRows() === 3, lang + ': model search must filter while retaining price sorting');
+  check(countRows() === 2, lang + ': model search must filter the active one-line tab');
+  check(one('#tableCountA').textContent === '2 / 42' && one('#tableCountB').textContent === '1 / 35', lang + ': both tabs must show filtered and total counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
+  tabs[1].listeners.click();
+  check(countRows() === 1 && body().includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
+  check(buttons[2].attributes['aria-pressed'] === 'true' && buttons[2].dataset.direction === 'desc', lang + ': switching tabs must retain price direction');
+  check(one('#gridA').innerHTML.includes('Opus5(Max)V1') && one('#gridB').innerHTML.includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': tab switching must not filter the galleries');
   one('#modelSearchInput').value = 'no-such-model';
   one('#modelSearchInput').listeners.input();
-  check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
+  check(body().includes('colspan="9"'), lang + ': empty state must span all nine columns');
   one('#modelSearchClear').listeners.click();
-  check(countRows() === 77, lang + ': clearing search must restore all works');
+  check(countRows() === 35, lang + ': clearing search must preserve the selected detailed-spec tab');
+  tabs[0].listeners.click();
+  check(countRows() === 42, lang + ': one-line tab must restore its 42 entries');
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('103') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current full score');
@@ -970,7 +992,7 @@ check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose th
 const expectedRecommendations = {
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
-  'Claude Opus 5 (Ultra)': ['up', 5, '202609前，天下第一'],
+  'Claude Opus 5 (Ultra)': ['up', 5, '又快、又稳、又贵'],
   'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
   'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
   'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
@@ -1062,10 +1084,11 @@ for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   const heroEnd = page.indexOf('</header>', heroStart);
   check(searchStart > navStart && searchStart < navEnd, `${language} model search must live inside the sticky navigation`);
   check(!(searchStart > heroStart && searchStart < heroEnd), `${language} hero must no longer contain the model search`);
-  const caveatStart = page.indexOf('class="effort-caveat"');
+  const rulesStart = page.indexOf('class="score-rules"');
+  check(!page.includes('effort-caveat') && !page.includes('ULTRA ≠ MAX'), `${language} must remove the Ultra notice box`);
   const modelGapStart = page.indexOf('id="modelGapComparisons"');
   const tableStart = page.indexOf('class="tablewrap"');
-  check(modelGapStart > caveatStart && modelGapStart < tableStart && page.includes('id="modelGapList"'), `${language} model-gap section must sit between the Ultra notice and the table`);
+  check(modelGapStart > rulesStart && modelGapStart < tableStart && page.includes('id="modelGapList"'), `${language} model-gap section must sit between the score rules and the table`);
   check(page.includes('S.modelGapComparisons') && page.includes('S.modelGapMatches'), `${language} model-gap section must participate in global search filtering`);
   check(page.indexOf('<section id="table"') < page.indexOf('<section id="pairs"'), `${language} total table must appear before the same-model comparison`);
   const effortStart = page.indexOf('id="solEffortComparison"');
@@ -1083,26 +1106,27 @@ check(enHome.includes('<th data-k="model">Model</th><th data-k="recommendation">
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
-  check(page.includes('S.tableRows(works,sk,sd,') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
+  check(page.includes('S.tableRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
   check(page.includes("w.personal.direction==='up'?'▲':'▽'") && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use triangle symbols instead of thumb emoji');
 }
 
 check(zhHome.includes("0:'T0',1:'T1',2:'T2',3:'T3'"), 'Chinese table must use T0–T3 while preserving other tier labels');
 for (const page of [zhHome,enHome]) {
   const table = page.slice(page.indexOf('<table id="tbl">'),page.indexOf('</table>',page.indexOf('<table id="tbl">'))+8);
-  check(!/data-k="(?:bytes|lines)"/.test(table), 'Size and Lines columns must be hidden');
-  check((table.match(/<th[ >]/g)||[]).length === 10, 'Revised table must have ten columns');
+  check(!/data-k="(?:bytes|lines|group)"/.test(table), 'Size, Lines, and Brief columns must be hidden');
+  check((page.match(/role="tab"/g)||[]).length === 2 && page.includes('role="tablist"') && page.includes('role="tabpanel"'), 'Both pages must expose two prompt-format tabs and their table panel');
+  check((table.match(/<th[ >]/g)||[]).length === 9, 'Revised table must have nine columns');
   check(table.indexOf('data-price-sort') < table.indexOf('data-k="environment"'), 'Price must appear before Environment');
   check(table.includes(') $/M</th>'), 'Both price headings must visibly include the dollar symbol');
   check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
-  check(page.includes('colspan="10"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
+  check(page.includes('colspan="9"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
   check(page.includes('button.dataset.priceSort') && page.includes('tbl(searchWorks())'), 'Price sorting must preserve active model search');
   check(page.includes('2026-09-02') && page.includes('$0.90 / $4.47 / $0.18'), 'Price notes must disclose the saved date and Doubao estimate');
   for (const match of page.matchAll(/<script>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 }
 
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
-check(siteSource.includes('No. 1 before September 2026') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
+check(siteSource.includes('Fast, reliable, and expensive') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
 check(cssSource.includes('.table-personal-rec.is-up{color:var(--good)}') && cssSource.includes('.table-personal-rec.is-down{color:var(--bad)}'), 'Recommendation triangles must use distinct positive and negative colors');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
