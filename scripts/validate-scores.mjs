@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const read = path => fs.readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+const asset = path => new URL(`../${path}`, import.meta.url);
 const context = { window: {} };
 context.window.window = context.window;
 vm.createContext(context);
@@ -951,7 +952,7 @@ for (const lang of ['zh', 'en']) {
         check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
         check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
         const first = localSite.tableRows(works,button.dataset.priceSort,direction,lang)[0];
-        check(body().startsWith('<tr>\n      <td>' + localSite.esc(first.model) + '</td>'), lang + ': sort must reorder only the selected group');
+        check(body().startsWith('<tr>\n      <td class="table-model-cell">' + localSite.modelCell(first) + '</td>'), lang + ': sort must reorder only the selected group');
       }
     }
   }
@@ -989,6 +990,24 @@ const visibleNamingSurface = [
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
 check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
+check(typeof SITE.modelLogoFor === 'function' && typeof SITE.modelCell === 'function', 'SITE must expose shared model-logo rendering');
+const expectedModelLogos = {
+  'Claude Opus 5 (Ultra)': 'anthropic', 'Claude Fable 5 (Max)': 'anthropic',
+  'GPT-5.6 Sol (Max)': 'openai', 'Gemini 3.7 Flash (high)': 'gemini',
+  'Kimi K3 (Max)': 'kimi', 'DeepSeek V4 Pro 0813 (Max)': 'deepseek',
+  'Qwen 3.8 Max (Max)': 'qwen', 'GLM 5.3 (Max)': 'glm', 'Hy 4 Preview (high)': 'hy',
+  'Grok 4.6 (xHigh)': 'grok', 'Doubao Seed Evolving (Max)': 'doubao',
+  'LongCat 2.0 (high)': 'longcat', 'MiniMax M3 (high)': 'minimax',
+};
+for (const [model, logo] of Object.entries(expectedModelLogos)) {
+  const work = { model };
+  const path = `assets/logos/${logo}.png`;
+  check(SITE.modelLogoFor(work) === path, `${model}: wrong company logo mapping`);
+  check(fs.existsSync(asset(path)) && fs.statSync(asset(path)).size > 100, `${model}: normalized company logo is missing`);
+  const cell = SITE.modelCell(work);
+  check(cell.includes(`src="${path}"`) && cell.includes(`>${model}</span>`), `${model}: table cell must combine logo and model name`);
+}
+check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === null, 'MiMo must not be assigned the unrelated Meta logo');
 const expectedRecommendations = {
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],

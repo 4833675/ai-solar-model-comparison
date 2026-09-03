@@ -62,6 +62,31 @@
     const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
     return value ? Object.assign({ reason: I18N.en ? value.en : value.zh }, value) : null;
   };
+  const MODEL_LOGOS = [
+    [/^(?:Claude\b|Claude Fable\b)/, 'anthropic'],
+    [/^GPT-/, 'openai'],
+    [/^Gemini\b/, 'gemini'],
+    [/^Kimi\b/, 'kimi'],
+    [/^DeepSeek\b/, 'deepseek'],
+    [/^Qwen\b/, 'qwen'],
+    [/^GLM\b/, 'glm'],
+    [/^Hy\b/, 'hy'],
+    [/^Grok\b/, 'grok'],
+    [/^Doubao\b/, 'doubao'],
+    [/^LongCat\b/, 'longcat'],
+    [/^MiniMax\b/, 'minimax'],
+  ];
+  const modelLogoFor = work => {
+    const model = String(work && work.model || '');
+    const match = MODEL_LOGOS.find(([pattern]) => pattern.test(model));
+    return match ? `assets/logos/${match[1]}.png` : null;
+  };
+  const modelCell = work => {
+    const logo = modelLogoFor(work);
+    return `<span class="table-model">${logo
+      ? `<span class="table-model-logo"><img src="${logo}" alt="" width="20" height="20" loading="lazy" decoding="async" aria-hidden="true"></span>`
+      : ''}<span>${esc(work && work.model)}</span></span>`;
+  };
   const PRICE_KEYS = ['priceInput', 'priceOutput', 'priceCache'];
   const priceFor = work => (window.MODEL_PRICES || {})[
     recommendationModelKey(work && work.model).replace(/\s+\([^()]*\)$/, '')] || null;
@@ -906,7 +931,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, personalRecommendationFor, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, personalRecommendationFor, modelLogoFor, modelCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
