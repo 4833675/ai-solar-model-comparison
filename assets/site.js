@@ -75,6 +75,7 @@
     [/^Doubao\b/, 'doubao'],
     [/^LongCat\b/, 'longcat'],
     [/^MiniMax\b/, 'minimax'],
+    [/^MiMo\b/, 'mi'],
   ];
   const modelLogoFor = work => {
     const model = String(work && work.model || '');

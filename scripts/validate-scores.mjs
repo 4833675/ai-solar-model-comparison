@@ -998,6 +998,7 @@ const expectedModelLogos = {
   'Qwen 3.8 Max (Max)': 'qwen', 'GLM 5.3 (Max)': 'glm', 'Hy 4 Preview (high)': 'hy',
   'Grok 4.6 (xHigh)': 'grok', 'Doubao Seed Evolving (Max)': 'doubao',
   'LongCat 2.0 (high)': 'longcat', 'MiniMax M3 (high)': 'minimax',
+  'MiMo 2.5 Pro (high)': 'mi',
 };
 for (const [model, logo] of Object.entries(expectedModelLogos)) {
   const work = { model };
@@ -1007,7 +1008,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
   const cell = SITE.modelCell(work);
   check(cell.includes(`src="${path}"`) && cell.includes(`>${model}</span>`), `${model}: table cell must combine logo and model name`);
 }
-check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === null, 'MiMo must not be assigned the unrelated Meta logo');
+check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
