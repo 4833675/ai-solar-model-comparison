@@ -56,6 +56,8 @@
     'Doubao Seed Evolving (Max)': { direction: 'down', count: 1, zh: '给你一个最直白的', en: 'Here is the most straightforward one' },
     'Gemini 3.1 Pro (high)': { direction: 'down', count: 3, zh: '昔日荣光', en: 'Former glory' },
     'Claude Opus 4.8 (Max)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
+    'MuseSpark 1.3 Contributor (xHigh)': { direction: 'up', count: 1, zh: '四舍五入约等于不要钱', en: 'Practically free, if you round it off' },
+    'Gemini 3.8 Flash (high)': { direction: 'up', count: 1, zh: '更新了版本号错误的问题', en: 'Fixed the version-number mistake' },
   };
   const recommendationModelKey = model => String(model || '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
@@ -76,6 +78,7 @@
     [/^LongCat\b/, 'longcat'],
     [/^MiniMax\b/, 'minimax'],
     [/^MiMo\b/, 'mi'],
+    [/^MuseSpark\b/, 'meta'],
   ];
   const modelLogoFor = work => {
     const model = String(work && work.model || '');
@@ -95,11 +98,13 @@
     const value = priceFor(work);
     if (!value) return '<span class="table-price table-recommend-empty">—</span>';
     const notes = I18N.en ? {
+      openrouter: 'OpenRouter price reference supplied by the site author, not a Meta-direct API list price.',
       solReference: 'Pre-promotion long-context reference; current promotional input/output/cache rates at lookup were $8/$30/$0.80. Not a guaranteed future price.',
       estimated: 'Approximate reference selected by the site author, not a verified official USD quote.',
       minimaxList: 'Crossed-out list price above 512K, before the advertised permanent 50% discount.',
       qwenCache: 'Implicit cache hit: $0.25/M. Explicit cache read is separately priced at $0.17/M.',
     } : {
+      openrouter: '站点作者提供的 OpenRouter 参考价，非 Meta 直连 API 官方报价。',
       solReference: '促销前长上下文参考价；查询时实际促销读/写/缓存读为 $8/$30/$0.80，不代表承诺恢复的未来价格。',
       estimated: '站点作者采用的估算参考，非已核实的官方美元报价。',
       minimaxList: '超过 512K 的划线原价，未计官网标注的永久五折。',

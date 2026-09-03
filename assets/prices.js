@@ -1,4 +1,4 @@
-/* Saved USD / 1M-token reference, 2026-09-02: peak hours, highest context band,
+/* Saved USD / 1M-token reference, 2026-09-03: peak hours, highest context band,
    standard service, before promotions. Cache means read/hit, not write/storage. */
 (function () {
   'use strict';
@@ -15,6 +15,7 @@
     longcat: 'https://longcat.ai/platform/docs/Pricing/LongCat-2.0.html',
     mimo: 'https://mimo.mi.com/models/mimo-v2.5-pro',
     minimax: 'https://platform.minimax.io/docs/guides/pricing-paygo',
+    openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
     ['Claude Fable 5.1', 10, 50, .25, 'claude'],
@@ -29,6 +30,8 @@
     ['Gemini 3.1 Pro', 4, 18, .4, 'google'],
     ['Gemini 3.6 Flash', 1.5, 7.5, .15, 'google'],
     ['Gemini 3.7 Flash', 1.5, 7.5, .15, 'google'],
+    ['Gemini 3.8 Flash', 1.5, 7.5, .15, 'google'],
+    ['MuseSpark 1.3 Contributor', .10, .20, .002, 'openrouter', 'openrouter'],
     ['Grok 4.6', 4, 12, 1, 'grok'],
     ['Hy 4 Preview', .834, 2.501, .042, 'hy'],
     ['Kimi K3', 3, 15, .3, 'kimi'],
@@ -43,7 +46,7 @@
     ['MiMo 2.5 Pro', .435, .87, .0036, 'mimo'],
     ['MiniMax M3', 1.2, 4.8, .24, 'minimax', 'minimaxList'],
   ];
-  window.MODEL_PRICE_DATE = '2026-09-02';
+  window.MODEL_PRICE_DATE = '2026-09-03';
   window.MODEL_PRICES = Object.fromEntries(entries.map(([model, input, output, cache, source, note]) =>
     [model, Object.freeze({ input, output, cache, source: sources[source] || null, note: note || null })]));
 })();

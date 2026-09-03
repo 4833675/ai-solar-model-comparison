@@ -890,6 +890,243 @@
       correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 8.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: '完整的源码、运行覆盖与稳定控制；仅木星略发白且大红斑对比偏低。'
+    },
+    'MuseSpark1.3Contributor(xhigh)V1': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 12,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 4,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "联网 Three.js 实现 JPL/开普勒轨道、十二颗名义卫星、哈雷与完整后期。月球以外的卫星采用随意倾角及非闭合起伏，卫星系统按部分有效计；金星自转周期误用 2802 小时。支持选取与跟随，但缩放可进入大型天体，且没有完整重置。",
+      moonQuality: 0.5
+    },
+    'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 3.5,
+        integrity: 4.5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 1,
+        follow: 0,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线 WebGL2 覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环影及后期。实跑确认聚焦过渡结束后镜头目标冻结，地球继续移动；暂停冻结日期却未停止自转。信息卡仅在选取时刷新，首次地球偏心率显示 0.00000；缩放安全边界与完整重置也不足。"
+    },
+    'Gemini3.8Flash(high)V1': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 0,
+        elements: 0.5,
+        orientation: 0,
+        epoch: 0
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 1,
+      hasEarthMoon: true,
+      halley: false,
+      correctness: {
+        runtime: 5,
+        data: 4,
+        integrity: 4
+      },
+      visualBase: null,
+      interaction: {
+        drag: 0.5,
+        zoom: 0.5,
+        focus: 0.5,
+        follow: 0.5,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "联网 Three.js 的环、小行星带、后期和月球可运行；公转用匀速角代入极坐标椭圆，没有开普勒求解、完整轨道定向或历元，也没有哈雷。选取木星后只转动视线，不移动镜头拉近；跟随也只更新目标，不锁定相对距离。按下即拾取，月球按帧推进，巡航按钮还会被选取逻辑关闭。"
+    },
+    'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 4.5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 0.5,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线 WebGL2 的行星 JPL/开普勒轨道、环影、后期和聚焦可运行。但月球局部轨道先按世界坐标构造后又做黄道映射，实际倾角约 84.855° 而非 5.145°，按无效地球月球扣分；海卫一同时使用负周期与大于 90° 的倾角，方向被重复翻转。拖拽误选、缩放穿入和不完整重置仍存在。",
+      earthMoonValid: false
+    },
+    'Gemini3.8Flash(high)V2': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 0.5
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 4.5,
+        integrity: 4.5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 0.5,
+        follow: 0.5,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "联网 Three.js 具备完整定向的开普勒轨道、八颗名义卫星和哈雷；但地球 M0 错用平均黄经，历元相位约偏移 103°。月球距离仅约 0.046 场景单位，远小于地球半径 3，埋在地球内部，按无效月球扣分。只能通过目录聚焦，持续跟随未锁定镜头距离，卫星开关漏掉月球，重置也只恢复时间。",
+      earthMoonValid: false
+    },
+    'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 0.4,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 3.5,
+        integrity: 4.5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 0.5,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线 WebGL2 覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环系、大气及 ACES。HDR Bloom 已移除，只有眩光近似；月球到地球的距离却显示为母行星日心距约 1 AU，海卫一也重复翻转逆行方向。聚焦可跟随，但缺少拖拽误点抑制、安全缩放和完整状态重置。"
     }
   };
 })();

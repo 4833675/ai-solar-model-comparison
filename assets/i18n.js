@@ -370,6 +370,12 @@
     'Hy3': 'Surfaces, the red spot, and the procedural Saturn ring are comparatively rich. Selection does not pull the camera closer, but subsequent body displacement is followed continuously. Orbital realism remains low, it requires a network connection, and real ring shadows are absent.',
     'MiniMax_M3_thinking-1': 'The outer planets visibly drift away from their orbit lines, low speed settings can produce NaN values, and reset does not restore the view. The main view remains visible, so this is L2 rather than L1.',
     'Sonnet5Ultra-TasksAssignedByOpus5': 'Earth’s night side, Saturn’s rings, and bidirectional shadows are particularly strong. Jupiter is slightly washed out and the Great Red Spot has limited contrast.',
+    'MuseSpark1.3Contributor(xhigh)V1': "This network-dependent Three.js build implements JPL/Keplerian orbits, twelve nominal moons, Halley, and post-processing. Apart from the Moon, satellites use arbitrary inclinations and non-closing vertical oscillations, so the satellite system receives partial credit. Venus uses an incorrect 2,802-hour rotation period. Selection and follow work, but zoom can enter large bodies and there is no full reset.",
+    'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': "The offline WebGL2 build covers JPL/Keplerian orbits, eight moons, Halley, ring shadows, and post-processing. Runtime checks confirm that the camera target freezes after the focus transition while Earth keeps moving. Pause stops the date but not spin. The information card refreshes only on selection and initially reports Earth eccentricity as 0.00000. Safe zoom bounds and a full reset are also missing.",
+    'Gemini3.8Flash(high)V1': "Rings, the asteroid belt, post-processing, and the Moon render in this network-dependent Three.js build. Orbital motion uses a uniform angle in a polar ellipse, with no Kepler solver, complete orientation, epoch, or Halley. Selecting Jupiter changes the look-at target without moving the camera closer; tracking does not retain relative distance. Picking occurs on pointerdown, lunar motion is frame-dependent, and selection turns the tour off.",
+    'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': "The offline WebGL2 planetary JPL/Kepler pipeline, ring shadows, post-processing, and focus run. However, the lunar orbit is built in world coordinates and then mapped from ecliptic coordinates again, yielding about 84.855° inclination instead of 5.145°; the invalid Earth Moon deduction applies. Triton combines a negative period with inclination above 90°, reversing its direction twice. Drag mis-picks, zoom penetration, and incomplete reset remain.",
+    'Gemini3.8Flash(high)V2': "This network-dependent Three.js build includes oriented Keplerian paths, eight nominal moons, and Halley. Earth M0 incorrectly uses mean longitude, shifting epoch phase by roughly 103°. The Moon is only about 0.046 scene units from Earth, whose radius is 3, so it is buried inside the planet and receives the invalid Moon deduction. Focus is list-only, tracking does not lock relative camera distance, the moon toggle misses the Moon, and reset restores only time.",
+    'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': "The offline WebGL2 build covers JPL/Keplerian orbits, eight moons, Halley, rings, atmospheres, and ACES. HDR Bloom has been removed, leaving a flare approximation. The Moon-to-Earth distance incorrectly uses its parent’s heliocentric distance of about 1 AU, and Triton’s retrograde direction is reversed twice. Focus tracks, but drag-click suppression, safe zoom, and a complete reset are missing.",
     'Opus4.8Ultra-TasksAssignedByOpus5': 'All eight features, eight moons, native WebGL2, bidirectional ring shadows, and continuous following work, with an excellent Saturn close-up. Halley follows the specification’s osculating period rather than the measured 2061 return correction added by the Claude Opus 5 (Ultra) specification run.',
     'GPT5.6SolUltra-TasksAssignedByOpus5': 'Earth’s clouds and city lights, Jupiter’s Great Red Spot, Saturn’s layered rings, and bidirectional shadows all read clearly; all five interaction criteria are satisfied.',
     'GPT5.6TerraUltra-TasksAssignedByOpus5': 'Distinct surface classes, the Great Red Spot, atmospheric and night-side detail, and bidirectional ring shadows are all present. Actual detail is clearly above GPT-5.6 Luna (Max), though still below GPT-5.6 Sol (Ultra).',
@@ -520,7 +526,13 @@
     'Qwen3.8Flash(xhigh)V1': { title: 'Solar System · Real-Orbit Motion Model' },
     'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model · WebGL2' },
     'Sonnet5Ultra': { title: 'Solar System Motion Model · Claude Sonnet 5 (Ultra)' },
-    'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' }
+    'Sonnet5Ultra-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'MuseSpark1.3Contributor(xhigh)V1': { title: 'Solar System Motion Model · Solar System' },
+    'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar System Model' },
+    'Gemini3.8Flash(high)V1': { title: 'Ultra-Realistic Solar-System Dynamics and Gravity Simulator' },
+    'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar-System Dynamics Model' },
+    'Gemini3.8Flash(high)V2': { title: 'High-Precision Solar-System Dynamics Simulator' },
+    'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': { title: 'Real-Time Solar-System Dynamics Model' }
   };
 
   function template(value, vars) {
