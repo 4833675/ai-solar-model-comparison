@@ -128,7 +128,7 @@ window.WORKS=[
   "net": ["cdn.jsdelivr.net"],
   "fix": null,
   "tags": ["in WorkBuddy"],
-  "tier": 1,
+  "tier": 2,
   "rank": 99
  },
  {
@@ -153,7 +153,7 @@ window.WORKS=[
   "net": ["cdn.jsdelivr.net","unpkg.com","registry.npmmirror.com"],
   "fix": null,
   "tags": ["in WorkBuddy"],
-  "tier": 1,
+  "tier": 2,
   "rank": 99
  },
  {

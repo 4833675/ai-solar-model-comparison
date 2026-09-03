@@ -131,8 +131,8 @@ const CANONICAL_NAMES = {
 const EXPECTED_EXACT = {
   'Opus5(Max)V1': 103,
   'Fable5.1(Max)V1': 106,
-  "Hy4Preview(high)V1": 97.7,
-  "Hy4Preview(high)V2": 99.466666666667,
+  "Hy4Preview(high)V1": 94.7,
+  "Hy4Preview(high)V2": 96.466666666667,
   "Hy4Preview(high)V1-TasksAssignedByOpus5": 93.726666666667,
   "Hy4Preview(high)V2-TasksAssignedByOpus5": 94.726666666667,
   "GLM5.3Flash(Max)V2": 92.01,
@@ -658,7 +658,7 @@ check(glm53FlashOneLine?.group === 'A' && glm53FlashOneLine?.bytes === 75687 && 
 check(glm53FlashDetailed?.group === 'B' && glm53FlashDetailed?.bytes === 113486 && glm53FlashDetailed?.lines === 2699 && glm53FlashDetailed?.msaa === true, 'GLM 5.3 Flash detailed metadata must match the supplied file');
 check(SITE.scoreFor(glm53FlashOneLine).total === 85 && SITE.scoreFor(glm53FlashDetailed).total === 60 && SITE.scoreFor(glm53FlashDetailed).fatal === 'L2', 'GLM 5.3 Flash evidence scores must be 85 and L2-capped 60');
 for (const work of [hy4OneLine1, hy4OneLine2, hy4Detailed1, hy4Detailed2]) {
-  check(work?.tier === 1 && JSON.stringify(work?.tags) === JSON.stringify(['in WorkBuddy']), `${work?.id || 'Hy 4 Preview'} must be Tier 1 and show in WorkBuddy`);
+  check(work?.tier === (work.group === 'A' ? 2 : 1) && JSON.stringify(work?.tags) === JSON.stringify(['in WorkBuddy']), `${work?.id || 'Hy 4 Preview'} must be T2 for one-line, T1 for detailed, and show in WorkBuddy`);
   check(fs.existsSync(new URL(`../${work.file}`, import.meta.url)) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Hy 4 Preview'} source and screenshot must exist`);
 }
 check(hy4OneLine1?.group === 'A' && hy4OneLine1?.pair === 'hy4v1' && hy4OneLine1?.tech === 'Three.js' && hy4OneLine1?.bytes === 99488 && hy4OneLine1?.lines === 2447 && JSON.stringify(hy4OneLine1?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Hy 4 Preview #1 one-line metadata must match the supplied file');
@@ -666,7 +666,11 @@ check(hy4OneLine2?.group === 'A' && hy4OneLine2?.pair === 'hy4v2' && hy4OneLine2
 check(hy4Detailed1?.group === 'B' && hy4Detailed1?.pair === 'hy4v1' && hy4Detailed1?.tech === 'WebGL2' && hy4Detailed1?.bytes === 126382 && hy4Detailed1?.lines === 2898 && hy4Detailed1?.net.length === 0, 'Hy 4 Preview #1 detailed metadata must match the supplied file');
 check(hy4Detailed2?.group === 'B' && hy4Detailed2?.pair === 'hy4v2' && hy4Detailed2?.tech === 'WebGL2' && hy4Detailed2?.bytes === 126917 && hy4Detailed2?.lines === 2864 && hy4Detailed2?.net.length === 0, 'Hy 4 Preview #2 detailed metadata must match the supplied file');
 check(!fs.existsSync(new URL('../models/Hy4Preview(high)V3.html', import.meta.url)) && !read('models/Hy4Preview(high)V2.html').includes('HY4 PREVIEW · V3'), 'The former Hy 4 V3 source and visible V3 branding must be removed after renaming it to V2');
-check(SITE.scoreFor(hy4OneLine1).total === 98 && SITE.scoreFor(hy4OneLine2).total === 99 && SITE.scoreFor(hy4Detailed1).total === 94 && SITE.scoreFor(hy4Detailed2).total === 95, 'Hy 4 Preview evidence scores must be 98, 99, 94, and 95');
+check(SITE.scoreFor(hy4OneLine1).total === 95 && SITE.scoreFor(hy4OneLine2).total === 96 && SITE.scoreFor(hy4Detailed1).total === 94 && SITE.scoreFor(hy4Detailed2).total === 95, 'Hy 4 Preview scores must be 95, 96, 94, and 95');
+check(SITE.scoreFor(hy4OneLine1).manualAdjustment === -3 && SITE.scoreFor(hy4OneLine2).manualAdjustment === -3, 'Both one-line Hy 4 works must receive only the normal T2 adjustment');
+close(SITE.scoreFor(hy4OneLine1).evidenceBase, 97.7, 'Hy 4 #1 base evidence unchanged');
+close(SITE.scoreFor(hy4OneLine2).evidenceBase, 99.46666666666667, 'Hy 4 #2 base evidence unchanged');
+check(SITE.tieredGallery([hy4OneLine1,hy4OneLine2],false).includes('tier-archive') && !SITE.tieredGallery([hy4OneLine1,hy4OneLine2],false).includes('tier tier-1'), 'One-line Hy 4 cards must be in the collapsible T2 gallery');
 for (const work of [glm53Flash2OneLine, glm53Flash2Detailed]) {
   check(work?.tier === 2 && work?.pair === 'glm53flashv2' && JSON.stringify(work?.tags) === JSON.stringify(['in Zcode', '突然聪明了']), `${work?.id || 'GLM 5.3 Flash #2'} must be paired Tier 2 in Zcode with the requested note tag`);
   check(fs.existsSync(new URL(`../${work.file}`, import.meta.url)) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3 Flash #2'} source and screenshot must exist`);
@@ -1263,7 +1267,7 @@ check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({
 close(stats.pairedSummary.execution.a, 30.466049382716047, 'Paired a execution mean');
 close(stats.pairedSummary.execution.b, 31.643209876543207, 'Paired b execution mean');
 check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":15,"tie":3,"decline":9}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 77.7767901234568, 'Paired a exact mean');
+close(stats.pairedSummary.exact.a, 77.55456790123457, 'Paired a exact mean');
 close(stats.pairedSummary.exact.b, 88.95333333333336, 'Paired b exact mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":22,"tie":1,"decline":4}), 'exact paired outcomes must match the evidence');
 
@@ -1273,7 +1277,7 @@ const EXPECTED_WHOLE_GROUP = {
       45,
       51.081777777777766,
       31.121111111111116,
-      78.66955555555553
+      78.5362222222222
     ],
     "b": [
       38,
@@ -1287,7 +1291,7 @@ const EXPECTED_WHOLE_GROUP = {
       44,
       50.788181818181805,
       31.010227272727278,
-      78.18477272727272
+      78.04840909090908
     ],
     "b": [
       38,
@@ -1301,7 +1305,7 @@ const EXPECTED_WHOLE_GROUP = {
       44,
       51.43227272727272,
       31.34507575757576,
-      79.1637121212121
+      79.02734848484846
     ],
     "b": [
       35,
@@ -1315,7 +1319,7 @@ const EXPECTED_WHOLE_GROUP = {
       43,
       51.139999999999986,
       31.236821705426358,
-      78.67914728682169
+      78.53961240310076
     ],
     "b": [
       35,
