@@ -1,0 +1,3253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>太阳系 · 实时运动模型</title>
+<style>
+:root{
+  --panel: rgba(12,16,25,0.62);
+  --panel2: rgba(12,16,25,0.80);
+  --line: rgba(255,255,255,0.085);
+  --line2: rgba(255,255,255,0.16);
+  --txt: #d7dce7;
+  --dim: #8a93a6;
+  --dim2: #5d6575;
+  --acc: #7fb2ff;
+  --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html,body{ width:100%; height:100%; overflow:hidden; background:#000; }
+body{
+  font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--txt); font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+#gl{ position:fixed; inset:0; width:100%; height:100%; display:block; cursor:grab; touch-action:none; }
+#gl.drag{ cursor:grabbing; }
+
+/* ---------- 天体标签（HTML 覆盖层） ---------- */
+#labels{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:3; }
+.lbl{
+  position:absolute; transform:translate(-50%,-150%); white-space:nowrap;
+  font-size:11px; letter-spacing:0.18em; text-indent:0.18em;
+  color:rgba(228,235,246,0.94); text-shadow:0 1px 2px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.8);
+  pointer-events:auto; cursor:pointer; user-select:none; padding:2px 7px; border-radius:7px;
+  transition:background .15s;
+}
+.lbl:hover{ background:rgba(130,170,255,0.14); }
+.lbl.moon{ font-size:10px; color:rgba(196,206,222,0.85); letter-spacing:0.12em; }
+.lbl.sel{ color:#cfe2ff; text-shadow:0 0 6px rgba(110,160,255,0.8), 0 1px 2px rgba(0,0,0,.9); }
+
+/* ---------- 玻璃面板通用 ---------- */
+.panel{
+  position:fixed; z-index:5; background:var(--panel);
+  border:1px solid var(--line); border-radius:14px;
+  backdrop-filter:blur(18px) saturate(1.3); -webkit-backdrop-filter:blur(18px) saturate(1.3);
+  box-shadow:0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.panel .cap{
+  font-size:10px; letter-spacing:0.28em; text-indent:0.28em; color:var(--dim);
+  text-transform:uppercase; padding:10px 14px 6px; display:flex; align-items:center; gap:6px;
+}
+.cap::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--line2),transparent); }
+
+/* ---------- 左上标题 ---------- */
+#brand{ top:14px; left:14px; padding:10px 16px 11px; border-radius:12px; }
+#brand h1{ font-size:15px; font-weight:600; letter-spacing:0.12em; color:#eef2fa; }
+#brand .sub{ font-size:10.5px; color:var(--dim); letter-spacing:0.08em; margin-top:2px; }
+#brand .sub b{ color:var(--acc); font-weight:500; }
+
+/* ---------- 左侧天体列表 ---------- */
+#list{ top:96px; left:14px; width:172px; max-height:calc(100vh - 260px); overflow-y:auto; overscroll-behavior:contain; }
+#list::-webkit-scrollbar{ width:4px; }
+#list::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.14); border-radius:2px; }
+.it{
+  display:flex; align-items:center; gap:9px; padding:6px 10px 6px 12px; margin:1px 6px;
+  border-radius:9px; cursor:pointer; user-select:none; transition:background .12s;
+}
+.it:hover{ background:rgba(255,255,255,0.07); }
+.it.on{ background:rgba(110,160,255,0.14); }
+.it .dot{ width:7px; height:7px; border-radius:50%; flex:none; box-shadow:0 0 6px currentColor; }
+.it .nm{ flex:1; font-size:12.5px; letter-spacing:0.06em; color:#dfe5f0; }
+.it.moon{ padding-left:30px; }
+.it.moon .nm{ font-size:11.5px; color:var(--dim); }
+.it.moon.on .nm{ color:#cfe2ff; }
+.it.moon .dot{ width:5px; height:5px; margin-left:-14px; }
+.it .rg{ font-size:9.5px; color:var(--dim2); font-family:var(--mono); }
+
+/* ---------- 右侧信息卡 ---------- */
+#info{ top:14px; right:14px; width:308px; max-height:calc(100vh - 200px); overflow-y:auto; overscroll-behavior:contain; }
+#info::-webkit-scrollbar{ width:4px; }
+#info::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.14); border-radius:2px; }
+#info .hd{ padding:12px 16px 4px; display:flex; align-items:baseline; gap:9px; }
+#info .hd .nm{ font-size:17px; font-weight:600; letter-spacing:0.1em; color:#f0f4fb; }
+#info .hd .tp{ font-size:10px; color:var(--acc); border:1px solid rgba(127,178,255,0.35); padding:1px 7px; border-radius:20px; letter-spacing:0.12em; }
+#info .live{ padding:6px 14px 10px; }
+#info .live .row{ display:flex; justify-content:space-between; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(255,255,255,0.05); }
+#info .live .row:last-child{ border-bottom:none; }
+#info .live .k{ font-size:10.5px; color:var(--dim); letter-spacing:0.1em; }
+#info .live .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:12px; color:#e8edf7; }
+#info .live .v small{ color:var(--dim); font-size:10px; }
+#info .stat{ padding:4px 14px 10px; }
+#info .stat .row{ display:flex; justify-content:space-between; padding:2.5px 0; }
+#info .stat .k{ font-size:10.5px; color:var(--dim); letter-spacing:0.1em; }
+#info .stat .v{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11.5px; color:#ccd4e2; text-align:right; }
+#info .desc{ margin:2px 14px 14px; padding:10px 12px; font-size:11.5px; color:#a9b2c4;
+  background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.05); border-radius:10px; line-height:1.7; }
+#info .foot{ margin:0 14px 14px; font-size:10px; color:var(--dim2); line-height:1.6; }
+
+/* ---------- 底部时间条 ---------- */
+#timebar{ left:50%; bottom:14px; transform:translateX(-50%); display:flex; align-items:center; gap:12px; padding:9px 14px; border-radius:16px; }
+#btnPlay{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line2); background:rgba(255,255,255,0.06);
+  color:#e8edf7; cursor:pointer; display:flex; align-items:center; justify-content:center; flex:none; transition:background .15s; }
+#btnPlay:hover{ background:rgba(255,255,255,0.14); }
+#btnPlay svg{ width:13px; height:13px; }
+#dateWrap{ position:relative; }
+#dateTxt{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px; color:#eef2fa; letter-spacing:0.04em;
+  cursor:pointer; padding:4px 8px; border-radius:8px; border:1px solid transparent; }
+#dateTxt:hover{ border-color:var(--line2); background:rgba(255,255,255,0.05); }
+#dateTxt .z{ color:var(--dim); font-size:10px; margin-left:5px; }
+#dateInput{ position:absolute; left:0; top:0; width:100%; height:100%; opacity:0; cursor:pointer; font-family:var(--mono); }
+#oob{ display:none; font-size:10px; color:#ffcf7a; background:rgba(255,190,90,0.1); border:1px solid rgba(255,200,110,0.3);
+  padding:2px 8px; border-radius:10px; letter-spacing:0.05em; }
+#oob.show{ display:block; }
+.spd{ display:flex; align-items:center; gap:8px; }
+#speedSlider{ width:150px; height:3px; -webkit-appearance:none; appearance:none; background:linear-gradient(90deg,#3a4358,#5a6b8f,#3a4358); border-radius:2px; outline:none; cursor:pointer; }
+#speedSlider::-webkit-slider-thumb{ -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:#cfe2ff;
+  box-shadow:0 0 8px rgba(127,178,255,0.7); cursor:pointer; }
+#speedTxt{ font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:11px; color:#cdd6e4; min-width:86px; text-align:right; }
+#btnNow{ font-size:11px; color:var(--dim); border:1px solid var(--line2); background:transparent; padding:5px 11px;
+  border-radius:9px; cursor:pointer; letter-spacing:0.1em; transition:all .15s; }
+#btnNow:hover{ color:#fff; background:rgba(255,255,255,0.08); }
+
+/* ---------- 右下开关 ---------- */
+#toggles{ right:14px; bottom:14px; padding:8px 6px 9px; width:158px; }
+.tg{ display:flex; align-items:center; justify-content:space-between; padding:4px 10px; border-radius:8px; cursor:pointer; user-select:none; }
+.tg:hover{ background:rgba(255,255,255,0.05); }
+.tg .n{ font-size:11.5px; color:#c6cedd; letter-spacing:0.08em; }
+.sw{ width:30px; height:16px; border-radius:9px; background:rgba(255,255,255,0.10); border:1px solid var(--line2); position:relative; transition:background .2s; flex:none; }
+.sw::after{ content:""; position:absolute; top:1.5px; left:2px; width:11px; height:11px; border-radius:50%;
+  background:#9aa6bb; transition:all .2s; }
+.tg.on .sw{ background:rgba(110,160,255,0.45); border-color:rgba(127,178,255,0.5); }
+.tg.on .sw::after{ left:15px; background:#e8f1ff; box-shadow:0 0 6px rgba(127,178,255,0.8); }
+
+/* ---------- 提示 / 错误 / 加载 ---------- */
+#hint{ position:fixed; left:16px; bottom:16px; z-index:4; font-size:10.5px; color:var(--dim2); letter-spacing:0.12em; pointer-events:none; text-shadow:0 1px 3px #000; }
+#err{ position:fixed; left:50%; top:12px; transform:translateX(-50%); z-index:99; max-width:70vw; display:none;
+  background:rgba(120,20,20,0.85); border:1px solid rgba(255,120,120,0.5); color:#ffd9d9; font-family:var(--mono);
+  font-size:11px; padding:8px 12px; border-radius:10px; white-space:pre-wrap; }
+#loading{ position:fixed; inset:0; z-index:60; background:#02040a; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:14px; transition:opacity .8s; }
+#loading.off{ opacity:0; pointer-events:none; }
+#loading .ring{ width:46px; height:46px; border-radius:50%; border:2px solid rgba(127,178,255,0.15); border-top-color:#7fb2ff;
+  animation:spin 1s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+#loading .t{ font-size:14px; letter-spacing:0.4em; text-indent:0.4em; color:#dfe6f3; }
+#loading .s{ font-size:10.5px; letter-spacing:0.2em; color:var(--dim2); font-family:var(--mono); }
+
+/* ---------- 隐藏界面 ---------- */
+body.hideui .panel, body.hideui #hint, body.hideui #labels{ opacity:0 !important; pointer-events:none !important; }
+body.hideui #labels .lbl{ pointer-events:none !important; }
+.panel, #hint{ transition:opacity .3s; }
+
+@media (max-width: 980px){
+  #info{ display:none; }
+  #list{ width:150px; }
+}
+@media (max-width: 700px){
+  #list{ display:none; }
+  #toggles{ display:none; }
+}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="labels"></div>
+<div id="err"></div>
+<div id="loading">
+  <div class="ring"></div>
+  <div class="t">太阳系</div>
+  <div class="s" id="ldTxt">编译着色器 · 构建小行星带</div>
+</div>
+
+<header id="brand" class="panel">
+  <h1>太阳系 · 实时运动模型</h1>
+  <div class="sub">JPL 轨道根数 · <b>真实开普勒运动</b> · 单文件离线运行</div>
+</header>
+
+<nav id="list" class="panel">
+  <div class="cap">天体</div>
+  <div id="listBody"></div>
+</nav>
+
+<aside id="info" class="panel">
+  <div class="hd"><span class="nm" id="iName">—</span><span class="tp" id="iType">—</span></div>
+  <div class="cap">实时数据</div>
+  <div class="live" id="iLive"></div>
+  <div class="cap">基本参数</div>
+  <div class="stat" id="iStat"></div>
+  <div class="desc" id="iDesc"></div>
+  <div class="foot" id="iFoot"></div>
+</aside>
+
+<div id="timebar" class="panel">
+  <button id="btnPlay" title="播放 / 暂停（空格）"><svg viewBox="0 0 16 16" id="icoPlay"><path d="M4 2.5 L13 8 L4 13.5 Z" fill="currentColor"/></svg></button>
+  <div id="dateWrap">
+    <div id="dateTxt"><span id="dateStr">—</span><span class="z">UTC</span></div>
+    <input id="dateInput" type="datetime-local" step="1">
+  </div>
+  <div id="oob">已超出根数有效区间（外推）</div>
+  <div class="spd">
+    <input id="speedSlider" type="range" min="-100" max="100" step="1" value="58">
+    <div id="speedTxt">—</div>
+  </div>
+  <button id="btnNow" title="回到现实此刻">此刻</button>
+</div>
+
+<div id="toggles" class="panel">
+  <div class="cap">显示</div>
+  <div id="tgBody"></div>
+</div>
+
+<div id="hint">拖拽旋转 · 滚轮缩放 · 点击天体聚焦 · 空格暂停 · ←/→ 调速 · H 隐藏界面</div>
+<script>
+'use strict';
+/* ============================================================
+ * 矩阵 / 向量工具（列主序，与 WebGL 一致）
+ * ============================================================ */
+const M4 = {
+  create(){ return new Float32Array(16); },
+  identity(m){ m.fill(0); m[0]=m[5]=m[10]=m[15]=1; return m; },
+  multiply(out,a,b){ // out = a * b
+    let o = out;
+    if(out===a || out===b) o = new Float32Array(16);
+    for(let c=0;c<4;c++){
+      const b0=b[c*4], b1=b[c*4+1], b2=b[c*4+2], b3=b[c*4+3];
+      o[c*4  ] = a[0]*b0 + a[4]*b1 + a[8]*b2  + a[12]*b3;
+      o[c*4+1] = a[1]*b0 + a[5]*b1 + a[9]*b2  + a[13]*b3;
+      o[c*4+2] = a[2]*b0 + a[6]*b1 + a[10]*b2 + a[14]*b3;
+      o[c*4+3] = a[3]*b0 + a[7]*b1 + a[11]*b2 + a[15]*b3;
+    }
+    if(o!==out) out.set(o);
+    return out;
+  },
+  perspective(out,fovy,aspect,near,far){
+    const f = 1/Math.tan(fovy/2), nf = 1/(near-far);
+    out.fill(0);
+    out[0]=f/aspect; out[5]=f; out[10]=(far+near)*nf; out[11]=-1; out[14]=2*far*near*nf;
+    return out;
+  },
+  lookAt(out,eye,center,up){
+    let zx=eye[0]-center[0], zy=eye[1]-center[1], zz=eye[2]-center[2];
+    let zl=Math.hypot(zx,zy,zz);
+    if(zl<1e-9){ zx=0; zy=0; zz=1; zl=1; }
+    zx/=zl; zy/=zl; zz/=zl;
+    let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+    let xl=Math.hypot(xx,xy,xz);
+    if(xl<1e-9){
+      if(Math.abs(zz)<0.9){ xx=1; xy=0; xz=0; } else { xx=0; xy=0; xz=1; }
+      xl=Math.hypot(xx,xy,xz);
+    }
+    xx/=xl; xy/=xl; xz/=xl;
+    const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+    out[0]=xx; out[1]=yx; out[2]=zx; out[3]=0;
+    out[4]=xy; out[5]=yy; out[6]=zy; out[7]=0;
+    out[8]=xz; out[9]=yz; out[10]=zz; out[11]=0;
+    out[12]=-(xx*eye[0]+xy*eye[1]+xz*eye[2]);
+    out[13]=-(yx*eye[0]+yy*eye[1]+yz*eye[2]);
+    out[14]=-(zx*eye[0]+zy*eye[1]+zz*eye[2]);
+    out[15]=1;
+    return out;
+  },
+  invert(out,m){
+    const a00=m[0],a01=m[1],a02=m[2],a03=m[3],
+          a10=m[4],a11=m[5],a12=m[6],a13=m[7],
+          a20=m[8],a21=m[9],a22=m[10],a23=m[11],
+          a30=m[12],a31=m[13],a32=m[14],a33=m[15];
+    const b00=a00*a11-a01*a10, b01=a00*a12-a02*a10, b02=a00*a13-a03*a10,
+          b03=a01*a12-a02*a11, b04=a01*a13-a03*a11, b05=a02*a13-a03*a12,
+          b06=a20*a31-a21*a30, b07=a20*a32-a22*a30, b08=a20*a33-a23*a30,
+          b09=a21*a32-a22*a31, b10=a21*a33-a23*a31, b11=a22*a33-a23*a32;
+    let det=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;
+    if(!det) return M4.identity(out);
+    det=1/det;
+    out[0]=(a11*b11-a12*b10+a13*b09)*det;
+    out[1]=(a02*b10-a01*b11-a03*b09)*det;
+    out[2]=(a31*b05-a32*b04+a33*b03)*det;
+    out[3]=(a22*b04-a21*b05-a23*b03)*det;
+    out[4]=(a12*b08-a10*b11-a13*b07)*det;
+    out[5]=(a00*b11-a02*b08+a03*b07)*det;
+    out[6]=(a32*b02-a30*b05-a33*b01)*det;
+    out[7]=(a20*b05-a22*b02+a23*b01)*det;
+    out[8]=(a10*b10-a11*b08+a13*b06)*det;
+    out[9]=(a01*b08-a00*b10-a03*b06)*det;
+    out[10]=(a30*b04-a31*b02+a33*b00)*det;
+    out[11]=(a21*b02-a20*b04-a23*b00)*det;
+    out[12]=(a11*b07-a10*b09-a12*b06)*det;
+    out[13]=(a00*b09-a01*b07+a02*b06)*det;
+    out[14]=(a31*b01-a30*b03-a32*b00)*det;
+    out[15]=(a20*b03-a21*b01+a22*b00)*det;
+    return out;
+  },
+  // 提取视锥体 6 平面（world 空间），planes = [a,b,c,d]*6（点在内部: ax+by+cz+d > 0 的反面判定）
+  frustumPlanes(planes, m){
+    // 行 i = [m[i], m[i+4], m[i+8], m[i+12]]
+    const r=(i)=>[m[i], m[i+4], m[i+8], m[i+12]];
+    const r0=r(0), r1=r(1), r2=r(2), r3=r(3);
+    const set=(k,a,b,s)=>{ for(let i=0;i<4;i++) planes[k*4+i]=a[i]+s*b[i]; };
+    set(0,r3,r0, 1); set(1,r3,r0,-1);
+    set(2,r3,r1, 1); set(3,r3,r1,-1);
+    set(4,r3,r2, 1); set(5,r3,r2,-1);
+    for(let k=0;k<6;k++){
+      const l=Math.hypot(planes[k*4],planes[k*4+1],planes[k*4+2]);
+      if(l>1e-9){ for(let i=0;i<3;i++) planes[k*4+i]/=l; planes[k*4+3]/=l; }
+    }
+    return planes;
+  },
+  sphereInFrustum(planes, x,y,z, rad){
+    for(let k=0;k<6;k++){
+      const d = planes[k*4]*x + planes[k*4+1]*y + planes[k*4+2]*z + planes[k*4+3];
+      if(d < -rad) return false;
+    }
+    return true;
+  }
+};
+
+// 以自转轴为 Y 列构造右手正交基（惯性系固定）
+function basisFromAxis(ax,ay,az){
+  let refx,refy,refz;
+  if(Math.abs(ay)<0.94){ refx=0; refy=0; refz=1; } else { refx=1; refy=0; refz=0; }
+  // X = ref × Y
+  let xx=refy*az-refz*ay, xy=refz*ax-refx*az, xz=refx*ay-refy*ax;
+  let xl=Math.hypot(xx,xy,xz);
+  if(xl<1e-9){ refx=1;refy=0;refz=0; xx=refy*az-refz*ay; xy=refz*ax-refx*az; xz=refx*ay-refy*ax; xl=Math.hypot(xx,xy,xz)||1; }
+  xx/=xl; xy/=xl; xz/=xl;
+  // Z = X × Y
+  const zx=xy*az-xz*ay, zy=xz*ax-xx*az, zz=xx*ay-xy*ax;
+  return {x:[xx,xy,xz], y:[ax,ay,az], z:[zx,zy,zz]};
+}
+
+// 模型矩阵 = T(pos) · B · Ry(phase) · S(scale)
+// （标准 Ry：+X 转向 -Z，与公转 +X→-Z 的方向一致 → 顺行自转）
+function composeModel(out, pos, basis, phase, scale){
+  const c=Math.cos(phase), s=Math.sin(phase);
+  const bx=basis.x, by=basis.y, bz=basis.z;
+  const x0=bx[0]*c - bz[0]*s, x1=bx[1]*c - bz[1]*s, x2=bx[2]*c - bz[2]*s;
+  const z0=bx[0]*s + bz[0]*c, z1=bx[1]*s + bz[1]*c, z2=bx[2]*s + bz[2]*c;
+  out[0]=x0*scale; out[1]=x1*scale; out[2]=x2*scale; out[3]=0;
+  out[4]=by[0]*scale; out[5]=by[1]*scale; out[6]=by[2]*scale; out[7]=0;
+  out[8]=z0*scale; out[9]=z1*scale; out[10]=z2*scale; out[11]=0;
+  out[12]=pos[0]; out[13]=pos[1]; out[14]=pos[2]; out[15]=1;
+  return out;
+}
+// 世界方向 → 物体空间（物体自转 Ry(-phase) 后回基）
+function worldDirToObj(out, basis, phase, w){
+  const bx=basis.x, by=basis.y, bz=basis.z;
+  // Bᵀ·w
+  const ux=bx[0]*w[0]+bx[1]*w[1]+bx[2]*w[2];
+  const uy=by[0]*w[0]+by[1]*w[1]+by[2]*w[2];
+  const uz=bz[0]*w[0]+bz[1]*w[1]+bz[2]*w[2];
+  // Ry(-phase)
+  const c=Math.cos(-phase), s=Math.sin(-phase);
+  out[0]=ux*c+uz*s; out[1]=uy; out[2]=-ux*s+uz*c;
+  return out;
+}
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function easeInOut(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+function fmt(n, d){ return n.toFixed(d); }
+/* ============================================================
+ * 天文数据与轨道力学（数据照抄任务规格书 §2，勿改数值）
+ * ============================================================ */
+const ASTRO = {
+  J2000: 2451545.0,
+  D2R: Math.PI/180,
+  AU_KM: 149597870.7,
+  SUN_RADIUS_KM: 696340,
+
+  // —— 显示比例（§3.5）——
+  SCALE: 34,
+  COMPRESS: 0.62,
+
+  unixToJD(ms){ return ms/86400000 + 2440587.5; },
+  jdToUnix(jd){ return (jd - 2440587.5)*86400000; },
+  TfromJD(jd){ return (jd - 2451545.0)/36525; },
+
+  wrapPi(a){
+    a = a - 2*Math.PI*Math.floor(a/(2*Math.PI));
+    if(a > Math.PI) a -= 2*Math.PI;
+    return a;
+  },
+  wrap2pi(a){ a = a - 2*Math.PI*Math.floor(a/(2*Math.PI)); return a; },
+
+  // —— 开普勒方程（§3.2）——
+  solveKepler(M, e){
+    M = ASTRO.wrapPi(M);
+    let E = M + e*Math.sin(M)*(1 + e*Math.cos(M));
+    for(let i=0;i<10;i++){
+      const f  = E - e*Math.sin(E) - M;
+      const fp = 1 - e*Math.cos(E);
+      const d  = f/fp;
+      E -= d;
+      if(Math.abs(d) < 1e-13) break;
+    }
+    return E;
+  },
+
+  // —— 行星轨道根数（NASA/JPL《主要行星近似位置》，1800–2050）——
+  planets: [
+    { key:'mercury', name:'水星', en:'Mercury',
+      a:0.38709927, e:0.20563593, I:7.00497902, L:252.25032350, W:77.45779628, O:48.33076593,
+      da:0.00000037, de:0.00001906, dI:-0.00594749, dL:149472.67411175, dW:0.16047689, dO:-0.12534081,
+      radiusKm:2439.7, mass:'3.30×10²³ kg', periodTxt:'87.97 天', moonsN:0, temp:'−173 ~ 427 ℃',
+      rotH:1407.6, tilt:7.0, poleLon:318.4, tiltTextbook:'0.03°',
+      atmoTxt:'外逸层（O、Na、H）', type:'类地行星' },
+    { key:'venus', name:'金星', en:'Venus',
+      a:0.72333566, e:0.00677672, I:3.39467605, L:181.97909950, W:131.60246718, O:76.67984255,
+      da:0.00000390, de:-0.00004107, dI:-0.00078890, dL:58517.81538729, dW:0.00268329, dO:-0.27769418,
+      radiusKm:6051.8, mass:'4.87×10²⁴ kg', periodTxt:'224.70 天', moonsN:0, temp:'464 ℃',
+      rotH:-5832.5, tilt:177.4, poleLon:211.2, tiltTextbook:'177.4°',
+      atmoTxt:'CO₂ 96.5%、N₂ 3.5%', type:'类地行星' },
+    { key:'earth', name:'地球', en:'Earth',
+      a:1.00000261, e:0.01671123, I:-0.00001531, L:100.46457166, W:102.93768193, O:0.0,
+      da:0.00000562, de:-0.00004392, dI:-0.01294668, dL:35999.37244981, dW:0.32327364, dO:0.0,
+      radiusKm:6371.0, mass:'5.972×10²⁴ kg', periodTxt:'365.256 天', moonsN:1, temp:'−89 ~ 57 ℃',
+      rotH:23.9345, tilt:23.44, poleLon:90.0, tiltTextbook:'23.44°',
+      atmoTxt:'N₂ 78%、O₂ 21%', type:'类地行星' },
+    { key:'mars', name:'火星', en:'Mars',
+      a:1.52371034, e:0.09339410, I:1.84969142, L:-4.55343205, W:-23.94362959, O:49.55953891,
+      da:0.00001847, de:0.00007882, dI:-0.00813131, dL:19140.30268499, dW:0.44441088, dO:-0.29257343,
+      radiusKm:3389.5, mass:'6.42×10²³ kg', periodTxt:'686.98 天', moonsN:2, temp:'−143 ~ 35 ℃',
+      rotH:24.6229, tilt:26.76, poleLon:352.9, tiltTextbook:'25.19°',
+      atmoTxt:'CO₂ 95%、N₂ 2.8%', type:'类地行星' },
+    { key:'jupiter', name:'木星', en:'Jupiter',
+      a:5.20288700, e:0.04838624, I:1.30439695, L:34.39644051, W:14.72847983, O:100.47390909,
+      da:-0.00011607, de:-0.00013253, dI:-0.00183714, dL:3034.74612775, dW:0.21252668, dO:0.20469106,
+      radiusKm:69911, mass:'1.898×10²⁷ kg', periodTxt:'11.86 年', moonsN:95, temp:'−108 ℃',
+      rotH:9.925, tilt:2.25, poleLon:247.8, tiltTextbook:'3.13°',
+      atmoTxt:'H₂ 90%、He 10%', type:'气态巨行星' },
+    { key:'saturn', name:'土星', en:'Saturn',
+      a:9.53667594, e:0.05386179, I:2.48599187, L:49.95424423, W:92.59887831, O:113.66242448,
+      da:-0.00125060, de:-0.00050991, dI:0.00193609, dL:1222.49362201, dW:-0.41897216, dO:-0.28867794,
+      radiusKm:58232, mass:'5.683×10²⁶ kg', periodTxt:'29.46 年', moonsN:274, temp:'−139 ℃',
+      rotH:10.656, tilt:28.06, poleLon:79.5, tiltTextbook:'26.73°',
+      atmoTxt:'H₂ 96%、He 3%', type:'气态巨行星' },
+    { key:'uranus', name:'天王星', en:'Uranus',
+      a:19.18916464, e:0.04725744, I:0.77263783, L:313.23810451, W:170.95427630, O:74.01692503,
+      da:-0.00196176, de:-0.00004397, dI:-0.00242939, dL:428.48202785, dW:0.40805281, dO:0.04240589,
+      radiusKm:25362, mass:'8.68×10²⁵ kg', periodTxt:'84.01 年', moonsN:28, temp:'−195 ℃',
+      rotH:-17.24, tilt:97.77, poleLon:77.7, tiltTextbook:'97.77°',
+      atmoTxt:'H₂ 83%、He 15%、CH₄ 2%', type:'冰巨行星' },
+    { key:'neptune', name:'海王星', en:'Neptune',
+      a:30.06992276, e:0.00859048, I:1.77004347, L:-55.12002969, W:44.96476227, O:131.78422574,
+      da:0.00026291, de:0.00005105, dI:0.00035372, dL:218.45945325, dW:-0.32241464, dO:-0.00508664,
+      radiusKm:24622, mass:'1.024×10²⁶ kg', periodTxt:'164.8 年', moonsN:16, temp:'−201 ℃',
+      rotH:16.11, tilt:28.02, poleLon:319.3, tiltTextbook:'28.32°',
+      atmoTxt:'H₂ 80%、He 19%、CH₄ 1.5%', type:'冰巨行星' },
+    { key:'pluto', name:'冥王星', en:'Pluto',
+      a:39.48211675, e:0.24882730, I:17.14001206, L:238.92903833, W:224.06891629, O:110.30393684,
+      da:-0.00031596, de:0.00005170, dI:0.00004818, dL:145.20780515, dW:-0.04062942, dO:-0.01183482,
+      radiusKm:1188.3, mass:'1.303×10²² kg', periodTxt:'247.9 年', moonsN:5, temp:'−233 ~ −223 ℃',
+      rotH:-153.29, tilt:112.8, poleLon:137.4, tiltTextbook:'119.6°',
+      atmoTxt:'N₂、CH₄、CO（季节性）', type:'矮行星' },
+  ],
+
+  // —— 卫星（§2.4）——
+  moons: [
+    { key:'moon', name:'月球', parent:'earth', radiusKm:1737.4, aKm:384400, periodDays:27.32166, incDeg:5.145, ref:'ecliptic',
+      phi0:218.32, temp:'−173 ~ 127 ℃', type:'天然卫星' },
+    { key:'io', name:'木卫一', parent:'jupiter', radiusKm:1821.6, aKm:421700, periodDays:1.769138, incDeg:0.05, ref:'equator',
+      phi0:88.0, temp:'−143 ℃', type:'天然卫星' },
+    { key:'europa', name:'木卫二', parent:'jupiter', radiusKm:1560.8, aKm:671034, periodDays:3.551181, incDeg:0.47, ref:'equator',
+      phi0:170.0, temp:'−160 ℃', type:'天然卫星' },
+    { key:'ganymede', name:'木卫三', parent:'jupiter', radiusKm:2634.1, aKm:1070412, periodDays:7.154553, incDeg:0.20, ref:'equator',
+      phi0:255.0, temp:'−163 ℃', type:'天然卫星' },
+    { key:'callisto', name:'木卫四', parent:'jupiter', radiusKm:2410.3, aKm:1882709, periodDays:16.6890, incDeg:0.19, ref:'equator',
+      phi0:20.0, temp:'−139 ℃', type:'天然卫星' },
+    { key:'titan', name:'土卫六', parent:'saturn', radiusKm:2574.7, aKm:1221870, periodDays:15.945, incDeg:0.35, ref:'equator',
+      phi0:60.0, temp:'−179 ℃', type:'天然卫星' },
+    { key:'triton', name:'海卫一', parent:'neptune', radiusKm:1353.4, aKm:354759, periodDays:-5.876854, incDeg:156.9, ref:'equator',
+      phi0:130.0, temp:'−235 ℃', type:'天然卫星' },
+    { key:'charon', name:'冥卫一', parent:'pluto', radiusKm:606, aKm:19591, periodDays:6.3872, incDeg:0.08, ref:'equator',
+      phi0:300.0, temp:'−220 ℃', type:'天然卫星' },
+  ],
+
+  // —— 哈雷彗星（§2.5）——
+  halley: { key:'halley', name:'哈雷彗星', en:'1P/Halley',
+    a:17.834, e:0.96714, Ideg:162.26, omegaDeg:111.33, Odeg:58.42,
+    Tp:2446470.96, Pdays:27512.6, radiusKm:5.5, type:'短周期彗星' },
+
+  // 行星黄道坐标（AU）→ 黄道直角坐标（§3.3，逐字照抄）
+  stateAt(p, T){
+    const a = p.a + p.da*T;
+    const e = p.e + p.de*T;
+    const I = (p.I + p.dI*T)*ASTRO.D2R;
+    const L = (p.L + p.dL*T)*ASTRO.D2R;
+    const W = (p.W + p.dW*T)*ASTRO.D2R;   // ϖ
+    const O = (p.O + p.dO*T)*ASTRO.D2R;   // Ω
+    const w = W - O;                       // ω
+    let M = ASTRO.wrapPi(L - W);
+    const E = ASTRO.solveKepler(M, e);
+    const xp = a*(Math.cos(E) - e);
+    const yp = a*Math.sqrt(1 - e*e)*Math.sin(E);
+    const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(O), sO=Math.sin(O), cI=Math.cos(I), sI=Math.sin(I);
+    const x = (cw*cO - sw*sO*cI)*xp + (-sw*cO - cw*sO*cI)*yp;
+    const y = (cw*sO + sw*cO*cI)*xp + (-sw*sO + cw*cO*cI)*yp;
+    const z = (sw*sI)*xp + (cw*sI)*yp;
+    return { x, y, z, a, e, I, r:Math.sqrt(x*x+y*y+z*z) };
+  },
+
+  // 哈雷：M = 2π(JD − Tp)/P
+  halleyAt(jd){
+    const h = ASTRO.halley;
+    const a = h.a, e = h.e;
+    const I = h.Ideg*ASTRO.D2R, w = h.omegaDeg*ASTRO.D2R, O = h.Odeg*ASTRO.D2R;
+    const M = ASTRO.wrapPi(2*Math.PI*(jd - h.Tp)/h.Pdays);
+    const E = ASTRO.solveKepler(M, e);
+    const xp = a*(Math.cos(E) - e);
+    const yp = a*Math.sqrt(1 - e*e)*Math.sin(E);
+    const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(O), sO=Math.sin(O), cI=Math.cos(I), sI=Math.sin(I);
+    const x = (cw*cO - sw*sO*cI)*xp + (-sw*cO - cw*sO*cI)*yp;
+    const y = (cw*sO + sw*cO*cI)*xp + (-sw*sO + cw*cO*cI)*yp;
+    const z = (sw*sI)*xp + (cw*sI)*yp;
+    return { x, y, z, r:Math.sqrt(x*x+y*y+z*z), a, e, M };
+  },
+
+  // 黄道坐标 → world（§3.4：world = (x, z, −y)），并做幂律压缩
+  eclToWorld(x,y,z, compress){
+    const r = Math.sqrt(x*x+y*y+z*z);
+    if(r < 1e-12) return { wx:0, wy:0, wz:0, r, rd:0, s:0 };
+    const rd = ASTRO.SCALE * Math.pow(r, compress);
+    const s = rd/r;
+    return { wx:x*s, wy:z*s, wz:-y*s, r, rd, s };
+  },
+
+  // 活力公式（km/s）
+  visViva(rAU, aAU){ return 29.7847*Math.sqrt(Math.max(2/rAU - 1/aAU, 1e-12)); },
+
+  // 自转轴：axis_ecl → world（§2.2）
+  axisWorld(p){
+    const t = p.tilt*ASTRO.D2R, pl = p.poleLon*ASTRO.D2R;
+    const sx = Math.sin(t)*Math.cos(pl), sy = Math.sin(t)*Math.sin(pl), sz = Math.cos(t);
+    return [sx, sz, -sy]; // (x, z, −y)
+  },
+
+  // JD → 公历（ 用于日期显示 / 有效区间判定 ）
+  jdToDate(jd){
+    const z = Math.floor(jd + 0.5), f = jd + 0.5 - z;
+    let a = z;
+    if(z >= 2299161){ const al = Math.floor((z-1867216.25)/36524.25); a = z + 1 + al - Math.floor(al/4); }
+    const b = a + 1524, c = Math.floor((b-122.1)/365.25), d = Math.floor(365.25*c), e = Math.floor((b-d)/30.6001);
+    const dayF = b - d - Math.floor(30.6001*e) + f;
+    const month = (e < 14) ? e - 1 : e - 13;
+    const year = (month > 2) ? c - 4716 : c - 4715;
+    let di = Math.floor(dayF);
+    let fr = dayF - di;
+    if(fr >= 0.5 + 1e-9){ di += 1; fr -= 1; } // 进位到下一天，剩余为负——用 12h 制：以 0 时为基准
+    // 更稳妥：日部分带小数，转成时分秒
+    let day = Math.floor(dayF);
+    let rem = (dayF - day)*24;
+    let hh = Math.floor(rem); let rem2 = (rem-hh)*60;
+    let mi = Math.floor(rem2); let ss = Math.round((rem2-mi)*60);
+    if(ss>=60){ ss-=60; mi+=1; } if(mi>=60){ mi-=60; hh+=1; } if(hh>=24){ hh-=24; day+=1; }
+    return { y:year, m:month, d:day, hh, mi, ss };
+  },
+  dateToJD(y,m,d,hh,mi,ss){
+    let yy=y, mm=m, dd=d;
+    if(mm<=2){ yy-=1; mm+=12; }
+    const A = Math.floor(yy/100);
+    const B = 2 - A + Math.floor(A/4);
+    return Math.floor(365.25*(yy+4716)) + Math.floor(30.6001*(mm+1)) + dd + B - 1524.5
+         + (hh + mi/60 + ss/3600)/24;
+  },
+  jdYear(jd){ return ASTRO.jdToDate(jd).y; }
+};
+/* 科普文字（信息卡） */
+ASTRO.descs = {
+  sun:'一颗 G2V 型主序星，占太阳系总质量的 99.86%。核心每秒将约 6 亿吨氢聚变为氦，光子要经过数万年才挣到表面，再只用 8 分钟抵达地球。',
+  mercury:'最小、最快的行星，几乎没有大气，昼夜温差近 600 ℃。它的轨道偏心率在大行星中最大，且每百年存在 43 角秒的额外近日点进动——广义相对论最早的验证之一。',
+  venus:'浓厚的二氧化碳大气造成失控温室效应，表面 464 ℃，比水星更热。它逆向自转，一个金星日（243 个地球日）比一个金星年（225 天）还长。',
+  earth:'已知唯一存在生命的天体，表面 71% 被液态水覆盖。磁层与臭氧层共同屏蔽了太阳风与紫外线，夜面城市灯光在轨道上清晰可见。',
+  moon:'地球唯一的天然卫星，因潮汐锁定永远以同一面朝向我们。它正以每年约 3.8 cm 的速度缓慢远离地球。',
+  mars:'锈红色来自表面广泛分布的氧化铁尘埃。它拥有太阳系最高的火山（奥林帕斯山）和最长的峡谷（水手谷），南北半球的地质面貌截然不同。',
+  jupiter:'质量是其余行星总和的 2.5 倍。大红斑是一场持续了至少 350 年的反气旋风暴，尺度足以吞下整个地球。四颗伽利略卫星的 1:2:4 轨道共振清晰可见。',
+  io:'太阳系火山活动最剧烈的天体，潮汐加热驱动了 400 多座活火山，表面几乎看不到撞击坑。',
+  europa:'冰壳之下藏着一片咸水海洋，水量约为地球海洋总和的两倍，被视为寻找地外生命的首选目标之一。',
+  ganymede:'太阳系最大的卫星，比水星还大，也是唯一拥有自身磁场的卫星。',
+  callisto:'太阳系中撞击坑最密集的天体之一，表面 40 多亿年来几乎没有被地质活动更新过。',
+  saturn:'以壮丽的环系闻名。环主要由水冰构成，宽度数十万公里，平均厚度却只有约几十米。土星的平均密度比水还低。',
+  titan:'唯一拥有浓厚大气的卫星，表面下着甲烷雨、分布着液态甲烷湖泊，是地球之外最接近「地表世界」的地方。',
+  uranus:'自转轴几乎躺在轨道面内（倾角 97.8°），像一颗侧躺着滚动的星球，每个极点要经历 42 年的极昼与极夜。',
+  neptune:'太阳系最遥远的行星，风速可达 2,100 km/h，是已知最强的行星风。它的位置先由数学计算「预言」，随后才被望远镜找到。',
+  triton:'沿逆行轨道公转——它应是海王星俘获的柯伊伯带天体。表面氮冰间歇泉能喷出 8 km 高的羽流。',
+  pluto:'2006 年被重新归类为矮行星。新视野号揭示了它的心形氮冰平原「斯普特尼克平原」与 3,500 m 高的水冰山峰。',
+  charon:'直径达到冥王星的一半，两者绕共同的质心旋转，构成罕见的「双矮行星」系统。',
+  halley:'最著名的短周期彗星，约 76 年回归一次。每次接近太阳时冰物质剧烈升华，形成上亿公里长的彗尾；上一次回归在 1986 年，下一次在 2061 年年中。'
+};
+ASTRO.ringNote = '距离按 r^0.62 幂律压缩显示，天体的黄经、相位与合冲关系保持精确；打开「真实距离比例」可看原始尺度。';
+/* ============================================================
+ * WebGL2 核心：上下文 / 着色器程序 / 帧缓冲 / 网格
+ * ============================================================ */
+const GLX = {
+  gl:null, hasFloat:false, hasMSAA:false, samples:4,
+
+  init(canvas){
+    const gl = canvas.getContext('webgl2', {
+      antialias:false, alpha:false, depth:true, stencil:false,
+      premultipliedAlpha:false, preserveDrawingBuffer:false,
+      powerPreference:'high-performance'
+    });
+    if(!gl) throw new Error('需要 WebGL2 支持');
+    this.gl = gl;
+    this.hasFloat = !!gl.getExtension('EXT_color_buffer_float');
+    gl.getExtension('OES_texture_float_linear'); // 32F 线性过滤（尽力而为）
+    return gl;
+  },
+
+  compile(type, src){
+    const gl = this.gl;
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if(!gl.getShaderParameter(sh, gl.COMPILE_STATUS)){
+      const log = gl.getShaderInfoLog(sh);
+      console.error('着色器编译失败:\n' + log);
+      throw new Error('shader: ' + log);
+    }
+    return sh;
+  },
+
+  program(vsSrc, fsSrc, name){
+    const gl = this.gl;
+    const vs = this.compile(gl.VERTEX_SHADER, vsSrc);
+    const fs = this.compile(gl.FRAGMENT_SHADER, fsSrc);
+    const p = gl.createProgram();
+    gl.attachShader(p, vs); gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    if(!gl.getProgramParameter(p, gl.LINK_STATUS)){
+      const log = gl.getProgramInfoLog(p);
+      console.error('程序链接失败 ' + name + ':\n' + log);
+      throw new Error('link: ' + name);
+    }
+    gl.deleteShader(vs); gl.deleteShader(fs);
+    // 缓存 uniform 位置
+    const u = {};
+    const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    for(let i=0;i<n;i++){
+      const info = gl.getActiveUniform(p, i);
+      const nm = info.name.replace(/\[0\]$/, '');
+      u[nm] = gl.getUniformLocation(p, info.name);
+    }
+    return { prog:p, u, name };
+  },
+
+  texture(w, h, float, filter){
+    const gl = this.gl;
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    if(float && this.hasFloat){
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+    }else{
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return t;
+  },
+
+  fbo(tex){
+    const gl = this.gl;
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return f;
+  },
+
+  // UV 球（含自动绕序修正——7.12）
+  buildSphere(latN, lonN){
+    const gl = this.gl;
+    const verts = new Float32Array((latN+1)*(lonN+1)*3);
+    let k = 0;
+    for(let i=0;i<=latN;i++){
+      const lat = (i/latN - 0.5)*Math.PI;
+      const cl = Math.cos(lat), sl = Math.sin(lat);
+      for(let j=0;j<=lonN;j++){
+        const lon = j/lonN*2*Math.PI;
+        verts[k++]=cl*Math.cos(lon); verts[k++]=sl; verts[k++]=cl*Math.sin(lon);
+      }
+    }
+    const idx = new Uint32Array(latN*lonN*6);
+    k = 0;
+    for(let i=0;i<latN;i++) for(let j=0;j<lonN;j++){
+      const A=i*(lonN+1)+j, B=(i+1)*(lonN+1)+j, C=(i+1)*(lonN+1)+j+1, D=i*(lonN+1)+j+1;
+      idx[k++]=A; idx[k++]=B; idx[k++]=D;
+      idx[k++]=B; idx[k++]=C; idx[k++]=D;
+    }
+    // 绕序自检：三角形几何法向与外向（质心方向）相反则翻转
+    for(let t=0;t<idx.length;t+=3){
+      const a=verts[idx[t]*3], b=verts[idx[t]*3+1], c=verts[idx[t]*3+2];
+      const a1=verts[idx[t+1]*3], b1=verts[idx[t+1]*3+1], c1=verts[idx[t+1]*3+2];
+      const a2=verts[idx[t+2]*3], b2=verts[idx[t+2]*3+1], c2=verts[idx[t+2]*3+2];
+      const ux=a1-a, uy=b1-b, uz=c1-c, vx=a2-a, vy=b2-b, vz=c2-c;
+      const nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx;
+      const cx=(a+a1+a2), cy=(b+b1+b2), cz=(c+c1+c2);
+      if(nx*cx+ny*cy+nz*cz < 0){ const tmp=idx[t+1]; idx[t+1]=idx[t+2]; idx[t+2]=tmp; }
+    }
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    const ib = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    return { vao, count:idx.length };
+  },
+
+  // 环面网格：XZ 平面，局部半径单位 = 行星半径（1.15 – 2.45）
+  buildAnnulus(rSeg, aSeg, r0, r1){
+    const gl = this.gl;
+    const verts = new Float32Array((rSeg+1)*(aSeg+1)*3);
+    let k=0;
+    for(let i=0;i<=rSeg;i++){
+      const r = r0 + (r1-r0)*i/rSeg;
+      for(let j=0;j<=aSeg;j++){
+        const a = j/aSeg*2*Math.PI;
+        verts[k++]=r*Math.cos(a); verts[k++]=0; verts[k++]=r*Math.sin(a);
+      }
+    }
+    const idx = new Uint32Array(rSeg*aSeg*6);
+    k=0;
+    for(let i=0;i<rSeg;i++) for(let j=0;j<aSeg;j++){
+      const A=i*(aSeg+1)+j, B=(i+1)*(aSeg+1)+j, C=(i+1)*(aSeg+1)+j+1, D=i*(aSeg+1)+j+1;
+      idx[k++]=A; idx[k++]=B; idx[k++]=D; idx[k++]=B; idx[k++]=C; idx[k++]=D;
+    }
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    const ib = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    return { vao, count:idx.length };
+  },
+
+  // 居中 billboard 四边形（-1..1）
+  buildQuad(){
+    const gl = this.gl;
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+    return { vao, count:4 };
+  },
+
+  // 全屏大三角形
+  buildFS(){
+    const gl = this.gl;
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+    return { vao, count:3 };
+  },
+
+  // 动态顶点缓冲（轨道缎带等）
+  dynamicBuffer(floatPerVert, maxVerts){
+    const gl = this.gl;
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, maxVerts*floatPerVert*4, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, floatPerVert*4, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, floatPerVert*4, 12);
+    gl.enableVertexAttribArray(2);
+    gl.vertexAttribPointer(2, 1, gl.FLOAT, false, floatPerVert*4, 24);
+    gl.enableVertexAttribArray(3);
+    gl.vertexAttribPointer(3, 1, gl.FLOAT, false, floatPerVert*4, 28);
+    gl.bindVertexArray(null);
+    return { vao, vb, max: maxVerts, fpv: floatPerVert };
+  }
+};
+/* ============================================================
+ * GLSL 着色器（一）：公共块 + 背景/恒星/小行星/轨道/广告牌/大气/后期
+ * ============================================================ */
+const SHD = {};
+
+SHD.H = '#version 300 es\nprecision highp float;\nprecision highp int;\n';
+
+SHD.NOISE = `
+const float PI = 3.14159265;
+float sstep(float a, float b, float x){ float t = clamp((x-a)/(b-a), 0.0, 1.0); return t*t*(3.0-2.0*t); }
+float hash13(vec3 p){ p = fract(p*0.1031); p += dot(p, p.zyx+31.32); return fract((p.x+p.y)*p.z); }
+vec3 hash33(vec3 p){ p = fract(p*vec3(0.1031,0.1030,0.0973)); p += dot(p, p.yxz+33.33); return fract((p.xxy+p.yxx)*p.zyx); }
+float vnoise(vec3 p){
+  vec3 i = floor(p), f = fract(p);
+  f = f*f*(3.0-2.0*f);
+  float a = mix(hash13(i),               hash13(i+vec3(1.,0.,0.)), f.x);
+  float b = mix(hash13(i+vec3(0.,1.,0.)),hash13(i+vec3(1.,1.,0.)), f.x);
+  float c = mix(hash13(i+vec3(0.,0.,1.)),hash13(i+vec3(1.,0.,1.)), f.x);
+  float d = mix(hash13(i+vec3(0.,1.,1.)),hash13(i+vec3(1.,1.,1.)), f.x);
+  return mix(mix(a,b,f.y), mix(c,d,f.y), f.z);
+}
+const mat3 FBM_ROT = mat3(0.00,0.80,0.60, -0.80,0.36,-0.48, -0.60,-0.48,0.64);
+float fbm(vec3 p, int oct){
+  float a = 0.5, s = 0.0, nm = 0.0;
+  for(int i=0;i<7;i++){
+    if(i>=oct) break;
+    s += a*vnoise(p);
+    nm += a;
+    a *= 0.5;
+    p = FBM_ROT*p*2.03;
+  }
+  return s/max(nm, 1e-4);
+}
+vec2 worley(vec3 p){            // 返回 (F1, 胞随机数 id)
+  vec3 ip = floor(p), fp = fract(p);
+  float f1 = 8.0, id = 0.0;
+  for(int x=-1;x<=1;x++) for(int y=-1;y<=1;y++) for(int z=-1;z<=1;z++){
+    vec3 q = vec3(float(x),float(y),float(z));
+    float d = length(hash33(ip+q) + q - fp);
+    if(d < f1){ f1 = d; id = hash13(ip+q); }
+  }
+  return vec2(f1, id);
+}
+vec3 worley2(vec3 p){           // 返回 (F1, F2, id) —— F2−F1 用于胞壁网络
+  vec3 ip = floor(p), fp = fract(p);
+  float f1 = 8.0, f2 = 8.0, id = 0.0;
+  for(int x=-1;x<=1;x++) for(int y=-1;y<=1;y++) for(int z=-1;z<=1;z++){
+    vec3 q = vec3(float(x),float(y),float(z));
+    float d = length(hash33(ip+q) + q - fp);
+    if(d < f1){ f2 = f1; f1 = d; id = hash13(ip+q); }
+    else if(d < f2){ f2 = d; }
+  }
+  return vec3(f1, f2, id);
+}
+vec3 rotYv(vec3 p, float a){ float c = cos(a), s = sin(a); return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z); }
+float wPi(float x){ return mod(x + 180.0, 360.0) - 180.0; }
+float gsq(float x){ return exp(-x*x); }   // 高斯（pow 负底数未定义，统一走这里）
+`;
+
+// —— 环系径向密度（供环着色器与行星片元着色器共用）——
+SHD.RINGD = `
+float fbm1(float x){
+  return (vnoise(vec3(x, 3.7, 9.1))*0.5 + vnoise(vec3(x*2.7, 7.3, 1.9))*0.25
+        + vnoise(vec3(x*6.1, 1.3, 4.7))*0.125)/0.875;
+}
+float ringDensityRaw(float r, int type){
+  if(type == 0){                       // 土星
+    float d = 0.0;
+    d += 0.11 * sstep(1.225, 1.245, r) * (1.0 - sstep(1.51, 1.53, r));   // C
+    d += 1.20 * sstep(1.51, 1.53,  r) * (1.0 - sstep(1.93, 1.95, r));   // B
+    float cass = sstep(1.945, 1.955, r) * (1.0 - sstep(2.025, 2.035, r)); // 卡西尼缝
+    d *= 1.0 - 0.87*cass;
+    d += 0.58 * sstep(2.02, 2.03,  r) * (1.0 - sstep(2.25, 2.27, r));   // A
+    d *= 1.0 - 0.92*gsq((r-2.214)/0.0045);                              // 恩克缝
+    d *= 1.0 - 0.80*gsq((r-2.265)/0.0018);                              // 基勒缝
+    d += 0.30 * gsq((r-2.324)/0.0055);                                  // F 环
+    d *= 0.70 + 0.60*fbm1(r*230.0);
+    return max(d, 0.0);
+  } else if(type == 1){                // 天王星
+    float d = 0.55*gsq((r-1.951)/0.0055);
+    d += 0.20*gsq((r-1.909)/0.0025);
+    d += 0.15*gsq((r-1.863)/0.0022);
+    d += 0.12*gsq((r-1.823)/0.0020);
+    d += 0.10*gsq((r-1.786)/0.0018);
+    d += 0.085*gsq((r-1.751)/0.0016);
+    d += 0.07*gsq((r-1.690)/0.0015);
+    return d;
+  }
+  return 0.016*sstep(1.40, 1.43, r)*(1.0 - sstep(1.78, 1.81, r));        // 木星（极稀薄）
+}
+float ringDensity(float r, int type, float mu){
+  // 掠射时视线在环面内扫过一段半径区间：径向 5 点积分近似（消侧视虚线/珠串）
+  float w = clamp((1.0/max(mu, 0.10) - 1.0)*0.035, 0.0, 0.4);
+  if(w < 0.02) return ringDensityRaw(r, type);
+  float s = ringDensityRaw(r, type)
+          + ringDensityRaw(max(r - w*0.5, 0.0), type)
+          + ringDensityRaw(r + w*0.5, type)
+          + ringDensityRaw(max(r - w, 0.0), type)
+          + ringDensityRaw(min(r + w, 2.45), type);
+  return s/5.0;
+}
+`;
+
+SHD.VS_STD = SHD.H + `
+layout(location=0) in vec3 aPos;
+uniform mat4 uVP, uModel;
+out vec3 vWorld;
+out vec3 vObj;
+out vec3 vN;
+void main(){
+  vObj = aPos;
+  vec4 w = uModel*vec4(aPos, 1.0);
+  vWorld = w.xyz;
+  vN = normalize(mat3(uModel)*aPos);
+  gl_Position = uVP*w;
+}
+`;
+
+/* ---------- 背景（银河）---------- */
+SHD.FS_BG = SHD.H + SHD.NOISE + `
+in vec2 vUV;
+out vec4 o;
+uniform mat4 uInvVP;
+void main(){
+  vec2 ndc = vUV*2.0 - 1.0;
+  vec4 f4 = uInvVP*vec4(ndc, 1.0, 1.0);
+  vec4 n4 = uInvVP*vec4(ndc, -1.0, 1.0);
+  vec3 rd = normalize(f4.xyz/f4.w - n4.xyz/n4.w);
+  vec3 col = vec3(0.0013, 0.0015, 0.0021);           // 深空底色 ~0.002（7.7）
+  vec3 pole = vec3(-0.8678, 0.4972, 0.0003);          // 银北极（world）
+  vec3 gc = normalize(vec3(-0.0548, -0.0966, 0.9938));// 银心方向
+  float d = dot(rd, pole);
+  float band = exp(-d*d*24.0);
+  float mn = fbm(rd*2.6 + 4.2, 4);
+  float bright = band*(0.048 + 0.115*pow(mn, 1.7));
+  float dust = band*pow(fbm(rd*4.1 + 9.1, 3), 2.2);
+  bright *= 1.0 - 0.85*clamp(dust*2.4, 0.0, 1.0);
+  float gcGlow = pow(max(dot(rd, gc), 0.0), 20.0)*band*0.09;
+  vec3 mwc = mix(vec3(0.80,0.74,0.70), vec3(0.62,0.72,0.98), mn);
+  col += mwc*bright + vec3(1.0,0.84,0.62)*gcGlow;
+  o = vec4(col, 1.0);
+}
+`;
+
+/* ---------- 恒星点 ---------- */
+SHD.VS_STAR = SHD.H + `
+layout(location=0) in vec3 aDir;
+layout(location=1) in float aLum;
+layout(location=2) in float aSize;
+layout(location=3) in float aCi;
+uniform mat4 uVP;
+uniform vec3 uCamPos;
+uniform float uTime;
+out vec3 vCol;
+out float vLum;
+void main(){
+  vec3 c;
+  if(aCi < 1.0)      c = vec3(1.00,0.72,0.52);  // M
+  else if(aCi < 2.0) c = vec3(1.00,0.83,0.66);  // K
+  else if(aCi < 3.0) c = vec3(1.00,0.95,0.88);  // G
+  else if(aCi < 4.0) c = vec3(1.00,0.98,0.94);  // F
+  else if(aCi < 5.0) c = vec3(0.96,0.97,1.00);  // A
+  else if(aCi < 6.0) c = vec3(0.85,0.90,1.00);  // B
+  else               c = vec3(0.72,0.80,1.00);  // O
+  float tw = 1.0 + 0.15*sin(uTime*(1.3+aCi*1.7) + aCi*37.0);
+  vCol = c;
+  vLum = aLum*tw;
+  gl_Position = uVP*vec4(uCamPos + aDir*4000.0, 1.0);
+  gl_PointSize = aSize;
+}
+`;
+SHD.FS_STAR = SHD.H + `
+in vec3 vCol;
+in float vLum;
+out vec4 o;
+void main(){
+  vec2 pc = gl_PointCoord*2.0 - 1.0;
+  float r2 = dot(pc, pc);
+  if(r2 > 1.0) discard;
+  float a = pow(max(1.0-r2, 0.0), 2.0);
+  o = vec4(vCol*(vLum*a*0.85), 1.0);
+}
+`;
+
+/* ---------- 小行星带（顶点着色器内解开普勒）---------- */
+SHD.VS_BELT = SHD.H + `
+layout(location=0) in vec4 aP1;   // a, e, I, Ω
+layout(location=1) in vec4 aP2;   // ω, M0, n, size
+uniform mat4 uVP;
+uniform vec3 uCamPos;
+uniform float uJD, uCompress, uPxScale;
+out float vL;
+float keplerVS(float M, float e){
+  M = mod(M + PI, 2.0*PI) - PI;   // 需 PI —— 由 NOISE 块提供
+  float E = M + e*sin(M)*(1.0 + e*cos(M));
+  for(int i=0;i<7;i++){
+    float f = E - e*sin(E) - M;
+    E -= f/(1.0 - e*cos(E));
+  }
+  return E;
+}
+void main(){
+  float a = aP1.x, e = aP1.y, I = aP1.z, O = aP1.w;
+  float w = aP2.x;
+  float M = aP2.y + aP2.z*(uJD - 2451545.0);
+  float E = keplerVS(M, e);
+  float xp = a*(cos(E) - e);
+  float yp = a*sqrt(max(1.0 - e*e, 0.0))*sin(E);
+  float cw = cos(w), sw = sin(w), cO = cos(O), sO = sin(O), cI = cos(I), sI = sin(I);
+  float x = (cw*cO - sw*sO*cI)*xp + (-sw*cO - cw*sO*cI)*yp;
+  float y = (cw*sO + sw*cO*cI)*xp + (-sw*sO + cw*cO*cI)*yp;
+  float z = (sw*sI)*xp + (cw*sI)*yp;
+  float r = sqrt(x*x + y*y + z*z);
+  float s = 34.0*pow(r, uCompress)/max(r, 1e-6);
+  vec3 world = vec3(x, z, -y)*s;
+  vec4 cp = uVP*vec4(world, 1.0);
+  gl_Position = cp;
+  float dist = distance(uCamPos, world);
+  gl_PointSize = clamp(aP2.w*uPxScale/max(dist, 0.5), 0.75, 4.5);
+  vL = clamp(1.4*pow(1.0/max(r, 0.5), 0.40), 0.05, 1.15);
+}
+`;
+SHD.VS_BELT = SHD.H + SHD.NOISE + SHD.VS_BELT.substring(SHD.H.length);
+
+SHD.FS_BELT = SHD.H + `
+in float vL;
+uniform vec3 uTint;
+uniform float uAlpha;
+out vec4 o;
+void main(){
+  vec2 pc = gl_PointCoord*2.0 - 1.0;
+  float r2 = dot(pc, pc);
+  if(r2 > 1.0) discard;
+  float a = pow(max(1.0 - r2, 0.0), 1.5);
+  o = vec4(uTint*(a*uAlpha*vL), 1.0);
+}
+`;
+
+/* ---------- 轨道缎带（屏幕空间展宽——7.2）---------- */
+SHD.VS_RIBBON = SHD.H + `
+layout(location=0) in vec3 aPos;    // 采样点世界坐标
+layout(location=1) in vec3 aNext;   // 指向相邻采样点
+layout(location=2) in float aSide;  // ±1
+layout(location=3) in float aD;     // 拖尾参数 0(头)..1(尾)
+uniform mat4 uVP;
+uniform vec2 uHalfViewport;         // 像素
+uniform float uHalfWidth;           // 半宽（像素）
+out float vD;
+out float vSide;
+void main(){
+  vec4 c0 = uVP*vec4(aPos, 1.0);
+  vec4 c1 = uVP*vec4(aNext, 1.0);
+  if(c0.w <= 0.0 || c1.w <= 0.0){ gl_Position = vec4(0.0, 0.0, 3.0, 1.0); vD = aD; vSide = aSide; return; }
+  vec2 n0 = c0.xy/c0.w;
+  vec2 n1 = c1.xy/c1.w;
+  vec2 tp = (n1 - n0)*uHalfViewport;      // 像素空间切线
+  float tl = length(tp);
+  tp = tl > 1e-6 ? tp/tl : vec2(1.0, 0.0);
+  vec2 nrm = vec2(-tp.y, tp.x);
+  vec2 off = nrm*(aSide*uHalfWidth)/uHalfViewport;  // NDC 中正好 1px/px
+  gl_Position = vec4(c0.xy + off*c0.w, c0.z, c0.w);
+  vD = aD;
+  vSide = aSide;
+}
+`;
+SHD.FS_RIBBON = SHD.H + `
+in float vD;
+in float vSide;
+uniform vec3 uColor;
+uniform float uBase, uPeak;
+out vec4 o;
+void main(){
+  float edge = 1.0 - abs(vSide);
+  float a = (uBase + uPeak*pow(max(0.0, 1.0 - vD), 3.2))*edge;
+  o = vec4(uColor*a, 1.0);
+}
+`;
+
+/* ---------- 广告牌（日冕 / 远距离圆点）---------- */
+SHD.VS_BILL = SHD.H + `
+layout(location=0) in vec2 aP;
+uniform mat4 uVP;
+uniform vec3 uPos, uRight, uUp;
+uniform float uSize;
+out vec2 vP;
+void main(){
+  vP = aP;
+  vec3 w = uPos + (uRight*aP.x + uUp*aP.y)*uSize;
+  gl_Position = uVP*vec4(w, 1.0);
+}
+`;
+SHD.FS_CORONA = SHD.H + SHD.NOISE + `
+in vec2 vP;
+out vec4 o;
+uniform float uGain, uTime, uSeed;
+void main(){
+  float r = length(vP);
+  if(r > 1.0) discard;
+  float ang = atan(vP.y, vP.x);
+  vec3 q = vec3(cos(ang)*1.6, sin(ang)*1.6, r*2.8) + vec3(uSeed) + vec3(uTime*0.006, 0.0, 0.0);
+  float st = vnoise(q)*0.6 + vnoise(q*2.7)*0.3;
+  float I = pow(max(1.0 - r, 0.0), 2.0)*(0.45 + 0.75*st);
+  o = vec4(vec3(1.0, 0.87, 0.66)*(I*uGain), 1.0);
+}
+`;
+SHD.FS_DOT = SHD.H + `
+in vec2 vP;
+out vec4 o;
+uniform vec3 uColor;
+uniform float uAlpha;
+void main(){
+  float r = length(vP);
+  if(r > 1.0) discard;
+  float a = pow(max(1.0 - r, 0.0), 1.6);
+  o = vec4(uColor*(a*uAlpha), 1.0);
+}
+`;
+
+/* ---------- 彗尾缎带（CPU 建顶点）---------- */
+SHD.VS_TAIL = SHD.H + `
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec2 aUV;   // u: 0(头)..1(尾), v: -1..1
+uniform mat4 uVP;
+out vec2 vUV;
+void main(){ vUV = aUV; gl_Position = uVP*vec4(aPos, 1.0); }
+`;
+SHD.FS_TAIL = SHD.H + `
+in vec2 vUV;
+uniform vec3 uColor;
+uniform float uAlpha;
+out vec4 o;
+void main(){
+  float across = 1.0 - abs(vUV.y);
+  float I = pow(max(across, 0.0), 2.0)*(1.0 - vUV.x)*uAlpha;
+  o = vec4(uColor*I, 1.0);
+}
+`;
+
+/* ---------- 大气壳层（§5.9 视线撞击参数积分）---------- */
+SHD.FS_ATMO = SHD.H + SHD.NOISE + `
+in vec3 vWorld;
+out vec4 o;
+uniform vec3 uCamPos, uCenter, uSunPos, uColor, uSunset;
+uniform float uRadius, uScaleH, uStrength, uSunI;
+void main(){
+  vec3 rd = normalize(vWorld - uCamPos);
+  vec3 oc = uCenter - uCamPos;
+  float tca = dot(oc, rd);
+  if(tca < 0.0) discard;
+  float b = sqrt(max(dot(oc, oc) - tca*tca, 0.0))/uRadius;   // 归一化撞击参数
+  float dens = exp(-max(b - 1.0, 0.0)/uScaleH);
+  dens *= 1.0 - sstep(1.0, 0.960, b)*0.86;                    // 盘面内只穿半层
+  vec3 an = normalize(uCamPos + rd*tca - uCenter);            // 最近点法向（昼夜判定）
+  vec3 L = normalize(uSunPos - uCenter);
+  float mu = dot(an, L);
+  float lightF = sstep(-0.02, 0.34, mu);
+  float mie = pow(dot(rd, L)*0.5 + 0.5, 4.0);
+  vec3 tint = mix(uColor, uSunset, sstep(0.38, 0.03, abs(mu))*0.8);
+  o = vec4(tint*(dens*lightF*mie*uStrength*uSunI), 1.0);
+}
+`;
+
+/* ---------- 后期 ---------- */
+SHD.VS_POST = SHD.H + `
+layout(location=0) in vec2 aP;
+out vec2 vUV;
+void main(){ vUV = aP*0.5 + 0.5; gl_Position = vec4(aP, 0.0, 1.0); }
+`;
+
+SHD.FS_DOWN = SHD.H + `
+uniform sampler2D uTex;
+uniform vec2 uTexel;
+uniform float uThresh, uKnee;
+uniform int uThOn;
+in vec2 vUV;
+out vec4 o;
+vec3 tap(vec2 dx){ return texture(uTex, vUV + dx*uTexel).rgb; }
+void main(){
+  vec3 s = tap(vec2(0.0))*4.0;
+  s += (tap(vec2(-1.0,-1.0)) + tap(vec2(1.0,-1.0)) + tap(vec2(-1.0,1.0)) + tap(vec2(1.0,1.0)))*2.0;
+  s += tap(vec2(-2.0,0.0)) + tap(vec2(2.0,0.0)) + tap(vec2(0.0,-2.0)) + tap(vec2(0.0,2.0));
+  s += (tap(vec2(-2.0,-2.0)) + tap(vec2(2.0,-2.0)) + tap(vec2(-2.0,2.0)) + tap(vec2(2.0,2.0)))*0.5;
+  vec3 c = s/16.0;
+  if(uThOn == 1){
+    float br = max(c.r, max(c.g, c.b));
+    float soft = clamp(br - uThresh + uKnee, 0.0, 2.0*uKnee);
+    soft = soft*soft/(4.0*uKnee + 1e-4);
+    float contrib = max(soft, br - uThresh)/max(br, 1e-4);
+    c *= contrib;
+  }
+  o = vec4(c, 1.0);
+}
+`;
+
+SHD.FS_UP = SHD.H + `
+uniform sampler2D uTex;
+uniform vec2 uTexel;
+in vec2 vUV;
+out vec4 o;
+void main(){
+  vec3 s = vec3(0.0);
+  s += texture(uTex, vUV + uTexel*vec2(-1.0,-1.0)).rgb;
+  s += texture(uTex, vUV + uTexel*vec2( 0.0,-1.0)).rgb*2.0;
+  s += texture(uTex, vUV + uTexel*vec2( 1.0,-1.0)).rgb;
+  s += texture(uTex, vUV + uTexel*vec2(-1.0, 0.0)).rgb*2.0;
+  s += texture(uTex, vUV).rgb*4.0;
+  s += texture(uTex, vUV + uTexel*vec2( 1.0, 0.0)).rgb*2.0;
+  s += texture(uTex, vUV + uTexel*vec2(-1.0, 1.0)).rgb;
+  s += texture(uTex, vUV + uTexel*vec2( 0.0, 1.0)).rgb*2.0;
+  s += texture(uTex, vUV + uTexel*vec2( 1.0, 1.0)).rgb;
+  o = vec4(s/16.0, 1.0);
+}
+`;
+
+SHD.FS_COMP = SHD.H + `
+uniform sampler2D uScene, uBloom;
+uniform vec2 uRes, uSunPx;
+uniform float uVis, uTime, uExposure, uBloomOn;
+in vec2 vUV;
+out vec4 o;
+float hash21(vec2 p){ p = fract(p*vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y)*p.x); }
+void main(){
+  vec2 cuv = vUV*2.0 - 1.0;
+  float r2 = dot(cuv, cuv);
+  vec2 off = cuv*r2*0.0022;                       // 轻微色散
+  vec3 col;
+  col.r = texture(uScene, vUV + off).r;
+  col.g = texture(uScene, vUV).g;
+  col.b = texture(uScene, vUV - off).b;
+  if(uBloomOn > 0.5) col += texture(uBloom, vUV).rgb*0.34;
+  if(uVis > 0.001){
+    vec2 px = vUV*uRes;
+    vec2 d = px - uSunPx;
+    float dist = length(d);
+    float fl = 0.0;
+    fl += exp(-dist/60.0)*0.35 + exp(-dist/180.0)*0.07;
+    for(int k=0; k<6; k++){                        // 六道星芒
+      float a = float(k)*PI/3.0 + 0.35;
+      vec2 rdir = vec2(cos(a), sin(a));
+      float cros = abs(d.x*rdir.y - d.y*rdir.x);
+      float proj = d.x*rdir.x + d.y*rdir.y;
+      if(proj > 0.0) fl += gsq(cros/1.8)*exp(-proj/(90.0 + float(k)*35.0))*0.028;
+    }
+    fl += gsq(d.y/2.0)*exp(-abs(d.x)/230.0)*0.05;   // 变形光条
+    col += vec3(1.0, 0.93, 0.82)*(fl*uVis);
+    vec2 c0 = uRes*0.5;                            // 鬼影光斑
+    for(int g=0; g<4; g++){
+      float t = 0.42 + float(g)*0.34;
+      vec2 gp = uSunPx + (c0 - uSunPx)*t;
+      float gr = 14.0 + float(g)*17.0;
+      float gs = gsq(length(px - gp)/gr);
+      vec3 tint;
+      if(g == 0)      tint = vec3(0.9, 0.6, 1.0);
+      else if(g == 1) tint = vec3(1.0, 0.75, 0.5);
+      else if(g == 2) tint = vec3(0.6, 0.85, 1.0);
+      else            tint = vec3(1.0, 0.9, 0.7);
+      col += tint*gs*0.018*uVis;
+    }
+  }
+  col *= uExposure;
+  col = clamp((col*(2.51*col + 0.03))/(col*(2.43*col + 0.59) + 0.14), 0.0, 1.0);  // ACES
+  col = pow(col, vec3(1.0/2.2));
+  col *= 1.0 - 0.30*sstep(0.35, 1.45, r2);        // 暗角
+  float g2 = hash21(vUV*uRes + fract(uTime)*vec2(17.0, 113.0)) - 0.5;
+  col += g2*0.010*(0.35 + 0.65*(1.0 - dot(col, col)));
+  o = vec4(col, 1.0);
+}
+`;
+SHD.FS_COMP = SHD.H + SHD.NOISE + SHD.FS_COMP.substring(SHD.H.length);
+/* ============================================================
+ * GLSL 着色器（二）：行星 uber 表面 / 太阳 / 环系
+ * ============================================================ */
+
+SHD.FS_PLANET = SHD.H + SHD.NOISE + SHD.RINGD + `
+in vec3 vWorld;
+in vec3 vObj;
+in vec3 vN;
+out vec4 o;
+uniform vec3 uCamPos, uSunPos, uSunDirObj;
+uniform float uSunI, uTime, uAmbient, uBumpK, uDetail, uWarp1, uWarp2;
+uniform int uType;
+uniform float uRingInner, uRingOuter;
+uniform int uRingType;
+
+void craterLayer(vec3 p, float freq, float depth, inout float h, inout float a){
+  vec2 w = worley(p*freq);
+  float d1 = w.x, id = w.y;
+  float exist = step(id, 0.74);
+  float rad = 0.13 + 0.22*fract(id*7.31);
+  float t = d1/rad;
+  float bowl = t < 1.0 ? -(1.0 - t*t) : 0.0;
+  float rim = exp(-(t - 1.0)*(t - 1.0)/0.0676);
+  float mask = exist*sstep(0.60, 0.40, d1);        // 胞界前衰减（7.5）
+  h += (bowl*0.90 + rim*0.50)*depth*mask;
+  a += (bowl*0.55 + rim*0.32)*mask;
+}
+float craterField(vec3 p, float amp, out float aOut){
+  float h = 0.0, a = 0.0;
+  craterLayer(p, 5.0,  amp,        h, a);
+  craterLayer(p, 12.0, amp*0.52,   h, a);
+  craterLayer(p, 28.0, amp*0.26,   h, a);
+  craterLayer(p, 62.0, amp*0.13,   h, a);
+  aOut = a;
+  return h;
+}
+vec3 bumpNormal(vec3 N, vec3 wp, float h, float k){
+  vec3 dpx = dFdx(wp), dpy = dFdy(wp);
+  float dhx = dFdx(h), dhy = dFdy(h);
+  vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
+  float det = dot(dpx, r1);
+  if(abs(det) < 1e-12) return N;
+  vec3 grad = (r1*dhx + r2*dhy)/det;
+  return normalize(N - k*grad);
+}
+
+void main(){
+  vec3 p = normalize(vObj);
+  vec3 N = normalize(vN);
+  vec3 V = normalize(uCamPos - vWorld);
+  vec3 L = normalize(uSunPos - vWorld);
+  vec3 alb = vec3(0.2);
+  float h = 0.0, bumpAmt = 0.0, specK = 0.0, specPow = 60.0;
+  float soft0 = -0.03, soft1 = 0.25;
+  vec3 emit = vec3(0.0);
+  vec3 cloudCol = vec3(0.0);
+  float cloudA = 0.0;
+  float latD = degrees(asin(clamp(p.y, -1.0, 1.0)));
+  float lonD = degrees(atan(p.z, p.x));
+  float aM;
+
+  if(uType == 0){                                   // 水星
+    h = craterField(p, uDetail, aM);
+    float bn = fbm(p*2.5 + 11.0, 3);
+    alb = vec3(0.148, 0.142, 0.135)*(0.80 + 0.45*bn);
+    alb *= clamp(1.0 + aM, 0.30, 1.7);
+    bumpAmt = 1.0;
+    h += (bn - 0.5)*0.3;
+  }
+  else if(uType == 1){                              // 金星（只有云）
+    vec3 tw = rotYv(p, -latD*0.018);
+    float v1 = fbm(tw*3.2 + vec3(uTime*0.010, 0.0, uTime*0.004), 5);
+    float v2 = fbm(vec3(p.x*1.7, p.y*4.0, p.z*1.7) + v1*1.4 + vec3(3.7), 4);
+    alb = mix(vec3(0.80, 0.70, 0.50), vec3(0.94, 0.89, 0.76), sstep(0.35, 0.68, v2*0.75 + v1*0.35));
+    alb *= 0.78 + 0.18*v1;
+  }
+  else if(uType == 2){                              // 地球
+    float hh = fbm(p*2.2 + 1.7, 7);
+    float land = sstep(0.549, 0.556, hh);
+    float coast = sstep(0.505, 0.549, hh);
+    float dn = fbm(p*4.3 + 9.2, 4);
+    vec3 oc = mix(vec3(0.012, 0.040, 0.085), vec3(0.004, 0.115, 0.145), coast*0.75);
+    float desert = gsq((abs(latD) - 24.0)/11.0)*sstep(0.48, 0.60, dn);
+    vec3 green = mix(vec3(0.030, 0.072, 0.020), vec3(0.062, 0.105, 0.032), dn);
+    vec3 landc = mix(green, vec3(0.28, 0.215, 0.12), desert);
+    landc = mix(landc, vec3(0.22, 0.21, 0.20), sstep(0.60, 0.665, hh));
+    float iceEdge = p.y > 0.0 ? 0.925 : 0.905;
+    float ice = sstep(iceEdge, iceEdge + 0.03, abs(p.y) + 0.03*(hh - 0.5));
+    landc = mix(landc, vec3(0.82, 0.86, 0.92), ice);
+    alb = mix(oc, landc, land);
+    h = (hh - 0.552)*2.0 + (dn - 0.5)*0.5;
+    bumpAmt = land*uDetail;
+    float ndl0 = dot(N, L);
+    // 云：随纬度做纬向漂移（速率与累计角都有界，防剪切糊成螺旋）+ 云量带
+    float ct = min(uTime, 40.0);
+    vec3 pc2 = rotYv(p, ct*(2.0*PI/60.0)*cos(radians(latD))*cos(radians(latD)));
+    float cl = fbm(pc2*3.0 + vec3(0.0, ct*0.006, 0.0), 5);
+    float cm = 0.52 + 0.50*gsq(latD/13.0) + 0.42*gsq((abs(latD) - 52.0)/16.0);
+    cloudA = sstep(0.52, 0.60, cl*cm*1.30);
+    float dayC = sstep(-0.04, 0.18, ndl0);
+    cloudCol = vec3(0.93, 0.95, 0.98)*(0.72 + 0.28*cl)*uSunI*dayC;
+    // 夜面城市灯光
+    float lno = fbm(p*13.0 + 5.0, 3);
+    float lights = pow(max(lno - 0.46, 0.0)*3.2, 3.0);
+    float night = sstep(0.02, -0.18, ndl0);
+    emit = vec3(1.0, 0.70, 0.32)*lights*land*(1.0 - ice)*night*(1.0 - cloudA)*0.30;
+    specK = 0.55*(1.0 - land)*(1.0 - cloudA);
+    specPow = 420.0;
+  }
+  else if(uType == 3){                              // 火星
+    float north = sstep(0.02, 0.30, p.y);
+    float amp = uDetail*0.5*mix(1.0, 0.22, north);  // 北半球年轻平原：坑少 78%
+    h = craterField(p, amp, aM);
+    float bn = fbm(p*3.0 + 7.7, 4);
+    alb = vec3(0.170, 0.063, 0.027)*(0.80 + 0.55*bn);
+    alb = mix(alb, vec3(0.105, 0.045, 0.028), sstep(0.56, 0.64, bn)*0.75);
+    float vm = gsq((latD + 9.0)/5.5)*sstep(244.0, 262.0, lonD)*sstep(318.0, 300.0, lonD);
+    alb = mix(alb, vec3(0.075, 0.038, 0.026), vm*0.8);
+    h -= vm*0.5;
+    float bn2 = fbm(p*7.0 + 21.0, 3);
+    float capN = sstep(0.928, 0.950, p.y + 0.030*(bn2 - 0.5));
+    float capS = sstep(0.952, 0.972, -p.y + 0.025*(bn2 - 0.5));
+    alb = mix(alb, vec3(0.80, 0.82, 0.86), max(capN, capS));
+    alb *= clamp(1.0 + aM, 0.30, 1.7);
+    bumpAmt = 1.0;
+    h += (bn - 0.5)*0.25;
+  }
+  else if(uType == 4 || uType == 5){                // 木星 / 土星（纬向带纹）
+    float w1 = fbm(vec3(p.x*2.4, p.y*7.0, p.z*2.4) + vec3(uTime*0.006, 0.0, 0.0), 4);
+    float w2 = fbm(vec3(p.x*4.8, p.y*16.0, p.z*4.8) + vec3(7.3), 4)*uDetail;
+    float latW = latD + (w1 - 0.5)*uWarp1 + (w2 - 0.5)*uWarp2;
+    float band = 0.42*sin(radians(latW)*4.0 + 0.8)
+               + 0.26*sin(radians(latW)*9.0 + 2.1)
+               + 0.16*sin(radians(latW)*17.0 + 4.0)
+               + 0.10*sin(radians(latW)*30.0 + 1.3);
+    band = band*0.5 + 0.5;
+    float polar = 1.0 - 0.94*sstep(46.0, 88.0, abs(latD));   // 极区淡出带纹
+    band = mix(0.5, band, polar);
+    if(uType == 4){
+      float bandJ = clamp(band*1.35 - 0.16, 0.0, 1.0);
+      alb = mix(vec3(0.40, 0.24, 0.13), vec3(0.86, 0.80, 0.67), bandJ);
+      alb = mix(alb, vec3(0.58, 0.36, 0.20), 0.30*(1.0 - polar));
+    }else{
+      float bandS = clamp(band*1.15 - 0.07, 0.0, 1.0);
+      alb = mix(vec3(0.60, 0.48, 0.31), vec3(0.88, 0.80, 0.63), bandS);
+    }
+    alb *= 0.92 + 0.16*w2;
+    vec2 wo = worley(vec3(p.x*1.6, p.y*7.5, p.z*1.6) + vec3(5.1));
+    alb = mix(alb, alb*vec3(1.30, 1.25, 1.15), sstep(0.22, 0.05, wo.x)*0.30);
+    if(uType == 4){                                 // 大红斑
+      float dLon = wPi(lonD - 210.0);
+      float du = dLon*cos(radians(-22.0));
+      float dv = latD + 22.0;
+      float a1 = du/9.0, a2 = dv/4.2;
+      float rr = sqrt(a1*a1 + a2*a2);
+      float inG = sstep(1.0, 0.86, rr);
+      if(inG > 0.001){
+        float th = atan(dv, du);
+        float sp = vnoise(vec3(cos(th)*1.4, sin(th)*1.4, rr*2.2 - uTime*0.02));
+        vec3 grs = mix(vec3(0.72, 0.30, 0.16), vec3(0.88, 0.48, 0.28), sp);
+        grs = mix(grs, vec3(0.95, 0.75, 0.55), sstep(0.45, 0.0, rr));
+        alb = mix(alb, grs, inG);
+        alb *= 1.0 + 0.22*gsq((rr - 1.12)/0.14);
+      }
+    }else{                                          // 土星北极六边形
+      if(p.y > 0.80){
+        float rc = length(p.xz);
+        float hexR = 0.215/max(cos(radians(mod(lonD, 60.0) - 30.0)), 0.15);
+        float ed = abs(rc - hexR);
+        float hex = sstep(0.020, 0.006, ed)*sstep(0.80, 0.90, p.y);
+        alb = mix(alb, alb*0.55, hex);
+        alb = mix(alb, vec3(0.55, 0.62, 0.60), sstep(0.985, 0.995, p.y)*0.5);
+      }
+    }
+  }
+  else if(uType == 6){                              // 天王星
+    alb = vec3(0.38, 0.62, 0.66);
+    float bu = 0.5 + 0.5*sin(radians(latD)*6.0 + 1.2);
+    alb *= 0.88 + 0.22*bu;
+    alb = mix(alb, vec3(0.44, 0.68, 0.70), sstep(55.0, 85.0, latD)*0.25);
+    float stU = pow(fbm(vec3(p.x*1.5, p.y*6.0, p.z*1.5)*2.4 + vec3(9.0), 4), 3.0);
+    alb += vec3(0.35, 0.42, 0.45)*sstep(0.12, 0.40, stU)*0.4;   // 甲烷亮云条
+  }
+  else if(uType == 7){                              // 海王星
+    alb = vec3(0.10, 0.18, 0.50);
+    float bn = 0.5 + 0.5*sin(radians(latD)*5.0 + 2.0);
+    alb *= 0.95 + 0.08*bn;
+    float st = pow(fbm(vec3(p.x*1.3, p.y*5.0, p.z*1.3)*2.5, 4), 3.0);
+    alb += vec3(0.26, 0.32, 0.42)*sstep(0.10, 0.35, st)*0.42;   // 亮甲烷云条
+    float du = wPi(lonD - 40.0)*cos(radians(-25.0))/12.0;
+    float dv = (latD + 25.0)/7.0;
+    float rs = sqrt(du*du + dv*dv);
+    alb = mix(alb, vec3(0.06, 0.10, 0.30), sstep(1.0, 0.8, rs)*0.85);  // 大暗斑
+  }
+  else if(uType == 8){                              // 冥王星
+    float bn = fbm(p*3.2 + 1.0, 4);
+    alb = vec3(0.62, 0.56, 0.52)*(0.90 + 0.20*bn);
+    float cm = exp(-pow((latD + 10.0)/16.0, 2.0))*sstep(0.45, 0.60, fbm(p*2.8 + 13.0, 4));
+    alb = mix(alb, vec3(0.16, 0.10, 0.07), cm*0.85);           // 克苏鲁暗带
+    float g1 = gsq(wPi(lonD - 170.0)/22.0)*gsq((latD - 8.0)/13.0);
+    float g2 = gsq(wPi(lonD - 150.0)/16.0)*gsq((latD - 16.0)/11.0);
+    alb = mix(alb, vec3(0.88, 0.86, 0.84), sstep(0.45, 0.75, max(g1, g2)));  // 心形冰原
+    bumpAmt = uDetail*0.4;
+    h = (bn - 0.5)*0.3;
+  }
+  else if(uType == 9){                              // 月球
+    h = craterField(p, uDetail, aM);
+    float m = sstep(0.47, 0.55, fbm(p*2.1 + 3.7, 4));
+    alb = mix(vec3(0.145, 0.142, 0.138), vec3(0.062, 0.060, 0.058), m);
+    alb *= 0.90 + 0.25*vnoise(p*35.0);
+    const vec3 TYCHO = vec3(0.718, -0.682, -0.140);
+    float ang = acos(clamp(dot(p, TYCHO), -1.0, 1.0));
+    float rayN = fbm(p*46.0 + vec3(31.0), 2);
+    alb *= 1.0 + 0.55*sstep(0.60, 0.72, rayN)*sstep(1.05, 0.35, ang)*(1.0 - m);  // 辐射纹
+    alb *= clamp(1.0 + aM, 0.30, 1.7);
+    bumpAmt = 1.0;
+  }
+  else if(uType == 10){                             // 木卫一 Io
+    float bn = fbm(p*3.1 + 1.3, 4);
+    alb = mix(vec3(0.85, 0.66, 0.22), vec3(0.78, 0.42, 0.12), sstep(0.40, 0.65, bn));
+    float frost = sstep(0.62, 0.75, fbm(p*5.0 + 9.0, 3));
+    alb = mix(alb, vec3(0.92, 0.90, 0.82), frost*0.8);
+    vec2 w = worley(p*9.0 + 2.2);
+    alb = mix(alb, vec3(0.14, 0.07, 0.05), sstep(0.16, 0.05, w.x));
+    emit = vec3(1.0, 0.35, 0.10)*sstep(0.10, 0.02, w.x)*0.35;   // 火山口微光
+    bumpAmt = uDetail*0.5;
+    h = (bn - 0.5)*0.4;
+  }
+  else if(uType == 11){                             // 木卫二 Europa
+    alb = vec3(0.68, 0.67, 0.62)*(0.95 + 0.10*vnoise(p*40.0));
+    float lv1 = abs(fbm(p*3.5 + 2.0, 4) - 0.5);
+    float lv2 = abs(fbm(p*8.0 + 8.0, 4) - 0.5);
+    float lv3 = abs(fbm(p*18.0 + 15.0, 3)*uDetail - 0.5);
+    float line = sstep(0.030, 0.006, lv1)*0.7 + sstep(0.022, 0.004, lv2)*0.6 + sstep(0.014, 0.003, lv3)*0.4;
+    alb = mix(alb, vec3(0.50, 0.26, 0.17), clamp(line, 0.0, 1.0)*0.7);   // 红褐线纹
+  }
+  else if(uType == 12){                             // 木卫三 Ganymede
+    float tn = fbm(p*2.4 + 5.0, 4);
+    float dark = sstep(0.46, 0.54, tn);
+    alb = mix(vec3(0.235, 0.225, 0.21), vec3(0.095, 0.090, 0.085), dark);
+    float gv = abs(fbm(p*6.0 + 2.0, 3) - 0.5);
+    alb = mix(alb, vec3(0.34, 0.33, 0.30), sstep(0.020, 0.004, gv)*(1.0 - dark)*0.7);  // 沟槽
+    h = craterField(p, uDetail*0.7, aM);
+    alb *= clamp(1.0 + aM, 0.35, 1.6);
+    bumpAmt = 0.8;
+  }
+  else if(uType == 13){                             // 木卫四 Callisto
+    alb = vec3(0.135, 0.125, 0.115)*(0.85 + 0.5*fbm(p*3.0 + 4.0, 3));
+    h = craterField(p, uDetail*1.1, aM);
+    alb *= clamp(1.0 + aM, 0.30, 1.8);
+    vec2 w = worley(p*14.0 + 4.0);
+    alb *= 1.0 + sstep(0.06, 0.02, w.x)*1.4;                   // 亮溅射物
+    bumpAmt = 1.0;
+  }
+  else if(uType == 14){                             // 土卫六 Titan（浓雾，晨昏线特软）
+    float bn = fbm(p*2.4 + 8.0, 4);
+    alb = vec3(0.60, 0.40, 0.17)*(0.88 + 0.24*bn);
+    alb = mix(alb, vec3(0.45, 0.30, 0.13), sstep(0.35, 0.15, abs(latD))*0.4);
+    soft0 = -0.30; soft1 = 0.45;
+  }
+  else if(uType == 15){                             // 海卫一 Triton
+    float bn = fbm(p*2.8 + 3.0, 4);
+    float cn = worley(p*8.0 + 1.0).x;
+    alb = vec3(0.66, 0.60, 0.56)*(0.90 + 0.20*bn);
+    alb *= 0.92 + 0.12*sstep(0.10, 0.40, cn);
+    float cap = sstep(-0.50, -0.62, p.y - 0.05*(bn - 0.5));
+    alb = mix(alb, vec3(0.82, 0.72, 0.66), cap);
+    vec2 w = worley(p*16.0 + 7.0);
+    alb = mix(alb, vec3(0.30, 0.26, 0.24), sstep(0.10, 0.04, w.x)*0.5*cap);
+  }
+  else if(uType == 16){                             // 冥卫一 Charon
+    float bn = fbm(p*3.0 + 6.0, 4);
+    alb = vec3(0.30, 0.295, 0.29)*(0.90 + 0.30*bn);
+    h = craterField(p, uDetail*0.8, aM);
+    alb *= clamp(1.0 + aM, 0.35, 1.6);
+    float redcap = sstep(0.55, 0.72, p.y + 0.05*(bn - 0.5));
+    alb = mix(alb, vec3(0.22, 0.12, 0.07), redcap*0.8);        // 北极红冠
+    bumpAmt = 0.9;
+  }
+  else{                                             // 17 哈雷彗核（粗糙岩核）
+    float bn = fbm(p*5.0 + 2.0, 4);
+    alb = vec3(0.085, 0.080, 0.075)*(0.70 + 0.60*bn);
+    h = craterField(p, uDetail, aM);
+    alb *= clamp(1.0 + aM, 0.30, 1.7);
+    bumpAmt = 1.0;
+  }
+
+  if(bumpAmt > 0.001){
+    N = bumpNormal(N, vWorld, h, uBumpK*bumpAmt);
+  }
+
+  // —— 环在行星上的投影（§5.10.2）——
+  float ringShade = 1.0;
+  if(uRingOuter > 1.01 && abs(uSunDirObj.y) > 0.02){
+    vec3 so = uSunDirObj;
+    float tt = -p.y/so.y;
+    if(tt > 0.0){
+      float rq = length((p + so*tt).xz);
+      if(rq > uRingInner && rq < uRingOuter){
+        ringShade = exp(-ringDensity(rq, uRingType, abs(so.y))*1.45/abs(so.y));
+      }
+    }
+  }
+
+  float ndl = dot(N, L);
+  float day = sstep(soft0, soft1, ndl);
+  vec3 col = alb*(uSunI*day*ringShade);
+  if(specK > 0.0){
+    vec3 Hv = normalize(L + V);
+    col += vec3(1.0, 0.98, 0.9)*specK*pow(max(dot(N, Hv), 0.0), specPow)*day*uSunI;
+  }
+  col += emit;
+  col += alb*(uAmbient*uSunI);
+  float ter = gsq((ndl - 0.04)/0.16);
+  col *= mix(vec3(1.0), vec3(1.07, 0.82, 0.62), ter*0.45);   // 晨昏线暖色
+  col = mix(col, cloudCol, cloudA);
+  o = vec4(col, 1.0);
+}
+`;
+
+
+/* ---------- 太阳（§5.1）---------- */
+SHD.FS_SUN = SHD.H + SHD.NOISE + `
+in vec3 vWorld;
+in vec3 vObj;
+in vec3 vN;
+out vec4 o;
+uniform vec3 uCamPos;
+uniform float uTime, uDetail;
+void main(){
+  vec3 p = normalize(vObj);
+  vec3 N = normalize(vN);
+  vec3 V = normalize(uCamPos - vWorld);
+  float mu = max(dot(N, V), 0.0);
+  vec3 w1 = worley2(p*76.0 + vec3(uTime*0.018, 0.0, uTime*0.010));
+  vec3 w2 = worley2(p*31.0 + vec3(-uTime*0.008, uTime*0.012, 0.0));
+  float g1 = sstep(0.02, 0.30, w1.y - w1.x);
+  float g2 = sstep(0.02, 0.30, w2.y - w2.x);
+  float gran = 0.30 + uDetail*(0.70*g1 + 0.35*g2);
+  float sup = fbm(p*6.5 + vec3(uTime*0.005, 0.0, -uTime*0.003), 4);
+  float heat = 0.18 + 0.52*gran + 0.30*(sup - 0.5);
+  float sp = fbm(p*3.1 + 11.0, 4);
+  float umbra = sstep(0.750, 0.788, sp);
+  float pen = sstep(0.700, 0.750, sp) - umbra;
+  float spotD = 1.0 - 0.88*umbra - 0.42*pen;
+  heat *= mix(1.0, 0.60, umbra + pen*0.7);
+  float limb = 0.24 + 0.76*pow(mu, 0.38);
+  heat *= 0.55 + 0.45*pow(mu, 0.45);
+  heat = clamp(heat, 0.0, 1.0);
+  vec3 c = mix(vec3(0.55, 0.09, 0.01), vec3(1.00, 0.35, 0.05), sstep(0.0, 0.35, heat));
+  c = mix(c, vec3(1.00, 0.72, 0.25), sstep(0.35, 0.62, heat));
+  c = mix(c, vec3(1.00, 0.93, 0.75), sstep(0.62, 0.85, heat));
+  c = mix(c, vec3(1.00, 0.98, 0.92), sstep(0.85, 1.00, heat));
+  o = vec4(c*(limb*2.0*spotD), 1.0);
+}
+`;
+
+/* ---------- 环系（§5.10：光学厚度 + 前向散射 + 行星投影）---------- */
+SHD.FS_RING = SHD.H + SHD.NOISE + SHD.RINGD + `
+in vec3 vWorld;
+in vec3 vObj;
+in vec3 vN;
+out vec4 o;
+uniform vec3 uCamPos, uCenter, uSunPos, uRingNormal;
+uniform float uSunI, uPlanetR;
+uniform int uRingType;
+vec3 ringColor(float r, int type){
+  if(type == 0){
+    vec3 c = mix(vec3(0.42, 0.40, 0.38), vec3(0.72, 0.66, 0.56), sstep(1.2, 1.6, r));
+    c = mix(c, vec3(0.80, 0.74, 0.64), sstep(2.0, 2.2, r));
+    return c;
+  }else if(type == 1){
+    return vec3(0.15, 0.15, 0.16);
+  }
+  return vec3(0.35, 0.22, 0.14);
+}
+void main(){
+  float r = length(vObj.xz);
+  vec3 vdir = normalize(uCamPos - vWorld);
+  vec3 ldir = normalize(uSunPos - vWorld);
+  float muV = max(abs(dot(uRingNormal, vdir)), 0.10);
+  float d = ringDensity(r, uRingType, muV);
+  if(d < 0.0005) discard;
+  float muS = max(abs(dot(uRingNormal, ldir)), 0.10);
+  float tv = d*1.45/muV;
+  float ts = d*1.45/muS;
+  float alpha = 1.0 - exp(-tv);
+  float sObs = dot(uRingNormal, normalize(uCamPos - uCenter));
+  float sSun = dot(uRingNormal, ldir);
+  float lum;
+  if(sObs*sSun > 0.0) lum = (1.0 - exp(-ts))*0.85;
+  else lum = exp(-ts*0.42)*1.15*(1.0 - exp(-ts*0.75));
+  // —— 行星在环上的投影（§5.10.1 解析求交）——
+  vec3 oc = vWorld - uCenter;
+  float bb = dot(oc, ldir);
+  float shade = 1.0;
+  if(bb < 0.0){
+    float dmin = sqrt(max(dot(oc, oc) - bb*bb, 0.0));
+    shade = sstep(uPlanetR*0.97, uPlanetR*1.09, dmin);
+  }
+  o = vec4(ringColor(r, uRingType)*(lum*uSunI*shade), alpha);
+}
+`;
+/* ============================================================
+ * 渲染引擎：天体状态 / 相机 / 管线编排 / 小行星带 / 彗尾 / 后期
+ * ============================================================ */
+const CFG = {
+  FOV: 50*Math.PI/180,
+  SUN_R: 4.6,
+  COMPRESS_MIN: 0.62,
+  MAX_DIST: 3500,
+  STAR_R: 3900,
+};
+const ENG = {
+  bodies: [], byKey: {},
+  state: {
+    jd: 0, paused: false, speedV: 58,
+    compress: CFG.COMPRESS_MIN, compressT: CFG.COMPRESS_MIN, compressAnim: 0,
+    show: { orbit:true, label:true, moons:true, belt:true, comet:true, realScale:false, glow:true },
+    focusKey: 'sun',
+    fps: 0,
+  },
+  cam: { yaw:-0.6, pitch:0.46, dist:430, tgtKey:'sun', anim:null, followPos:[0,0,0] },
+  wall: 0, cloudT: 0, sunVis: 1, sunVisT: 1, sunPx: [0,0],
+  quality: 1, W: 0, H: 0, dpr: 1,
+  debug: /[?&]debug=1/.test(location.search),
+};
+
+/* ---------------- 天体定义 ---------------- */
+ENG.initBodies = function(){
+  const D = (km)=>0.72*Math.pow(km/6371, 0.42);
+  const tintOf = {
+    sun:[1,0.88,0.66], mercury:[0.75,0.72,0.68], venus:[0.95,0.85,0.60], earth:[0.45,0.65,1.0],
+    mars:[0.90,0.50,0.30], jupiter:[0.85,0.75,0.60], saturn:[0.95,0.85,0.65], uranus:[0.60,0.85,0.90],
+    neptune:[0.45,0.60,1.0], pluto:[0.80,0.75,0.70], moon:[0.76,0.76,0.76], io:[0.90,0.78,0.35],
+    europa:[0.80,0.80,0.75], ganymede:[0.70,0.68,0.62], callisto:[0.60,0.58,0.55], titan:[0.95,0.68,0.30],
+    triton:[0.80,0.72,0.68], charon:[0.70,0.68,0.66], halley:[0.60,0.90,1.0],
+  };
+  const bt = { mercury:0, venus:1, earth:2, mars:3, jupiter:4, saturn:5, uranus:6, neptune:7,
+               pluto:8, moon:9, io:10, europa:11, ganymede:12, callisto:13, titan:14, triton:15, charon:16, halley:17 };
+  const warp = { jupiter:[9.0,4.0], saturn:[3.8,1.7] };
+  const atmo = {
+    earth:{ c:[0.30,0.55,1.0], s:[1.0,0.42,0.18], h:0.028, k:0.26 },
+    venus:{ c:[0.95,0.85,0.55], s:[1.0,0.75,0.40], h:0.050, k:0.40 },
+    mars:{ c:[0.85,0.55,0.35], s:[1.0,0.50,0.25], h:0.022, k:0.16 },
+    jupiter:{ c:[0.90,0.75,0.55], s:[1.0,0.60,0.35], h:0.030, k:0.12 },
+    saturn:{ c:[0.95,0.85,0.60], s:[1.0,0.70,0.40], h:0.030, k:0.10 },
+    uranus:{ c:[0.55,0.90,0.95], s:[0.8,0.95,1.0], h:0.030, k:0.12 },
+    neptune:{ c:[0.40,0.60,1.0], s:[0.7,0.85,1.0], h:0.030, k:0.13 },
+    titan:{ c:[0.90,0.55,0.22], s:[1.0,0.60,0.25], h:0.060, k:0.55 },
+    pluto:{ c:[0.40,0.60,0.90], s:[0.8,0.85,1.0], h:0.050, k:0.08 },
+  };
+  const ring = { saturn:{t:0,i:1.235,o:2.34}, uranus:{t:1,i:1.68,o:1.96}, jupiter:{t:2,i:1.40,o:1.81} };
+
+  const sun = { key:'sun', name:'太阳', kind:'star', radiusKm:ASTRO.SUN_RADIUS_KM, R:CFG.SUN_R,
+    rotH:609.12, tilt:7.25, poleLon:75.8, rotPhase:0, pos:[0,0,0], rAU:0, tint:tintOf.sun,
+    typeTxt:'G2V 主序星', atmoTxt:'H 73%、He 25%', temp:'5,772 K（有效温度）', mass:'1.989×10³⁰ kg' };
+  sun.basis = basisFromAxis(...ASTRO.axisWorld(sun));
+  ENG.bodies.push(sun); ENG.byKey.sun = sun;
+
+  for(const p of ASTRO.planets){
+    const b = { key:p.key, name:p.name, kind:'planet', el:p, radiusKm:p.radiusKm, R:D(p.radiusKm),
+      rotH:p.rotH, rotPhase:Math.random()*6.28, tint:tintOf[p.key], bodyType:bt[p.key],
+      basis:basisFromAxis(...ASTRO.axisWorld(p)), pos:[0,0,0], posEcl:[0,0,0],
+      rAU:0, aNow:p.a, eNow:p.e, lam:0, beta:0,
+      ring: ring[p.key] || null, atmo: atmo[p.key] || null,
+      warp: warp[p.key] || [0,0], typeTxt:p.type };
+    ENG.bodies.push(b); ENG.byKey[p.key] = b;
+  }
+  for(const m of ASTRO.moons){
+    const par = ENG.byKey[m.parent];
+    const b = { key:m.key, name:m.name, kind:'moon', parentKey:m.parent, parent:par,
+      radiusKm:m.radiusKm, R:D(m.radiusKm), tint:tintOf[m.key], bodyType:bt[m.key],
+      moon:{ aKm:m.aKm, P:Math.abs(m.periodDays), inc:m.incDeg*ASTRO.D2R,
+             ref:m.ref, phi0:m.phi0*ASTRO.D2R, d:0 },
+      pos:[0,0,0], rAU:0, typeTxt:m.type, atmo: m.key==='titan' ? atmo.titan : null };
+    ENG.bodies.push(b); ENG.byKey[m.key] = b;
+  }
+  const hb = { key:'halley', name:'哈雷彗星', kind:'comet', radiusKm:5.5, R:D(5.5),
+    tint:tintOf.halley, bodyType:17, rotH:52.8, rotPhase:1.0, pos:[0,0,0], posEcl:[0,0,0],
+    rAU:35, act:0, velDir:[1,0,0], typeTxt:ASTRO.halley.type };
+  ENG.bodies.push(hb); ENG.byKey.halley = hb;
+
+  // 卫星显示距离（§3.7 / 7.6）：基准 = max(2.35, 环外缘 + 最内层卫星R/行星R + 0.55)
+  const groups = {};
+  for(const m of ASTRO.moons){ (groups[m.parent] = groups[m.parent] || []).push(m); }
+  for(const pk in groups){
+    const par = ENG.byKey[pk];
+    const list = groups[pk].slice().sort((x,y)=>x.aKm-y.aKm);
+    const a0 = list[0].aKm;
+    const rOut = ring[pk] ? ring[pk].o : 1.0;
+    const base = Math.max(2.35, rOut + ENG.byKey[list[0].key].R/par.R + 0.55);
+    for(const m of list){
+      ENG.byKey[m.key].moon.d = par.R*base*Math.pow(m.aKm/a0, 0.55);
+    }
+  }
+};
+
+/* ---------------- 小行星带 / 柯伊伯带生成（§2.6）---------------- */
+function gaussRand(){
+  let u=0, v=0;
+  while(u===0) u=Math.random();
+  while(v===0) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+ENG.initBelts = function(){
+  const gl = GLX.gl;
+  const gaps = [ [2.502,0.022,0.93], [2.825,0.016,0.85], [2.958,0.012,0.70], [3.279,0.020,0.90], [2.065,0.010,0.60] ];
+  function keepProb(a){
+    let p = Math.exp(-0.5*Math.pow((a-2.72)/0.55, 2));
+    for(const g of gaps) p *= 1 - g[2]*Math.exp(-Math.pow((a-g[0])/g[1], 2));
+    return p;
+  }
+  function keplerN(a){ return 2*Math.PI/(365.256*Math.pow(a, 1.5)); }
+  const njup = 3034.74612775/36525*ASTRO.D2R;         // 木星平均运动（rad/天）
+  const nnep = 218.45945325/36525*ASTRO.D2R;
+  const LJUP = 34.39644051*ASTRO.D2R;
+
+  function makeBelt(count, gen){
+    const arr = new Float32Array(count*8);
+    for(let i=0;i<count;i++){
+      const s = gen();
+      arr[i*8]   = s.a; arr[i*8+1] = s.e; arr[i*8+2] = s.I; arr[i*8+3] = s.O;
+      arr[i*8+4] = s.w; arr[i*8+5] = s.M0; arr[i*8+6] = s.n; arr[i*8+7] = s.size;
+    }
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 32, 0);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 32, 16);
+    gl.bindVertexArray(null);
+    return { vao, count };
+  }
+  const TAU = Math.PI*2;
+  // 主带：拒绝采样挖柯克伍德空隙
+  const mainGen = ()=>{
+    let a;
+    for(;;){
+      a = 2.06 + Math.random()*1.22;
+      if(Math.random() < keepProb(a)) break;
+    }
+    return { a, e:clamp(Math.abs(gaussRand())*0.175, 0.01, 0.34),
+      I:clamp(Math.abs(gaussRand())*10*ASTRO.D2R, 0, 26*ASTRO.D2R),
+      O:Math.random()*TAU, w:Math.random()*TAU, M0:Math.random()*TAU,
+      n:keplerN(a), size:0.05 + Math.random()*0.09 };
+  };
+  // 希尔达族：3:2 共振（n = 1.5·n_木）
+  const hildaGen = ()=>({ a:3.90 + gaussRand()*0.09, e:0.10 + Math.random()*0.20,
+    I:Math.abs(gaussRand())*6*ASTRO.D2R, O:Math.random()*TAU, w:Math.random()*TAU,
+    M0:Math.random()*TAU, n:1.5*njup, size:0.05 + Math.random()*0.08 });
+  // 木星特洛伊：M0 = (L木±60°+高斯) − ϖ，n = n_木（几十年不散）
+  const trojanGen = ()=>{
+    const lead = Math.random() < 0.5 ? 1 : -1;
+    const lam = LJUP + lead*Math.PI/3 + gaussRand()*26*ASTRO.D2R;
+    const O = Math.random()*TAU, w = Math.random()*TAU;
+    const W = O + w;
+    return { a:5.202 + gaussRand()*0.15, e:clamp(Math.abs(gaussRand())*0.03, 0.001, 0.12),
+      I:clamp(Math.abs(gaussRand())*6*ASTRO.D2R, 0, 20*ASTRO.D2R),
+      O, w, M0:ASTRO.wrapPi(lam - W), n:njup, size:0.05 + Math.random()*0.08 };
+  };
+  // 柯伊伯带：冥族 / 经典 / 离散盘
+  const kuiperGen = ()=>{
+    const r = Math.random();
+    if(r < 0.22){
+      const a = 39.45 + gaussRand()*0.55;
+      return { a, e:clamp(Math.abs(gaussRand())*0.08, 0.01, 0.25), I:clamp(Math.abs(gaussRand())*9*ASTRO.D2R, 0, 30*ASTRO.D2R),
+        O:Math.random()*TAU, w:Math.random()*TAU, M0:Math.random()*TAU, n:1.5*nnep, size:0.05 + Math.random()*0.08 };
+    }else if(r < 0.86){
+      const a = 42.5 + Math.random()*5.2;
+      return { a, e:Math.random()*0.11, I:clamp(Math.abs(gaussRand())*8.75*ASTRO.D2R, 0, 30*ASTRO.D2R),
+        O:Math.random()*TAU, w:Math.random()*TAU, M0:Math.random()*TAU, n:keplerN(a), size:0.05 + Math.random()*0.08 };
+    }
+    const a = 48 + Math.random()*32;
+    return { a, e:0.15 + Math.random()*0.35, I:clamp(Math.abs(gaussRand())*22*ASTRO.D2R, 0, 42*ASTRO.D2R),
+      O:Math.random()*TAU, w:Math.random()*TAU, M0:Math.random()*TAU, n:keplerN(a), size:0.05 + Math.random()*0.09 };
+  };
+  ENG.belts = [
+    makeBelt(9000, mainGen), makeBelt(900, hildaGen), makeBelt(2000, trojanGen), makeBelt(6000, kuiperGen),
+  ];
+};
+
+/* ---------------- 恒星（11000，向银道面聚集）---------------- */
+ENG.initStars = function(){
+  const gl = GLX.gl;
+  const N = 11000;
+  const arr = new Float32Array(N*6);
+  const pole = [-0.8678, 0.4972, 0.0003];
+  for(let i=0;i<N;i++){
+    let x, y, z, l;
+    do{ x=Math.random()*2-1; y=Math.random()*2-1; z=Math.random()*2-1; l=x*x+y*y+z*z; }while(l>1||l<1e-4);
+    l = Math.sqrt(l); x/=l; y/=l; z/=l;
+    if(Math.random() < 0.55){
+      const f = 0.45 + 0.45*Math.random();
+      const dp = x*pole[0]+y*pole[1]+z*pole[2];
+      x -= pole[0]*dp*f; y -= pole[1]*dp*f; z -= pole[2]*dp*f;
+      const ll = Math.hypot(x,y,z)||1; x/=ll; y/=ll; z/=ll;
+    }
+    const lum = Math.pow(Math.random(), 3.6);
+    const size = 1.0 + 2.0*Math.pow(lum, 0.45)*Math.random();
+    let ci;
+    const r = Math.random();
+    if(r < 0.76) ci = 0; else if(r < 0.88) ci = 1; else if(r < 0.956) ci = 2;
+    else if(r < 0.986) ci = 3; else if(r < 0.992) ci = 4; else if(r < 0.999) ci = 5; else ci = 6;
+    const k = i*6;
+    arr[k]=x; arr[k+1]=y; arr[k+2]=z; arr[k+3]=0.25+2.6*lum; arr[k+4]=size; arr[k+5]=ci;
+  }
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vb = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+  gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 24, 0);
+  gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 24, 12);
+  gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 24, 16);
+  gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3, 1, gl.FLOAT, false, 24, 20);
+  gl.bindVertexArray(null);
+  ENG.stars = { vao, count:N };
+};
+
+/* ---------------- 程序与网格 ---------------- */
+ENG.initGLResources = function(){
+  const gl = GLX.gl;
+  ENG.meshSphere = GLX.buildSphere(64, 96);
+  ENG.meshAnnulus = GLX.buildAnnulus(72, 128, 1.15, 2.45);
+  ENG.meshQuad = GLX.buildQuad();
+  ENG.meshFS = GLX.buildFS();
+
+  ENG.pPlanet = GLX.program(SHD.VS_STD, SHD.FS_PLANET, 'planet');
+  ENG.pSun    = GLX.program(SHD.VS_STD, SHD.FS_SUN, 'sun');
+  ENG.pAtmo   = GLX.program(SHD.VS_STD, SHD.FS_ATMO, 'atmo');
+  ENG.pRing   = GLX.program(SHD.VS_STD, SHD.FS_RING, 'ring');
+  ENG.pRibbon = GLX.program(SHD.VS_RIBBON, SHD.FS_RIBBON, 'ribbon');
+  ENG.pBelt   = GLX.program(SHD.VS_BELT, SHD.FS_BELT, 'belt');
+  ENG.pStar   = GLX.program(SHD.VS_STAR, SHD.FS_STAR, 'star');
+  ENG.pBG     = GLX.program(SHD.VS_POST, SHD.FS_BG, 'bg');
+  ENG.pCorona = GLX.program(SHD.VS_BILL, SHD.FS_CORONA, 'corona');
+  ENG.pDot    = GLX.program(SHD.VS_BILL, SHD.FS_DOT, 'dot');
+  ENG.pTail   = GLX.program(SHD.VS_TAIL, SHD.FS_TAIL, 'tail');
+  ENG.pDown   = GLX.program(SHD.VS_POST, SHD.FS_DOWN, 'down');
+  ENG.pUp     = GLX.program(SHD.VS_POST, SHD.FS_UP, 'up');
+  ENG.pComp   = GLX.program(SHD.VS_POST, SHD.FS_COMP, 'comp');
+
+  ENG.ribbons = {};
+  for(const k of ['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto','halley'])
+    ENG.ribbons[k] = GLX.dynamicBuffer(8, 512*2);
+  for(const m of ASTRO.moons) ENG.ribbons[m.key] = GLX.dynamicBuffer(8, 256*2);
+  ENG.tailIon = { vao:null, buf:new Float32Array(34*2*5) };
+  ENG.tailDust = { vao:null, buf:new Float32Array(34*2*5) };
+  for(const t of [ENG.tailIon, ENG.tailDust]){
+    t.vao = gl.createVertexArray();
+    gl.bindVertexArray(t.vao);
+    t.vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, t.vb);
+    gl.bufferData(gl.ARRAY_BUFFER, t.buf.byteLength, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 20, 0);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 20, 12);
+    gl.bindVertexArray(null);
+  }
+};
+
+/* ---------------- 帧缓冲 ---------------- */
+ENG.initFramebuffers = function(){
+  const gl = GLX.gl;
+  const w = Math.max(8, Math.round(ENG.W)), h = Math.max(8, Math.round(ENG.H));
+  ENG.W = w; ENG.H = h;
+  if(ENG.sceneTex) gl.deleteTexture(ENG.sceneTex);
+  if(ENG.sceneFBO) gl.deleteFramebuffer(ENG.sceneFBO);
+  ENG.sceneTex = GLX.texture(w, h, GLX.hasFloat, gl.LINEAR);
+  ENG.sceneFBO = GLX.fbo(ENG.sceneTex);
+  // MSAA
+  if(ENG.msaaFBO){
+    gl.deleteFramebuffer(ENG.msaaFBO); gl.deleteRenderbuffer(ENG.msaaColorRB); gl.deleteRenderbuffer(ENG.msaaDepthRB);
+    ENG.msaaFBO = null;
+  }
+  try{
+    const rbC = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, rbC);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, GLX.hasFloat ? gl.RGBA16F : gl.RGBA8, w, h);
+    const rbD = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, rbD);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.DEPTH_COMPONENT24, w, h);
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, rbC);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rbD);
+    if(gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE){
+      ENG.msaaFBO = f; ENG.msaaColorRB = rbC; ENG.msaaDepthRB = rbD;
+    }else{
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.deleteFramebuffer(f);
+    }
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+  }catch(e){ ENG.msaaFBO = null; }
+  // 泛光 6 级
+  if(!ENG.bloom){ ENG.bloom = []; }
+  for(const b of ENG.bloom){
+    if(b.tex) gl.deleteTexture(b.tex);
+    if(b.fbo) gl.deleteFramebuffer(b.fbo);
+  }
+  ENG.bloom.length = 0;
+  let bw = w>>1, bh = h>>1;
+  for(let i=0;i<6 && bw>=8 && bh>=8;i++){
+    const t = GLX.texture(bw, bh, GLX.hasFloat, gl.LINEAR);
+    ENG.bloom.push({ tex:t, fbo:GLX.fbo(t), w:bw, h:bh });
+    bw = bw>>1; bh = bh>>1;
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+};
+
+/* ---------------- 每帧天体状态 ---------------- */
+ENG.sunNoiseT = 0;
+ENG.computeStates = function(jd, dtDays){
+  ENG.sunNoiseT += clamp(dtDays, -0.06, 0.06);
+  ENG.cloudT = ENG.sunNoiseT;
+  const T = ASTRO.TfromJD(jd);
+  const compress = ENG.state.compressT;
+  for(const b of ENG.bodies){
+    if(b.kind === 'planet'){
+      const st = ASTRO.stateAt(b.el, T);
+      b.posEcl[0]=st.x; b.posEcl[1]=st.y; b.posEcl[2]=st.z;
+      b.rAU = st.r; b.aNow = st.a; b.eNow = st.e;
+      b.lam = (Math.atan2(st.y, st.x)/ASTRO.D2R + 360)%360;
+      b.beta = Math.asin(clamp(st.z/Math.max(st.r,1e-9), -1, 1))/ASTRO.D2R;
+      const w = ASTRO.eclToWorld(st.x, st.y, st.z, compress);
+      b.pos[0]=w.wx; b.pos[1]=w.wy; b.pos[2]=w.wz;
+      b.sunI = clamp(1.5*Math.pow(1/Math.max(st.r,0.1), 0.40), 0.26, 2.1);
+    }
+  }
+  const sun = ENG.byKey.sun;
+  sun.sunI = 1.0;
+  const hb = ENG.byKey.halley;
+  {
+    const h = ASTRO.halleyAt(jd);
+    hb.posEcl[0]=h.x; hb.posEcl[1]=h.y; hb.posEcl[2]=h.z;
+    hb.rAU = h.r; hb.aNow = h.a; hb.eNow = h.e;
+    hb.lam = (Math.atan2(h.y, h.x)/ASTRO.D2R + 360)%360;
+    hb.beta = Math.asin(clamp(h.z/Math.max(h.r,1e-9),-1,1))/ASTRO.D2R;
+    const w = ASTRO.eclToWorld(h.x, h.y, h.z, compress);
+    hb.pos[0]=w.wx; hb.pos[1]=w.wy; hb.pos[2]=w.wz;
+    hb.sunI = clamp(1.5*Math.pow(1/Math.max(h.r,0.1), 0.40), 0.26, 2.1);
+    hb.act = clamp(Math.pow(3/h.r, 2), 0, 9);
+    const jd2 = jd + 0.02;
+    const h2 = ASTRO.halleyAt(jd2);
+    const w2 = ASTRO.eclToWorld(h2.x, h2.y, h2.z, compress);
+    let vx=w2.wx-hb.pos[0], vy=w2.wy-hb.pos[1], vz=w2.wz-hb.pos[2];
+    const vl = Math.hypot(vx,vy,vz)||1;
+    hb.velDir = [vx/vl, vy/vl, vz/vl];
+  }
+  // 卫星
+  for(const b of ENG.bodies){
+    if(b.kind !== 'moon') continue;
+    const par = b.parent;
+    const mm = b.moon;
+    const th = 2*Math.PI*(jd - ASTRO.J2000)/mm.P + mm.phi0;
+    b.theta = th;
+    const d = mm.d;
+    const ci = Math.cos(mm.inc), si = Math.sin(mm.inc);
+    const bx = Math.cos(th)*d, bz0 = -Math.sin(th)*d;
+    // rotX(inc)：y' = y·ci − z·si ; z' = y·si + z·ci  （y=0）
+    const ty = -bz0*si, tz = bz0*ci;
+    if(mm.ref === 'ecliptic'){
+      b.pos[0] = par.pos[0] + bx;
+      b.pos[1] = par.pos[1] + ty;
+      b.pos[2] = par.pos[2] + tz;
+    }else{
+      const B = par.basis;
+      b.pos[0] = par.pos[0] + B.x[0]*bx + B.y[0]*ty + B.z[0]*tz;
+      b.pos[1] = par.pos[1] + B.x[1]*bx + B.y[1]*ty + B.z[1]*tz;
+      b.pos[2] = par.pos[2] + B.x[2]*bx + B.y[2]*ty + B.z[2]*tz;
+    }
+    // 潮汐锁定相位：同一面朝向母星
+    b.tidalPhase = Math.atan2(-Math.cos(th), Math.sin(th));
+    b.distAU = Math.hypot(b.pos[0], b.pos[1], b.pos[2])/ASTRO.SCALE; // 近似（用于亮度）
+    b.sunI = clamp(1.5*Math.pow(1/Math.max(b.distAU,0.1), 0.40), 0.26, 2.1);
+  }
+  // 自转相位（限速 7.11）
+  for(const b of ENG.bodies){
+    if(b.kind === 'moon') continue;
+    if(!b.rotH) continue;
+    const rotDays = b.rotH/24;
+    if(Math.abs(rotDays) < 1e-6) continue;
+    let dph = 2*Math.PI*dtDays/rotDays;
+    dph = clamp(dph, -0.22, 0.22);
+    b.rotPhase += dph;
+  }
+};
+
+/* ---------------- 轨道缎带重建 ---------------- */
+ENG.buildRibbons = function(jd){
+  const gl = GLX.gl;
+  const T = ASTRO.TfromJD(jd);
+  const compress = ENG.state.compressT;
+  const N = 384, spanM = 2.2;
+  function writeRibbon(key, sampleFn, count){
+    const rb = ENG.ribbons[key];
+    if(!rb) return;
+    const fpv = rb.fpv;
+    let vi = 0;
+    const posArr = ENG._tmp;
+    for(let k=0;k<count;k++){
+      const s = sampleFn(k/count);
+      posArr[k*3] = s[0]; posArr[k*3+1] = s[1]; posArr[k*3+2] = s[2];
+    }
+    for(let k=0;k<count;k++){
+      const nx = k < count-1 ? posArr[(k+1)*3] : posArr[(count-2)*3];
+      const ny = k < count-1 ? posArr[(k+1)*3+1] : posArr[(count-2)*3+1];
+      const nz = k < count-1 ? posArr[(k+1)*3+2] : posArr[(count-2)*3+2];
+      const d = k/(count-1);
+      for(let sd=0;sd<2;sd++){
+        const o = vi*fpv;
+        ENG._rbuf[o]=posArr[k*3]; ENG._rbuf[o+1]=posArr[k*3+1]; ENG._rbuf[o+2]=posArr[k*3+2];
+        ENG._rbuf[o+3]=nx; ENG._rbuf[o+4]=ny; ENG._rbuf[o+5]=nz;
+        ENG._rbuf[o+6]=sd===0?1:-1; ENG._rbuf[o+7]=d;
+        vi++;
+      }
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, rb.vb);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, ENG._rbuf, 0, vi*fpv);
+    rb.n = vi;
+  }
+  if(!ENG._rbuf) ENG._rbuf = new Float32Array(512*2*8);
+  if(!ENG._tmp) ENG._tmp = new Float32Array(512*3);
+  // 行星 + 哈雷：M 空间均匀回溯（头=当前位置，尾=过去轨迹）
+  function planetRibbon(b, count, span){
+    const st = ASTRO.stateAt(b.el, T);
+    const a=st.a, e=st.e;
+    const I=(b.el.I + b.el.dI*T)*ASTRO.D2R;
+    const W=(b.el.W + b.el.dW*T)*ASTRO.D2R;
+    const O=(b.el.O + b.el.dO*T)*ASTRO.D2R;
+    const w = W - O;
+    const M0 = ASTRO.wrapPi((b.el.L + b.el.dL*T)*ASTRO.D2R - W);
+    const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(O), sO=Math.sin(O), cI=Math.cos(I), sI=Math.sin(I);
+    const s11 = cw*cO - sw*sO*cI, s12 = -sw*cO - cw*sO*cI;
+    const s21 = cw*sO + sw*cO*cI, s22 = -sw*sO + cw*cO*cI;
+    const s31 = sw*sI, s32 = cw*sI;
+    const qy = 1 - e*e;
+    writeRibbon(b.key, (u)=>{
+      const M = M0 - span*u;
+      const E = ASTRO.solveKepler(M, e);
+      const xp = a*(Math.cos(E)-e), yp = a*Math.sqrt(qy)*Math.sin(E);
+      const x = s11*xp + s12*yp, y = s21*xp + s22*yp, z = s31*xp + s32*yp;
+      const wd = ASTRO.eclToWorld(x, y, z, compress);
+      return [wd.wx, wd.wy, wd.wz];
+    }, count);
+  }
+  if(ENG.state.show.orbit){
+    for(const p of ASTRO.planets) planetRibbon(ENG.byKey[p.key], N, spanM);
+    // 哈雷：按偏近点角 E 均匀采样（近日点自动加密——e=0.967 时按 M 均匀采样会在近日点出棱角）
+    {
+      const h = ASTRO.halley;
+      const a = h.a, e = h.e;
+      const I = h.Ideg*ASTRO.D2R, w = h.omegaDeg*ASTRO.D2R, O = h.Odeg*ASTRO.D2R;
+      const Mn = ASTRO.wrapPi(2*Math.PI*(jd - h.Tp)/h.Pdays);
+      const En = ASTRO.solveKepler(Mn, e);
+      const spanE = Math.PI*1.15;
+      const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(O), sO=Math.sin(O), cI=Math.cos(I), sI=Math.sin(I);
+      const s11 = cw*cO - sw*sO*cI, s12 = -sw*cO - cw*sO*cI;
+      const s21 = cw*sO + sw*cO*cI, s22 = -sw*sO + cw*cO*cI;
+      const s31 = sw*sI, s32 = cw*sI;
+      const sqy = Math.sqrt(1 - e*e);
+      writeRibbon('halley', (u)=>{
+        const E = En - spanE*u;
+        const xp = a*(Math.cos(E)-e), yp = a*sqy*Math.sin(E);
+        const x = s11*xp + s12*yp, y = s21*xp + s22*yp, z = s31*xp + s32*yp;
+        const wd = ASTRO.eclToWorld(x, y, z, compress);
+        return [wd.wx, wd.wy, wd.wz];
+      }, 512);
+    }
+    // 卫星轨道（母星投影半径足够大才画）
+    for(const m of ASTRO.moons){
+      const b = ENG.byKey[m.key];
+      const par = b.parent;
+      if(par._projR < 4 || !ENG.state.show.moons){ ENG.ribbons[m.key].n = 0; continue; }
+      const mm = b.moon;
+      const ci = Math.cos(mm.inc), si = Math.sin(mm.inc);
+      const B = par.basis;
+      const span = Math.PI*2*0.85;
+      writeRibbon(m.key, (u)=>{
+        const th = b.theta - span*u;
+        const bx = Math.cos(th)*mm.d, bz0 = -Math.sin(th)*mm.d;
+        const ty = -bz0*si, tz = bz0*ci;
+        if(mm.ref === 'ecliptic') return [par.pos[0]+bx, par.pos[1]+ty, par.pos[2]+tz];
+        return [par.pos[0]+B.x[0]*bx+B.y[0]*ty+B.z[0]*tz,
+                par.pos[1]+B.x[1]*bx+B.y[1]*ty+B.z[1]*tz,
+                par.pos[2]+B.x[2]*bx+B.y[2]*ty+B.z[2]*tz];
+      }, 160);
+    }
+  }else{
+    for(const k in ENG.ribbons) ENG.ribbons[k].n = 0;
+  }
+};
+
+/* ---------------- 彗尾（CPU 重建）---------------- */
+ENG.buildTails = function(){
+  const hb = ENG.byKey.halley;
+  const gl = GLX.gl;
+  function build(t, len, width0, width1, bend){
+    const M = 32;
+    const nuc = hb.pos;
+    const anti = [nuc[0], nuc[1], nuc[2]];
+    const al = Math.hypot(anti[0], anti[1], anti[2]) || 1;
+    anti[0]/=al; anti[1]/=al; anti[2]/=al;
+    const vd = hb.velDir;
+    const toCam = [ENG.cam.eye[0]-nuc[0], ENG.cam.eye[1]-nuc[1], ENG.cam.eye[2]-nuc[2]];
+    let p1 = [ anti[1]*toCam[2]-anti[2]*toCam[1], anti[2]*toCam[0]-anti[0]*toCam[2], anti[0]*toCam[1]-anti[1]*toCam[0] ];
+    let pl = Math.hypot(p1[0],p1[1],p1[2]);
+    if(pl < 1e-6){ p1 = [0,1,0]; pl = 1; }
+    p1 = [p1[0]/pl, p1[1]/pl, p1[2]/pl];
+    let vi = 0;
+    for(let i=0;i<=M;i++){
+      const u = i/M;
+      const ax = anti[0]*(1-bend*u) - vd[0]*bend*u;
+      const ay = anti[1]*(1-bend*u) - vd[1]*bend*u;
+      const az = anti[2]*(1-bend*u) - vd[2]*bend*u;
+      const aln = Math.hypot(ax,ay,az)||1;
+      const w = width0 + (width1-width0)*u;
+      const cx = nuc[0] + ax/aln*len*u;
+      const cy = nuc[1] + ay/aln*len*u;
+      const cz = nuc[2] + az/aln*len*u;
+      for(let sd=0;sd<2;sd++){
+        const o = vi*5;
+        t.buf[o]=cx + p1[0]*w*(sd===0?0.5:-0.5);
+        t.buf[o+1]=cy + p1[1]*w*(sd===0?0.5:-0.5);
+        t.buf[o+2]=cz + p1[2]*w*(sd===0?0.5:-0.5);
+        t.buf[o+3]=u; t.buf[o+4]=sd===0?1:-1;
+        vi++;
+      }
+    }
+    t.n = vi;
+    gl.bindBuffer(gl.ARRAY_BUFFER, t.vb);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, t.buf, 0, vi*5);
+  }
+  hb.tailN = 0;
+  if(!ENG.state.show.comet || hb.rAU > 6.5){ ENG.tailIon.n = 0; ENG.tailDust.n = 0; return; }
+  const act = hb.act;
+  build(ENG.tailIon, act*1.05, 0.02, 0.16*act/9+0.05, 0.12);
+  build(ENG.tailDust, act*0.75, 0.03, 0.55*act/9+0.10, 0.55);
+};
+
+/* ---------------- 投影辅助 ---------------- */
+ENG._vpM = M4.create(); ENG._viewM = M4.create(); ENG._projM = M4.create();
+ENG._invVP = M4.create();
+ENG._planes = new Float32Array(24);
+ENG.projectToScreen = function(x, y, z){
+  const m = ENG._vpM;
+  const cx = m[0]*x + m[4]*y + m[8]*z + m[12];
+  const cy = m[1]*x + m[5]*y + m[9]*z + m[13];
+  const cw = m[3]*x + m[7]*y + m[11]*z + m[15];
+  const cz = m[2]*x + m[6]*y + m[10]*z + m[14];
+  if(cw <= 0.001) return { behind:true };
+  const ndcX = cx/cw, ndcY = cy/cw;
+  return {
+    behind:false,
+    px:(ndcX*0.5+0.5)*ENG.W, py:(1 - (ndcY*0.5+0.5))*ENG.H,
+    cpx:(ndcX*0.5+0.5)*ENG.Wcss, cpy:(1 - (ndcY*0.5+0.5))*ENG.Hcss,
+    depth:cz/cw, w:cw
+  };
+};
+
+/* ---------------- 相机 ---------------- */
+ENG.focusBody = function(key, immediate){
+  const b = ENG.byKey[key];
+  if(!b) return;
+  const cam = ENG.cam;
+  if(immediate || !cam.anim){
+    cam.tgtKey = key; cam.anim = null;
+    cam.followPos = [b.pos[0], b.pos[1], b.pos[2]];
+    if(immediate){
+      cam.dist = Math.max(b.R*5, 3.5);
+      ENG.state.focusKey = key;
+      return;
+    }
+  }
+  const from = [cam.followPos[0], cam.followPos[1], cam.followPos[2]];
+  const fromDist = cam.dist;
+  const toDist = clamp(Math.max(b.R*5.5, 3.0), 0.4, CFG.MAX_DIST);
+  cam.anim = { key, from, fromDist, toDist, t:0, dur:1.0 };
+  ENG.state.focusKey = key;
+};
+ENG.updateCamera = function(dt){
+  const cam = ENG.cam;
+  const tgt = ENG.byKey[cam.tgtKey] || ENG.byKey.sun;
+  if(cam.anim){
+    cam.anim.t += dt/cam.anim.dur;
+    const e = easeInOut(clamp(cam.anim.t, 0, 1));
+    const nb = ENG.byKey[cam.anim.key];
+    cam.followPos[0] = lerp(cam.anim.from[0], nb.pos[0], e);
+    cam.followPos[1] = lerp(cam.anim.from[1], nb.pos[1], e);
+    cam.followPos[2] = lerp(cam.anim.from[2], nb.pos[2], e);
+    cam.dist = Math.exp(lerp(Math.log(cam.anim.fromDist), Math.log(cam.anim.toDist), e));
+    if(cam.anim.t >= 1){ cam.tgtKey = cam.anim.key; cam.anim = null; }
+  }else{
+    cam.followPos[0] = tgt.pos[0];
+    cam.followPos[1] = tgt.pos[1];
+    cam.followPos[2] = tgt.pos[2];
+  }
+  cam.tgt = tgt;
+  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+  const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+  cam.eye = [
+    cam.followPos[0] + cam.dist*cp*sy,
+    cam.followPos[1] + cam.dist*sp,
+    cam.followPos[2] + cam.dist*cp*cy
+  ];
+};
+/* ============================================================
+ * 渲染 pass 编排（管线顺序照规格书 §4.1）
+ * ============================================================ */
+ENG.drawSphere = function(b, typeOverride){
+  const gl = GLX.gl;
+  const P = ENG.pPlanet;
+  gl.useProgram(P.prog);
+  gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+  composeModel(ENG._model, b.pos, b.basis || ENG.byKey.sun.basis, b.rotPhase !== undefined ? b.rotPhase : 0, b.R);
+  gl.uniformMatrix4fv(P.u.uModel, false, ENG._model);
+  gl.uniform3f(P.u.uCamPos, ENG.cam.eye[0], ENG.cam.eye[1], ENG.cam.eye[2]);
+  gl.uniform3f(P.u.uSunPos, 0, 0, 0);
+  gl.uniform1f(P.u.uSunI, b.sunI);
+  gl.uniform1f(P.u.uTime, ENG.cloudT);
+  gl.uniform1i(P.u.uType, typeOverride !== undefined ? typeOverride : b.bodyType);
+  gl.uniform1f(P.u.uDetail, b._detail);
+  gl.uniform1f(P.u.uBumpK, 0.05*b.R);
+  gl.uniform1f(P.u.uWarp1, b.warp ? b.warp[0] : 0);
+  gl.uniform1f(P.u.uWarp2, b.warp ? b.warp[1] : 0);
+  gl.uniform1f(P.u.uAmbient, 0.004);
+  const ring = b.ring;
+  gl.uniform1i(P.u.uRingType, ring ? ring.t : 0);
+  gl.uniform1f(P.u.uRingInner, ring ? ring.i : 0);
+  gl.uniform1f(P.u.uRingOuter, ring ? ring.o : 0);
+  if(ring){
+    const sd = [ -b.pos[0], -b.pos[1], -b.pos[2] ];
+    worldDirToObj(ENG._tmp3, b.basis, b.rotPhase, sd);
+    gl.uniform3f(P.u.uSunDirObj, ENG._tmp3[0], ENG._tmp3[1], ENG._tmp3[2]);
+  }else{
+    gl.uniform3f(P.u.uSunDirObj, 0, 1, 0);
+  }
+  gl.bindVertexArray(ENG.meshSphere.vao);
+  gl.drawElements(gl.TRIANGLES, ENG.meshSphere.count, gl.UNSIGNED_INT, 0);
+};
+ENG._model = M4.create();
+ENG._tmp3 = new Float32Array(3);
+
+ENG.drawBodies = function(){
+  const gl = GLX.gl;
+  const S = ENG.state;
+  const pxScale = (0.5*ENG.H)/Math.tan(CFG.FOV/2);
+  // —— 太阳球体 ——
+  const sun = ENG.byKey.sun;
+  if(sun._vis && sun._projR >= 1.0){
+    const P = ENG.pSun;
+    gl.useProgram(P.prog);
+    composeModel(ENG._model, sun.pos, sun.basis, sun.rotPhase, sun.R);
+    gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+    gl.uniformMatrix4fv(P.u.uModel, false, ENG._model);
+    gl.uniform3f(P.u.uCamPos, ENG.cam.eye[0], ENG.cam.eye[1], ENG.cam.eye[2]);
+    gl.uniform1f(P.u.uTime, ENG.sunNoiseT);
+    gl.uniform1f(P.u.uDetail, sun._detail);
+    gl.bindVertexArray(ENG.meshSphere.vao);
+    gl.drawElements(gl.TRIANGLES, ENG.meshSphere.count, gl.UNSIGNED_INT, 0);
+  }
+  // —— 行星 / 卫星 / 彗核 ——
+  for(const b of ENG.bodies){
+    if(!b._vis) continue;
+    if(b === sun) continue;
+    if(b.kind === 'moon' && !S.show.moons) continue;
+    if(b.kind === 'comet' && !S.show.comet) continue;
+    if(b._projR >= 1.0){
+      ENG.drawSphere(b);
+    }
+  }
+  // —— 远距圆点（行星缩成星点的兜底）——
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  gl.depthMask(false);
+  gl.disable(gl.CULL_FACE);
+  const P = ENG.pDot;
+  gl.useProgram(P.prog);
+  gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+  gl.uniform3f(P.u.uRight, ENG.camRight[0], ENG.camRight[1], ENG.camRight[2]);
+  gl.uniform3f(P.u.uUp, ENG.camUp[0], ENG.camUp[1], ENG.camUp[2]);
+  for(const b of ENG.bodies){
+    if(!b._vis || b === sun) continue;
+    if(b.kind === 'moon' && !S.show.moons) continue;
+    if(b.kind === 'comet' && !S.show.comet) continue;
+    if(b._projR >= 1.0) continue;
+    if(b.kind === 'moon' && b.parent._projR < 8) continue;
+    const px = clamp(b._projR*1.6 + 1.6, 1.6, 3.6);
+    const world = px*2*b._dist*Math.tan(CFG.FOV/2)/ENG.H;
+    gl.uniform3f(P.u.uPos, b.pos[0], b.pos[1], b.pos[2]);
+    gl.uniform1f(P.u.uSize, world*1.8);
+    gl.uniform3f(P.u.uColor, b.tint[0], b.tint[1], b.tint[2]);
+    gl.uniform1f(P.u.uAlpha, 0.55*b.sunI);
+    gl.bindVertexArray(ENG.meshQuad.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+};
+
+ENG.drawRibbons = function(){
+  const gl = GLX.gl;
+  const P = ENG.pRibbon;
+  gl.useProgram(P.prog);
+  gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+  gl.uniform2f(P.u.uHalfViewport, 0.5*ENG.W, 0.5*ENG.H);
+  gl.depthMask(false);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  const colors = {
+    mercury:[0.55,0.53,0.50], venus:[0.85,0.72,0.48], earth:[0.35,0.55,0.95], mars:[0.80,0.42,0.25],
+    jupiter:[0.75,0.63,0.45], saturn:[0.85,0.74,0.52], uranus:[0.45,0.72,0.78], neptune:[0.35,0.50,0.90],
+    pluto:[0.65,0.60,0.55], halley:[0.45,0.85,1.0],
+  };
+  for(const k in ENG.ribbons){
+    const rb = ENG.ribbons[k];
+    if(!rb.n) continue;
+    let base = 0.05, peak = 0.42, hw = 0.7;
+    const col = colors[k] || [0.48, 0.50, 0.56];
+    if(ENG.byKey[k] && ENG.byKey[k].kind === 'moon'){ base = 0.035; peak = 0.30; hw = 0.55; }
+    if(k === 'halley'){ base = 0.06; peak = 0.6; hw = 0.9; }
+    gl.uniform3f(P.u.uColor, col[0], col[1], col[2]);
+    gl.uniform1f(P.u.uBase, base);
+    gl.uniform1f(P.u.uPeak, peak);
+    gl.uniform1f(P.u.uHalfWidth, hw);
+    gl.bindVertexArray(rb.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, rb.n);
+  }
+  gl.disable(gl.BLEND);
+};
+
+ENG.drawBelts = function(){
+  if(!ENG.state.show.belt) return;
+  const gl = GLX.gl;
+  const P = ENG.pBelt;
+  gl.useProgram(P.prog);
+  gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+  gl.uniform3f(P.u.uCamPos, ENG.cam.eye[0], ENG.cam.eye[1], ENG.cam.eye[2]);
+  gl.uniform1f(P.u.uJD, ENG.state.jd);
+  gl.uniform1f(P.u.uCompress, ENG.state.compressT);
+  gl.uniform1f(P.u.uPxScale, (0.5*ENG.H)/Math.tan(CFG.FOV/2));
+  gl.depthMask(false);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  const tints = [ [0.62,0.59,0.55], [0.68,0.58,0.44], [0.72,0.58,0.42], [0.50,0.55,0.68] ];
+  const alphas = [0.50, 0.45, 0.55, 0.42];
+  ENG.belts.forEach((b, i)=>{
+    gl.uniform3f(P.u.uTint, tints[i][0], tints[i][1], tints[i][2]);
+    gl.uniform1f(P.u.uAlpha, alphas[i]);
+    gl.bindVertexArray(b.vao);
+    gl.drawArrays(gl.POINTS, 0, b.count);
+  });
+  gl.disable(gl.BLEND);
+};
+
+ENG.drawAtmos = function(){
+  const gl = GLX.gl;
+  for(const b of ENG.bodies){
+    if(!b._vis || !b.atmo) continue;
+    if(b.kind === 'moon' && !ENG.state.show.moons) continue;
+    if(b._projR < 1.5) continue;
+    const a = b.atmo;
+    const P = ENG.pAtmo;
+    gl.useProgram(P.prog);
+    M4.identity(ENG._model);
+    ENG._model[12] = b.pos[0]; ENG._model[13] = b.pos[1]; ENG._model[14] = b.pos[2];
+    const s = b.R*(1 + a.h*7.5);
+    ENG._model[0]=s; ENG._model[5]=s; ENG._model[10]=s;
+    gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+    gl.uniformMatrix4fv(P.u.uModel, false, ENG._model);
+    gl.uniform3f(P.u.uCamPos, ENG.cam.eye[0], ENG.cam.eye[1], ENG.cam.eye[2]);
+    gl.uniform3f(P.u.uCenter, b.pos[0], b.pos[1], b.pos[2]);
+    gl.uniform3f(P.u.uSunPos, 0, 0, 0);
+    gl.uniform3f(P.u.uColor, a.c[0], a.c[1], a.c[2]);
+    gl.uniform3f(P.u.uSunset, a.s[0], a.s[1], a.s[2]);
+    gl.uniform1f(P.u.uRadius, b.R);
+    gl.uniform1f(P.u.uScaleH, a.h);
+    gl.uniform1f(P.u.uStrength, a.k);
+    gl.uniform1f(P.u.uSunI, b.sunI);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.depthMask(false);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    gl.bindVertexArray(ENG.meshSphere.vao);
+    gl.drawElements(gl.TRIANGLES, ENG.meshSphere.count, gl.UNSIGNED_INT, 0);
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+  }
+};
+
+ENG.drawRings = function(){
+  const gl = GLX.gl;
+  for(const b of ENG.bodies){
+    if(!b._vis || !b.ring) continue;
+    if(b._projR < 2) continue;
+    const ring = b.ring;
+    const P = ENG.pRing;
+    gl.useProgram(P.prog);
+    // 环模型：T·B·S(R)——顶点半径单位 = 行星半径（片元里的 r 也按行星半径单位取密度）
+    const B = b.basis, rs = b.R;
+    ENG._model[0]=B.x[0]*rs; ENG._model[1]=B.x[1]*rs; ENG._model[2]=B.x[2]*rs;
+    ENG._model[3]=0;
+    ENG._model[4]=B.y[0]*rs; ENG._model[5]=B.y[1]*rs; ENG._model[6]=B.y[2]*rs;
+    ENG._model[7]=0;
+    ENG._model[8]=B.z[0]*rs; ENG._model[9]=B.z[1]*rs; ENG._model[10]=B.z[2]*rs;
+    ENG._model[11]=0;
+    ENG._model[12]=b.pos[0]; ENG._model[13]=b.pos[1]; ENG._model[14]=b.pos[2];
+    ENG._model[15]=1;
+    gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+    gl.uniformMatrix4fv(P.u.uModel, false, ENG._model);
+    gl.uniform3f(P.u.uCamPos, ENG.cam.eye[0], ENG.cam.eye[1], ENG.cam.eye[2]);
+    gl.uniform3f(P.u.uCenter, b.pos[0], b.pos[1], b.pos[2]);
+    gl.uniform3f(P.u.uSunPos, 0, 0, 0);
+    gl.uniform3f(P.u.uRingNormal, B.y[0], B.y[1], B.y[2]);
+    gl.uniform1f(P.u.uSunI, b.sunI);
+    gl.uniform1f(P.u.uPlanetR, b.R);
+    gl.uniform1i(P.u.uRingType, ring.t);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    gl.disable(gl.CULL_FACE);
+    gl.bindVertexArray(ENG.meshAnnulus.vao);
+    gl.drawElements(gl.TRIANGLES, ENG.meshAnnulus.count, gl.UNSIGNED_INT, 0);
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+  }
+};
+
+ENG.drawComet = function(){
+  if(!ENG.state.show.comet) return;
+  const hb = ENG.byKey.halley;
+  if(!hb._vis && hb.tailN === 0 && hb.act <= 0) return;
+  const gl = GLX.gl;
+  gl.depthMask(false);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  if(hb._vis){
+    // 彗核
+    ENG.drawSphere(hb);
+  }
+  if(hb.rAU <= 6.5 && hb.act > 0.02){
+    // 彗发（点状辉光）
+    const P = ENG.pDot;
+    gl.useProgram(P.prog);
+    gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+    gl.uniform3f(P.u.uRight, ENG.camRight[0], ENG.camRight[1], ENG.camRight[2]);
+    gl.uniform3f(P.u.uUp, ENG.camUp[0], ENG.camUp[1], ENG.camUp[2]);
+    const comaR = hb.R*(3 + 2.4*hb.act);
+    const comaW = comaR*2*hb._dist*Math.tan(CFG.FOV/2)/ENG.H;
+    gl.uniform3f(P.u.uPos, hb.pos[0], hb.pos[1], hb.pos[2]);
+    gl.uniform1f(P.u.uSize, comaW);
+    gl.uniform3f(P.u.uColor, 0.62, 0.78, 1.0);
+    gl.uniform1f(P.u.uAlpha, 0.5);
+    gl.bindVertexArray(ENG.meshQuad.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    // 两条彗尾
+    const PT = ENG.pTail;
+    gl.useProgram(PT.prog);
+    gl.uniformMatrix4fv(PT.u.uVP, false, ENG._vpM);
+    gl.uniform3f(PT.u.uColor, 0.45, 0.66, 1.0);
+    gl.uniform1f(PT.u.uAlpha, 0.55);
+    gl.bindVertexArray(ENG.tailIon.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, ENG.tailIon.n);
+    gl.uniform3f(PT.u.uColor, 0.95, 0.80, 0.52);
+    gl.uniform1f(PT.u.uAlpha, 0.30);
+    gl.bindVertexArray(ENG.tailDust.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, ENG.tailDust.n);
+  }
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+};
+
+ENG.drawCorona = function(){
+  const gl = GLX.gl;
+  const P = ENG.pCorona;
+  gl.useProgram(P.prog);
+  gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+  gl.uniform3f(P.u.uPos, 0, 0, 0);
+  gl.uniform3f(P.u.uRight, ENG.camRight[0], ENG.camRight[1], ENG.camRight[2]);
+  gl.uniform3f(P.u.uUp, ENG.camUp[0], ENG.camUp[1], ENG.camUp[2]);
+  gl.uniform1f(P.u.uTime, ENG.wall);
+  gl.depthMask(false);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  const layers = [ [3.1, 0.28, 1.7], [6.5, 0.05, 5.2] ];
+  for(const L of layers){
+    const w = L[0]*CFG.SUN_R;
+    gl.uniform1f(P.u.uSize, w);
+    gl.uniform1f(P.u.uGain, L[1]);
+    gl.uniform1f(P.u.uSeed, L[2]);
+    gl.bindVertexArray(ENG.meshQuad.vao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+};
+
+/* ---------------- 每帧：绘制准备（裁剪/投影半径）---------------- */
+ENG.prepareBodies = function(){
+  const eye = ENG.cam.eye;
+  const pxScale = (0.5*ENG.H)/Math.tan(CFG.FOV/2);
+  for(const b of ENG.bodies){
+    const dx = b.pos[0]-eye[0], dy = b.pos[1]-eye[1], dz = b.pos[2]-eye[2];
+    b._dist = Math.hypot(dx, dy, dz);
+    const pad = b.ring ? b.R*2.45 : b.R*1.6;
+    b._vis = M4.sphereInFrustum(ENG._planes, b.pos[0], b.pos[1], b.pos[2], Math.max(pad, b._dist*0.004));
+    const pr = ENG.projectToScreen(b.pos[0], b.pos[1], b.pos[2]);
+    if(pr.behind){ b._projR = 0; b._vis = false; }
+    else{
+      b._projR = b.R/b._dist*pxScale;
+      b._scr = pr;
+    }
+    b._detail = clamp(b._projR/6, 0.25, 1);
+  }
+  ENG.byKey.sun._vis = ENG.byKey.sun._vis && true;
+};
+
+/* ---------------- 主渲染 ---------------- */
+ENG.renderFrame = function(dt, wall){
+  const gl = GLX.gl;
+  const cam = ENG.cam;
+  // —— 压缩过渡动画（0.4s）——
+  const S = ENG.state;
+  if(S.compressAnim > 0){
+    S.compressAnim = Math.max(0, S.compressAnim - dt);
+    const t = 1 - S.compressAnim/0.4;
+    S.compressT = lerp(S.compressFrom, S.compressTo, easeInOut(clamp(t, 0, 1)));
+  }
+  // —— 相机与矩阵 ——
+  ENG.updateCamera(dt);
+  const near = Math.max(0.012, cam.dist*0.0035);
+  const far = Math.max(cam.dist*14, 4200);
+  M4.lookAt(ENG._viewM, cam.eye, cam.followPos, [0,1,0]);
+  M4.perspective(ENG._projM, CFG.FOV, ENG.W/ENG.H, near, far);
+  M4.multiply(ENG._vpM, ENG._projM, ENG._viewM);
+  M4.invert(ENG._invVP, ENG._vpM);
+  M4.frustumPlanes(ENG._planes, ENG._vpM);
+  // 相机右/上向量
+  {
+    const fwd = [cam.followPos[0]-cam.eye[0], cam.followPos[1]-cam.eye[1], cam.followPos[2]-cam.eye[2]];
+    const fl = Math.hypot(fwd[0],fwd[1],fwd[2])||1;
+    fwd[0]/=fl; fwd[1]/=fl; fwd[2]/=fl;
+    let r = [fwd[2], 0, -fwd[0]];
+    let rl = Math.hypot(r[0],r[1],r[2])||1;
+    ENG.camRight = [r[0]/rl, r[1]/rl, r[2]/rl];
+    ENG.camUp = [
+      ENG.camRight[1]*fwd[2]-ENG.camRight[2]*fwd[1],
+      ENG.camRight[2]*fwd[0]-ENG.camRight[0]*fwd[2],
+      ENG.camRight[0]*fwd[1]-ENG.camRight[1]*fwd[0]
+    ];
+  }
+  ENG.prepareBodies();
+  if(S.show.orbit) ENG.buildRibbons(S.jd);
+  else { for(const k in ENG.ribbons) ENG.ribbons[k].n = 0; }
+  ENG.buildTails();
+  // 眩光可见度（CPU 遮挡判定）
+  ENG.computeFlareVis();
+  // —— 场景 ——
+  const target = ENG.msaaFBO || ENG.sceneFBO;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, target);
+  gl.viewport(0, 0, ENG.W, ENG.H);
+  gl.depthMask(true);                       // 7.1：clear 深度前必须恢复
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.disable(gl.CULL_FACE);
+  // 1 背景
+  gl.disable(gl.DEPTH_TEST);
+  {
+    const P = ENG.pBG;
+    gl.useProgram(P.prog);
+    gl.uniformMatrix4fv(P.u.uInvVP, false, ENG._invVP);
+    gl.bindVertexArray(ENG.meshFS.vao);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  // 2 恒星
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  {
+    const P = ENG.pStar;
+    gl.useProgram(P.prog);
+    gl.uniformMatrix4fv(P.u.uVP, false, ENG._vpM);
+    gl.uniform3f(P.u.uCamPos, cam.eye[0], cam.eye[1], cam.eye[2]);
+    gl.uniform1f(P.u.uTime, wall);
+    gl.bindVertexArray(ENG.stars.vao);
+    gl.drawArrays(gl.POINTS, 0, ENG.stars.count);
+  }
+  gl.disable(gl.BLEND);
+  // 3-4 天体（不透明）
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthMask(true);
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  ENG.drawBodies();
+  // 5 轨道缎带
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthMask(false);
+  gl.disable(gl.CULL_FACE);
+  ENG.drawRibbons();
+  // 6 小行星带
+  ENG.drawBelts();
+  // 7 大气
+  ENG.drawAtmos();
+  // 8 环系
+  ENG.drawRings();
+  // 9 彗尾 + 彗发
+  ENG.drawComet();
+  // 10 日冕
+  ENG.drawCorona();
+  gl.disable(gl.BLEND);
+  gl.depthMask(true);
+  // —— 解析 MSAA ——
+  if(ENG.msaaFBO){
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, ENG.msaaFBO);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, ENG.sceneFBO);
+    gl.blitFramebuffer(0, 0, ENG.W, ENG.H, 0, 0, ENG.W, ENG.H, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  }
+  ENG.postPass(wall);
+};
+
+/* ---------------- 后期 ---------------- */
+ENG.postPass = function(wall){
+  const gl = GLX.gl;
+  const S = ENG.state;
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.CULL_FACE);
+  // 泛光
+  let bloomTex = ENG.bloomTexFallback = null;
+  if(S.show.glow && ENG.bloom.length){
+    for(let i=0;i<ENG.bloom.length;i++){
+      const lv = ENG.bloom[i];
+      const src = i === 0 ? ENG.sceneTex : ENG.bloom[i-1].tex;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, lv.fbo);
+      gl.viewport(0, 0, lv.w, lv.h);
+      const P = ENG.pDown;
+      gl.useProgram(P.prog);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, src);
+      gl.uniform1i(P.u.uTex, 0);
+      gl.uniform2f(P.u.uTexel, 1/ (i===0 ? ENG.W : ENG.bloom[i-1].w), 1/(i===0 ? ENG.H : ENG.bloom[i-1].h));
+      gl.uniform1f(P.u.uThresh, GLX.hasFloat ? 1.25 : 0.85);
+      gl.uniform1f(P.u.uKnee, GLX.hasFloat ? 0.6 : 0.3);
+      gl.uniform1i(P.u.uThOn, i === 0 ? 1 : 0);
+      gl.bindVertexArray(ENG.meshFS.vao);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    // 升采样：加法混合累加（7.3 反馈环规避）
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    for(let i=ENG.bloom.length-1;i>=1;i--){
+      const dst = ENG.bloom[i-1];
+      const src = ENG.bloom[i];
+      gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fbo);
+      gl.viewport(0, 0, dst.w, dst.h);
+      const P = ENG.pUp;
+      gl.useProgram(P.prog);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, src.tex);
+      gl.uniform1i(P.u.uTex, 0);
+      gl.uniform2f(P.u.uTexel, 1/src.w, 1/src.h);
+      gl.bindVertexArray(ENG.meshFS.vao);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    gl.disable(gl.BLEND);
+    bloomTex = ENG.bloom[0].tex;
+  }
+  // 合成
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, ENG.W, ENG.H);
+  const P = ENG.pComp;
+  gl.useProgram(P.prog);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, ENG.sceneTex);
+  gl.uniform1i(P.u.uScene, 0);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, bloomTex || ENG.sceneTex);
+  gl.uniform1i(P.u.uBloom, 1);
+  gl.uniform2f(P.u.uRes, ENG.W, ENG.H);
+  gl.uniform2f(P.u.uSunPx, ENG.sunPx[0], ENG.sunPx[1]);
+  gl.uniform1f(P.u.uVis, S.show.glow ? ENG.sunVisT : 0);
+  gl.uniform1f(P.u.uTime, wall);
+  gl.uniform1f(P.u.uExposure, 1.0);
+  gl.uniform1f(P.u.uBloomOn, (S.show.glow && bloomTex) ? 1 : 0);
+  gl.bindVertexArray(ENG.meshFS.vao);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.bindVertexArray(null);
+  gl.activeTexture(gl.TEXTURE0);
+};
+
+/* ---------------- 眩光可见度 ---------------- */
+ENG.computeFlareVis = function(){
+  const sun = ENG.projectToScreen(0, 0, 0);
+  if(sun.behind){ ENG.sunVis = 0; }
+  else{
+    ENG.sunPx = [sun.px, sun.py];
+    let vis = 1;
+    for(const b of ENG.bodies){
+      if(b === ENG.byKey.sun || !b._vis) continue;
+      if(b.kind === 'moon' && b.parent._projR < 3) continue;
+      const s = b._scr;
+      if(!s || s.behind) continue;
+      const dx = s.px - sun.px, dy = s.py - sun.py;
+      const dd = Math.hypot(dx, dy);
+      const rr = b._projR*0.96;
+      if(dd < rr && s.depth < sun.depth){
+        vis = Math.min(vis, clamp(dd/Math.max(rr, 0.001), 0, 1));
+      }
+    }
+    // 视锥边缘淡出
+    const m = Math.min(ENG.sunPx[0], ENG.sunPx[1], ENG.W-ENG.sunPx[0], ENG.H-ENG.sunPx[1]);
+    vis *= clamp(m/60, 0, 1);
+    ENG.sunVis = vis;
+  }
+  ENG.sunVisT += (ENG.sunVis - ENG.sunVisT)*Math.min(1, 0.016*10);
+};
+/* ============================================================
+ * UI / 交互 / 主循环
+ * ============================================================ */
+const UI = {};
+
+UI.speedDays = function(v){
+  return Math.sign(v)*1.157407e-5*Math.pow(10, Math.abs(v)/100*8.55);
+};
+UI.fmtSpeed = function(v){
+  const dps = UI.speedDays(v);
+  const sgn = dps < 0 ? '−' : '';
+  const s = Math.abs(dps)*86400;
+  if(s < 120) return sgn + (s < 10 ? s.toFixed(1) : s.toFixed(0)) + ' 秒/秒';
+  if(s < 5400) return sgn + (s/60).toFixed(0) + ' 分钟/秒';
+  if(s < 129600) return sgn + (s/3600).toFixed(1) + ' 小时/秒';
+  const d = Math.abs(dps);
+  if(d < 365) return sgn + (d < 10 ? d.toFixed(1) : d.toFixed(0)) + ' 天/秒';
+  return sgn + (d/365.25).toFixed(1) + ' 年/秒';
+};
+UI.fmtDate = function(jd){
+  const t = ASTRO.jdToDate(jd);
+  const p = (n)=>String(n).padStart(2, '0');
+  return t.y + '-' + p(t.m) + '-' + p(t.d) + ' ' + p(t.hh) + ':' + p(t.mi) + ':' + p(t.ss);
+};
+UI.fmtKm = function(km){
+  if(km >= 1e8) return (km/1e8).toFixed(2) + ' 亿 km';
+  if(km >= 1e4) return (km/1e4).toFixed(1) + ' 万 km';
+  return km.toFixed(0) + ' km';
+};
+
+/* ---------- 天体列表 ---------- */
+UI.buildList = function(){
+  const box = document.getElementById('listBody');
+  box.innerHTML = '';
+  const mk = (b, moon)=>{
+    const d = document.createElement('div');
+    d.className = 'it' + (moon ? ' moon' : '');
+    d.dataset.key = b.key;
+    const col = b.tint;
+    const cr = Math.round(col[0]*255), cg = Math.round(col[1]*255), cb = Math.round(col[2]*255);
+    d.innerHTML = '<span class="dot" style="background:rgb(' + cr + ',' + cg + ',' + cb +
+      ');color:rgb(' + cr + ',' + cg + ',' + cb + ')"></span>' +
+      '<span class="nm">' + b.name + '</span>';
+    d.onclick = ()=>UI.select(b.key);
+    box.appendChild(d);
+  };
+  mk(ENG.byKey.sun, false);
+  for(const p of ASTRO.planets){
+    mk(ENG.byKey[p.key], false);
+    for(const m of ASTRO.moons){
+      if(m.parent === p.key) mk(ENG.byKey[m.key], true);
+    }
+  }
+  mk(ENG.byKey.halley, false);
+};
+
+/* ---------- 信息卡 ---------- */
+UI.renderInfoStatic = function(b){
+  document.getElementById('iName').textContent = b.name;
+  document.getElementById('iType').textContent = b.typeTxt || '—';
+  const stat = document.getElementById('iStat');
+  const rows = [];
+  const add = (k, v)=>rows.push('<div class="row"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>');
+  const fmtRot = (h)=>{
+    if(h === undefined || h === null) return '—';
+    const ah = Math.abs(h);
+    return (h < 0 ? '−' : '') + (ah >= 48 ? (ah/24).toFixed(2) + ' 天' : ah.toFixed(2) + ' 小时') + (h < 0 ? '（逆行）' : '');
+  };
+  if(b.kind === 'star'){
+    add('直径', (ASTRO.SUN_RADIUS_KM*2).toLocaleString() + ' km');
+    add('质量', b.mass);
+    add('自转周期', fmtRot(b.rotH));
+    add('光谱型', 'G2V');
+    add('有效温度', b.temp);
+    add('大气成分', b.atmoTxt);
+  }else if(b.kind === 'planet'){
+    const p = b.el;
+    add('直径', (p.radiusKm*2).toLocaleString() + ' km');
+    add('质量', p.mass);
+    add('公转周期', p.periodTxt);
+    add('自转周期', fmtRot(p.rotH));
+    add('轨道半长轴', p.a.toFixed(3) + ' AU');
+    add('轨道偏心率', p.e.toFixed(4));
+    add('轨道倾角', p.I.toFixed(2) + '°');
+    add('转轴倾角', p.tiltTextbook + '（对轨道面）');
+    add('已知卫星', String(p.moonsN));
+    add('表面/云顶温度', p.temp);
+    add('大气成分', p.atmoTxt);
+  }else if(b.kind === 'moon'){
+    const m = b.moon;
+    add('直径', (b.radiusKm*2).toLocaleString() + ' km');
+    add('轨道半径', UI.fmtKm(m.aKm));
+    add('轨道周期', Math.abs(m.P).toFixed(m.P < 10 ? 3 : 2) + ' 天' + (b.key === 'triton' ? '（逆行）' : ''));
+    add('轨道倾角', (m.inc > Math.PI/2 ? 180 - m.inc/ASTRO.D2R : m.inc/ASTRO.D2R).toFixed(2) + '°');
+    add('表面温度', b._temp || '—');
+    add('大气', b.key === 'titan' ? 'N₂ 95%、CH₄ 5%' : '（无明显大气）');
+  }else if(b.kind === 'comet'){
+    const h = ASTRO.halley;
+    add('轨道半长轴', h.a.toFixed(3) + ' AU');
+    add('偏心率', h.e.toFixed(5));
+    add('轨道倾角', h.Ideg.toFixed(2) + '°（逆行）');
+    add('周期', (h.Pdays/365.25).toFixed(2) + ' 年');
+    add('近日点', (h.a*(1-h.e)).toFixed(3) + ' AU');
+    add('远日点', (h.a*(1+h.e)).toFixed(3) + ' AU');
+    add('上次回归', '1986-02-09');
+    add('下次回归', '2061 年年中');
+    add('彗核直径', '~11 km');
+  }
+  stat.innerHTML = rows.join('');
+  document.getElementById('iDesc').textContent = ASTRO.descs[b.key] || '';
+  document.getElementById('iFoot').textContent = ASTRO.ringNote;
+};
+
+UI.updateLive = function(){
+  const b = ENG.byKey[ENG.state.focusKey];
+  if(!b) return;
+  const earth = ENG.byKey.earth;
+  const live = document.getElementById('iLive');
+  const rows = [];
+  const add = (k, v)=>rows.push('<div class="row"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>');
+  const distE = (bp)=>{
+    const dx = bp[0]-earth.posEcl[0], dy = bp[1]-earth.posEcl[1], dz = bp[2]-earth.posEcl[2];
+    return Math.sqrt(dx*dx + dy*dy + dz*dz);
+  };
+  const fmtLT = (au)=>{
+    const m = au*499.005/60;
+    return m < 1 ? (au*499.005).toFixed(1) + ' 秒' : m.toFixed(1) + ' 分钟';
+  };
+  if(b.kind === 'star'){
+    const dE = Math.sqrt(earth.posEcl[0]*earth.posEcl[0] + earth.posEcl[1]*earth.posEcl[1] + earth.posEcl[2]*earth.posEcl[2]);
+    add('距地球', dE.toFixed(4) + ' AU');
+    add('光行时', fmtLT(dE));
+    add('地球距太阳', Math.hypot(earth.posEcl[0], earth.posEcl[1], earth.posEcl[2]).toFixed(4) + ' AU');
+  }else if(b.kind === 'planet' || b.kind === 'comet'){
+    add('日心距离', b.rAU.toFixed(4) + ' AU · ' + (b.rAU*ASTRO.AU_KM/1e6).toFixed(1) + ' 百万km');
+    add('日心黄经', b.lam.toFixed(2) + '°');
+    add('日心黄纬', b.beta.toFixed(2) + '°');
+    const dE = distE(b.posEcl);
+    add('距地球', dE.toFixed(4) + ' AU');
+    add('光行时', fmtLT(dE));
+    add('近日点 / 远日点', (b.aNow*(1-b.eNow)).toFixed(3) + ' / ' + (b.aNow*(1+b.eNow)).toFixed(3) + ' AU');
+    add('轨道速度', ASTRO.visViva(b.rAU, b.aNow).toFixed(2) + ' km/s');
+  }else if(b.kind === 'moon'){
+    add('距母星（' + b.parent.name + '）', UI.fmtKm(b.moon.aKm));
+    const wx = b.pos[0]/ASTRO.SCALE, wy = b.pos[1]/ASTRO.SCALE, wz = b.pos[2]/ASTRO.SCALE;
+    add('距地球', Math.sqrt(wx*wx + wy*wy + wz*wz).toFixed(4) + ' AU');
+    add('光行时', fmtLT(Math.sqrt(wx*wx + wy*wy + wz*wz)));
+    add('轨道速度', (2*Math.PI*b.moon.aKm/(Math.abs(b.moon.P)*86400)).toFixed(2) + ' km/s');
+  }
+  live.innerHTML = rows.join('');
+};
+
+/* ---------- 标签 ---------- */
+UI.initLabels = function(){
+  const box = document.getElementById('labels');
+  UI.labels = {};
+  for(const b of ENG.bodies){
+    const d = document.createElement('div');
+    d.className = 'lbl' + (b.kind === 'moon' ? ' moon' : '');
+    d.textContent = b.name;
+    d.onclick = ()=>UI.select(b.key);
+    box.appendChild(d);
+    UI.labels[b.key] = d;
+  }
+};
+UI.updateLabels = function(){
+  const S = ENG.state;
+  for(const b of ENG.bodies){
+    const el = UI.labels[b.key];
+    let show = S.show.label && b._scr && !b._scr.behind && b._vis;
+    if(b.kind === 'moon'){
+      show = show && S.show.moons && (b.parent._projR > 12 || b._projR > 1.2);
+    }
+    if(!show){ el.style.display = 'none'; continue; }
+    const pr = b._projR/ENG.dprEff;
+    const op = clamp(0.32 + pr*0.45, 0.32, 0.95);
+    el.style.display = 'block';
+    el.style.opacity = op.toFixed(2);
+    el.style.transform = 'translate(-50%,-150%) translate(' + b._scr.cpx.toFixed(1) + 'px,' +
+      (b._scr.cpy - Math.max(pr, 3) - 8).toFixed(1) + 'px)';
+    el.classList.toggle('sel', S.focusKey === b.key);
+  }
+};
+
+/* ---------- 开关 ---------- */
+UI.toggles = [
+  { id:'orbit', name:'轨道', get:()=>ENG.state.show.orbit, set:v=>{ ENG.state.show.orbit = v; } },
+  { id:'label', name:'名称', get:()=>ENG.state.show.label, set:v=>{ ENG.state.show.label = v; } },
+  { id:'moons', name:'卫星', get:()=>ENG.state.show.moons, set:v=>{ ENG.state.show.moons = v; } },
+  { id:'belt', name:'小行星带', get:()=>ENG.state.show.belt, set:v=>{ ENG.state.show.belt = v; } },
+  { id:'comet', name:'彗星', get:()=>ENG.state.show.comet, set:v=>{ ENG.state.show.comet = v; } },
+  { id:'realScale', name:'真实距离比例', get:()=>ENG.state.show.realScale,
+    set:v=>{ ENG.state.show.realScale = v; UI.setCompress(v ? 1.0 : CFG.COMPRESS_MIN); } },
+  { id:'glow', name:'辉光', get:()=>ENG.state.show.glow, set:v=>{ ENG.state.show.glow = v; } },
+];
+UI.buildToggles = function(){
+  const box = document.getElementById('tgBody');
+  box.innerHTML = '';
+  for(const t of UI.toggles){
+    const d = document.createElement('div');
+    d.className = 'tg' + (t.get() ? ' on' : '');
+    d.innerHTML = '<span class="n">' + t.name + '</span><span class="sw"></span>';
+    d.onclick = ()=>{
+      t.set(!t.get());
+      d.classList.toggle('on', t.get());
+    };
+    box.appendChild(d);
+  }
+};
+UI.setCompress = function(to){
+  const S = ENG.state;
+  S.compressFrom = S.compressT;
+  S.compressTo = to;
+  S.compressAnim = 0.4;
+};
+
+/* ---------- 选中 / 聚焦 ---------- */
+UI.select = function(key){
+  const b = ENG.byKey[key];
+  if(!b) return;
+  if(b.kind === 'moon' && !ENG.state.show.moons){
+    const tg = UI.toggles.find(t=>t.id === 'moons');
+    tg.set(true);
+    document.querySelectorAll('#tgBody .tg').forEach((el, i)=>el.classList.toggle('on', UI.toggles[i].get()));
+  }
+  ENG.focusBody(key);
+  UI.renderInfoStatic(b);
+  document.querySelectorAll('#listBody .it').forEach(el=>{
+    el.classList.toggle('on', el.dataset.key === key);
+  });
+};
+
+/* ---------- 拾取 ---------- */
+UI.pick = function(px, py){
+  let best = null, bestD = 1e9;
+  for(const b of ENG.bodies){
+    if(!b._scr || b._scr.behind || !b._vis) continue;
+    if(b.kind === 'moon' && (!ENG.state.show.moons || b.parent._projR < 6)) continue;
+    const dx = b._scr.cpx - px, dy = b._scr.cpy - py;
+    const d = Math.hypot(dx, dy);
+    const thr = Math.max(26, b._projR/ENG.dprEff + 12);
+    if(d < thr && d < bestD){ bestD = d; best = b; }
+  }
+  if(best) UI.select(best.key);
+};
+
+/* ---------- 输入 ---------- */
+UI.initInput = function(canvas){
+  let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0, downT = 0;
+  canvas.addEventListener('pointerdown', e=>{
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    downX = e.clientX; downY = e.clientY; downT = performance.now();
+    canvas.classList.add('drag');
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    ENG.cam.yaw -= dx*0.005;
+    ENG.cam.pitch = clamp(ENG.cam.pitch + dy*0.005, -1.55, 1.55);
+  });
+  canvas.addEventListener('pointerup', e=>{
+    dragging = false;
+    canvas.classList.remove('drag');
+    const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
+    if(moved < 6 && performance.now() - downT < 600) UI.pick(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('pointercancel', ()=>{ dragging = false; canvas.classList.remove('drag'); });
+  canvas.addEventListener('wheel', e=>{
+    e.preventDefault();
+    const f = Math.exp(e.deltaY*0.0011);
+    const tgt = ENG.cam.tgt || ENG.byKey.sun;
+    ENG.cam.dist = clamp(ENG.cam.dist*f, Math.max(tgt.R*1.5, 0.4), CFG.MAX_DIST);
+  }, { passive:false });
+  let pinch0 = 0, dist0 = 0;
+  canvas.addEventListener('touchstart', e=>{
+    if(e.touches.length === 2){
+      pinch0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      dist0 = ENG.cam.dist;
+    }
+  }, { passive:true });
+  canvas.addEventListener('touchmove', e=>{
+    if(e.touches.length === 2 && pinch0 > 0){
+      const dd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const tgt = ENG.cam.tgt || ENG.byKey.sun;
+      ENG.cam.dist = clamp(dist0*pinch0/Math.max(dd, 1), Math.max(tgt.R*1.5, 0.4), CFG.MAX_DIST);
+      e.preventDefault();
+    }
+  }, { passive:false });
+  window.addEventListener('keydown', e=>{
+    if(e.target && e.target.tagName === 'INPUT') return;
+    if(e.code === 'Space'){
+      e.preventDefault();
+      UI.setPaused(!ENG.state.paused);
+    }else if(e.code === 'ArrowRight'){
+      ENG.state.speedV = clamp(ENG.state.speedV + 2, -100, 100);
+      document.getElementById('speedSlider').value = ENG.state.speedV;
+    }else if(e.code === 'ArrowLeft'){
+      ENG.state.speedV = clamp(ENG.state.speedV - 2, -100, 100);
+      document.getElementById('speedSlider').value = ENG.state.speedV;
+    }else if(e.code === 'KeyH'){
+      document.body.classList.toggle('hideui');
+    }
+  });
+};
+
+/* ---------- 时间控件 ---------- */
+UI.setPaused = function(p){
+  ENG.state.paused = p;
+  document.getElementById('icoPlay').innerHTML = p
+    ? '<path d="M4 2.5 L13 8 L4 13.5 Z" fill="currentColor"/>'
+    : '<rect x="3.5" y="3" width="3.2" height="10" fill="currentColor"/><rect x="9.3" y="3" width="3.2" height="10" fill="currentColor"/>';
+};
+UI.initTime = function(){
+  const slider = document.getElementById('speedSlider');
+  slider.addEventListener('input', ()=>{
+    ENG.state.speedV = parseInt(slider.value, 10);
+  });
+  document.getElementById('btnPlay').onclick = ()=>UI.setPaused(!ENG.state.paused);
+  document.getElementById('btnNow').onclick = ()=>{
+    ENG.state.jd = ASTRO.unixToJD(Date.now());
+  };
+  const inp = document.getElementById('dateInput');
+  const txt = document.getElementById('dateTxt');
+  txt.onclick = ()=>{ if(inp.showPicker) inp.showPicker(); else inp.focus(); };
+  inp.addEventListener('change', ()=>{
+    const v = inp.value;
+    if(!v) return;
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+    if(!m) return;
+    ENG.state.jd = ASTRO.dateToJD(+m[1], +m[2], +m[3], +m[4], +m[5], +(m[6] || 0));
+  });
+  UI.setPaused(false);
+};
+UI.updateTimeUI = function(){
+  const S = ENG.state;
+  document.getElementById('dateStr').textContent = UI.fmtDate(S.jd);
+  document.getElementById('speedTxt').textContent = UI.fmtSpeed(S.speedV);
+  const y = ASTRO.jdToDate(S.jd).y;
+  document.getElementById('oob').classList.toggle('show', y < 1800 || y > 2050);
+  const inp = document.getElementById('dateInput');
+  if(document.activeElement !== inp){
+    const t = ASTRO.jdToDate(S.jd);
+    const p = n=>String(n).padStart(2, '0');
+    inp.value = t.y + '-' + p(t.m) + '-' + p(t.d) + 'T' + p(t.hh) + ':' + p(t.mi) + ':' + p(Math.min(t.ss, 59));
+  }
+};
+
+/* ---------- 尺寸 ---------- */
+UI.resize = function(){
+  const canvas = document.getElementById('gl');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)*ENG.quality;
+  ENG.dprEff = dpr;
+  ENG.Wcss = window.innerWidth; ENG.Hcss = window.innerHeight;
+  const W = Math.max(8, Math.round(ENG.Wcss*dpr));
+  const H = Math.max(8, Math.round(ENG.Hcss*dpr));
+  if(W !== ENG.Wraw || H !== ENG.Hraw){
+    ENG.Wraw = W; ENG.Hraw = H;
+    canvas.width = W; canvas.height = H;
+    ENG.W = W; ENG.H = H;
+    ENG.initFramebuffers();
+  }
+};
+
+/* ---------- 主循环（rAF + 节流兜底，防隐藏标签页卡死）---------- */
+UI.step = function(dt, now){
+  if(ENG.freeze) return;
+  ENG.wall += dt;
+  const S = ENG.state;
+  let dd = 0;
+  if(!S.paused) dd = UI.speedDays(S.speedV)*dt;
+  S.jd += dd;
+  ENG.computeStates(S.jd, dd);
+  ENG.renderFrame(dt, ENG.wall);
+  UI.updateLabels();
+  UI.updateTimeUI();
+  if(UI._liveT === undefined || now - UI._liveT > 200){ UI._liveT = now; UI.updateLive(); }
+};
+UI.booted = false;
+UI.boot = function(){
+  try{
+    const canvas = document.getElementById('gl');
+    GLX.init(canvas);
+    ENG.initBodies();
+    ENG.initGLResources();
+    ENG.initBelts();
+    ENG.initStars();
+    UI.resize();
+    ENG.state.jd = ASTRO.unixToJD(Date.now());
+    ENG.computeStates(ENG.state.jd, 0);
+    ENG.cam.tgtKey = 'sun';
+    ENG.cam.followPos = [0, 0, 0];
+    ENG.cam.dist = 430;
+    ENG.state.focusKey = 'sun';
+    UI.buildList();
+    UI.buildToggles();
+    UI.initLabels();
+    UI.initInput(canvas);
+    UI.initTime();
+    UI.select('earth');
+    ENG.cam.dist = 430;
+    ENG.cam.tgtKey = 'sun';
+    ENG.cam.anim = null;
+    ENG.cam.followPos = [0, 0, 0];
+    window.addEventListener('resize', ()=>UI.resize());
+    UI.booted = true;
+    let last = performance.now();
+    const frame = (now)=>{
+      if(!UI.booted) return;
+      UI._lastRAF = now;
+      const dt = Math.min((now - last)/1000, 0.1);
+      last = now;
+      UI.step(dt, now);
+      if(ENG.debug) ENG.debugCheck();
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+    setInterval(()=>{
+      if(UI.booted && performance.now() - (UI._lastRAF || 0) > 400){
+        const now = performance.now();
+        const dt = Math.min((now - last)/1000, 0.1);
+        last = now;
+        UI.step(dt, now);
+      }
+    }, 33);
+    document.getElementById('loading').classList.add('off');
+    setTimeout(()=>{ const el = document.getElementById('loading'); if(el) el.style.display = 'none'; }, 900);
+  }catch(e){
+    UI.showErr(e);
+    throw e;
+  }
+};
+UI.showErr = function(e){
+  const el = document.getElementById('err');
+  el.style.display = 'block';
+  el.textContent = '错误: ' + (e && e.message ? e.message + '\n' + (e.stack || '') : String(e));
+};
+
+/* ---------- 调试 ---------- */
+ENG.debugCheck = function(){
+  const gl = GLX.gl;
+  const err = gl.getError();
+  if(err !== 0 && !ENG._glErr){
+    ENG._glErr = true;
+    console.error('gl.getError() =', err);
+  }
+};
+ENG.debugRead = function(x, y){
+  const gl = GLX.gl;
+  const px = new Float32Array(4);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, ENG.sceneFBO);
+  gl.readPixels(Math.round(clamp(x, 0, ENG.W-1)), Math.round(clamp(ENG.H - y, 0, ENG.H-1)), 1, 1, gl.RGBA, gl.FLOAT, px);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return px;
+};
+
+window.addEventListener('error', e=>{
+  window.__errs = window.__errs || [];
+  window.__errs.push(String(e.message) + ' @' + String(e.filename || '').split('/').pop() + ':' + e.lineno);
+  if(ENG.debug) UI.showErr(e);
+});
+window.addEventListener('unhandledrejection', e=>{
+  window.__errs = window.__errs || [];
+  window.__errs.push('rejection: ' + String(e.reason));
+});
+
+setTimeout(()=>{
+  UI.boot();
+}, 60);
+</script>
+</body>
+</html>

@@ -1206,6 +1206,85 @@
       },
       fatal: null,
       note: "离线 WebGL2 版完整覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多重小天体带、Bloom/ACES、大气与持续跟随。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年密切周期推进，却把下一次近日点标成 2061-07-28，模型实际约早 50 天。拖拽释放仍会误选，缩放可进入大型天体，也没有完整状态重置。"
+    },
+    'OmenAlpha(Max)V1': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 7,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 4.5,
+        integrity: 4
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL2 一句话版覆盖 JPL 世纪率/开普勒轨道、七颗卫星、校正到 2061 回归的哈雷、双向环影、多重小天体群、Bloom/ACES、大气及持续跟随。月球轨道在 5.1° 黄道倾角之外又叠加地球约 23.4° 轴倾角，按无效地球月球扣分。隐藏标签页的定时兜底会直接再次调用并自调度 frame，恢复可见后可能累积并行 rAF 循环；缩放也可进入大型天体，且没有完整状态重置。",
+      earthMoonValid: false
+    },
+    'OmenAlpha(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、多重小天体群、Bloom/ACES、大气与持续跟随；1440×900 实跑稳定且无控制台错误。拖拽误点抑制与按目标半径限制的安全缩放均成立，暂停和“此刻”可用；主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。"
     }
   };
 })();

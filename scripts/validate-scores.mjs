@@ -128,6 +128,8 @@ const CANONICAL_NAMES = {
   'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': 'Gemini 3.8 Flash (high) #2',
   'MuseSpark1.3Contributor(xhigh)V2': 'MuseSpark 1.3 Contributor (xHigh) #2',
   'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': 'MuseSpark 1.3 Contributor (xHigh) #2',
+  'OmenAlpha(Max)V1': 'Omen Alpha (Max)',
+  'OmenAlpha(Max)V1-TasksAssignedByOpus5': 'Omen Alpha (Max)',
 };
 
 const EXPECTED_EXACT = {
@@ -236,6 +238,8 @@ const EXPECTED_EXACT = {
   "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 85.993333333333,
   "MuseSpark1.3Contributor(xhigh)V2": 81.51,
   "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 91.966666666667,
+  "OmenAlpha(Max)V1": 88.95,
+  "OmenAlpha(Max)V1-TasksAssignedByOpus5": 96,
 };
 
 // Current scoring-input field oracle. Order:
@@ -348,6 +352,8 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': '0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|5|3.5|4.5|-|0.5|0.5|1|1|0.5|-|-',
   'MuseSpark1.3Contributor(xhigh)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|1|5|3.5|5|-|1|0.5|1|1|0.5|-|-',
   'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|4|5|-|0.5|0.5|1|1|0.5|-|-',
+  'OmenAlpha(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|5|4.5|4|-|1|0.5|1|1|0.5|-|-',
+  'OmenAlpha(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|5|5|5|-|1|1|1|1|0.5|-|-',
 };
 
 const auditFingerprint = score => [
@@ -362,18 +368,18 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 105, `WORKS count must be 105, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 105, `SCORES count must be 105, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 105, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 105, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 107, `WORKS count must be 107, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 107, `SCORES count must be 107, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 107, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 107, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the WORKS IDs');
-check(WORKS.filter(w => w.group === 'A').length === 60, 'Audited Group A count must be 60 after adding MuseSpark #2');
-check(WORKS.filter(w => w.group === 'B').length === 45, 'Audited Group B count must be 45 after adding MuseSpark #2');
+check(WORKS.filter(w => w.group === 'A').length === 61, 'Audited Group A count must be 61 after adding Omen Alpha');
+check(WORKS.filter(w => w.group === 'B').length === 46, 'Audited Group B count must be 46 after adding Omen Alpha');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
   'Qwen3.8MaxV2-TasksAssignedByOpus5',
@@ -398,16 +404,16 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 85, 'Visible WORKS count must be 85');
-check(visibleWorks.filter(w => w.group === 'A').length === 46, 'Visible Group A count must be 46');
-check(visibleWorks.filter(w => w.group === 'B').length === 39, 'Visible Group B count must be 39');
+check(visibleWorks.length === 87, 'Visible WORKS count must be 87');
+check(visibleWorks.filter(w => w.group === 'A').length === 47, 'Visible Group A count must be 47');
+check(visibleWorks.filter(w => w.group === 'B').length === 40, 'Visible Group B count must be 40');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) check(SITE.byId(id) === undefined, id + ': direct work page lookup must stay hidden');
-check(PAIR_ORDER.length === 31 && new Set(PAIR_ORDER).size === 31, 'PAIR_ORDER must retain 31 configured pair keys, including MuseSpark #2');
+check(PAIR_ORDER.length === 32 && new Set(PAIR_ORDER).size === 32, 'PAIR_ORDER must retain 32 configured pair keys, including Omen Alpha');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 28, 'Expected 28 complete visible pairs');
+check(SITE.pairs().length === 29, 'Expected 29 complete visible pairs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
 check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(['gemini36flash', 'gemini38flashv1', 'gemini37flash', 'qwen38max', 'doubao', 'deepseekv4flash0731']), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
@@ -418,7 +424,7 @@ check(PAIR_ORDER[13] === 'grok46', 'The Grok 4.6 pair must occupy comparison pos
 check(PAIR_ORDER[16] === 'gemini36flash', 'Gemini 3.6 Flash must occupy comparison position 17');
 check(PAIR_ORDER[18] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 19 after inserting Grok 4.6');
 check(PAIR_ORDER[21] === 'doubao' && PAIR_ORDER[22] === 'hy4v1' && PAIR_ORDER[23] === 'hy4v2' && PAIR_ORDER[24] === 'glm53flashv2' && PAIR_ORDER[25] === 'minimax' && PAIR_ORDER[26] === 'qwen38flash', 'Doubao, Hy 4 #1/#2, GLM 5.3 Flash #2, MiniMax, and Qwen 3.8 Flash must occupy the final comparison positions');
-check(PAIR_ORDER[27] === 'musespark13' && PAIR_ORDER[28] === 'gemini38flashv1' && PAIR_ORDER[29] === 'gemini38flashv2' && PAIR_ORDER[30] === 'musespark13v2', 'MuseSpark #1, Gemini 3.8 Flash #1/#2, and MuseSpark #2 must be appended in their declared pair order');
+check(PAIR_ORDER[27] === 'musespark13' && PAIR_ORDER[28] === 'gemini38flashv1' && PAIR_ORDER[29] === 'gemini38flashv2' && PAIR_ORDER[30] === 'musespark13v2' && PAIR_ORDER[31] === 'omenalpha', 'MuseSpark, Gemini 3.8 Flash, and Omen Alpha must be appended in their declared pair order');
 
 const referenceIds = ['Opus5Ultra-WebGL2'];
 check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Only Claude Opus 5 (Ultra) may be flagged as the benchmark');
@@ -451,6 +457,14 @@ check(muse2A.bytes === 46583 && muse2A.lines === 796 && muse2A.tech === 'Three.j
 check(muse2B.bytes === 91860 && muse2B.lines === 1794 && muse2B.tech === 'WebGL2' && !muse2B.needsFloat && muse2B.msaa && muse2B.net.length === 0, 'MuseSpark #2 detailed metadata must match the supplied source');
 check(SITE.environmentTag(muse2A) === 'in Pi' && SITE.environmentTag(muse2B) === 'in Pi', 'Both MuseSpark #2 works must use the supplied Pi environment');
 check(museA.model.endsWith('#1') && museB.model.endsWith('#1') && muse2A.model.endsWith('#2') && muse2B.model.endsWith('#2'), 'MuseSpark repeated runs must be numbered independently in both requirement groups');
+const omenA = SITE.byId('OmenAlpha(Max)V1');
+const omenB = SITE.byId('OmenAlpha(Max)V1-TasksAssignedByOpus5');
+check(omenA?.tier === 2 && omenB?.tier === 2 && omenA?.pair === 'omenalpha' && omenB?.pair === 'omenalpha', 'Both Omen Alpha works must form one Tier 2 pair');
+check(omenA?.bytes === 89376 && omenA?.lines === 1903 && omenA?.tech === 'WebGL2' && !omenA?.needsFloat && !omenA?.msaa && omenA?.net.length === 0, 'Omen Alpha one-line metadata must match the supplied source');
+check(omenB?.bytes === 136419 && omenB?.lines === 3254 && omenB?.tech === 'WebGL2' && !omenB?.needsFloat && omenB?.msaa && omenB?.net.length === 0, 'Omen Alpha detailed metadata must match the supplied source');
+check(SITE.environmentTag(omenA) === 'in Zcode' && SITE.environmentTag(omenB) === 'in Zcode', 'Both Omen Alpha works must use Zcode');
+check((omenA.tags || []).includes('匿名参测') && (omenB.tags || []).includes('匿名参测'), 'Both Omen Alpha works must disclose anonymous participation');
+for (const work of [omenA, omenB]) check(fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)) && work.jsErrors === 0, `${work.id}: source, screenshot, and clean runtime result must exist`);
 for (const [run, oneBytes, oneLines, docBytes, docLines, env] of [[1,67828,1877,148351,3736,'in Antigravity'],[2,64353,1808,170910,4799,'in Zcode']]) {
   const one = SITE.byId(`Gemini3.8Flash(high)V${run}`), doc = SITE.byId(`Gemini3.8Flash(high)V${run}-TasksAssignedByOpus5`);
   check(one.bytes === oneBytes && one.lines === oneLines && one.tech === 'Three.js' && one.net.length > 0, `Gemini 3.8 Flash #${run} one-line metadata must match the source`);
@@ -503,7 +517,8 @@ for (const [model, values] of Object.entries(expectedPrices)) {
   const actual = context.window.MODEL_PRICES[model];
   ['input','output','cache'].forEach((key,i)=>close(actual[key],values[i],model+' '+key));
 }
-check(visibleWorks.every(work=>SITE.priceFor(work)), 'Every visible work must map to a saved price family');
+check(visibleWorks.filter(work => !work.id.startsWith('OmenAlpha')).every(work=>SITE.priceFor(work)), 'Every identified visible work must map to a saved price family');
+check(!SITE.priceFor(omenA) && !SITE.priceFor(omenB) && SITE.priceCell(omenA).includes('—'), 'Anonymous Omen Alpha pricing must remain undisclosed');
 check(SITE.priceFor(museA).note === 'openrouter' && SITE.priceCell(museA).includes('0.1 / 0.2 / 0.002'), 'MuseSpark must show the user-provided OpenRouter reference');
 for (const key of ['priceInput','priceOutput','priceCache']) for (const direction of [1,-1]) {
   const sorted = SITE.tableRows(visibleWorks, key, direction, 'zh');
@@ -522,6 +537,7 @@ const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
 const expectedMoonAdjustments = {
   'MuseSpark1.3Contributor(xhigh)V1': { moonQuality: .5 },
   'MuseSpark1.3Contributor(xhigh)V2': { moonQuality: .5 },
+  'OmenAlpha(Max)V1': { earthMoonValid: false },
   'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': { earthMoonValid: false },
   'Gemini3.8Flash(high)V2': { earthMoonValid: false },
   'GLM5.3(Max)V1': { moonQuality: .5 },
@@ -590,7 +606,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 105, `scores.js source key ${key} must occur exactly 105 times; duplicate/missing key detected (${count})`);
+  check(count === 107, `scores.js source key ${key} must occur exactly 107 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -1007,7 +1023,7 @@ for (const lang of ['zh', 'en']) {
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
   const countRows = () => (body().match(/<tr>/g) || []).length;
-  check(countRows() === 46 && body().includes('Claude Opus 5 (Max)'), lang + ': table must default to the 46 one-line works');
+  check(countRows() === 47 && body().includes('Claude Opus 5 (Max)'), lang + ': table must default to the 47 one-line works');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
   for (const [index,group] of ['A','B'].entries()) {
     tabs[index].listeners.click();
@@ -1034,7 +1050,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
   check(countRows() === 2, lang + ': model search must filter the active one-line tab');
-  check(one('#tableCountA').textContent === '2 / 46' && one('#tableCountB').textContent === '1 / 39', lang + ': both tabs must show filtered and total counts');
+  check(one('#tableCountA').textContent === '2 / 47' && one('#tableCountB').textContent === '1 / 40', lang + ': both tabs must show filtered and total counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[1].listeners.click();
   check(countRows() === 1 && body().includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
@@ -1044,9 +1060,9 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   check(body().includes('colspan="9"'), lang + ': empty state must span all nine columns');
   one('#modelSearchClear').listeners.click();
-  check(countRows() === 39, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 40, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 46, lang + ': one-line tab must restore its 46 entries');
+  check(countRows() === 47, lang + ': one-line tab must restore its 47 entries');
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('103') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current full score');
@@ -1114,6 +1130,7 @@ const expectedRecommendations = {
   'Claude Opus 4.8 (Max)': ['down', 5, '你不喜欢Opus5？'],
   'MuseSpark 1.3 Contributor (xHigh)': ['up', 1, '四舍五入约等于不要钱'],
   'Gemini 3.8 Flash (high)': ['up', 1, '更新了版本号错误的问题'],
+  'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
 };
 for (const work of visibleWorks) {
   const modelKey = work.model.replace(/ #\d+$/, '');
@@ -1228,9 +1245,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星奖励 3 分') && zhHome.includes('理论最高分为 103') && zhHome.includes('三个证据项的满分贡献各增加 1 分'), 'Chinese scoring rules must explain the 100+3 structure and correctness reallocation');
 check(enHome.includes('100 Base Points + 3 Extra-Moon Bonus') && enHome.includes('the theoretical maximum is 103') && enHome.includes('each evidence item now contributes one additional point'), 'English scoring rules must explain the 100+3 structure and correctness reallocation');
-check(zhHome.includes('id="aAll">46') && enHome.includes('id="aAll">46') && zhHome.includes('id="bAll">39') && enHome.includes('id="bAll">39') && zhHome.includes('id="tAll">85') && enHome.includes('id="tAll">85'), 'Both home pages must publish 46/39 and 85-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 46 件和文档组 39 件') && enHome.includes('prefer the 28 paired results over treating all 46 one-line and 39 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && zhHome.includes('51.16 / 67') && enHome.includes('51.16 / 67') && zhHome.includes('31.62 / 36') && enHome.includes('31.62 / 36'), 'Both home pages must publish the current V3 28-pair statistics');
+check(zhHome.includes('id="aAll">47') && enHome.includes('id="aAll">47') && zhHome.includes('id="bAll">40') && enHome.includes('id="bAll">40') && zhHome.includes('id="tAll">87') && enHome.includes('id="tAll">87'), 'Both home pages must publish 47/40 and 87-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 47 件和文档组 40 件') && enHome.includes('prefer the 29 paired results over treating all 47 one-line and 40 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('29 组同模型') && enHome.includes('29 same-model') && zhHome.includes('51.48 / 67') && enHome.includes('51.48 / 67') && zhHome.includes('31.74 / 36') && enHome.includes('31.74 / 36'), 'Both home pages must publish the current V3 29-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -1280,72 +1297,72 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 103, 'Score maxima');
 check(stats.maxima.coverage === 67 && stats.maxima.execution === 36 && stats.maxima.total === 103, 'Max definition must be 67 coverage + 36 execution = 103, including the 3-point extra-moon bonus');
 check(stats.maxima.final === 106, 'Tier 0 final ceiling must be separately defined as 106');
-check(stats.pairedSummary.n === 28, 'Paired statistics must use 28 visible pairs');
-close(stats.pairedSummary.coverage.a, 51.158928571428575, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 62.73571428571427, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":24,"tie":2,"decline":2}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 30.501190476190477, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.619047619047613, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":15,"tie":3,"decline":10}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 77.69583333333335, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 89.0609523809524, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":23,"tie":1,"decline":4}), 'exact paired outcomes must match the evidence');
+check(stats.pairedSummary.n === 29, 'Paired statistics must use 29 visible pairs');
+close(stats.pairedSummary.coverage.a, 51.48103448275862, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 62.77931034482758, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":25,"tie":2,"decline":2}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.a, 30.53390804597701, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 31.735632183908038, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":16,"tie":3,"decline":10}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 78.08390804597703, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 89.30022988505749, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":24,"tie":1,"decline":4}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      46,
-      51.124782608695625,
-      31.128260869565228,
-      78.60086956521738
+      47,
+      51.32425531914891,
+      31.135106382978737,
+      78.82106382978722
     ],
     "b": [
-      39,
-      61.762051282051274,
-      30.424358974358977,
-      85.58162393162392
+      40,
+      61.818,
+      30.538750000000004,
+      85.84208333333332
     ]
   },
   "withoutReferences": {
     "a": [
-      45,
-      50.838666666666654,
-      31.020000000000014,
-      78.12533333333332
+      46,
+      51.0486956521739,
+      31.02934782608697,
+      78.36065217391302
     ],
     "b": [
-      39,
-      61.762051282051274,
-      30.424358974358977,
-      85.58162393162392
+      40,
+      61.818,
+      30.538750000000004,
+      85.84208333333332
     ]
   },
   "withoutTier4": {
     "a": [
-      45,
-      51.46844444444442,
-      31.34740740740742,
-      79.0825185185185
+      46,
+      51.66478260869563,
+      31.349637681159432,
+      79.29702898550723
     ],
     "b": [
-      36,
-      62.44777777777776,
-      31.770833333333332,
-      89.65787037037036
+      37,
+      62.48972972972972,
+      31.85810810810811,
+      89.82927927927926
     ]
   },
   "withoutReferencesOrTier4": {
     "a": [
-      44,
-      51.18363636363634,
-      31.241666666666678,
-      78.6071212121212
+      45,
+      51.39066666666665,
+      31.24629629629631,
+      78.83696296296294
     ],
     "b": [
-      36,
-      62.44777777777776,
-      31.770833333333332,
-      89.65787037037036
+      37,
+      62.48972972972972,
+      31.85810810810811,
+      89.82927927927926
     ]
   }
 };
@@ -1380,4 +1397,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 105 audited records, 85 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');
+console.log('\nScore validation passed: 107 audited records, 87 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=103, and Tier 0 final max=106.');
