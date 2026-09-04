@@ -1127,6 +1127,85 @@
       },
       fatal: null,
       note: "离线 WebGL2 覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环系、大气及 ACES。HDR Bloom 已移除，只有眩光近似；月球到地球的距离却显示为母行星日心距约 1 AU，海卫一也重复翻转逆行方向。聚焦可跟随，但缺少拖拽误点抑制、安全缩放和完整状态重置。"
+    },
+    'MuseSpark1.3Contributor(xhigh)V2': {
+      reference: false,
+      featureMap: {
+        rings: 0.4,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 6,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 3.5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "联网 Three.js 版具备完整定向的 J2000/开普勒行星轨道、六颗名义卫星、哈雷、双小天体带、Bloom/ACES、大气和持续跟随。行星环没有物理环影；六颗卫星均使用手调显示距离和非闭合的竖直起伏，按部分有效计。哈雷初始相位也由任意 L=0 推得，而非 1986 近日点；缩放可进入大型天体，且没有完整重置。",
+      moonQuality: 0.5
+    },
+    'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      correctness: {
+        runtime: 5,
+        data: 4,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 0.5,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线 WebGL2 版完整覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多重小天体带、Bloom/ACES、大气与持续跟随。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年密切周期推进，却把下一次近日点标成 2061-07-28，模型实际约早 50 天。拖拽释放仍会误选，缩放可进入大型天体，也没有完整状态重置。"
     }
   };
 })();
