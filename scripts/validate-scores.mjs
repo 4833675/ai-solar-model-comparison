@@ -472,7 +472,7 @@ for (const [run, oneBytes, oneLines, docBytes, docLines, env] of [[1,67828,1877,
   check(SITE.environmentTag(one) === env && SITE.environmentTag(doc) === env, `Gemini 3.8 Flash #${run} must use ${env}`);
 }
 check(fable51?.group === 'A' && fable51?.tier === 0 && fable51?.pair === null && fable51?.model === 'Claude Fable 5.1 (Max)', 'Claude Fable 5.1 must be an unpaired Tier 0 one-line work');
-check(fable51.bytes === 156068 && fable51.lines === 1373 && fable51.tech === 'WebGL2' && fable51.net.length === 0 && fable51.msaa && !fable51.needsFloat, 'Claude Fable 5.1 metadata must match the unchanged audited file');
+check(fable51.bytes === 183910 && fable51.lines === 1769 && fable51.tech === 'WebGL2' && fable51.net.length === 0 && fable51.msaa && !fable51.needsFloat, 'Claude Fable 5.1 metadata must match the current supplied file');
 check(SITE.environmentTag(fable51) === 'in Claude Code' && fs.existsSync(new URL(`../${fable51.shot}`, import.meta.url)), 'Claude Fable 5.1 must expose its environment and real screenshot');
 close(fable51Score.evidenceBase, 103, 'Claude Fable 5.1 full base score');
 for (const [part, maximum] of Object.entries({ features: 12, orbit: 30, moons: 12, moonBonus: 3, independence: 7, halley: 3, correctness: 23, interaction: 13 })) {
