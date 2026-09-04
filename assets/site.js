@@ -60,7 +60,7 @@
     'Gemini 3.8 Flash (high)': { direction: 'up', count: 1, zh: '更新了版本号错误的问题', en: 'Fixed the version-number mistake' },
     'Omen Alpha (Max)': { direction: 'up', count: 1, zh: '看起来好像很厉害？', en: 'Looks pretty formidable?' },
   };
-  const recommendationModelKey = model => String(model || '').replace(/ #\d+$/, '');
+  const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
     const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
     return value ? Object.assign({ reason: I18N.en ? value.en : value.zh }, value) : null;

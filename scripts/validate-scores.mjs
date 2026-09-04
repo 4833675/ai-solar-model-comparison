@@ -10,10 +10,11 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
   vm.runInContext(read(file), context, { filename: file });
 }
 
-const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, SITE } = context.window;
+const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
 const fail = message => { throw new Error(message); };
 const check = (condition, message) => { if (!condition) fail(message); };
 const close = (actual, expected, label) => check(Math.abs(actual - expected) < 1e-9, `${label}: expected ${expected}, got ${actual}`);
+const stripCreationDate = model => String(model || '').replace(/\s+\(\d{6}\)$/, '');
 const exactKeys = (value, expected, label) => {
   const actual = Object.keys(value).sort();
   const wanted = [...expected].sort();
@@ -378,6 +379,13 @@ check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs ha
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(CANONICAL_NAMES).sort()), 'Canonical-name ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_EXACT).sort()), 'Expected-score ledger does not cover exactly the WORKS IDs');
 check(JSON.stringify(workIds) === JSON.stringify(Object.keys(EXPECTED_AUDIT_FINGERPRINT).sort()), 'Audit fingerprint ledger does not cover exactly the WORKS IDs');
+check(JSON.stringify(workIds) === JSON.stringify(Object.keys(WORK_CREATION_DATES).sort()), 'Creation-date ledger must cover exactly the WORKS IDs');
+for (const work of WORKS) {
+  const date = WORK_CREATION_DATES[work.id];
+  check(/^\d{6}$/.test(date) && work.model.endsWith(` (${date})`), `${work.id}: model name must end with its YYMMDD filesystem creation date`);
+  check(stripCreationDate(work.model) === CANONICAL_NAMES[work.id], `${work.id}: dated model name must preserve its canonical base name`);
+}
+check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 61, 'Audited Group A count must be 61 after adding Omen Alpha');
 check(WORKS.filter(w => w.group === 'B').length === 46, 'Audited Group B count must be 46 after adding Omen Alpha');
 const expectedHiddenIds = [
@@ -456,7 +464,7 @@ check(SITE.environmentTag(museA) === 'in Zcode' && SITE.environmentTag(museB) ==
 check(muse2A.bytes === 46583 && muse2A.lines === 796 && muse2A.tech === 'Three.js' && JSON.stringify(muse2A.net) === JSON.stringify(['unpkg.com']), 'MuseSpark #2 one-line metadata must match the supplied source');
 check(muse2B.bytes === 91860 && muse2B.lines === 1794 && muse2B.tech === 'WebGL2' && !muse2B.needsFloat && muse2B.msaa && muse2B.net.length === 0, 'MuseSpark #2 detailed metadata must match the supplied source');
 check(SITE.environmentTag(muse2A) === 'in Pi' && SITE.environmentTag(muse2B) === 'in Pi', 'Both MuseSpark #2 works must use the supplied Pi environment');
-check(museA.model.endsWith('#1') && museB.model.endsWith('#1') && muse2A.model.endsWith('#2') && muse2B.model.endsWith('#2'), 'MuseSpark repeated runs must be numbered independently in both requirement groups');
+check(stripCreationDate(museA.model).endsWith('#1') && stripCreationDate(museB.model).endsWith('#1') && stripCreationDate(muse2A.model).endsWith('#2') && stripCreationDate(muse2B.model).endsWith('#2'), 'MuseSpark repeated runs must be numbered independently in both requirement groups');
 const omenA = SITE.byId('OmenAlpha(Max)V1');
 const omenB = SITE.byId('OmenAlpha(Max)V1-TasksAssignedByOpus5');
 check(omenA?.tier === 2 && omenB?.tier === 2 && omenA?.pair === 'omenalpha' && omenB?.pair === 'omenalpha', 'Both Omen Alpha works must form one Tier 2 pair');
@@ -471,7 +479,7 @@ for (const [run, oneBytes, oneLines, docBytes, docLines, env] of [[1,67828,1877,
   check(doc.bytes === docBytes && doc.lines === docLines && doc.tech === 'WebGL2' && !doc.needsFloat && doc.net.length === 0, `Gemini 3.8 Flash #${run} detailed metadata must match the source`);
   check(SITE.environmentTag(one) === env && SITE.environmentTag(doc) === env, `Gemini 3.8 Flash #${run} must use ${env}`);
 }
-check(fable51?.group === 'A' && fable51?.tier === 0 && fable51?.pair === null && fable51?.model === 'Claude Fable 5.1 (Max)', 'Claude Fable 5.1 must be an unpaired Tier 0 one-line work');
+check(fable51?.group === 'A' && fable51?.tier === 0 && fable51?.pair === null && stripCreationDate(fable51?.model) === 'Claude Fable 5.1 (Max)', 'Claude Fable 5.1 must be an unpaired Tier 0 one-line work');
 check(fable51.bytes === 183910 && fable51.lines === 1769 && fable51.tech === 'WebGL2' && fable51.net.length === 0 && fable51.msaa && !fable51.needsFloat, 'Claude Fable 5.1 metadata must match the current supplied file');
 check(SITE.environmentTag(fable51) === 'in Claude Code' && fs.existsSync(new URL(`../${fable51.shot}`, import.meta.url)), 'Claude Fable 5.1 must expose its environment and real screenshot');
 close(fable51Score.evidenceBase, 103, 'Claude Fable 5.1 full base score');
@@ -558,7 +566,7 @@ const nested = {
 for (const work of WORKS) {
   const id = work.id;
   const score = SCORES[id];
-  check(work.model === CANONICAL_NAMES[id], `${id}: canonical name mismatch: ${work.model}`);
+  check(stripCreationDate(work.model) === CANONICAL_NAMES[id], `${id}: canonical name mismatch: ${work.model}`);
   const actualFingerprint = auditFingerprint(score);
   check(actualFingerprint === EXPECTED_AUDIT_FINGERPRINT[id], `${id}: audit evidence fingerprint mismatch\n  expected ${EXPECTED_AUDIT_FINGERPRINT[id]}\n  actual   ${actualFingerprint}`);
   const presentOptional = optionalRecordKeys.filter(key => Object.hasOwn(score, key));
@@ -681,8 +689,8 @@ for (const work of [lunaMax1, lunaMax2]) {
   check(work?.group === 'A' && work?.tier === 3 && work?.pair === null && JSON.stringify(work?.tags) === JSON.stringify(['in Codex']), `${work?.id || 'GPT-5.6 Luna Max'} must be an unpaired Tier 3 in Codex run`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Luna Max'} screenshot asset must exist`);
 }
-check(lunaMax1?.model === 'GPT-5.6 Luna (Max) #1' && lunaMax1?.tech === 'WebGL2' && lunaMax1?.bytes === 75455 && lunaMax1?.lines === 1944 && lunaMax1?.net.length === 0, 'GPT-5.6 Luna Max #1 metadata must match the supplied file');
-check(lunaMax2?.model === 'GPT-5.6 Luna (Max) #2' && lunaMax2?.tech === 'Three.js' && lunaMax2?.bytes === 64120 && lunaMax2?.lines === 876 && JSON.stringify(lunaMax2?.net) === JSON.stringify(['cdn.jsdelivr.net', 'fonts.googleapis.com']), 'GPT-5.6 Luna Max #2 metadata must match the supplied file and disclose network dependencies');
+check(stripCreationDate(lunaMax1?.model) === 'GPT-5.6 Luna (Max) #1' && lunaMax1?.tech === 'WebGL2' && lunaMax1?.bytes === 75455 && lunaMax1?.lines === 1944 && lunaMax1?.net.length === 0, 'GPT-5.6 Luna Max #1 metadata must match the supplied file');
+check(stripCreationDate(lunaMax2?.model) === 'GPT-5.6 Luna (Max) #2' && lunaMax2?.tech === 'Three.js' && lunaMax2?.bytes === 64120 && lunaMax2?.lines === 876 && JSON.stringify(lunaMax2?.net) === JSON.stringify(['cdn.jsdelivr.net', 'fonts.googleapis.com']), 'GPT-5.6 Luna Max #2 metadata must match the supplied file and disclose network dependencies');
 check(SITE.scoreFor(lunaMax1).total === 62 && SITE.scoreFor(lunaMax2).total === 59, 'GPT-5.6 Luna Max #1 and #2 evidence scores must be 62 and 59');
 for (const work of [glm53FlashOneLine, glm53FlashDetailed]) {
   check(work?.tier === 3 && work?.pair === null && work?.tech === 'WebGL2' && work?.net.length === 0, `${work?.id || 'GLM 5.3 Flash'} must be an unpaired offline Tier 3 WebGL2 run`);
@@ -738,7 +746,7 @@ const grok46 = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1');
 const grok46Detailed = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1-TasksAssignedByOpus5');
 check(grok46?.group === 'A' && grok46Detailed?.group === 'B' && grok46?.tier === 2 && grok46Detailed?.tier === 2, 'Both Grok 4.6 runs must be Tier 2');
 check(grok46?.pair === 'grok46' && grok46Detailed?.pair === 'grok46', 'Grok 4.6 runs must form one explicit pair');
-check(grok46?.model === 'Grok 4.6 (xHigh)' && grok46Detailed?.model === 'Grok 4.6 (xHigh)', 'Grok 4.6 visible naming must be canonical');
+check(stripCreationDate(grok46?.model) === 'Grok 4.6 (xHigh)' && stripCreationDate(grok46Detailed?.model) === 'Grok 4.6 (xHigh)', 'Grok 4.6 visible naming must be canonical');
 check(grok46?.title === '日心仪 · Helios Orrery' && grok46Detailed?.title === '太阳系实时运动模型', 'Grok 4.6 visible titles must match the audited files');
 check(grok46?.bytes === 59361 && grok46?.lines === 1527 && grok46?.tech === 'Three.js' && grok46?.needsFloat === false && grok46?.msaa === true, 'Grok 4.6 one-line source metadata must match the replaced file');
 check(JSON.stringify(grok46?.net) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net']), 'Grok 4.6 one-line network dependencies must match the replaced file');
@@ -767,7 +775,7 @@ const deepSeekPro0813V2 = WORKS.find(w => w.id === 'DeepSeekV4Pro0813(Max)V2-Tas
 const deepSeekPro0813V2OneLine = WORKS.find(w => w.id === 'DeepSeekV4Pro0813(Max)V2');
 check(deepSeekPro0813OneLine?.group === 'A' && deepSeekPro0813OneLine?.tier === 2 && deepSeekPro0813OneLine?.pair === 'deepseekv4pro0813', 'DeepSeek V4 Pro 0813 #1 one-line run must be the paired Tier 2 entry');
 check(deepSeekPro0813?.group === 'B' && deepSeekPro0813?.tier === 2 && deepSeekPro0813?.pair === 'deepseekv4pro0813', 'DeepSeek V4 Pro 0813 #1 detailed run must be the paired Tier 2 entry');
-check(deepSeekPro0813?.model === 'DeepSeek V4 Pro 0813 (Max) #1' && deepSeekPro0813OneLine?.model === 'DeepSeek V4 Pro 0813 (Max) #1', 'Original DeepSeek V4 Pro 0813 runs must be numbered #1');
+check(stripCreationDate(deepSeekPro0813?.model) === 'DeepSeek V4 Pro 0813 (Max) #1' && stripCreationDate(deepSeekPro0813OneLine?.model) === 'DeepSeek V4 Pro 0813 (Max) #1', 'Original DeepSeek V4 Pro 0813 runs must be numbered #1');
 check(deepSeekPro0813?.title === '太阳系实时运动模型' && deepSeekPro0813OneLine?.title === '太阳系 · 实时运动模型', 'DeepSeek V4 Pro 0813 #1 visible titles must remain canonical');
 for (const work of [deepSeekPro0813, deepSeekPro0813OneLine]) {
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Zcode']), `${work?.id || 'DeepSeek V4 Pro 0813 #1'} must show the exact in Zcode tag`);
@@ -779,7 +787,7 @@ check(deepSeekPro0813OneLine?.bytes === 50852 && deepSeekPro0813OneLine?.lines =
 check(JSON.stringify(deepSeekPro0813OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net', 'esm.sh']), 'DeepSeek V4 Pro 0813 #1 one-line network dependencies must match the audited file');
 check(deepSeekPro0813V2OneLine?.group === 'A' && deepSeekPro0813V2OneLine?.tier === 2 && deepSeekPro0813V2OneLine?.pair === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #2 one-line run must be the paired Tier 2 entry');
 check(deepSeekPro0813V2?.group === 'B' && deepSeekPro0813V2?.tier === 2 && deepSeekPro0813V2?.pair === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #2 detailed run must be the paired Tier 2 entry');
-check(deepSeekPro0813V2?.model === 'DeepSeek V4 Pro 0813 (Max) #2' && deepSeekPro0813V2OneLine?.model === 'DeepSeek V4 Pro 0813 (Max) #2', 'New DeepSeek V4 Pro 0813 runs must be numbered #2');
+check(stripCreationDate(deepSeekPro0813V2?.model) === 'DeepSeek V4 Pro 0813 (Max) #2' && stripCreationDate(deepSeekPro0813V2OneLine?.model) === 'DeepSeek V4 Pro 0813 (Max) #2', 'New DeepSeek V4 Pro 0813 runs must be numbered #2');
 check(deepSeekPro0813V2OneLine?.bytes === 61829 && deepSeekPro0813V2OneLine?.lines === 1387 && deepSeekPro0813V2OneLine?.tech === 'Three.js' && deepSeekPro0813V2OneLine?.needsFloat === false && deepSeekPro0813V2OneLine?.msaa === true, 'DeepSeek V4 Pro 0813 #2 one-line source metadata must match the audited file');
 check(JSON.stringify(deepSeekPro0813V2OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'DeepSeek V4 Pro 0813 #2 one-line network dependencies must match the audited file');
 check(deepSeekPro0813V2?.bytes === 104830 && deepSeekPro0813V2?.lines === 2423 && deepSeekPro0813V2?.tech === 'WebGL2' && deepSeekPro0813V2?.needsFloat === true && deepSeekPro0813V2?.msaa === true && deepSeekPro0813V2?.net.length === 0, 'DeepSeek V4 Pro 0813 #2 detailed source metadata must match the audited file');
@@ -796,9 +804,9 @@ const glm53Detailed1 = WORKS.find(w => w.id === 'GLM5.3(Max)V1-TasksAssignedByOp
 const glm53Detailed2 = WORKS.find(w => w.id === 'GLM5.3(Max)V2-TasksAssignedByOpus5');
 check([glm53OneLine1, glm53OneLine2, glm53OneLine3].every(w => w?.group === 'A' && w?.tier === 2), 'All three GLM 5.3 one-line runs must be Tier 2');
 check(glm53Detailed1?.group === 'B' && glm53Detailed2?.group === 'B' && glm53Detailed1?.tier === 3 && glm53Detailed2?.tier === 3, 'Both GLM 5.3 detailed runs must be Tier 3');
-check(glm53OneLine1?.model === 'GLM 5.3 (Max) #1' && glm53Detailed1?.model === 'GLM 5.3 (Max) #1', 'GLM 5.3 V1 runs must be numbered #1');
-check(glm53OneLine2?.model === 'GLM 5.3 (Max) #2' && glm53Detailed2?.model === 'GLM 5.3 (Max) #2', 'GLM 5.3 V2 runs must be numbered #2');
-check(glm53OneLine3?.model === 'GLM 5.3 (Max) #3' && glm53OneLine3?.pair === null, 'GLM 5.3 V3 must be the unpaired one-line #3 run');
+check(stripCreationDate(glm53OneLine1?.model) === 'GLM 5.3 (Max) #1' && stripCreationDate(glm53Detailed1?.model) === 'GLM 5.3 (Max) #1', 'GLM 5.3 V1 runs must be numbered #1');
+check(stripCreationDate(glm53OneLine2?.model) === 'GLM 5.3 (Max) #2' && stripCreationDate(glm53Detailed2?.model) === 'GLM 5.3 (Max) #2', 'GLM 5.3 V2 runs must be numbered #2');
+check(stripCreationDate(glm53OneLine3?.model) === 'GLM 5.3 (Max) #3' && glm53OneLine3?.pair === null, 'GLM 5.3 V3 must be the unpaired one-line #3 run');
 check(glm53OneLine1?.pair === 'glm53v1' && glm53Detailed1?.pair === 'glm53v1' && glm53OneLine2?.pair === 'glm53v2' && glm53Detailed2?.pair === 'glm53v2', 'GLM 5.3 versions must form two explicit pairs');
 check(glm53OneLine1?.title === '太阳系 · Solar System 3D' && glm53OneLine2?.title === '太阳系运动模型 · Solar System' && glm53OneLine3?.title === '太阳系运动模型 · WebGL2', 'GLM 5.3 one-line titles must stay canonical');
 check(glm53Detailed1?.title === '太阳系 · 实时运动模型' && glm53Detailed2?.title === '太阳系实时运动模型 v4', 'GLM 5.3 detailed titles must stay canonical');
@@ -824,7 +832,7 @@ check(JSON.stringify(miniMax2?.tags) === JSON.stringify(['in ClaudeCLI']), 'Mini
 check(miniMax2?.bytes === 137459 && miniMax2?.lines === 3612 && miniMax2?.tech === 'WebGL2' && miniMax2?.net.length === 0, 'MiniMax detailed #2 source metadata must match the audited file');
 check(SITE.chips(miniMax2, null).includes('in ClaudeCLI'), 'MiniMax detailed #2 context tag must render in its chip list');
 check(fs.existsSync(new URL(`../${miniMax2.shot}`, import.meta.url)), 'MiniMax detailed #2 screenshot asset must exist');
-check(WORKS.find(w => w.id === 'MiniMaxM3-TasksAssignedByOpus5')?.model === 'MiniMax M3 (high) #1', 'Original MiniMax detailed run must be numbered #1');
+check(stripCreationDate(WORKS.find(w => w.id === 'MiniMaxM3-TasksAssignedByOpus5')?.model) === 'MiniMax M3 (high) #1', 'Original MiniMax detailed run must be numbered #1');
 
 const qwenStable1 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V1');
 const qwenStable2 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V2');
@@ -844,7 +852,7 @@ for (const work of [qwenStable1, qwenStable2, qwenStable3, qwenStableDoc]) {
 const qwenFlashOneLine = WORKS.find(w => w.id === 'Qwen3.8Flash(xhigh)V1');
 const qwenFlashDetailed = WORKS.find(w => w.id === 'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5');
 for (const work of [qwenFlashOneLine, qwenFlashDetailed]) {
-  check(work?.model === 'Qwen 3.8 Flash (xHigh)' && work?.tier === 3 && work?.pair === 'qwen38flash', `${work?.id || 'Qwen 3.8 Flash'} must use the canonical xHigh name, Tier 3, and its explicit pair`);
+  check(stripCreationDate(work?.model) === 'Qwen 3.8 Flash (xHigh)' && work?.tier === 3 && work?.pair === 'qwen38flash', `${work?.id || 'Qwen 3.8 Flash'} must use the canonical xHigh name, Tier 3, and its explicit pair`);
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Claude CLI']), `${work?.id || 'Qwen 3.8 Flash'} must show the exact in Claude CLI tag`);
   check(SITE.environmentTag(work) === 'in Claude CLI' && SITE.chips(work, null).includes('in Claude CLI'), `${work?.id || 'Qwen 3.8 Flash'} environment tag must render as in Claude CLI`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Qwen 3.8 Flash'} screenshot asset must exist`);
@@ -860,9 +868,9 @@ const kimi1Detailed = WORKS.find(w => w.id === 'KimiK3Max-TasksAssignedByOpus5')
 const kimi2OneLine = WORKS.find(w => w.id === 'KimiK3(Max)V2');
 const kimi2Detailed = WORKS.find(w => w.id === 'KimiK3(Max)V2-TasksAssignedByOpus5');
 const kimi3OneLine = WORKS.find(w => w.id === 'KimiK3(Max)V3');
-check(kimi1OneLine?.model === 'Kimi K3 (Max) #1' && kimi1Detailed?.model === 'Kimi K3 (Max) #1', 'Original Kimi K3 runs must be numbered #1');
-check(kimi2OneLine?.model === 'Kimi K3 (Max) #2' && kimi2Detailed?.model === 'Kimi K3 (Max) #2', 'New Kimi K3 runs must be numbered #2');
-check(kimi3OneLine?.model === 'Kimi K3 (Max) #3' && kimi3OneLine?.group === 'A' && kimi3OneLine?.tier === 2 && kimi3OneLine?.pair === null, 'Kimi K3 V3 must be the unpaired Tier 2 one-line #3 run');
+check(stripCreationDate(kimi1OneLine?.model) === 'Kimi K3 (Max) #1' && stripCreationDate(kimi1Detailed?.model) === 'Kimi K3 (Max) #1', 'Original Kimi K3 runs must be numbered #1');
+check(stripCreationDate(kimi2OneLine?.model) === 'Kimi K3 (Max) #2' && stripCreationDate(kimi2Detailed?.model) === 'Kimi K3 (Max) #2', 'New Kimi K3 runs must be numbered #2');
+check(stripCreationDate(kimi3OneLine?.model) === 'Kimi K3 (Max) #3' && kimi3OneLine?.group === 'A' && kimi3OneLine?.tier === 2 && kimi3OneLine?.pair === null, 'Kimi K3 V3 must be the unpaired Tier 2 one-line #3 run');
 check(kimi2OneLine?.group === 'A' && kimi2Detailed?.group === 'B' && kimi2OneLine?.tier === 2 && kimi2Detailed?.tier === 1, 'Kimi K3 #2 one-line must be Tier 2 while its detailed run remains Tier 1');
 check(kimi2OneLine?.pair === 'kimik3v2' && kimi2Detailed?.pair === 'kimik3v2', 'Kimi K3 #2 must form its own comparison pair');
 check(kimi2OneLine?.bytes === 71207 && kimi2OneLine?.lines === 1667 && kimi2OneLine?.tech === 'WebGL2' && kimi2OneLine?.needsFloat === false && kimi2OneLine?.msaa === true && kimi2OneLine?.net.length === 0, 'Kimi K3 #2 one-line source metadata must match the audited file');
@@ -903,7 +911,7 @@ check(gemini36OneLine?.bytes === 40641 && gemini36OneLine?.lines === 1085 && gem
 check(JSON.stringify(gemini36OneLine?.net) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net']), 'Gemini 3.6 Flash V0 network dependencies must match the audited file');
 check(JSON.stringify(gemini36OneLine?.tags) === JSON.stringify(['主动改写为幻想风格']), 'Gemini 3.6 Flash V0 must disclose its deliberate fantasy reframing');
 for (const work of [gemini36OneLine, gemini36Detailed]) {
-  check(work?.model === 'Gemini 3.6 Flash (high)', `${work?.id || 'Gemini 3.6 Flash'} visible naming must be canonical`);
+  check(stripCreationDate(work?.model) === 'Gemini 3.6 Flash (high)', `${work?.id || 'Gemini 3.6 Flash'} visible naming must be canonical`);
   check(SITE.environmentTag(work) === 'in Antigravity' && SITE.chips(work, null).includes('in Antigravity'), `${work?.id || 'Gemini 3.6 Flash'} must render the in Antigravity tag`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Gemini 3.6 Flash'} screenshot asset must exist`);
 }
@@ -918,7 +926,7 @@ check(gemini37OneLine?.bytes === 86959 && gemini37OneLine?.lines === 2410 && gem
 check(JSON.stringify(gemini37OneLine?.net) === JSON.stringify(['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com']), 'Gemini 3.7 Flash one-line network dependencies must match the audited file');
 check(gemini37Detailed?.bytes === 156951 && gemini37Detailed?.lines === 3967 && gemini37Detailed?.tech === 'WebGL2' && gemini37Detailed?.needsFloat === true && gemini37Detailed?.msaa === true && gemini37Detailed?.net.length === 0, 'Gemini 3.7 Flash detailed source metadata must match the audited file');
 for (const work of [gemini37OneLine, gemini37Detailed]) {
-  check(work?.model === 'Gemini 3.7 Flash (high)', `${work?.id || 'Gemini 3.7 Flash'} visible naming must be canonical`);
+  check(stripCreationDate(work?.model) === 'Gemini 3.7 Flash (high)', `${work?.id || 'Gemini 3.7 Flash'} visible naming must be canonical`);
   check(SITE.environmentTag(work) === 'in Antigravity' && SITE.chips(work, null).includes('in Antigravity'), `${work?.id || 'Gemini 3.7 Flash'} must render the in Antigravity tag`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Gemini 3.7 Flash'} screenshot asset must exist`);
 }
@@ -1133,7 +1141,7 @@ const expectedRecommendations = {
   'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
 };
 for (const work of visibleWorks) {
-  const modelKey = work.model.replace(/ #\d+$/, '');
+  const modelKey = stripCreationDate(work.model).replace(/ #\d+$/, '');
   const expected = expectedRecommendations[modelKey];
   const recommendation = SITE.personalRecommendationFor(work);
   if (!expected) {
