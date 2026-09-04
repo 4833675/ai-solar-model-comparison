@@ -87,10 +87,12 @@
   };
   const modelCell = work => {
     const logo = modelLogoFor(work);
-    return `<span class="table-model">${logo
+    return `<a class="table-model" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work && work.model }))}">${logo
       ? `<span class="table-model-logo"><img src="${logo}" alt="" width="20" height="20" loading="lazy" decoding="async" aria-hidden="true"></span>`
-      : ''}<span>${esc(work && work.model)}</span></span>`;
+      : ''}<span>${esc(work && work.model)}</span></a>`;
   };
+  const codeSizeCell = work => `<span class="table-code-size">${t('unit.lines', { count: work.lines })} <small>(${kb(work.bytes)})</small></span>`;
+  const environmentName = work => environmentTag(work).replace(/^in\s+/i, '');
   const PRICE_KEYS = ['priceInput', 'priceOutput', 'priceCache'];
   const priceFor = work => (window.MODEL_PRICES || {})[
     recommendationModelKey(work && work.model).replace(/\s+\([^()]*\)$/, '')] || null;
@@ -122,7 +124,7 @@
   function tableRows(works, key, direction, locale) {
     const rows = works.map(work => {
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
-      return Object.assign({}, work, { environment: environmentTag(work), personal,
+      return Object.assign({}, work, { environment: environmentName(work), personal,
         recommendation: personal ? (personal.direction === 'up' ? personal.count : -personal.count) : 0,
         score: score ? score.total : -1,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
@@ -937,7 +939,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, personalRecommendationFor, modelLogoFor, modelCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),

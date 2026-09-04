@@ -924,6 +924,7 @@ const expectedEnvironmentTag = work => {
 for (const work of WORKS) {
   const expected = expectedEnvironmentTag(work);
   check(SITE.environmentTag(work) === expected, `${work.id}: environment tag must be ${expected}`);
+  check(SITE.environmentName(work) === expected.replace(/^in\s+/i, ''), `${work.id}: table environment must omit the in prefix`);
   check(SITE.chips(work, null).includes(`>${expected}<`), `${work.id}: card chips must include environment tag ${expected}`);
 }
 
@@ -945,7 +946,7 @@ check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effect
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
 check(!siteSource.includes("w.tech === 'Canvas2D' ? 10") && !siteSource.includes("parts.visual"), 'Canvas2D and legacy visual evidence must not receive score deductions or points');
 check((siteSource.match(/s\.total >= 95/g) || []).length === 2, 'Both score badge and tooltip must use the inclusive 95-point green threshold for every non-benchmark entry');
-check((siteSource.match(/card\.openAria/g) || []).length === 4, 'Pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
+check((siteSource.match(/card\.openAria/g) || []).length === 5, 'Table model links, pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
 check(cssSource.includes('.model-gap-model>div:first-child>span{') && !cssSource.includes('.model-gap-model span{'), 'Model-gap eyebrow styling must not turn nested Ultra or score spans into block elements');
@@ -984,7 +985,7 @@ for (const lang of ['zh', 'en']) {
       setAttribute(key, value) { this.attributes[key] = value; },
       addEventListener(key, listener) { this.listeners[key] = listener; }, focus() {} };
   }
-  const headers = ['model','recommendation','environment','tier','score','tech'].map(key => node({ k: key }));
+  const headers = ['model','tier','score','environment','recommendation','tech','lines'].map(key => node({ k: key }));
   const priceHeader = node({}, ['price-head']);
   const buttons = ['priceInput','priceOutput','priceCache'].map(key => node({ priceSort: key }));
   const tabs = ['A','B'].map(group => node({ tableGroup: group }));
@@ -1192,22 +1193,23 @@ check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.in
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
 check(!enHome.includes('What it cannot demonstrate: an overall ranking of model capability') && !enHome.includes('Claude Fable 5 (Max) still has no specification-based version') && !enHome.includes('Reasoning-level note:'), 'English method section must remove the corresponding three explanatory paragraphs');
 check(enHome.includes("works.length===1?'entry':'entries'") && enHome.includes("pairs.length===1?'comparison':'comparisons'"), 'English live search status must use singular nouns for one result');
-check(zhHome.includes('<th data-k="model">模型</th><th data-k="recommendation">个人推荐</th><th>理由</th><th class="price-head"'), 'Chinese table must place recommendation, reason, and price after Model');
-check(enHome.includes('<th data-k="model">Model</th><th data-k="recommendation">Personal Pick</th><th>Reason</th><th class="price-head"'), 'English table must place recommendation, reason, and price after Model');
+check(zhHome.includes('<th data-k="model">模型</th><th data-k="tier">梯队</th><th data-k="score" class="n">得分</th><th data-k="environment">环境</th>\n      <th data-k="recommendation">推荐</th><th>理由</th><th data-k="tech">渲染</th><th data-k="lines">行数(大小)</th>'), 'Chinese table must use the requested Model, Tier, Score, Environment, Pick, Reason, Renderer, Lines/Size order');
+check(enHome.includes('<th data-k="model">Model</th><th data-k="tier">Tier</th><th data-k="score" class="n">Score</th><th data-k="environment">Environment</th>\n      <th data-k="recommendation">Pick</th><th>Reason</th><th data-k="tech">Renderer</th><th data-k="lines">Lines (Size)</th>'), 'English table must mirror the requested column order');
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
   check(page.includes('S.tableRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes(".repeat(w.personal.count)"), 'Table rows must render family-level personal recommendations');
+  check(page.includes('S.modelCell(w)') && page.includes('S.codeSizeCell(w)') && !page.includes('>运行 →</a>') && !page.includes('>Run →</a>'), 'Model names must open entries and replace the old Action column');
   check(page.includes("w.personal.direction==='up'?'▲':'▽'") && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use triangle symbols instead of thumb emoji');
 }
 
 check(zhHome.includes("0:'T0',1:'T1',2:'T2',3:'T3'"), 'Chinese table must use T0–T3 while preserving other tier labels');
 for (const page of [zhHome,enHome]) {
   const table = page.slice(page.indexOf('<table id="tbl">'),page.indexOf('</table>',page.indexOf('<table id="tbl">'))+8);
-  check(!/data-k="(?:bytes|lines|group)"/.test(table), 'Size, Lines, and Brief columns must be hidden');
+  check(!/data-k="(?:bytes|group)"/.test(table) && table.includes('data-k="lines"'), 'Lines and size must share one sortable column while Brief stays hidden');
   check((page.match(/role="tab"/g)||[]).length === 2 && page.includes('role="tablist"') && page.includes('role="tabpanel"'), 'Both pages must expose two prompt-format tabs and their table panel');
   check((table.match(/<th[ >]/g)||[]).length === 9, 'Revised table must have nine columns');
-  check(table.indexOf('data-price-sort') < table.indexOf('data-k="environment"'), 'Price must appear before Environment');
+  check(table.indexOf('data-k="lines"') < table.indexOf('data-price-sort') && table.indexOf('data-k="environment"') < table.indexOf('data-price-sort'), 'Price must be the final column');
   check(table.includes(') $/M</th>'), 'Both price headings must visibly include the dollar symbol');
   check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
   check(page.includes('colspan="9"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
