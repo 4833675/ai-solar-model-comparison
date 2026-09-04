@@ -385,7 +385,7 @@ in vec2 aPos; out vec2 vUv; void main(){ vUv=aPos*.5+.5; gl_Position=vec4(aPos,0
 // ---------------- procedural planet texture generator ----------------
 const FS_GEN=`#version 300 es
 precision highp float; in vec2 vUv; layout(location=0) out vec4 oCol; layout(location=1) out vec4 oAux;
-uniform int uType; uniform float uSeed; uniform sampler2D uMask;
+uniform int uType; uniform float uSeed; uniform sampler2D uMask; uniform sampler2D uBiome;
 ${GLSL_NOISE}
 vec3 sph(vec2 uv){ float lon=(uv.x-.5)*6.2831853, lat=(uv.y-.5)*3.1415926; return vec3(cos(lat)*cos(lon),cos(lat)*sin(lon),sin(lat)); }
 float city(vec2 uv){ return texture(uMask,uv).a; }
@@ -393,41 +393,82 @@ void main(){
   vec2 uv=vUv; vec3 p=sph(uv); float lat=(uv.y-.5)*180., lon=(uv.x-.5)*360.; float alat=abs(lat);
   vec3 col=vec3(.5); float h=0.5, spec=0., cloud=0., emis=0.; vec3 P=p*(1.+uSeed*.01);
   if(uType==0){ /* ===== EARTH ===== */
-    vec2 warp=vec2(fbm(P*9.+3.,4)-.5, fbm(P*9.+7.,4)-.5)*0.006 + vec2(fbm(P*33.,3)-.5,fbm(P*33.+2.,3)-.5)*0.0025;
+    vec2 warp=vec2(fbm(P*11.+3.,4)-.5,fbm(P*11.+7.,4)-.5)*0.0045+vec2(fbm(P*41.,3)-.5,fbm(P*41.+2.,3)-.5)*0.0016;
     vec4 m=texture(uMask,uv+warp); vec4 ms=texture(uMask,uv);
-    float coastN=(fbm(P*24.,5)-.5)*0.55+(fbm(P*90.,3)-.5)*0.2;
-    float land=smoothstep(0.47,0.53,m.g+coastN*(1.-abs(m.g-.5)*1.2)); land=max(land,m.r*step(0.9,m.r)*smoothstep(0.6,0.8,m.g));
+    // biome blobs are painted primitives; warp their lookup hard or they read as circles and worms
+    vec2 bw=vec2(fbm(P*2.1+13.,4)-.5,fbm(P*2.1+29.,4)-.5)*0.075
+          +vec2(fbm(P*5.5+7.,4)-.5,fbm(P*5.5+41.,4)-.5)*0.028
+          +vec2(fbm(P*17.+3.,3)-.5,fbm(P*17.+19.,3)-.5)*0.008;
+    vec4 bi=texture(uBiome,uv+bw); bi.r=max(bi.r,texture(uBiome,uv+bw*0.45).r*0.85);
+    float coastN=(fbm(P*30.,5)-.5)*0.50+(fbm(P*120.,3)-.5)*0.17;
+    float land=smoothstep(0.47,0.53,m.g+coastN*(1.-abs(m.g-.5)*1.2));
+    land=max(land,m.r*step(0.9,m.r)*smoothstep(0.6,0.8,m.g));
     land=clamp(land+m.b,0.,1.); float ice=m.b;
-    // elevation
-    float mtn=smoothstep(0.55,0.8,fbm(P*3.+11.,4))*(0.6+0.4*fbm(P*8.,3));
-    float elev=ridged(P*7.+5.,6)*mtn*0.9+fbm(P*12.,5)*0.25+fbm(P*40.,4)*0.08; elev=clamp(elev*1.1,0.,1.);
-    // climate
-    float moist=fbm(P*2.5+21.,4)*0.7+smoothstep(0.55,0.95,m.g)*0.25+ (1.-smoothstep(0.,25.,alat))*0.35;
-    float desertBand=exp(-pow((alat-24.)/9.,2.))*0.9+exp(-pow((alat-42.)/6.,2.))*0.35*smoothstep(0.6,0.4,moist);
-    float dry=clamp(desertBand*(1.2-moist*1.4)+ (0.45-moist)*0.8,0.,1.);
-    float temp=1.-smoothstep(20.,75.,alat)-elev*0.55+ (fbm(P*5.+9.,3)-.5)*0.25;
-    vec3 forest=vec3(.08,.22,.06), grass=vec3(.32,.40,.16), sand=vec3(.74,.62,.40), rock=vec3(.36,.30,.24), tundra=vec3(.40,.38,.30), snow=vec3(.93,.95,.98);
-    vec3 veg=mix(grass,forest,smoothstep(0.35,0.75,moist)); vec3 lc=mix(veg,sand,dry);
-    lc=mix(lc,rock,smoothstep(0.35,0.75,elev)*0.7); lc=mix(lc,tundra,smoothstep(0.35,0.1,temp));
-    float snowy=smoothstep(0.12,-0.05,temp)+smoothstep(0.55,0.85,elev)*smoothstep(0.5,0.2,temp)+ice; snowy=clamp(snowy,0.,1.);
-    lc=mix(lc,snow,snowy); lc*=0.85+0.3*fbm(P*60.,4);
-    // ocean
-    float depth=smoothstep(0.35,0.05,ms.g)*0.8+fbm(P*6.,3)*0.2; vec3 shallow=vec3(.04,.30,.42), deep=vec3(.005,.045,.16);
-    vec3 oc=mix(shallow,deep,depth); oc=mix(oc,vec3(.02,.12,.24),smoothstep(0.45,0.2,ms.g)*0.5);
-    float seaice=smoothstep(66.,76.,alat+(fbm(P*7.,3)-.5)*8.)*(1.-land)*step(0.,lat)+smoothstep(60.,68.,alat+(fbm(P*7.,3)-.5)*8.)*(1.-land)*step(lat,0.);
-    oc=mix(oc,snow*0.95,seaice);
-    col=mix(oc,lc,land); spec=(1.-land)*(1.-seaice)*0.95+snowy*land*0.15; h=mix(0.5,0.5+elev*0.5,land);
-    // night lights
-    float c=city(uv); float lightsN=smoothstep(0.42,0.7,fbm(P*35.+4.,4))*0.5+smoothstep(0.5,0.85,fbm(P*110.,3))*0.5;
-    emis=land*(1.-snowy)*(c*(0.35+0.9*lightsN)*0.85+ smoothstep(0.55,0.9,m.g)*smoothstep(0.6,0.85,fbm(P*14.+2.,4))*exp(-pow((alat-38.)/22.,2.))*0.2*lightsN);
+    // ---------- relief: geographic ranges carry the ridged detail ----------
+    vec3 Pw=P+vec3(fbm(P*3.5+11.,3)-.5,fbm(P*3.5+23.,3)-.5,fbm(P*3.5+37.,3)-.5)*0.16;
+    float ridge=ridged(Pw*7.5+5.,6), ridge2=ridged(Pw*26.+13.,4);
+    float mtn=smoothstep(0.05,0.90,bi.r*(0.58+0.86*fbm(P*13.+43.,4))+0.10*(fbm(P*30.+7.,3)-.5));
+    float elev=mtn*mtn*(0.26+0.74*ridge)*0.95+fbm(P*9.+2.,5)*0.13+fbm(P*30.,4)*0.04+ridge2*mtn*0.10;
+    elev=clamp(elev,0.,1.);
+    // ---------- climate ----------
+    float latT=1.-smoothstep(2.,72.,alat);
+    float temp=latT-smoothstep(0.25,1.0,elev)*0.62+(fbm(P*6.+9.,3)-.5)*0.10;
+    float rainf=clamp(bi.b*1.15+(fbm(P*10.+5.,4)-.5)*0.22,0.,1.);
+    float arid=clamp(bi.g*(0.72+0.70*fbm(P*8.5+21.,4))+(fbm(P*16.+5.,4)-.5)*0.22-rainf*0.55,0.,1.);
+    float bor=smoothstep(0.50,0.26,temp)*(1.-arid)*(1.-smoothstep(0.13,0.02,temp));
+    // ---------- land cover ----------
+    vec3 cRain=vec3(.036,.128,.030), cTemp=vec3(.082,.190,.058), cBor=vec3(.066,.122,.076),
+         cGrass=vec3(.300,.352,.150), cSav=vec3(.470,.408,.192), cSand=vec3(.800,.672,.428),
+         cRock=vec3(.400,.345,.290), cTund=vec3(.395,.375,.310), cSnow=vec3(.945,.960,.985);
+    vec3 lc=mix(cGrass,cTemp,smoothstep(0.20,0.60,1.-arid));
+    lc=mix(lc,cRain,smoothstep(0.15,0.65,rainf));
+    lc=mix(lc,cBor,bor*0.92);
+    lc=mix(lc,cSav,smoothstep(0.22,0.52,arid)*(1.-rainf));
+    lc=mix(lc,mix(cSand,vec3(.700,.545,.345),fbm(P*11.+61.,4)),smoothstep(0.46,0.84,arid));
+    lc=mix(lc,cRock,smoothstep(0.42,0.78,elev)*0.72);
+    lc=mix(lc,cTund,smoothstep(0.115,0.015,temp)*(1.-rainf));
+    float snowLine=0.46+0.46*latT;
+    float snowy=clamp(smoothstep(snowLine,snowLine+0.14,elev)+smoothstep(0.005,-0.16,temp)+ice,0.,1.);
+    lc=mix(lc,cSnow,snowy);
+    // rivers and lakes: a green corridor with open water at the core
+    float riv=smoothstep(0.18,0.60,bi.a), lake=smoothstep(0.62,0.95,bi.a);
+    lc=mix(lc,cTemp*1.15,riv*0.55*(1.-snowy));
+    lc=mix(lc,vec3(.055,.150,.215),lake);
+    lc*=0.88+0.26*fbm(P*70.,4); lc*=1.-0.12*smoothstep(0.30,0.80,ridge2);
+    // ---------- ocean: shelf, abyss, ridges ----------
+    // ms.g rises towards land, so coastal proximity is the ramp UP, not down
+    float coastp=smoothstep(0.16,0.48,ms.g), deepf=1.-coastp;
+    vec3 oc=mix(vec3(.040,.215,.320),vec3(.002,.020,.098),deepf*deepf);
+    oc=mix(oc,vec3(.075,.360,.420),coastp*coastp*0.34);
+    oc*=0.94+0.13*ridged(P*7.+31.,4);
+    float seaice=smoothstep(66.,76.,alat+(fbm(P*7.,3)-.5)*8.)*(1.-land)*step(0.,lat)
+                +smoothstep(60.,68.,alat+(fbm(P*7.,3)-.5)*8.)*(1.-land)*step(lat,0.);
+    oc=mix(oc,cSnow*0.95,seaice);
+    col=mix(oc,lc,land);
+    spec=(1.-land)*(1.-seaice)*0.95+land*(lake*0.9+snowy*0.12);
+    h=mix(0.5,0.5+elev*0.5,land)-deepf*(1.-land)*0.03;
+    // ---------- night lights: follow people, not noise ----------
+    float c=city(uv);
+    float lightsN=smoothstep(0.42,0.70,fbm(P*38.+4.,4))*0.5+smoothstep(0.50,0.85,fbm(P*120.,3))*0.5;
+    float habit=(1.-smoothstep(0.35,0.80,arid))*(1.-smoothstep(0.30,0.75,rainf))
+               *(1.-smoothstep(0.35,0.70,elev))*(1.-snowy)*(0.35+0.65*smoothstep(0.55,0.92,m.g));
+    emis=land*(1.-snowy)*(c*(0.35+0.90*lightsN)*0.90
+        +habit*smoothstep(0.60,0.86,fbm(P*15.+2.,4))*exp(-pow((alat-40.)/25.,2.))*0.22*lightsN
+        +riv*habit*0.10*lightsN);
     emis=clamp(emis,0.,1.);
-    // clouds
+    // ---------- clouds ----------
     vec3 w=vec3(fbm(P*3.+1.,4),fbm(P*3.+5.,4),fbm(P*3.+9.,4))-.5; vec3 cp=P*4.+w*1.6;
-    float cl=fbm(cp,7); float band=0.55-0.25*exp(-pow((alat-8.)/7.,2.))-0.2*exp(-pow((alat-52.)/12.,2.))+0.12*exp(-pow((alat-25.)/8.,2.));
+    float cl=fbm(cp,7);
+    float band=0.55-0.25*exp(-pow((alat-8.)/7.,2.))-0.20*exp(-pow((alat-52.)/12.,2.))+0.12*exp(-pow((alat-25.)/8.,2.));
     cloud=smoothstep(band,band+0.28,cl); cloud=mix(cloud,cloud*(0.6+0.6*turb(P*25.,4)),0.5);
-    // cyclones
-    for(int k=0;k<5;k++){ vec3 r=hash33(vec3(float(k)*7.3,1.,uSeed)); float clat=(r.x-.5)*100., clon=(r.y-.5)*360.; vec2 d=vec2((lon-clon)*cos(clat*0.01745),lat-clat); float dd=length(d);
-      if(dd<14.){ float ang=atan(d.y,d.x); float spiral=sin(ang*2.+dd*0.9-sin(dd*.3)*2.)*.5+.5; cloud=max(cloud,smoothstep(14.,2.,dd)*spiral*0.9*step(0.35,r.z)); } }
+        cloud=max(cloud,smoothstep(0.80,0.94,fbm(cp*0.60+17.,4))*exp(-pow((alat-54.)/9.,2.))*0.22); // storm track
+    for(int k=0;k<4;k++){ vec3 r=hash33(vec3(float(k)*7.3,1.,uSeed));
+      float clat=sign(r.x-.5)*(9.+r.x*22.), clon=(r.y-.5)*360.;
+      vec2 d=vec2((lon-clon)*cos(clat*0.01745),lat-clat); float dd=length(d);
+      if(dd<11.&&r.z>0.42){ float ang=atan(d.y,d.x);
+        float arm=sin(ang*2.+sign(clat)*log(dd+0.55)*5.2+fbm(P*30.,3)*1.4)*.5+.5;
+        float eye=smoothstep(0.35,1.3,dd);
+        cloud=max(cloud,smoothstep(11.,1.5,dd)*pow(arm,1.4)*eye*0.95); } }
     cloud=clamp(cloud,0.,1.);
   }
   else if(uType==1){ /* ===== MERCURY ===== */
@@ -581,7 +622,7 @@ const FS_PLANET=`#version 300 es
 precision highp float; in vec3 vWorld; in vec3 vNormal; in vec2 vUv; in vec3 vLocal; out vec4 oCol; ${LOGDEPTH_F}
 uniform sampler2D uTex0, uTex1, uRingTex; uniform vec3 uSunPos; uniform float uSunR; uniform vec3 uCenter; uniform mat3 uRot; uniform vec3 uScale;
 uniform vec4 uAtmo; /* rgb color, a strength */ uniform float uHasClouds, uHasLights, uTime, uBump, uEmit, uRingIn, uRingOut, uRingOn, uShadowsOn, uFlags;
-uniform vec4 uOcc[6]; uniform int uNocc; uniform vec3 uTint;
+uniform vec4 uOcc[6]; uniform int uNocc; uniform vec3 uTint; uniform sampler2D uDetailTex; uniform float uDetail, uDetailTile;
 vec3 tex0(vec2 uv){ return texture(uTex0,uv).rgb; }
 float shadowFrom(vec3 P,vec3 L,float dSun){ float s=1.; float aSun=uSunR/dSun;
   for(int i=0;i<6;i++){ if(i>=uNocc)break; vec3 oc=uOcc[i].xyz-P; float d=length(oc); if(d<1e-9)continue; float along=dot(oc,L); if(along<=0.)continue;
@@ -593,10 +634,22 @@ float ringShadow(vec3 P,vec3 L){ if(uRingOn<0.5)return 1.; vec3 n=uRot*vec3(0.,0
 void main(){
   vec3 N=normalize(vNormal); vec3 V=normalize(-vWorld); vec3 toSun=uSunPos-vWorld; float dSun=length(toSun); vec3 L=toSun/dSun;
   vec4 c0=texture(uTex0,vUv); vec4 c1=texture(uTex1,vUv); vec3 albedo=c0.rgb*uTint; float spec=c0.a;
+  vec3 detN=vec3(0.);
+  if(uDetail>0.002){ float landM=1.-smoothstep(0.30,0.62,spec);
+    vec4 dA=texture(uDetailTex,vUv*uDetailTile);
+    vec4 dB=texture(uDetailTex,vUv*uDetailTile*4.13+vec2(0.37,0.19));
+    float g=(dA.r-0.5)*0.62+(dB.a-0.5)*0.38;
+    albedo*=1.+g*0.42*uDetail*landM;
+    detN=vec3((dA.g-0.5)+(dB.g-0.5)*0.5,(dA.b-0.5)+(dB.b-0.5)*0.5,0.)*uDetail*landM*0.11;
+    // ocean glint is a mirror: even a small normal kick here turns the specular into moire rings
+    vec4 dW=texture(uDetailTex,vUv*uDetailTile*1.3+vec2(uTime*0.0016,uTime*0.0009));
+    detN.x+=(dW.g-0.5)*uDetail*(1.-landM)*0.030; detN.y+=(dW.b-0.5)*uDetail*(1.-landM)*0.030; }
   // bump mapping from height (tex1.b)
   if(uBump>0.){ vec2 ts=vec2(1.)/vec2(textureSize(uTex1,0)); float hl=texture(uTex1,vUv-vec2(ts.x,0.)).b, hr=texture(uTex1,vUv+vec2(ts.x,0.)).b, hd=texture(uTex1,vUv-vec2(0.,ts.y)).b, hu=texture(uTex1,vUv+vec2(0.,ts.y)).b;
     vec3 lp=normalize(vLocal); vec3 T=normalize(uRot*vec3(-lp.y,lp.x,0.)); vec3 B=normalize(cross(N,T)); float lat=asin(clamp(lp.z,-1.,1.)); float k=uBump*40./max(cos(lat),0.08);
-    N=normalize(N+T*(hl-hr)*k+B*(hd-hu)*k*cos(lat)); }
+    N=normalize(N+T*(hl-hr)*k+B*(hd-hu)*k*cos(lat)+T*detN.x*2.2+B*detN.y*2.2); }
+  else if(uDetail>0.002){ vec3 lp=normalize(vLocal); vec3 T=normalize(uRot*vec3(-lp.y,lp.x,0.)); vec3 B=normalize(cross(N,T));
+    N=normalize(N+T*detN.x*2.2+B*detN.y*2.2); }
   float ndl=dot(N,L); float geoNdl=dot(normalize(vNormal),L);
   float shade=1.; if(uShadowsOn>0.5){ shade=shadowFrom(vWorld,L,dSun)*ringShadow(vWorld,L); }
   vec3 sunCol=vec3(1.,.97,.92);
@@ -618,9 +671,9 @@ void main(){
   // atmosphere: rim scattering & sunset tint
   if(uAtmo.a>0.001){ float mu=clamp(dot(normalize(vNormal),V),0.,1.); float rim=pow(1.-mu,2.2); float lit=smoothstep(-0.35,0.35,geoNdl);
     vec3 ac=uAtmo.rgb; vec3 sunset=mix(ac,vec3(1.,.45,.2),smoothstep(0.3,-0.1,geoNdl)*0.8);
-    col=mix(col,sunset*lit,rim*uAtmo.a*0.55); col+=ac*lit*rim*uAtmo.a*0.35*shade;
+    col=mix(col,sunset*lit,rim*uAtmo.a*0.62); col+=ac*lit*rim*uAtmo.a*0.45*shade;
     // haze over surface (aerial perspective)
-    col=mix(col,ac*lit*0.6,uAtmo.a*0.08*(1.-mu*0.5)); }
+    col=mix(col,ac*lit*0.6,uAtmo.a*0.045*(1.-mu*0.6)); }
   col+=albedo*uEmit; col+=albedo*0.0025; // faint starlight/earthshine fill
   oCol=vec4(col,1.); writeDepth(); }`;
 // ---------------- atmosphere shell (analytic single scattering) ----------------
@@ -638,8 +691,8 @@ void main(){ vec3 rd=normalize(vWorld); vec3 ro=vec3(0.); vec2 ta=raySphere(ro,r
     // light attenuation through atmosphere toward sun (approx by path through shell)
     vec2 ts=raySphere(p,sunDir,uCenter,uRa); float pathLen=max(ts.y,0.); float att=exp(-pathLen/(uRa-uR)*0.6*dens);
     vec3 c=uAtmo.rgb*ray+vec3(1.,.9,.75)*mie*0.06; c=mix(c,vec3(1.,.45,.18)*ray,sunset*0.7);
-    acc+=c*dens*light*att*exp(-od)*dt/H*0.065; }
-  acc*=uAtmo.a*1.35*shade; oCol=vec4(acc,1.); writeDepth(); }`;
+    acc+=c*dens*light*att*exp(-od)*dt/H*0.048; }
+  acc*=uAtmo.a*0.54*shade; oCol=vec4(acc,1.); writeDepth(); }`;
 // ---------------- sun surface ----------------
 const FS_SUN=`#version 300 es
 precision highp float; in vec3 vWorld; in vec3 vNormal; in vec2 vUv; in vec3 vLocal; out vec4 oCol; ${LOGDEPTH_F}
@@ -679,6 +732,24 @@ void main(){ float r=length(vQ); if(r>1.||r<uInner*0.965)discard; float ang=atan
 const FS_GLOW=`#version 300 es
 precision highp float; in vec2 vQ; out vec4 oCol; ${LOGDEPTH_F} uniform vec3 uColor; uniform float uIntensity;
 void main(){ float r=length(vQ); if(r>1.)discard; float a=exp(-r*r*14.)*1.+exp(-r*4.)*0.25; a*=smoothstep(1.,0.7,r); oCol=vec4(uColor*a*uIntensity,1.); writeDepth(); }`;
+// ---------------- aurora ----------------
+const FS_AURORA=`#version 300 es
+precision highp float; in vec3 vWorld; in vec3 vNormal; in vec2 vUv; in vec3 vLocal; out vec4 oCol; ${LOGDEPTH_F}
+uniform vec3 uSunPos; uniform float uTime,uIntensity,uPhase,uBandLat,uBandW; uniform vec3 uColor;
+${GLSL_NOISE}
+void main(){ vec3 lp=normalize(vLocal);
+  vec3 mp=normalize(vec3(0.118,0.336,0.934));              // geomagnetic axis, ~11 deg off the spin axis
+  float ml=degrees(asin(clamp(dot(lp,mp),-1.,1.)));
+  float ring=exp(-pow((abs(ml)-uBandLat)/uBandW,2.)); if(ring<0.004)discard;
+  vec3 L=normalize(uSunPos-vWorld); float night=smoothstep(0.22,-0.28,dot(normalize(vNormal),L));
+  if(night<0.01)discard;
+  vec3 e1=normalize(cross(mp,vec3(0.,0.,1.))), e2=cross(mp,e1);
+  float mlon=atan(dot(lp,e2),dot(lp,e1));
+  vec3 q=vec3(cos(mlon),sin(mlon),0.)*2.6+vec3(0.,0.,uPhase+uTime*0.035);
+  float curtain=fbm(q,4), fine=fbm(q*4.1+7.,3);
+  float a=ring*pow(clamp(curtain*1.35,0.,1.),1.7)*(0.45+0.85*fine)*night;
+  vec3 Vd=normalize(-vWorld); a*=0.30+0.70*pow(1.-abs(dot(normalize(vNormal),Vd)),1.4);
+  oCol=vec4(uColor*a*uIntensity,1.); writeDepth(); }`;
 // ---------------- rings ----------------
 const VS_RING=`#version 300 es
 precision highp float; in vec3 aPos; in vec2 aUv; uniform mat4 uVP; uniform mat3 uRot; uniform vec3 uCenter; uniform float uRin, uRout;
@@ -893,6 +964,112 @@ const ICE=[
 ];
 const WATER=[[47,45,51,47,54,46,53,41,54,37,50,37,49,40,47,43],[28,41,28,44,31,47,34,46,37,47,39,45,41,42,37,41,32,42,29,41],[-92,47,-88,48,-85,47,-88,46],[-88,46,-86,46,-86,42,-88,42],[-84,46,-81,45,-82,43,-84,44],[-83,42,-79,43,-76,44,-79,44,-80,42],[32,0,34,0,34,-2,32,-2]];
 const CITIES=[[139.7,35.7,1],[135.5,34.7,.7],[127,37.5,.8],[116.4,39.9,.9],[121.5,31.2,1],[113.3,23.1,.9],[114.2,22.3,.7],[106.5,29.6,.6],[114.3,30.6,.6],[104.1,30.7,.6],[108.9,34.3,.5],[121.5,25,.6],[121,14.6,.7],[106.8,-6.2,.8],[103.8,1.3,.6],[100.5,13.8,.7],[106.7,10.8,.5],[105.8,21,.4],[101.7,3.1,.5],[90.4,23.7,.7],[88.4,22.6,.7],[77.2,28.6,1],[72.9,19.1,.9],[77.6,13,.6],[80.3,13.1,.6],[78.5,17.4,.5],[67,24.9,.7],[74.3,31.5,.6],[51.4,35.7,.7],[44.4,33.3,.5],[46.7,24.7,.6],[55.3,25.3,.6],[29,41,.8],[31.2,30,.8],[37.6,55.8,.9],[30.3,59.9,.6],[30.5,50.5,.5],[21,52.2,.5],[13.4,52.5,.6],[2.35,48.9,.9],[-0.1,51.5,1],[-3.7,40.4,.7],[2.2,41.4,.6],[12.5,41.9,.6],[9.2,45.5,.6],[4.9,52.4,.6],[4.35,50.85,.5],[8.7,50.1,.5],[11.6,48.1,.4],[16.4,48.2,.5],[18.1,59.3,.4],[3.4,6.5,.7],[15.3,-4.3,.5],[36.8,-1.3,.4],[28,-26.2,.7],[18.4,-33.9,.4],[-7.6,33.6,.4],[3,36.75,.4],[-74,40.7,1],[-71.1,42.4,.6],[-75.2,39.95,.6],[-77,38.9,.7],[-84.4,33.7,.6],[-80.2,25.8,.6],[-87.6,41.9,.9],[-83,42.3,.5],[-79.4,43.7,.7],[-73.6,45.5,.5],[-96.8,32.8,.7],[-95.4,29.8,.7],[-105,39.7,.4],[-112,33.5,.5],[-118.2,34,1],[-122.4,37.8,.7],[-122.3,47.6,.5],[-123.1,49.3,.4],[-99.1,19.4,.9],[-103.3,20.7,.4],[-100.3,25.7,.4],[-74.1,4.7,.6],[-77,-12,.6],[-70.7,-33.5,.6],[-58.4,-34.6,.8],[-46.6,-23.5,1],[-43.2,-22.9,.8],[-43.9,-19.9,.4],[-47.9,-15.8,.3],[-66.9,10.5,.4],[151.2,-33.9,.7],[145,-37.8,.6],[153,-27.5,.4],[115.9,-32,.4],[174.8,-36.9,.3],[-157.9,21.3,.3],[-90.5,14.6,.3],[-79.5,9,.3],[-71.6,-33,.3],[24,56.9,.3],[25.3,54.7,.3],[26.1,44.4,.4],[19,47.5,.4],[14.4,50.1,.4],[23.7,38,.5],[35.2,31.8,.4],[36.3,33.5,.3],[39.2,21.5,.4],[58.4,23.6,.3],[69.3,41.3,.4],[76.9,43.2,.3],[73,33.7,.4],[85.3,27.7,.3],[96.2,16.9,.4],[112.9,28.2,.4],[118.1,24.5,.5],[120.2,30.3,.6],[117.2,39.1,.6],[123.4,41.8,.5],[126.6,45.8,.4],[102.7,25,.3],[91.1,29.7,.1],[87.6,43.8,.2],[113.6,34.7,.5],[117,36.7,.5],[128.6,35.9,.4],[130.4,33.6,.4],[141.3,43,.4],[10.7,59.9,.3],[24.9,60.2,.3],[12.6,55.7,.4],[-9.1,38.7,.4],[-6,37.4,.3],[-4.2,55.9,.4],[-1.9,52.5,.5],[-2.2,53.5,.5],[6.9,51.2,.6],[13.7,51.1,.3],[9.9,53.5,.4],[4.5,51.9,.4],[6.6,46.5,.3],[11.3,44.5,.4],[14.2,40.9,.4],[13.4,38.1,.3],[15.6,38.1,.2],[-16.3,28.5,.2],[-8.6,41.1,.3],[32.5,15.6,.3],[38.7,9,.3],[45.3,2,.2],[7,4.8,.3],[-0.2,5.6,.4],[-17.4,14.7,.3],[-4,5.3,.3],[13.2,-8.8,.3],[31,-29.9,.4],[18.6,-34,.3],[28.3,-25.7,.4],[36.8,-1.3,.3],[39.3,-6.8,.3],[47.5,-18.9,.2],[57.5,-20.2,.1],[-56.2,-34.9,.4],[-64.2,-31.4,.3],[-68.1,-16.5,.3],[-63.2,-17.8,.2],[-78.5,-0.2,.3],[-79.9,-2.2,.3],[-75.5,6.2,.3],[-69.9,18.5,.3],[-82.4,23.1,.4],[-76.8,18,.2],[-66.1,18.4,.3],[-89.2,13.7,.2],[-87.2,14.1,.2],[-86.3,12.1,.2],[-84.1,9.9,.2],[-98.2,19,.3],[-101.7,21.1,.3],[-106.4,31.7,.3],[-104.7,24,.2],[-110.9,32.2,.3],[-115.1,36.2,.4],[-111.9,40.8,.3],[-116.5,33.8,.3],[-117.2,32.7,.5],[-121.9,37.3,.5],[-121.5,38.6,.3],[-122.7,45.5,.4],[-113.5,53.5,.3],[-114.1,51,.3],[-97.1,49.9,.2],[-75.7,45.4,.3],[-79.9,40.4,.4],[-81.7,41.5,.4],[-86.2,39.8,.4],[-85.7,38.2,.3],[-90.2,38.6,.4],[-94.6,39.1,.4],[-93.3,45,.4],[-88,43,.3],[-97.5,35.5,.3],[-90.1,35.1,.3],[-86.8,36.2,.3],[-97.7,30.3,.4],[-98.5,29.4,.4],[-90.1,29.9,.3],[-82.5,27.9,.4],[-81.4,28.5,.4],[-81.7,30.3,.3],[-80.8,35.2,.4],[-78.6,35.8,.3],[-77.4,37.5,.3],[-76.6,39.3,.4],[-77.9,34.2,.2],[-64.6,-30,.1],[153.4,-28,.3],[147.3,-42.9,.2],[138.6,-34.9,.4],[144.9,-37.8,.3],[121.8,-32,.1],[130.8,-12.5,.2],[145.8,-16.9,.2],[144.3,-36.8,.2],[172.6,-43.5,.3],[174.8,-41.3,.2],[27.5,-29.3,.1],[-46.3,-23.9,.2],[-38.5,-3.7,.4],[-34.9,-8.1,.4],[-38.5,-12.9,.4],[-42,-22.9,.2],[-48.5,-27.6,.3],[-49.3,-25.4,.4],[-51.2,-30,.4],[-60,-3.1,.3],[-48.5,-1.5,.3],[-44.3,-2.5,.2],[-35.2,-5.8,.3],[-36.5,-10.9,.2],[-49.3,-16.7,.3],[-54.6,-20.5,.2],[-63.9,-8.8,.1],[-67.8,-9.9,.1]];
+
+/* ---------- Earth geography: ranges, biomes, hydrology (lon,lat degrees) ---------- */
+// mountain ranges: {p:[lon,lat,...], w:halfWidth(deg), h:peakHeight 0-1}
+const RANGES=[
+ {p:[71,36,74,35,77,34,80,32,83,30,86,28,89,28,92,28,95,29],w:2.6,h:1.00}, // Himalaya / Karakoram
+ {p:[76,35,80,34,85,33,90,33,95,32,99,31],w:5.0,h:0.80},                   // Tibetan plateau
+ {p:[68,36,71,35,73,34],w:1.8,h:0.85},                                     // Hindu Kush
+ {p:[70,42,74,42,78,42,82,43,86,44],w:1.6,h:0.75},                         // Tien Shan
+ {p:[86,49,89,49,92,50,95,51],w:1.6,h:0.62},                               // Altai
+ {p:[95,52,100,52,105,52,110,54,114,56],w:1.8,h:0.45},                     // Sayan / Baikal
+ {p:[128,64,131,66,134,69],w:2.0,h:0.50},                                  // Verkhoyansk
+ {p:[157,53,159,56,161,59],w:1.0,h:0.52},                                  // Kamchatka
+ {p:[136,35,138,36,140,38,141,40],w:0.8,h:0.42},                           // Japan
+ {p:[46,36,49,34,52,31,55,29,58,27],w:1.6,h:0.60},                         // Zagros
+ {p:[40,43,43,43,46,42,48,41],w:1.0,h:0.68},                               // Caucasus
+ {p:[29,37,33,37,37,38,41,39],w:1.3,h:0.52},                               // Taurus / Anatolia
+ {p:[60,68,59,64,59,60,58,56,58,52],w:1.2,h:0.35},                         // Urals
+ {p:[6,45,9,46,12,47,15,47],w:1.5,h:0.62},                                 // Alps
+ {p:[-2,43,0,43,2,42],w:0.8,h:0.50},                                       // Pyrenees
+ {p:[12,44,14,42,16,40,16,38],w:0.8,h:0.40},                               // Apennines
+ {p:[16,46,18,44,20,42,22,40],w:1.0,h:0.45},                               // Dinaric / Balkan
+ {p:[19,49,22,48,25,46,26,45],w:1.2,h:0.45},                               // Carpathians
+ {p:[7,59,11,62,15,65,19,68,23,70],w:1.4,h:0.45},                          // Scandinavia
+ {p:[-8,32,-5,33,-1,34,3,35,8,36],w:1.2,h:0.50},                           // Atlas
+ {p:[37,7,38,10,39,13,39,15],w:2.4,h:0.60},                                // Ethiopian highlands
+ {p:[29,-2,29,-6,30,-10,31,-14],w:1.0,h:0.45},                             // Albertine rift
+ {p:[27,-31,29,-29,31,-26],w:1.4,h:0.50},                                  // Drakensberg
+ {p:[-150,62,-145,61,-138,60,-130,56,-125,52,-121,49],w:2.4,h:0.62},       // NW Cordillera
+ {p:[-121,49,-121,45,-120,42,-119,38,-117,35],w:1.1,h:0.55},               // Cascades / Sierra
+ {p:[-116,49,-113,45,-110,41,-107,37,-106,33],w:2.2,h:0.60},               // Rockies
+ {p:[-84,34,-81,36,-78,39,-75,41,-71,44],w:1.6,h:0.32},                    // Appalachians
+ {p:[-105,20,-100,19,-97,18],w:1.4,h:0.45},                                // Sierra Madre / TMVB
+ {p:[-73,11,-75,7,-77,3,-78,-2,-78,-7,-75,-12,-70,-17,-67,-22,-69,-28,-70,-33,-71,-39,-72,-45,-73,-51],w:2.0,h:0.88}, // Andes
+ {p:[-45,-22,-42,-19,-39,-16],w:3.5,h:0.25},                               // Brazilian highlands
+ {p:[-62,4,-59,3,-56,3],w:2.5,h:0.30},                                     // Guiana shield
+ {p:[145,-38,147,-34,150,-31,152,-28,148,-22,146,-19],w:1.2,h:0.35},       // Great Dividing
+ {p:[167,-45,169,-44,171,-42,173,-41],w:0.7,h:0.55},                       // Southern Alps NZ
+ {p:[137,-4,140,-5,143,-6,146,-7],w:1.2,h:0.55},                           // New Guinea highlands
+ {p:[96,28,98,26,101,24,103,22],w:1.5,h:0.62},                             // Hengduan
+ {p:[-43,66,-40,70,-38,74],w:4.0,h:0.55},                                  // Greenland dome
+];
+// blobs: [lon,lat,radiusLon,radiusLat,strength]
+const DESERTS=[[8,23,26,8,1.0],[26,24,14,8,1.0],[-6,25,8,6,0.9],[45,22,9,7,1.0],[39,32,5,3,0.8],
+ [71,27,4,3,0.9],[57,32,7,4,0.9],[60,42,8,4,0.85],[82,39,7,3,1.0],[105,43,12,5,0.9],[97,40,6,3,0.85],
+ [22,-23,7,6,0.8],[14,-24,2.2,7,0.95],[-69.5,-22,1.6,7,1.0],[-68,-45,4,6,0.6],
+ [-110,29,6,5,0.9],[-117,40,5,4,0.8],[-116,35,2.5,2,0.9],[-103,32,4,3,0.7],
+ [128,-25,13,8,0.95],[124,-21,6,4,0.9],[137,-27,7,5,0.9],[46,7,6,5,0.7],[-14,20,6,5,0.9],[64,28,5,4,0.8]];
+const RAINF=[[-62,-4,14,9,1.0],[-70,-6,7,6,0.9],[22,-1,11,7,1.0],[113,0,9,6,0.95],[141,-5,7,3,0.9],
+ [103,10,7,7,0.75],[-5,6,10,3,0.85],[-85,12,6,4,0.7],[48,-19,2,6,0.7],[-42,-22,4,5,0.55],[96,3,4,4,0.85],[122,10,3,4,0.7]];
+// inland water: [lon,lat,rlon,rlat]
+const LAKES=[[51,42,3.2,6],[58.6,45,1.0,1.1],[107,53,0.9,3.2],[33,-1,1.6,1.6],[29.6,-6,0.6,3.4],
+ [34.5,-12,0.55,2.6],[14.3,13,1.1,1.0],[-69,-16,0.8,0.5],[31.5,61,0.9,1.1],[35,62,0.7,0.8],
+ [74,46,2.6,0.7],[-121,66,1.8,1.1],[-114,62,2.2,0.9],[-98,52,0.9,1.6],[-110,59,1.4,0.8],
+ [-87,45,1.0,2.2],[-84,45,1.2,1.4],[-88,47,2.0,0.9],[-82,43,1.4,0.8],[-78,44,1.2,0.5],
+ [32.5,-15,0.8,0.5],[46,-20,0.5,0.5],[137,-29,0.9,0.6],[68,45,0.7,0.5]];
+// major rivers as polylines
+const RIVERS=[
+ [32,31,31,27,33,24,32,19,33,15,32,12,31,9],                       // Nile
+ [-50,-1,-56,-3,-60,-3,-65,-4,-70,-4,-74,-6],                       // Amazon
+ [12,-6,16,-5,19,-3,22,0,25,1,28,2],                                // Congo
+ [-90,29,-91,33,-90,37,-91,42,-95,45],                              // Mississippi / Missouri
+ [121,32,117,30,112,30,107,30,104,29,100,32],                       // Yangtze
+ [119,38,114,36,110,37,107,38,104,36],                              // Yellow
+ [89,23,86,25,82,25,78,27,77,30],                                   // Ganges
+ [29,45,24,44,19,45,16,48,12,49,9,48],                              // Danube
+ [48,46,46,49,45,52,48,56,50,58,52,60],                             // Volga
+ [69,67,72,62,76,58,80,55,84,53],                                   // Ob / Irtysh
+ [82,71,86,66,90,61,92,56,95,52],                                   // Yenisei
+ [127,72,126,68,123,63,120,60,117,55],                              // Lena
+ [6,5,4,9,1,12,-4,14,-8,12,-10,10],                                 // Niger
+ [68,24,70,28,72,32,74,35],                                         // Indus
+ [106,10,105,15,102,20,100,22,97,25],                               // Mekong
+ [-58,-34,-58,-28,-55,-24,-52,-20,-49,-17],                         // Parana
+ [139,-35,143,-35,147,-36,148,-35],                                 // Murray
+ [-62,10,-66,8,-70,7,-72,5],                                        // Orinoco
+ [-16,14,-12,14,-8,14],                                             // Senegal
+ [141,66,145,63,148,60,150,57],                                     // Kolyma
+ [-135,64,-140,65,-145,65],                                         // Yukon
+ [37,55,40,58,44,60],                                               // Volga upper
+];
+// Seamlessly tiling detail: sampled once per pixel at close range so the surface keeps
+// texture long after the 4096 base map has run out of texels. Periodic lattice => no seam.
+function buildDetailTex(N){
+  const P=64, perm=new Float32Array(P*P);
+  let sd=987654321; const rf=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296;};
+  for(let i=0;i<P*P;i++)perm[i]=rf();
+  const lerp=(a,b,t)=>a+(b-a)*t, fade=t=>t*t*(3-2*t);
+  const vnoise=(x,y,per)=>{ const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
+    const m=(a,b)=>perm[(((a%per)+per)%per)*P+(((b%per)+per)%per)];
+    const u=fade(xf),v=fade(yf);
+    return lerp(lerp(m(xi,yi),m(xi+1,yi),u),lerp(m(xi,yi+1),m(xi+1,yi+1),u),v); };
+  const H=new Float32Array(N*N);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    let a=0.5,f=4,sum=0,nrm=0;
+    for(let o=0;o<5;o++){ sum+=a*vnoise(x/N*f,y/N*f,f); nrm+=a; a*=0.5; f*=2; }
+    H[y*N+x]=sum/nrm; }
+  const d=new Uint8Array(N*N*4);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){ const i=y*N+x;
+    const hl=H[y*N+((x-1+N)%N)], hr=H[y*N+((x+1)%N)], hd=H[((y-1+N)%N)*N+x], hu=H[((y+1)%N)*N+x];
+    d[i*4]=Math.max(0,Math.min(255,H[i]*255));
+    d[i*4+1]=Math.max(0,Math.min(255,((hl-hr)*3+0.5)*255));
+    d[i*4+2]=Math.max(0,Math.min(255,((hd-hu)*3+0.5)*255));
+    d[i*4+3]=Math.max(0,Math.min(255,(H[(y*3%N)*N+(x*3%N)])*255)); }
+  const t=makeTex(N,N,{data:d,wrapS:gl.REPEAT,wrapT:gl.REPEAT,min:gl.LINEAR_MIPMAP_LINEAR,mag:gl.LINEAR,aniso:true});
+  gl.bindTexture(gl.TEXTURE_2D,t); gl.generateMipmap(gl.TEXTURE_2D); return t;
+}
 function buildEarthMask(W,H){
   const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');
   const X=lon=>(lon+180)/360*W, Y=lat=>(90-lat)/180*H;
@@ -915,10 +1092,54 @@ function buildEarthMask(W,H){
   for(let i=0;i<=20;i++){const t=i/20;blob(77.2+11.2*t,28.6-6*t,1.6*px,.05);} // Ganges plain
   CITIES.forEach(c=>{blob(c[0],c[1],(0.25+c[2]*0.7)*px,0.6*c[2]+0.2);blob(c[0],c[1],(0.8+c[2]*2.2)*px,0.07*c[2]);});
   const lights=c3.getImageData(0,0,W,H);
-  const out=new Uint8Array(W*H*4);for(let i=0;i<W*H;i++){out[i*4]=sharp.data[i*4];out[i*4+1]=blur.data[i*4];out[i*4+2]=Math.max(sharp.data[i*4+2],0);out[i*4+3]=lights.data[i*4];}
-  // the GPU texture has y up: canvas row 0 is north (lat +90) -> must flip so v=1 is north
-  const flipped=new Uint8Array(W*H*4);for(let y=0;y<H;y++)flipped.set(out.subarray(y*W*4,(y+1)*W*4),(H-1-y)*W*4);
-  return makeTex(W,H,{data:flipped,wrapS:gl.REPEAT});
+  // write straight into the flipped buffer (canvas row 0 is north, texture v=1 must be north)
+  const out=new Uint8Array(W*H*4);
+  for(let y=0;y<H;y++){ const src=y*W*4, dst=(H-1-y)*W*4;
+    for(let x=0;x<W;x++){ const i=src+x*4, o=dst+x*4;
+      out[o]=sharp.data[i]; out[o+1]=blur.data[i]; out[o+2]=sharp.data[i+2]; out[o+3]=lights.data[i]; } }
+  cv.width=cv.height=cv2.width=cv2.height=cv3.width=cv3.height=0;   // release the backing stores
+  return makeTex(W,H,{data:out,wrapS:gl.REPEAT});
+}
+function buildEarthBiome(W,H){
+  const X=lo=>(lo+180)/360*W, Y=la=>(90-la)/180*H, PX=W/360;
+  const wrap=fn=>{for(const o of [-360,0,360])fn(o);};
+  const mk=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;return c;};
+  const cwk=mk(), cbl=mk(), cx=cwk.getContext('2d',{willReadFrequently:true}), cb=cbl.getContext('2d',{willReadFrequently:true});
+  const out=new Uint8Array(W*H*4);
+  // One blur per channel. Setting ctx.filter per feature makes Skia allocate a full-canvas
+  // temp surface every time - ~500 of them at 4096x2048 was 11 s and hundreds of MB.
+  const bake=(draw,blurPx,ch)=>{
+    cx.setTransform(1,0,0,1,0,0); cx.filter='none'; cx.globalCompositeOperation='source-over';
+    cx.fillStyle='#000'; cx.fillRect(0,0,W,H); cx.globalCompositeOperation='lighter';
+    cx.lineCap='round'; cx.lineJoin='round'; draw(cx);
+    cb.setTransform(1,0,0,1,0,0); cb.globalCompositeOperation='source-over';
+    cb.fillStyle='#000'; cb.fillRect(0,0,W,H);
+    cb.filter=blurPx>0?`blur(${blurPx.toFixed(1)}px)`:'none'; cb.drawImage(cwk,0,0); cb.filter='none';
+    const px=cb.getImageData(0,0,W,H).data;
+    for(let y=0;y<H;y++){ const src=y*W*4, dst=(H-1-y)*W*4;       // flip: v=1 must be north
+      for(let x=0;x<W;x++) out[dst+x*4+ch]=px[src+x*4]; } };
+  // R: orogeny - skirt, flank, crest gives the massif a profile
+  bake(c=>{ for(const r of RANGES) wrap(off=>{
+      for(const p of [{k:1.35,a:0.26},{k:0.70,a:0.34},{k:0.30,a:0.42}]){
+        c.beginPath(); for(let i=0;i<r.p.length;i+=2){ const x=X(r.p[i]+off),y=Y(r.p[i+1]); i===0?c.moveTo(x,y):c.lineTo(x,y); }
+        c.lineWidth=r.w*2*p.k*PX; c.strokeStyle=`rgba(${Math.round(255*r.h*p.a)},0,0,1)`; c.stroke(); } }); },
+    Math.max(1.5,PX*0.5), 0);
+  const blob=(c,d)=>wrap(off=>{ const rx=d[2]*PX, ry=d[3]*PX;
+    c.save(); c.translate(X(d[0]+off),Y(d[1])); c.scale(1,ry/rx);
+    const g=c.createRadialGradient(0,0,0,0,0,rx); const v=Math.round(255*d[4]);
+    g.addColorStop(0,`rgba(${v},${v},${v},1)`); g.addColorStop(0.58,`rgba(${Math.round(v*0.85)},${Math.round(v*0.85)},${Math.round(v*0.85)},1)`);
+    g.addColorStop(1,'rgba(0,0,0,0)'); c.fillStyle=g; c.beginPath(); c.arc(0,0,rx,0,6.2832); c.fill(); c.restore(); });
+  bake(c=>{ for(const d of DESERTS) blob(c,d); }, Math.max(1.5,PX*0.45), 1);   // G aridity
+  bake(c=>{ for(const d of RAINF)   blob(c,d); }, Math.max(1.5,PX*0.45), 2);   // B rainforest
+  bake(c=>{ c.fillStyle='#fff'; c.strokeStyle='#fff';                          // A inland water
+      for(const l of LAKES) wrap(off=>{ c.save(); c.translate(X(l[0]+off),Y(l[1])); c.scale(1,l[3]/l[2]);
+        c.beginPath(); c.arc(0,0,l[2]*PX,0,6.2832); c.fill(); c.restore(); });
+      for(const r of RIVERS) wrap(off=>{ c.beginPath();
+        for(let i=0;i<r.length;i+=2){ const x=X(r[i]+off),y=Y(r[i+1]); i===0?c.moveTo(x,y):c.lineTo(x,y); }
+        c.lineWidth=Math.max(1.1,0.40*PX); c.stroke(); }); },
+    Math.max(0.8,PX*0.14), 3);
+  cwk.width=cwk.height=cbl.width=cbl.height=0;                                  // release the backing stores
+  return makeTex(W,H,{data:out,wrapS:gl.REPEAT});
 }
 /* ============================================================
    6. GPU resources
@@ -927,18 +1148,18 @@ const PR={}, MESH={}, TEX={}, RES={};
 function buildPrograms(){
   PR.gen=program(VS_QUAD,FS_GEN); PR.gen2=program(VS_QUAD,FS_GEN2); PR.skygen=program(VS_QUAD,FS_SKYGEN); PR.sky=program(VS_QUAD,FS_SKY);
   PR.planet=program(VS_PLANET,FS_PLANET); PR.atmo=program(VS_PLANET,FS_ATMO); PR.sun=program(VS_PLANET,FS_SUN);
-  PR.corona=program(VS_BILL,FS_CORONA); PR.glow=program(VS_BILL,FS_GLOW); PR.ring=program(VS_RING,FS_RING);
+  PR.aurora=program(VS_PLANET,FS_AURORA); PR.corona=program(VS_BILL,FS_CORONA); PR.glow=program(VS_BILL,FS_GLOW); PR.ring=program(VS_RING,FS_RING);
   PR.stars=program(VS_STARS,FS_STARS); PR.ast=program(VS_AST,FS_AST); PR.pts=program(VS_PTS,FS_PTS); PR.line=program(VS_LINE,FS_LINE); PR.comet=program(VS_COMET,FS_COMET);
   PR.down=program(VS_QUAD,FS_DOWN); PR.up=program(VS_QUAD,FS_UP); PR.comp=program(VS_QUAD,FS_COMPOSITE); PR.copy=program(VS_QUAD,FS_COPY);
 }
 function buildMeshes(){ const s=sphereData(96,192); MESH.sphere=makeMesh(s.pos,s.uv,s.idx,PR.planet); const s2=sphereData(24,48); MESH.sphereLo=makeMesh(s2.pos,s2.uv,s2.idx,PR.planet); const r=annulusData(256); MESH.ring=makeMesh(r.pos,r.uv,r.idx,PR.ring); }
-const TEXTYPE={sun:[9,1024],corona:[22,512],earth:[0,2048],mercury:[1,1024],venus:[2,1024],mars:[3,1024],jupiter:[4,1024],saturn:[5,1024],uranus:[6,1024],neptune:[7,1024],pluto:[8,1024],
+const TEXTYPE={sun:[9,1024],corona:[22,512],earth:[0,4096],mercury:[1,1024],venus:[2,1024],mars:[3,1024],jupiter:[4,1024],saturn:[5,1024],uranus:[6,1024],neptune:[7,1024],pluto:[8,1024],
   moon:[10,1024],io:[11,1024],europa:[12,1024],ganymede:[13,1024],callisto:[14,1024],titan:[15,1024],enceladus:[16,512],rhea:[17,512,[.85,1]],iapetus:[18,512],
   miranda:[17,512,[.72,1.2]],ariel:[17,512,[.80,.8]],umbriel:[17,512,[.45,1.]],titania:[17,512,[.70,.9]],oberon:[17,512,[.62,1.]],triton:[19,1024],charon:[20,512],phobos:[21,512],deimos:[21,512]};
 function genBodyTex(id){ const [type,w,param]=TEXTYPE[id]; const h=w/2; const opt={wrapS:gl.REPEAT,min:gl.LINEAR_MIPMAP_LINEAR,aniso:true};
   const t0=makeTex(w,h,opt), t1=makeTex(w,h,opt); const fbo=makeFBO(w,h,[t0,t1]); gl.bindFramebuffer(gl.FRAMEBUFFER,fbo.f); gl.viewport(0,0,w,h);
   const pr=use(type<10?PR.gen:PR.gen2); U.i('uType',type); U.f('uSeed',(id.length*7.13+id.charCodeAt(0)*0.37)%10); if(param)U.v4('uParam',[param[0],param[1],0,0]);
-  if(type===0)U.tex('uMask',0,RES.earthMask); drawQuad(); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.deleteFramebuffer(fbo.f);
+  if(type===0){U.tex('uMask',0,RES.earthMask);U.tex('uBiome',1,RES.earthBiome);} drawQuad(); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.deleteFramebuffer(fbo.f);
   [t0,t1].forEach(t=>{gl.bindTexture(gl.TEXTURE_2D,t);gl.generateMipmap(gl.TEXTURE_2D);}); TEX[id]=[t0,t1]; }
 // ring radial profiles (km)
 function ringProfile(kind){ const N=1024, d=new Uint8Array(N*4); const rin=kind==='saturn'?66900:38000, rout=kind==='saturn'?141000:52000;
@@ -1154,7 +1375,7 @@ canvas.addEventListener('dblclick',e=>pick(e.clientX,e.clientY,true));
 canvas.addEventListener('wheel',e=>{e.preventDefault();cam.tDist*=Math.exp(clamp(e.deltaY,-120,120)*0.0022);},{passive:false});
 function pick(x,y,dbl){ let best=null,bd=1e9; for(const b of bodies){ const s=project(b.camRel); if(!s)continue; const r=Math.max(b.Rvis/s[2]/Math.tan(SIM.fov*DEG/2)*cam.h*0.5,10); const d=Math.hypot(s[0]-x,s[1]-y); if(d<r&&s[2]<bd+1e-12&&(d<bd||true)){ if(!best||s[2]<bd){best=b;bd=s[2];} } }
   if(best&&(dbl||best!==cam.target)){ focus(best); } }
-window.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT')return; const k=e.key.toLowerCase();
+window.addEventListener('keydown',e=>{ const tn=e.target.tagName; if(tn==='INPUT'||tn==='SELECT')return; const k=e.key.toLowerCase();
   if(k===' '){SIM.playing=!SIM.playing;syncPlay();e.preventDefault();} else if(k==='h'){document.getElementById('ui').classList.toggle('hidden');} else if(k==='c'){toggleCruise();}
   else if(k==='r'){cam.tYaw=0.9;cam.tPitch=0.32;} else if(k==='t'){cam.tPitch=1.45;} else if(k==='0'){focus(byId.sun);} else if(k>='1'&&k<='9'){const ids=['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune','pluto'];focus(byId[ids[+k-1]]);}
   else if(k==='m'){focus(byId.moon);} else if(k==='+'||k==='='){setSpeedIdx(1);} else if(k==='-'){setSpeedIdx(-1);} });
@@ -1167,9 +1388,10 @@ function setSpeedIdx(dir){ const s=$('speed'); s.value=clamp(+s.value+dir*0.5,-9
 function syncPlay(){ $('btnPlay').textContent=SIM.playing?'❚❚':'▶'; $('btnPlay').classList.toggle('on',!SIM.playing); }
 $('speed').addEventListener('input',applySpeed); $('btnPlay').onclick=()=>{SIM.playing=!SIM.playing;syncPlay();};
 $('btnFwd').onclick=()=>setSpeedIdx(1); $('btnRev').onclick=()=>{const s=$('speed');s.value=-s.value;applySpeed();};
-$('btnNow').onclick=()=>{SIM.jd=jdFromDate(new Date());};
+const clearEvent=()=>{const e=$('events'); if(e)e.value='';};
+$('btnNow').onclick=()=>{SIM.jd=jdFromDate(new Date());clearEvent();};
 $('btnGo').onclick=()=>{const v=$('datein').value.trim();const m=/^(-?\d{1,4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(v);if(!m){$('datein').style.borderColor='#f66';return;}$('datein').style.borderColor='';
-  const dt=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],m[4]?+m[4]:0,m[5]?+m[5]:0));if(+m[1]<100)dt.setUTCFullYear(+m[1]);SIM.jd=jdFromDate(dt);};
+  const dt=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],m[4]?+m[4]:0,m[5]?+m[5]:0));if(+m[1]<100)dt.setUTCFullYear(+m[1]);SIM.jd=jdFromDate(dt);clearEvent();};
 $('datein').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnGo').click();});
 document.querySelectorAll('.tg').forEach(t=>{t.onclick=()=>{t.classList.toggle('on');SIM.opts[t.dataset.opt]=t.classList.contains('on');if(t.dataset.opt==='msaa')setupFBOs();};});
 $('sizeScale').addEventListener('input',e=>{SIM.sizeScale=Math.pow(10,+e.target.value);$('sizeScaleV').textContent=fmtNum(SIM.sizeScale,SIM.sizeScale<10?1:0)+'×';});
@@ -1212,7 +1434,7 @@ function buildEvents(){ const sel=$('events'); EVENTS.forEach((e,i)=>{const o=do
     else { setFov(45); focus(b,{instant:true,dist:o.dist?b.Rvis*o.dist:(b.type==='comet'?o.dist:undefined)}); }
     if(o.eclipse)setFov(32);
     if(b.type==='comet'&&o.dist)  { cam.dist=cam.tDist=o.dist; }
-    sel.value=''; sel.blur(); };
+    sel.blur(); };
 }
 function layoutPanels(){ const tb=$('timebar'), rc=$('rightcol'), bl=$('bodies'); if(!tb||!rc)return;
   const clear=Math.round((tb.getBoundingClientRect().height||60)+28);
@@ -1304,6 +1526,8 @@ function render(){
     use(PR.planet); U.m4('uVP',cam.vp); U.f('uLogC',LOGC); U.m3('uRot',b.rot); U.v3('uScale',bodyScale(b)); U.v3('uCenter',b.camRel); U.v3('uSunPos',sun.camRel); U.f('uSunR',sunR);
     U.tex('uTex0',0,b.tex[0]); U.tex('uTex1',1,b.tex[1]); U.v4('uAtmo',opts.atmo?b.atmo:[0,0,0,0]); U.f('uHasClouds',opts.clouds&&b.hasClouds?1:0); U.f('uHasLights',opts.clouds&&b.hasLights?1:0);
     U.f('uTime',SIM.jd-2451545.0); U.f('uBump',pr>6?b.bump:0); U.f('uEmit',b.type==='comet'?0.02:0); U.f('uShadowsOn',opts.shadows?1:0); U.v3('uTint',[1,1,1]);
+    U.tex('uDetailTex',3,RES.detail); U.f('uDetailTile',300.);
+    U.f('uDetail',b.id==='earth'?clamp((pr-240.)/900.,0,1):0);
     if(b.rings){U.f('uRingOn',1);U.f('uRingIn',b.rings.rin/AU_KM*S);U.f('uRingOut',b.rings.rout/AU_KM*S);U.tex('uRingTex',2,b.rings.tex);} else U.f('uRingOn',0);
     const occ=occludersFor(b); const arr=new Float32Array(24); occ.forEach((o,i)=>{arr[i*4]=o.camRel[0];arr[i*4+1]=o.camRel[1];arr[i*4+2]=o.camRel[2];arr[i*4+3]=o.Rvis;}); U.fv4('uOcc',arr); U.i('uNocc',occ.length);
     drawMesh(mesh); }
@@ -1316,6 +1540,14 @@ function render(){
   if(opts.atmo)for(const b of bodies){ if(!b.atmoT||b.pr<2)continue; const sc=bodyScale(b).map(v=>v*(1+b.atmoT)); use(PR.atmo); U.m4('uVP',cam.vp); U.f('uLogC',LOGC); U.m3('uRot',b.rot); U.v3('uScale',sc); U.v3('uCenter',b.camRel);
     U.f('uR',b.Rvis); U.f('uRa',b.Rvis*(1+b.atmoT)); U.v3('uSunPos',sun.camRel); U.v4('uAtmo',b.atmo); U.f('uSunR',sunR); U.f('uShadowsOn',opts.shadows?1:0);
     const occ=occludersFor(b); const arr=new Float32Array(24); occ.forEach((o,i)=>{arr[i*4]=o.camRel[0];arr[i*4+1]=o.camRel[1];arr[i*4+2]=o.camRel[2];arr[i*4+3]=o.Rvis;}); U.fv4('uOcc',arr); U.i('uNocc',occ.length); drawMesh(b.pr>30?MESH.sphere:MESH.sphereLo); }
+  // --- aurora (Earth) ---
+  { const b=byId.earth; if(opts.atmo&&b.pr>6){ const sc=bodyScale(b);
+      const shells=[[1.010,[0.30,1.00,0.45],1.00,3.2,0.0],[1.026,[0.45,1.00,0.72],0.52,3.7,3.7],[1.048,[1.00,0.32,0.62],0.26,4.6,8.1]];
+      use(PR.aurora); U.m4('uVP',cam.vp); U.f('uLogC',LOGC); U.m3('uRot',b.rot); U.v3('uCenter',b.camRel);
+      U.v3('uSunPos',sun.camRel); U.f('uTime',SIM.time);
+      for(const sh of shells){ U.v3('uScale',[sc[0]*sh[0],sc[1]*sh[0],sc[2]*sh[0]]); U.v3('uColor',sh[1]);
+        U.f('uIntensity',sh[2]*0.55); U.f('uBandW',sh[3]); U.f('uPhase',sh[4]); U.f('uBandLat',67.5);
+        drawMesh(b.pr>30?MESH.sphere:MESH.sphereLo); } } }
   // --- sun corona & glow ---
   gl.disable(gl.CULL_FACE);
   { use(PR.corona); U.m4('uVP',cam.vp); U.f('uLogC',LOGC); U.v3('uCenter',sun.camRel); U.v3('uRight',cam.right); U.v3('uUp',cam.up); U.f('uSize',sun.Rvis*3.4); U.f('uInner',1/3.4*0.985); U.f('uTime',SIM.time); U.f('uIntensity',0.30); U.tex('uTex0',0,TEX.corona[0]); drawQuad();
@@ -1361,7 +1593,7 @@ function start(){ buildBodyList(); buildEvents(); makeLabels(); setupFBOs(); lay
   if(window.ResizeObserver){ try{ new ResizeObserver(layoutPanels).observe($('timebar')); }catch(e){} }
   setTimeout(layoutPanels,300); setTimeout(layoutPanels,1200); updateEphemeris(SIM.jd); const e=byId.earth; focus(e,{instant:true,dist:e.Rvis*4.2}); cam.dist=e.Rvis*90; cam.tYaw+=0.35; applySpeed(); syncPlay();
   $('loading').classList.add('done'); setTimeout(()=>{$('hint').style.opacity=0.0;},14000); requestAnimationFrame(frame); }
-function init(){ const ldText=$('ldText'),ldFill=$('ldFill'); try{ buildPrograms(); buildMeshes(); RES.earthMask=buildEarthMask(2048,1024); }catch(e){showErr('初始化失败 / Init failed:\n'+e.message);throw e;}
+function init(){ const ldText=$('ldText'),ldFill=$('ldFill'); try{ buildPrograms(); buildMeshes(); RES.earthMask=buildEarthMask(2048,1024); RES.earthBiome=buildEarthBiome(2048,1024); RES.detail=buildDetailTex(512); }catch(e){showErr('初始化失败 / Init failed:\n'+e.message);throw e;}
   const tasks=[]; Object.keys(TEXTYPE).forEach(id=>tasks.push({n:'GENERATING SURFACE · '+id.toUpperCase(),f:()=>genBodyTex(id)}));
   tasks.push({n:'RING SYSTEMS',f:()=>{RES.ringSaturn=ringProfile('saturn');RES.ringUranus=ringProfile('uranus');}}); tasks.push({n:'MILKY WAY',f:genSky}); tasks.push({n:'STAR CATALOG',f:buildStars});
   tasks.push({n:'ASTEROID BELT · KUIPER BELT',f:buildAsteroids}); tasks.push({n:'COMETS',f:buildComets}); tasks.push({n:'SCENE',f:()=>{buildPoints(256);buildGrid();buildScene();}});
