@@ -522,12 +522,14 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const earthMoonValid = r.earthMoonValid ?? r.hasEarthMoon;
     const moonCore = Math.max(0, Math.min(12, effectiveMoons * 1.5) - (earthMoonValid ? 0 : 2));
     const moonBonus = Math.min(3, Math.max(0, effectiveMoons - 8) * .75);
+    const cometBonus = Math.min(3, r.otherComets);
     const independenceMode = w.net.length ? 'online' : w.tech === 'Three.js' ? 'bundled' : 'native';
     const parts = {
       features: summed(r.featureMap, FEATURE_KEYS) * 2.4,
       orbit: weighted(r.orbitModel, ORBIT_WEIGHTS) + weighted(r.orbitRuntime, ORBIT_RUNTIME_WEIGHTS),
       moons: moonCore,
       moonBonus,
+      cometBonus,
       independence: independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5,
       halley: r.halley ? 3 : 0,
       correctness: summed(r.correctness, ['runtime', 'data', 'integrity']) * (23 / 15),
@@ -535,7 +537,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     };
     const evidenceBase = Object.values(parts).reduce((sum, value) => sum + value, 0);
     const manualAdjustment = r.reference ? 0 : w.tier === 0 ? 3 : w.tier === 2 ? -3 : w.tier === 3 ? -6 : 0;
-    const scoreCeiling = w.tier === 0 ? 106 : 103;
+    const scoreCeiling = w.tier === 0 ? 109 : 106;
     const preCap = Math.max(0, Math.min(scoreCeiling, evidenceBase + manualAdjustment));
     const fatalCap = r.fatal ? FATAL_CAPS[r.fatal] : null;
     const exact = fatalCap == null ? preCap : Math.min(preCap, fatalCap);
@@ -574,6 +576,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         ${part(t('score.orbit'), 'orbit', 30)}
         ${part(t('score.moons'), 'moons', 12)}
         ${part(t('score.moonBonus'), 'moonBonus', 3)}
+        ${part(t('score.cometBonus'), 'cometBonus', 3)}
         ${part(t('score.independence'), 'independence', 7)}
         ${part(t('score.halley'), 'halley', 3)}
         ${part(t('score.correctness'), 'correctness', 23)}
@@ -871,7 +874,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreStats() {
     const works = visibleWorks().map(work => ({ work, score: scoreFor(work) })).filter(row => row.score);
     const mean = (rows, getter) => rows.length ? rows.reduce((sum, row) => sum + getter(row), 0) / rows.length : 0;
-    const coverage = score => score.parts.features + score.parts.orbit + score.parts.moons + score.parts.moonBonus + score.parts.independence + score.parts.halley;
+    const coverage = score => score.parts.features + score.parts.orbit + score.parts.moons + score.parts.moonBonus + score.parts.cometBonus + score.parts.independence + score.parts.halley;
     const execution = score => score.parts.correctness + score.parts.interaction;
     const summarize = rows => ({
       n: rows.length,
@@ -895,7 +898,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const pairMetric = key => paired.map(row => ({ a: row.a[key], b: row.b[key] }));
     const pairedSummary = {
       n: paired.length,
-      coverage: { a: mean(paired, row => row.a.coverage), b: mean(paired, row => row.b.coverage), max: 67, outcomes: outcomes(pairMetric('coverage')) },
+      coverage: { a: mean(paired, row => row.a.coverage), b: mean(paired, row => row.b.coverage), max: 70, outcomes: outcomes(pairMetric('coverage')) },
       execution: { a: mean(paired, row => row.a.execution), b: mean(paired, row => row.b.execution), max: 36, outcomes: outcomes(pairMetric('execution')) },
       exact: { a: mean(paired, row => row.a.exact), b: mean(paired, row => row.b.exact), outcomes: outcomes(pairMetric('exact')) },
     };
@@ -905,7 +908,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
     });
     return {
-      maxima: { coverage: 67, execution: 36, total: 103, final: 106 },
+      maxima: { coverage: 70, execution: 36, total: 106, final: 109 },
       paired,
       pairedSummary,
       wholeGroup: {
