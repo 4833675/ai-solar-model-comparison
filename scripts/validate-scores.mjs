@@ -519,7 +519,7 @@ check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SIT
 
 const expectedPrices = {
   'Claude Fable 5.1':[10,50,.25], 'Claude Fable 5':[10,50,1], 'Claude Opus 5':[5,25,.5],
-  'Claude Opus 4.8':[5,25,.5], 'Claude Sonnet 5':[2,10,.2], 'GPT-5.6 Sol':[10,45,1],
+  'Claude Opus 4.8':[5,25,.5], 'Claude Sonnet 5':[2,10,.2], 'GPT-6 Astra':[20,75,2], 'GPT-5.6 Sol':[10,45,1],
   'GPT-5.6 Terra':[4,18,.4], 'GPT-5.6 Luna':[.4,1.8,.04], 'GPT-5.5':[10,45,1],
   'Gemini 3.1 Pro':[4,18,.4], 'Gemini 3.6 Flash':[1.5,7.5,.15], 'Gemini 3.7 Flash':[1.5,7.5,.15], 'Gemini 3.8 Flash':[1.5,7.5,.15],
   'Grok 4.6':[4,12,1], 'Hy 4 Preview':[.834,2.501,.042], 'Kimi K3':[3,15,.3],
@@ -535,9 +535,9 @@ for (const [model, values] of Object.entries(expectedPrices)) {
   const actual = context.window.MODEL_PRICES[model];
   ['input','output','cache'].forEach((key,i)=>close(actual[key],values[i],model+' '+key));
 }
-check(visibleWorks.filter(work => !work.id.startsWith('OmenAlpha') && work.id !== 'GPT6Astra(Ultra)V1').every(work=>SITE.priceFor(work)), 'Every visible work with disclosed token pricing must map to a saved price family');
+check(visibleWorks.filter(work => !work.id.startsWith('OmenAlpha')).every(work=>SITE.priceFor(work)), 'Every visible identified work must map to a saved price family');
 check(!SITE.priceFor(omenA) && !SITE.priceFor(omenB) && SITE.priceCell(omenA).includes('—'), 'Anonymous Omen Alpha pricing must remain undisclosed');
-check(!SITE.priceFor(gpt6Astra) && SITE.priceCell(gpt6Astra).includes('—'), 'GPT-6 Astra subscription availability must not be presented as token pricing');
+check(SITE.priceFor(gpt6Astra).date === '2026-09-05' && SITE.priceCell(gpt6Astra).includes('20 / 75 / 2') && SITE.priceCell(gpt6Astra).includes('developers.openai.com/api/docs/pricing'), 'GPT-6 Astra must show its official long-context price and source date');
 check(SITE.priceFor(museA).note === 'openrouter' && SITE.priceCell(museA).includes('0.1 / 0.2 / 0.002'), 'MuseSpark must show the user-provided OpenRouter reference');
 for (const key of ['priceInput','priceOutput','priceCache']) for (const direction of [1,-1]) {
   const sorted = SITE.tableRows(visibleWorks, key, direction, 'zh');
@@ -1276,7 +1276,7 @@ for (const page of [zhHome,enHome]) {
   check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
   check(page.includes('colspan="9"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
   check(page.includes('button.dataset.priceSort') && page.includes('tbl(searchWorks())'), 'Price sorting must preserve active model search');
-  check(page.includes('2026-09-03') && page.includes('$0.90 / $4.47 / $0.18') && page.includes('OpenRouter'), 'Price notes must disclose the update date, Doubao estimate, and OpenRouter exception');
+  check(page.includes('2026-09-03') && page.includes('2026-09-05') && page.includes('$20 / $75 / $2') && page.includes('$0.90 / $4.47 / $0.18') && page.includes('OpenRouter'), 'Price notes must disclose the general date, Astra price/date, Doubao estimate, and OpenRouter exception');
   for (const match of page.matchAll(/<script>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 }
 

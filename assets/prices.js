@@ -1,5 +1,6 @@
-/* Saved USD / 1M-token reference, 2026-09-03: peak hours, highest context band,
-   standard service, before promotions. Cache means read/hit, not write/storage. */
+/* Saved USD / 1M-token references: mostly 2026-09-03, with entry-specific dates where set.
+   Peak hours, highest context band, standard service, before promotions.
+   Cache means read/hit, not write/storage. */
 (function () {
   'use strict';
   const sources = {
@@ -23,6 +24,7 @@
     ['Claude Opus 5', 5, 25, .5, 'claude'],
     ['Claude Opus 4.8', 5, 25, .5, 'claude'],
     ['Claude Sonnet 5', 2, 10, .2, 'claude'],
+    ['GPT-6 Astra', 20, 75, 2, 'openai', null, '2026-09-05'],
     ['GPT-5.6 Sol', 10, 45, 1, 'openai', 'solReference'],
     ['GPT-5.6 Terra', 4, 18, .4, 'openai'],
     ['GPT-5.6 Luna', .4, 1.8, .04, 'openai'],
@@ -47,6 +49,6 @@
     ['MiniMax M3', 1.2, 4.8, .24, 'minimax', 'minimaxList'],
   ];
   window.MODEL_PRICE_DATE = '2026-09-03';
-  window.MODEL_PRICES = Object.fromEntries(entries.map(([model, input, output, cache, source, note]) =>
-    [model, Object.freeze({ input, output, cache, source: sources[source] || null, note: note || null })]));
+  window.MODEL_PRICES = Object.fromEntries(entries.map(([model, input, output, cache, source, note, date]) =>
+    [model, Object.freeze({ input, output, cache, source: sources[source] || null, note: note || null, date: date || null })]));
 })();

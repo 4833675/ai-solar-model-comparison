@@ -122,7 +122,7 @@
       qwenCache: '隐式缓存命中 $0.25/M；显式缓存读取另为 $0.17/M。',
     };
     const title = (I18N.en ? 'USD / 1M tokens · Input / Output / Cache read · ' : '美元 / 百万 Token · 读 / 写 / 缓存读 · ') +
-      window.MODEL_PRICE_DATE + (value.note ? '\n' + notes[value.note] : '');
+      (value.date || window.MODEL_PRICE_DATE) + (value.note ? '\n' + notes[value.note] : '');
     const text = [value.input, value.output, value.cache].map(number =>
       (value.note === 'estimated' ? '≈' : '') + number).join(' / ') +
       (value.note === 'solReference' || value.note === 'minimaxList' ? '*' : '');
