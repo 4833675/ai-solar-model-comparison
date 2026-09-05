@@ -59,11 +59,16 @@
     'MuseSpark 1.3 Contributor (xHigh)': { direction: 'up', count: 1, zh: '四舍五入约等于不要钱', en: 'Practically free, if you round it off' },
     'Gemini 3.8 Flash (high)': { direction: 'up', count: 1, zh: '更新了版本号错误的问题', en: 'Fixed the version-number mistake' },
     'Omen Alpha (Max)': { direction: 'up', count: 1, zh: '看起来好像很厉害？', en: 'Looks pretty formidable?' },
+    'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 4, symbols: '▲▲▽▽', sortValue: 0, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
   };
   const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
     const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
-    return value ? Object.assign({ reason: I18N.en ? value.en : value.zh }, value) : null;
+    return value ? Object.assign({
+      reason: I18N.en ? value.en : value.zh,
+      symbols: value.symbols || (value.direction === 'up' ? '▲' : '▽').repeat(value.count),
+      sortValue: Number.isFinite(value.sortValue) ? value.sortValue : (value.direction === 'up' ? value.count : -value.count),
+    }, value) : null;
   };
   const MODEL_LOGOS = [
     [/^(?:Claude\b|Claude Fable\b)/, 'anthropic'],
@@ -126,7 +131,7 @@
     const rows = works.map(work => {
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
       return Object.assign({}, work, { environment: environmentName(work), personal,
-        recommendation: personal ? (personal.direction === 'up' ? personal.count : -personal.count) : 0,
+        recommendation: personal ? personal.sortValue : 0,
         score: score ? score.total : -1,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
     });

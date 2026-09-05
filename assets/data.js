@@ -112,7 +112,8 @@ window.WORK_CREATION_DATES={
  "MuseSpark1.3Contributor(xhigh)V2":"260903",
  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5":"260903",
  "OmenAlpha(Max)V1":"260904",
- "OmenAlpha(Max)V1-TasksAssignedByOpus5":"260904"
+ "OmenAlpha(Max)V1-TasksAssignedByOpus5":"260904",
+ "GPT6Astra(Ultra)V1":"260905"
 };
 window.WORKS=[
  {
@@ -3420,6 +3421,31 @@ window.WORKS=[
   "tags": ["in Zcode", "匿名参测"],
   "tier": 2,
   "rank": 34
+ },
+ {
+  "id": "GPT6Astra(Ultra)V1",
+  "file": "models/GPT6Astra(Ultra)V1.html",
+  "model": "GPT-6 Astra (Ultra)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 10045652,
+  "lines": 586,
+  "title": "SOL · 太阳系观测台",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "weight": "heavy",
+  "shot": "assets/shots/GPT6Astra(Ultra)V1.jpg",
+  "jsErrors": 0,
+  "note": "离线原生 WebGL2，内嵌高分辨率纹理、七颗卫星与四颗彗星，提供真实比例、卫星系统、近日点演示和完整观测控制。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": ["in Codex", "离线纹理 · 7 颗卫星 · 4 颗彗星"],
+  "tier": 1,
+  "rank": 0
  }
 ];
 window.WORKS.forEach(function(work){
