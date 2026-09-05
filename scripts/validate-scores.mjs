@@ -1114,7 +1114,7 @@ const visibleNamingSurface = [
 ].join('\n');
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
-check(typeof SITE.personalRecommendationFor === 'function', 'SITE must expose the personal recommendation lookup');
+check(typeof SITE.personalRecommendationFor === 'function' && typeof SITE.recommendationSymbols === 'function', 'SITE must expose the personal recommendation lookup and colored-symbol renderer');
 check(typeof SITE.modelLogoFor === 'function' && typeof SITE.modelCell === 'function', 'SITE must expose shared model-logo rendering');
 const expectedModelLogos = {
   'Claude Opus 5 (Ultra)': 'anthropic', 'Claude Fable 5 (Max)': 'anthropic',
@@ -1172,7 +1172,7 @@ const expectedRecommendations = {
   'MuseSpark 1.3 Contributor (xHigh)': ['up', 1, '四舍五入约等于不要钱'],
   'Gemini 3.8 Flash (high)': ['up', 1, '更新了版本号错误的问题'],
   'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
-  'GPT-6 Astra (Ultra)': ['mixed', 4, '任何订阅都能用/太费太贵', '▲▲▽▽', 0],
+  'GPT-6 Astra (Ultra)': ['mixed', 5, '任何订阅都能用/太费太贵', '▲▲▲▽▽', 1],
 };
 for (const work of visibleWorks) {
   const modelKey = stripCreationDate(work.model).replace(/ #\d+$/, '');
@@ -1185,6 +1185,8 @@ for (const work of visibleWorks) {
   check(recommendation.direction === expected[0] && recommendation.count === expected[1] && recommendation.reason === expected[2], `${work.id}: personal recommendation mismatch`);
   check(recommendation.symbols === (expected[3] || (expected[0] === 'up' ? '▲' : '▽').repeat(expected[1])) && recommendation.sortValue === (expected[4] ?? (expected[0] === 'up' ? expected[1] : -expected[1])), `${work.id}: recommendation symbols or sort value mismatch`);
 }
+const astraRecommendationHtml = SITE.recommendationSymbols(SITE.personalRecommendationFor(gpt6Astra));
+check((astraRecommendationHtml.match(/recommend-symbol-up/g) || []).length === 3 && (astraRecommendationHtml.match(/recommend-symbol-down/g) || []).length === 2 && astraRecommendationHtml.replace(/<[^>]+>/g, '') === '▲▲▲▽▽', 'GPT-6 Astra must render three green up-triangles and two red down-triangles');
 const searchKimi3 = WORKS.find(w => w.id === 'KimiK3(Max)V3');
 check(SITE.modelMatches(searchKimi3, 'kimi k3 max #3'), 'Model search must ignore case, spaces, and display punctuation');
 check(SITE.modelMatches(searchKimi3, 'KIMI'), 'Model search must support model-family queries');
@@ -1258,9 +1260,9 @@ check(enHome.includes('<th data-k="model">Model</th><th data-k="tier">Tier</th><
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
-  check(page.includes('S.tableRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes('w.personal.symbols'), 'Table rows must render family-level personal recommendations');
+  check(page.includes('S.tableRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes('S.recommendationSymbols(w.personal)'), 'Table rows must render colored family-level personal recommendations');
   check(page.includes('S.modelCell(w)') && page.includes('S.codeSizeCell(w)') && !page.includes('>运行 →</a>') && !page.includes('>Run →</a>'), 'Model names must open entries and replace the old Action column');
-  check(page.includes('w.personal.symbols') && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use the normalized triangle-symbol string instead of thumb emoji');
+  check(page.includes('S.recommendationSymbols(w.personal)') && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use the normalized colored triangle renderer instead of thumb emoji');
 }
 
 check(zhHome.includes("0:'T0',1:'T1',2:'T2',3:'T3'"), 'Chinese table must use T0–T3 while preserving other tier labels');
@@ -1280,7 +1282,7 @@ for (const page of [zhHome,enHome]) {
 
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
 check(siteSource.includes('Fast, reliable, and expensive') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
-check(cssSource.includes('.table-personal-rec.is-up{color:var(--good)}') && cssSource.includes('.table-personal-rec.is-down{color:var(--bad)}'), 'Recommendation triangles must use distinct positive and negative colors');
+check(cssSource.includes('.recommend-symbol-up{color:var(--good)}') && cssSource.includes('.recommend-symbol-down{color:var(--bad)}'), 'Every recommendation triangle must use its own positive or negative color');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
 check(zhHome.includes('不能单凭筛选后的六组证明因果') && enHome.includes('not causal proof on their own'), 'Both pair introductions must disclose the selected-case evidence limit');

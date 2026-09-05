@@ -59,7 +59,7 @@
     'MuseSpark 1.3 Contributor (xHigh)': { direction: 'up', count: 1, zh: '四舍五入约等于不要钱', en: 'Practically free, if you round it off' },
     'Gemini 3.8 Flash (high)': { direction: 'up', count: 1, zh: '更新了版本号错误的问题', en: 'Fixed the version-number mistake' },
     'Omen Alpha (Max)': { direction: 'up', count: 1, zh: '看起来好像很厉害？', en: 'Looks pretty formidable?' },
-    'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 4, symbols: '▲▲▽▽', sortValue: 0, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
+    'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 5, symbols: '▲▲▲▽▽', sortValue: 1, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
   };
   const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
@@ -70,6 +70,9 @@
       sortValue: Number.isFinite(value.sortValue) ? value.sortValue : (value.direction === 'up' ? value.count : -value.count),
     }, value) : null;
   };
+  const recommendationSymbols = personal => personal
+    ? esc(personal.symbols).replace(/▲/g, '<span class="recommend-symbol-up">▲</span>').replace(/▽/g, '<span class="recommend-symbol-down">▽</span>')
+    : '—';
   const MODEL_LOGOS = [
     [/^(?:Claude\b|Claude Fable\b)/, 'anthropic'],
     [/^GPT-/, 'openai'],
@@ -948,7 +951,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, environmentName, personalRecommendationFor, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),
