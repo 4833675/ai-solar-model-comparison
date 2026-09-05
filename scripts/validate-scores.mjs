@@ -1172,7 +1172,7 @@ const expectedRecommendations = {
   'MuseSpark 1.3 Contributor (xHigh)': ['up', 1, '四舍五入约等于不要钱'],
   'Gemini 3.8 Flash (high)': ['up', 1, '更新了版本号错误的问题'],
   'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
-  'GPT-6 Astra (Ultra)': ['mixed', 5, '任何订阅都能用/太费太贵', '▲▲▲▽▽', 1],
+  'GPT-6 Astra (Ultra)': ['mixed', 5, '任何订阅都能用/太费太贵', '△△△▽▽', 1],
 };
 for (const work of visibleWorks) {
   const modelKey = stripCreationDate(work.model).replace(/ #\d+$/, '');
@@ -1183,10 +1183,10 @@ for (const work of visibleWorks) {
     continue;
   }
   check(recommendation.direction === expected[0] && recommendation.count === expected[1] && recommendation.reason === expected[2], `${work.id}: personal recommendation mismatch`);
-  check(recommendation.symbols === (expected[3] || (expected[0] === 'up' ? '▲' : '▽').repeat(expected[1])) && recommendation.sortValue === (expected[4] ?? (expected[0] === 'up' ? expected[1] : -expected[1])), `${work.id}: recommendation symbols or sort value mismatch`);
+  check(recommendation.symbols === (expected[3] || (expected[0] === 'up' ? '△' : '▽').repeat(expected[1])) && recommendation.sortValue === (expected[4] ?? (expected[0] === 'up' ? expected[1] : -expected[1])), `${work.id}: recommendation symbols or sort value mismatch`);
 }
 const astraRecommendationHtml = SITE.recommendationSymbols(SITE.personalRecommendationFor(gpt6Astra));
-check((astraRecommendationHtml.match(/recommend-symbol-up/g) || []).length === 3 && (astraRecommendationHtml.match(/recommend-symbol-down/g) || []).length === 2 && astraRecommendationHtml.replace(/<[^>]+>/g, '') === '▲▲▲▽▽', 'GPT-6 Astra must render three green up-triangles and two red down-triangles');
+check((astraRecommendationHtml.match(/recommend-symbol-up/g) || []).length === 3 && (astraRecommendationHtml.match(/recommend-symbol-down/g) || []).length === 2 && astraRecommendationHtml.replace(/<[^>]+>/g, '') === '△△△▽▽', 'GPT-6 Astra must render three green outline up-triangles and two red down-triangles');
 const searchKimi3 = WORKS.find(w => w.id === 'KimiK3(Max)V3');
 check(SITE.modelMatches(searchKimi3, 'kimi k3 max #3'), 'Model search must ignore case, spaces, and display punctuation');
 check(SITE.modelMatches(searchKimi3, 'KIMI'), 'Model search must support model-family queries');
@@ -1282,7 +1282,7 @@ for (const page of [zhHome,enHome]) {
 
 check(zhHome.includes('其余暂时留空') && enHome.includes('all others remain blank for now'), 'Both table introductions must explain the intentionally partial recommendation list');
 check(siteSource.includes('Fast, reliable, and expensive') && siteSource.includes('Understanding is online; execution falls flat'), 'Personal recommendation reasons must include English translations');
-check(cssSource.includes('.recommend-symbol-up{color:var(--good)}') && cssSource.includes('.recommend-symbol-down{color:var(--bad)}'), 'Every recommendation triangle must use its own positive or negative color');
+check(cssSource.includes('--good:#84dfa0') && cssSource.includes('.table-personal-rec .recommend-symbol-up{color:var(--good)!important}') && cssSource.includes('.table-personal-rec .recommend-symbol-down{color:var(--bad)!important}'), 'Every recommendation triangle must use a defined and enforced positive or negative color');
 check(!zhHome.includes('唯一的变量就是需求形式') && !enHome.includes('only variable between the two groups'), 'Home copy must not claim all 22 pairs differ only by brief format');
 check(zhHome.includes('文档版提升最大的 6 组') && zhHome.includes('详细文档</span> − <span style="color:var(--A)">一句话') && enHome.includes('The 6 Largest Detailed-Spec Gains') && enHome.includes('detailed specification</span> − <span style="color:var(--A)">one-line prompt'), 'Both pair introductions must explain the directional top-six selection');
 check(zhHome.includes('不能单凭筛选后的六组证明因果') && enHome.includes('not causal proof on their own'), 'Both pair introductions must disclose the selected-case evidence limit');
