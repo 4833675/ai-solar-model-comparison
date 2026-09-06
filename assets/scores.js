@@ -212,24 +212,6 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
       note: '曝光克制且关键行星有专用材质；轨道仅为基础元素形状，无开普勒与历元传播，按钮聚焦也不持续跟随。'
     },
-    'Fable5Max-Three': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 0, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: .5 }, moons: 6, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '哈雷与六颗卫星均成立；没有实际 ACES，环影仅单向，最小缩放可进入大型天体内部。'
-    },
-    'Fable5Max-WebGL2': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false, otherComets: 1,
-      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 9.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '彗星实际是恩克而非哈雷；六颗卫星，土星环只有行星投向环的单向阴影。'
-    },
     'GLM5.2Max': {
       reference: false,
       featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },

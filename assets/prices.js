@@ -20,7 +20,6 @@
   };
   const entries = [
     ['Claude Fable 5.1', 10, 50, .25, 'claude'],
-    ['Claude Fable 5', 10, 50, 1, 'claude'],
     ['Claude Opus 5', 5, 25, .5, 'claude'],
     ['Claude Opus 4.8', 5, 25, .5, 'claude'],
     ['Claude Sonnet 5', 2, 10, .2, 'claude'],
