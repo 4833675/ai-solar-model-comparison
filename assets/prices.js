@@ -43,7 +43,7 @@
     ['Qwen 3.8 Flash', .15, .47, .016, 'qwen'],
     ['GLM 5.3', 1.4, 4.4, .26, 'glm'],
     ['GLM 5.3 Flash', .15, .5, .03, 'glm'],
-    ['Doubao Seed Evolving', .9, 4.47, .18, null, 'estimated'],
+    ['Doubao Seed Evolving 0827', .9, 4.47, .18, null, 'estimated'],
     ['LongCat 2.0', .75, 2.95, .015, 'longcat'],
     ['MiMo 2.5 Pro', .435, .87, .0036, 'mimo'],
     ['MiniMax M3', 1.2, 4.8, .24, 'minimax', 'minimaxList'],

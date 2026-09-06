@@ -53,12 +53,14 @@
     'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
     'MiMo 2.5 Pro (high)': { direction: 'down', count: 1, zh: '小爱同学…', en: 'XiaoAi…' },
     'Gemini 3.6 Flash (high)': { direction: 'down', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
-    'Doubao Seed Evolving (Max)': { direction: 'down', count: 1, zh: '给你一个最直白的', en: 'Here is the most straightforward one' },
+    'Doubao Seed Evolving 0827 (Max)': { direction: 'up', count: 3, zh: '豆包怎么了？现在挺好的', en: 'What is wrong with Doubao? It is pretty good now' },
     'Gemini 3.1 Pro (high)': { direction: 'down', count: 3, zh: '昔日荣光', en: 'Former glory' },
     'Claude Opus 4.8 (Max)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
     'MuseSpark 1.3 Contributor (xHigh)': { direction: 'up', count: 1, zh: '四舍五入约等于不要钱', en: 'Practically free, if you round it off' },
     'Gemini 3.8 Flash (high)': { direction: 'up', count: 1, zh: '更新了版本号错误的问题', en: 'Fixed the version-number mistake' },
     'Omen Alpha (Max)': { direction: 'up', count: 1, zh: '看起来好像很厉害？', en: 'Looks pretty formidable?' },
+    'GPT-6 Astra (Light)': { direction: 'up', count: 3, zh: '执行力不错也不算贵', en: 'Good execution without being too expensive' },
+    'Claude Opus 5 (Low)': { direction: 'up', count: 2, zh: '不努力完全不是一个东西', en: 'Without the effort, it is a completely different thing' },
     'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 5, symbols: '△△△▽▽', sortValue: 1, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
   };
   const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
@@ -155,8 +157,8 @@
     });
   }
   const MODEL_GAP_DEFS = [
-    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving(Max)V1' },
-    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy4Preview(high)V2-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5' },
+    { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving0827(Max)V1' },
+    { key: 'document', leftId: 'Opus5Ultra-TasksAssignedByOpus5', middleId: 'Hy4Preview(high)V2-TasksAssignedByOpus5', rightId: 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5' },
   ];
   const SOL_EFFORT_IDS = [
     'GPT5.6SolUltra-WebGL2',
@@ -718,7 +720,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function modelGapSide(work, role) {
     const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
-    const family = role === 'opus' ? 'CLAUDE OPUS 5' : role === 'hy' ? 'HY 4 PREVIEW' : 'DOUBAO SEED EVOLVING';
+    const family = role === 'opus' ? 'CLAUDE OPUS 5' : role === 'hy' ? 'HY 4 PREVIEW' : 'DOUBAO SEED EVOLVING 0827';
     return `<div class="model-gap-side ${role}">
       <div class="model-gap-model">
         <div><span>${family}</span><h5>${esc(work.model)}</h5></div>

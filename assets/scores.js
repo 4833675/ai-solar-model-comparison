@@ -148,23 +148,23 @@
       interaction: { drag: 1, zoom: .5, focus: 1, follow: 0, pauseReset: .5 }, fatal: null,
       note: '详细文档版完整运行 JPL/开普勒轨道、八颗卫星、哈雷、小行星带与柯伊伯带，地球近景细节清楚；但环系只是七条线，没有物理环影，辉光与大气仅为简化近似，没有 ACES，缩放可进入大型天体，聚焦也不持续跟随且没有完整状态重置。'
     },
-    'DoubaoSeedEvolving(Max)V1': {
+    'DoubaoSeedEvolving0827(Max)V1': {
       reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0 },
-      orbitModel: { geometry: 1, kepler: 0, elements: 0, orientation: 0, epoch: 0 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 11, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 3, integrity: 5 }, visualBase: 3,
-      interaction: { drag: 1, zoom: 1, focus: 0, follow: 0, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2、十一颗卫星、环影、Bloom/ACES 与小行星带均可运行；但行星使用共面圆轨道与手工速度，没有开普勒、真实历元或聚焦跟随，默认画面也被大量高亮粒子明显洗白。'
+      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: .4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 一句话版稳定实现 J2000 开普勒轨道、八颗卫星、小行星带、Bloom/ACES、拖拽缩放与持续聚焦跟随。行星环只有行星投向环的单向阴影，大气主要是表面着色中的简化边缘光；没有哈雷，也没有一次恢复镜头、时间、速度与显示开关的完整状态重置。'
     },
-    'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': {
+    'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
       orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 4,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '详细文档版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、三套环影、Bloom/ACES、大气和持续跟随；但默认场景曝光与轨道线亮度过强，近景背景明显泛金，且没有完整状态重置。'
+      correctness: { runtime: 5, data: 4, integrity: 3 }, visualBase: null,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 文档版覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小天体带、Bloom/ACES、大气和持续跟随，1440×900 高倍推进稳定且无报错。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年周期推进却标为 2061 年 7 月底，模型实际约在 6 月初过近日点。彗尾代码还把指向太阳的向量当作背日方向，实测与背日方向点积为 −1，离子尾实际朝向太阳；缩放可进入大型天体，也没有完整状态重置。'
     },
     'GPT5.6Sol(high)V1': {
       reference: false,
@@ -1285,6 +1285,24 @@
       },
       fatal: null,
       note: "离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、多重小天体群、Bloom/ACES、大气与持续跟随；1440×900 实跑稳定且无控制台错误。拖拽误点抑制与按目标半径限制的安全缩放均成立，暂停和“此刻”可用；主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。"
+    },
+    'GPT6Astra(Light)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小行星带、Bloom/ACES、大气与持续跟随。1440×900 实跑为 HDR、4× MSAA、约 144 FPS，高倍时间推进无控制台或 WebGL 错误，开普勒残差约 4.44×10⁻¹⁶；拖拽误点抑制与按目标半径限制的安全缩放均成立，主要缺项是没有完整状态重置。'
+    },
+    'Opus5(Low)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 文档版完整覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小天体带、Bloom/ACES、大气和持续跟随，1440×900 高倍推进约 144 FPS且无报错。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年周期推进，却把下一次近日点写成 2061 年 7 月。缩放下限可进入大型天体，也没有完整状态重置。'
     },
     'GPT6Astra(Ultra)V1': {
       reference: false,

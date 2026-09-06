@@ -41,8 +41,10 @@ const CANONICAL_NAMES = {
   'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': 'GPT-5.6 Sol (Max)',
   'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5': 'GPT-5.6 Sol (xHigh)',
   'GPT5.6Sol(high)V1-TasksAssignedByOpus5': 'GPT-5.6 Sol (high)',
-  'DoubaoSeedEvolving(Max)V1': 'Doubao Seed Evolving (Max)',
-  'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': 'Doubao Seed Evolving (Max)',
+  'DoubaoSeedEvolving0827(Max)V1': 'Doubao Seed Evolving 0827 (Max)',
+  'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5': 'Doubao Seed Evolving 0827 (Max)',
+  'GPT6Astra(Light)V1-TasksAssignedByOpus5': 'GPT-6 Astra (Light)',
+  'Opus5(Low)V1-TasksAssignedByOpus5': 'Claude Opus 5 (Low)',
   'GPT5.6Sol(high)V1': 'GPT-5.6 Sol (high)',
   'Opus5Ultra-TasksAssignedByOpus5': 'Claude Opus 5 (Ultra)',
   'DeepSeek-V4-Flash-0731': 'DeepSeek V4 Flash 0731 (Max)',
@@ -145,8 +147,10 @@ const EXPECTED_EXACT = {
   "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 89.993333333333,
   "GLM5.3Flash(Max)V1": 85.466666666667,
   "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 60,
-  "DoubaoSeedEvolving(Max)V1": 62.783333333333,
-  "DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5": 91.466666666667,
+  "DoubaoSeedEvolving0827(Max)V1": 90.12,
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 90.15,
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": 99,
+  "Opus5(Low)V1-TasksAssignedByOpus5": 96.216666666667,
   "GPT5.6Sol(high)V1": 85.493333333333,
   "Opus5Ultra-TasksAssignedByOpus5": 100,
   "DeepSeek-V4-Flash-0731": 59.04666666666667,
@@ -269,8 +273,10 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|9|1|1|1|1|0.5|-|-',
   'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|5.5|1|1|1|1|0.5|-|-',
   'GPT5.6Sol(high)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|0|1|1|8|1|1|0|5|3|5|7|1|1|1|1|0.5|-|-',
-  'DoubaoSeedEvolving(Max)V1': '0|1|1|1|1|0|1|0|0|0|0|1|1|11|1|0|0|5|3|5|3|1|1|0|0|1|-|-',
-  'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|4|1|1|1|1|0.5|-|-',
+  'DoubaoSeedEvolving0827(Max)V1': '0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
+  'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3|-|1|0.5|1|1|0.5|-|-',
+  'GPT6Astra(Light)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-',
+  'Opus5(Low)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-',
   'GPT5.6Sol(high)V1': '0|0.4|1|1|1|1|1|1|1|1|0|1|1|8|1|0|0|5|3|5|8|1|1|1|1|1|-|-',
   'DeepSeek-V4-Flash-0731': '0|0.4|0.4|0.4|1|1|1|1|1|0.5|0.5|0.5|0.5|1|1|0|3|4|4|3|1.5|1|1|0.5|0|1|-|-',
   'DeepSeek_V4_Pro_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|2.5|1|1|0|0|0|-|-',
@@ -372,10 +378,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 108, `WORKS count must be 108, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 108, `SCORES count must be 108, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 108, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 108, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 110, `WORKS count must be 110, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 110, `SCORES count must be 110, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 110, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 110, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -390,7 +396,7 @@ for (const work of WORKS) {
 }
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 62, 'Audited Group A count must be 62 after adding GPT-6 Astra');
-check(WORKS.filter(w => w.group === 'B').length === 46, 'Audited Group B count must remain 46 after adding GPT-6 Astra');
+check(WORKS.filter(w => w.group === 'B').length === 48, 'Audited Group B count must be 48 after replacing Doubao and adding two detailed-spec runs');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
   'Qwen3.8MaxV2-TasksAssignedByOpus5',
@@ -415,9 +421,9 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 88, 'Visible WORKS count must be 88');
+check(visibleWorks.length === 90, 'Visible WORKS count must be 90');
 check(visibleWorks.filter(w => w.group === 'A').length === 48, 'Visible Group A count must be 48');
-check(visibleWorks.filter(w => w.group === 'B').length === 40, 'Visible Group B count must be 40');
+check(visibleWorks.filter(w => w.group === 'B').length === 42, 'Visible Group B count must be 42');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) check(SITE.byId(id) === undefined, id + ': direct work page lookup must stay hidden');
@@ -426,7 +432,7 @@ check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLE
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
 check(SITE.pairs().length === 29, 'Expected 29 complete visible pairs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
-check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(['gemini36flash', 'gemini38flashv1', 'gemini37flash', 'qwen38max', 'doubao', 'deepseekv4flash0731']), 'Featured comparisons must be the six largest positive detailed-spec score gains');
+check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(['gemini36flash', 'gemini38flashv1', 'gemini37flash', 'qwen38max', 'deepseekv4flash0731', 'gpt56terra']), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
 check(PAIR_ORDER[7] === 'deepseekv4pro0813' && PAIR_ORDER[8] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 08 and 09');
 check(PAIR_ORDER[9] === 'glm53v1' && PAIR_ORDER[10] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 10 and 11');
@@ -525,7 +531,7 @@ const expectedPrices = {
   'Grok 4.6':[4,12,1], 'Hy 4 Preview':[.834,2.501,.042], 'Kimi K3':[3,15,.3],
   'DeepSeek V4 Pro 0813':[1.32,3.96,.044], 'DeepSeek V4 Flash 0731':[.44,1.32,.014],
   'Qwen 3.8 Max':[2,6,.25], 'Qwen 3.8 Flash':[.15,.47,.016], 'GLM 5.3':[1.4,4.4,.26],
-  'GLM 5.3 Flash':[.15,.5,.03], 'Doubao Seed Evolving':[.9,4.47,.18],
+  'GLM 5.3 Flash':[.15,.5,.03], 'Doubao Seed Evolving 0827':[.9,4.47,.18],
   'LongCat 2.0':[.75,2.95,.015], 'MiMo 2.5 Pro':[.435,.87,.0036], 'MiniMax M3':[1.2,4.8,.24],
   'MuseSpark 1.3 Contributor':[.10,.20,.002],
 };
@@ -548,7 +554,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
   check(withMissing.at(-1).id === 'missingPrice', 'Missing prices must sort last in either direction');
 }
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
-check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao prices must remain explicitly approximate');
+check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
@@ -645,7 +651,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 108, `scores.js source key ${key} must occur exactly 108 times; duplicate/missing key detected (${count})`);
+  check(count === 110, `scores.js source key ${key} must occur exactly 110 times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -665,8 +671,10 @@ for (const [key, values] of numbered) {
   check(values.every((value, index) => value === index + 1), `${key}: attempt numbering is not unique and contiguous: ${values.join(',')}`);
 }
 
-const doubaoOneLine = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1');
-const doubaoDetailed = WORKS.find(w => w.id === 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5');
+const doubaoOneLine = WORKS.find(w => w.id === 'DoubaoSeedEvolving0827(Max)V1');
+const doubaoDetailed = WORKS.find(w => w.id === 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5');
+const astraLightDetailed = WORKS.find(w => w.id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5');
+const opusLowDetailed = WORKS.find(w => w.id === 'Opus5(Low)V1-TasksAssignedByOpus5');
 const solHigh = WORKS.find(w => w.id === 'GPT5.6Sol(high)V1');
 const solMaxOneLine = WORKS.find(w => w.id === 'GPT5.6Sol(Max)V1');
 const solMaxDetailed = WORKS.find(w => w.id === 'GPT5.6Sol(Max)V1-TasksAssignedByOpus5');
@@ -686,16 +694,19 @@ const hy4Detailed1 = WORKS.find(w => w.id === 'Hy4Preview(high)V1-TasksAssignedB
 const hy4Detailed2 = WORKS.find(w => w.id === 'Hy4Preview(high)V2-TasksAssignedByOpus5');
 const glm53Flash2OneLine = WORKS.find(w => w.id === 'GLM5.3Flash(Max)V2');
 const glm53Flash2Detailed = WORKS.find(w => w.id === 'GLM5.3Flash(Max)V2-TasksAssignedByOpus5');
-check(doubaoOneLine?.group === 'A' && doubaoDetailed?.group === 'B' && doubaoOneLine?.tier === 3 && doubaoDetailed?.tier === 3, 'Both Doubao Seed Evolving runs must be Tier 3');
-check(doubaoOneLine?.pair === 'doubao' && doubaoDetailed?.pair === 'doubao', 'Doubao Seed Evolving runs must form one explicit pair');
-check(JSON.stringify(doubaoOneLine?.tags) === JSON.stringify(['in Claude CLI']) && JSON.stringify(doubaoDetailed?.tags) === JSON.stringify(['in Claude CLI']), 'Both Doubao runs must show in Claude CLI');
-check(doubaoOneLine?.bytes === 43559 && doubaoOneLine?.lines === 994 && doubaoDetailed?.bytes === 100880 && doubaoDetailed?.lines === 2568, 'Doubao source metadata must match the supplied files');
+check(doubaoOneLine?.group === 'A' && doubaoDetailed?.group === 'B' && doubaoOneLine?.tier === 2 && doubaoDetailed?.tier === 2, 'Both Doubao Seed Evolving 0827 runs must be Tier 2');
+check(doubaoOneLine?.pair === 'doubao' && doubaoDetailed?.pair === 'doubao', 'Doubao Seed Evolving 0827 runs must form one explicit pair');
+check(JSON.stringify(doubaoOneLine?.tags) === JSON.stringify(['in Zcode']) && JSON.stringify(doubaoDetailed?.tags) === JSON.stringify(['in Zcode']), 'Both Doubao 0827 runs must show in Zcode');
+check(doubaoOneLine?.bytes === 56571 && doubaoOneLine?.lines === 1378 && doubaoDetailed?.bytes === 92053 && doubaoDetailed?.lines === 2115, 'Doubao 0827 source metadata must match the supplied files');
+check(astraLightDetailed?.group === 'B' && astraLightDetailed?.tier === 1 && astraLightDetailed?.pair === null && JSON.stringify(astraLightDetailed?.tags) === JSON.stringify(['in Codex']), 'GPT-6 Astra Light must be an unpaired Tier 1 detailed-spec Codex run');
+check(opusLowDetailed?.group === 'B' && opusLowDetailed?.tier === 1 && opusLowDetailed?.pair === null && JSON.stringify(opusLowDetailed?.tags) === JSON.stringify(['in Claude Code']), 'Claude Opus 5 Low must be an unpaired Tier 1 detailed-spec Claude Code run');
+check(astraLightDetailed?.bytes === 46568 && astraLightDetailed?.lines === 94 && astraLightDetailed?.msaa === true && opusLowDetailed?.bytes === 85421 && opusLowDetailed?.lines === 1713 && opusLowDetailed?.msaa === true, 'Astra Light and Opus Low source metadata must match the supplied files');
 check(solHigh?.group === 'A' && solHigh?.tier === 2 && solHigh?.pair === null && JSON.stringify(solHigh?.tags) === JSON.stringify(['in Codex']), 'GPT-5.6 Sol high must be an unpaired Tier 2 in Codex run');
 check(solHigh?.bytes === 48544 && solHigh?.lines === 407 && solHigh?.tech === 'WebGL2', 'GPT-5.6 Sol high source metadata must match the supplied file');
 check(solMaxOneLine?.group === 'A' && solMaxOneLine?.tier === 1 && solMaxOneLine?.pair === null && SITE.environmentTag(solMaxOneLine) === 'in Codex', 'GPT-5.6 Sol Max replacement must be an unpaired Tier 1 in Codex run');
 check(solMaxOneLine?.file === 'models/GPT5.6Sol(Max)V1.html' && solMaxOneLine?.bytes === 102251 && solMaxOneLine?.lines === 2737 && solMaxOneLine?.tech === 'WebGL2' && solMaxOneLine?.msaa === false, 'GPT-5.6 Sol Max replacement metadata must match the supplied file');
-for (const work of [doubaoOneLine, doubaoDetailed, solHigh, solMaxOneLine]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
-check(SITE.scoreFor(doubaoOneLine).total === 63 && SITE.scoreFor(doubaoDetailed).total === 91 && SITE.scoreFor(solHigh).total === 85, 'V3 evidence scores must be 63, 91, and 85');
+for (const work of [doubaoOneLine, doubaoDetailed, astraLightDetailed, opusLowDetailed, solHigh, solMaxOneLine]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
+check(SITE.scoreFor(doubaoOneLine).total === 90 && SITE.scoreFor(doubaoDetailed).total === 90 && SITE.scoreFor(astraLightDetailed).total === 99 && SITE.scoreFor(opusLowDetailed).total === 96 && SITE.scoreFor(solHigh).total === 85, 'New Doubao, Astra Light, Opus Low, and Sol high V3 scores must remain fixed');
 check(solMaxDetailed?.group === 'B' && solMaxDetailed?.tier === 1 && solMaxDetailed?.pair === null, 'GPT-5.6 Sol Max must be an unpaired Tier 1 detailed-spec run');
 check(JSON.stringify(solMaxDetailed?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${solMaxDetailed.shot}`, import.meta.url)), 'GPT-5.6 Sol Max detailed must show in Codex and have a screenshot');
 for (const work of [solXHighDetailed, solHighDetailed]) {
@@ -1090,17 +1101,17 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
   check(countRows() === 2, lang + ': model search must filter the active one-line tab');
-  check(one('#tableCountA').textContent === '2 / 48' && one('#tableCountB').textContent === '1 / 40', lang + ': both tabs must show filtered and total counts');
+  check(one('#tableCountA').textContent === '2 / 48' && one('#tableCountB').textContent === '2 / 42', lang + ': both tabs must show filtered and total counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[1].listeners.click();
-  check(countRows() === 1 && body().includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
+  check(countRows() === 2 && body().includes('Opus5Ultra-TasksAssignedByOpus5') && body().includes('Opus5(Low)V1-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
   check(buttons[2].attributes['aria-pressed'] === 'true' && buttons[2].dataset.direction === 'desc', lang + ': switching tabs must retain price direction');
   check(one('#gridA').innerHTML.includes('Opus5(Max)V1') && one('#gridB').innerHTML.includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': tab switching must not filter the galleries');
   one('#modelSearchInput').value = 'no-such-model';
   one('#modelSearchInput').listeners.input();
   check(body().includes('colspan="9"'), lang + ': empty state must span all nine columns');
   one('#modelSearchClear').listeners.click();
-  check(countRows() === 40, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 42, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
   check(countRows() === 48, lang + ': one-line tab must restore its 48 entries');
   const work = localSite.byId('Opus5(Max)V1');
@@ -1121,7 +1132,7 @@ const expectedModelLogos = {
   'GPT-5.6 Sol (Max)': 'openai', 'Gemini 3.7 Flash (high)': 'gemini',
   'Kimi K3 (Max)': 'kimi', 'DeepSeek V4 Pro 0813 (Max)': 'deepseek',
   'Qwen 3.8 Max (Max)': 'qwen', 'GLM 5.3 (Max)': 'glm', 'Hy 4 Preview (high)': 'hy',
-  'Grok 4.6 (xHigh)': 'grok', 'Doubao Seed Evolving (Max)': 'doubao',
+  'Grok 4.6 (xHigh)': 'grok', 'Doubao Seed Evolving 0827 (Max)': 'doubao',
   'LongCat 2.0 (high)': 'longcat', 'MiniMax M3 (high)': 'minimax',
   'MiMo 2.5 Pro (high)': 'mi',
   'MuseSpark 1.3 Contributor (xHigh)': 'meta',
@@ -1166,12 +1177,14 @@ const expectedRecommendations = {
   'Claude Opus 4.8 (Ultra)': ['down', 5, '你不喜欢Opus5？'],
   'MiMo 2.5 Pro (high)': ['down', 1, '小爱同学…'],
   'Gemini 3.6 Flash (high)': ['down', 1, '你就说快不快吧'],
-  'Doubao Seed Evolving (Max)': ['down', 1, '给你一个最直白的'],
+  'Doubao Seed Evolving 0827 (Max)': ['up', 3, '豆包怎么了？现在挺好的'],
   'Gemini 3.1 Pro (high)': ['down', 3, '昔日荣光'],
   'Claude Opus 4.8 (Max)': ['down', 5, '你不喜欢Opus5？'],
   'MuseSpark 1.3 Contributor (xHigh)': ['up', 1, '四舍五入约等于不要钱'],
   'Gemini 3.8 Flash (high)': ['up', 1, '更新了版本号错误的问题'],
   'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
+  'GPT-6 Astra (Light)': ['up', 3, '执行力不错也不算贵'],
+  'Claude Opus 5 (Low)': ['up', 2, '不努力完全不是一个东西'],
   'GPT-6 Astra (Ultra)': ['mixed', 5, '任何订阅都能用/太费太贵', '△△△▽▽', 1],
 };
 for (const work of visibleWorks) {
@@ -1195,11 +1208,11 @@ check(SITE.modelMatches(searchKimi3, ''), 'An empty model query must restore eve
 check(typeof SITE.modelGapComparisons === 'function' && typeof SITE.modelGapBlock === 'function' && typeof SITE.modelGapMatches === 'function', 'SITE must expose the curated cross-model comparison API');
 const modelGaps = SITE.modelGapComparisons();
 check(modelGaps.length === 2, 'The curated model-gap section must contain exactly two comparisons');
-check(modelGaps[0]?.left?.id === 'Opus5Ultra-WebGL2' && modelGaps[0]?.middle?.id === 'Hy4Preview(high)V2' && modelGaps[0]?.right?.id === 'DoubaoSeedEvolving(Max)V1', 'The first model-gap comparison must contain Claude Opus 5, the higher-scoring Hy 4 one-line run, and Doubao');
-check(modelGaps[1]?.left?.id === 'Opus5Ultra-TasksAssignedByOpus5' && modelGaps[1]?.middle?.id === 'Hy4Preview(high)V2-TasksAssignedByOpus5' && modelGaps[1]?.right?.id === 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5', 'The second model-gap comparison must contain Claude Opus 5, the higher-scoring Hy 4 detailed run, and Doubao');
+check(modelGaps[0]?.left?.id === 'Opus5Ultra-WebGL2' && modelGaps[0]?.middle?.id === 'Hy4Preview(high)V2' && modelGaps[0]?.right?.id === 'DoubaoSeedEvolving0827(Max)V1', 'The first model-gap comparison must contain Claude Opus 5, the higher-scoring Hy 4 one-line run, and Doubao 0827');
+check(modelGaps[1]?.left?.id === 'Opus5Ultra-TasksAssignedByOpus5' && modelGaps[1]?.middle?.id === 'Hy4Preview(high)V2-TasksAssignedByOpus5' && modelGaps[1]?.right?.id === 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5', 'The second model-gap comparison must contain Claude Opus 5, the higher-scoring Hy 4 detailed run, and Doubao 0827');
 check(SITE.modelGapMatches(modelGaps[0], 'Opus') && SITE.modelGapMatches(modelGaps[0], 'Hy 4 Preview') && SITE.modelGapMatches(modelGaps[0], 'Doubao') && !SITE.modelGapMatches(modelGaps[0], 'Kimi'), 'Curated comparisons must follow the global model-name search');
 const modelGapHtml = modelGaps.map(SITE.modelGapBlock).join('');
-for (const id of ['Opus5Ultra-WebGL2', 'Hy4Preview(high)V2', 'DoubaoSeedEvolving(Max)V1', 'Opus5Ultra-TasksAssignedByOpus5', 'Hy4Preview(high)V2-TasksAssignedByOpus5', 'DoubaoSeedEvolving(Max)V1-TasksAssignedByOpus5']) {
+for (const id of ['Opus5Ultra-WebGL2', 'Hy4Preview(high)V2', 'DoubaoSeedEvolving0827(Max)V1', 'Opus5Ultra-TasksAssignedByOpus5', 'Hy4Preview(high)V2-TasksAssignedByOpus5', 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5']) {
   check(modelGapHtml.includes(`data-score-id="${id}"`), `${id} must render its existing score trigger in the curated comparison`);
   check(modelGapHtml.includes(WORKS.find(w => w.id === id).shot), `${id} must render its existing screenshot in the curated comparison`);
 }
@@ -1249,7 +1262,8 @@ for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(effortStart > tableStart && effortStart < page.indexOf('<section id="pairs"') && page.includes('id="solEffortList"') && page.includes('id="solEffortDocumentList"') && (page.match(/class="effort-run-scroll"/g) || []).length === 2, `${language} both six-way reasoning-effort comparisons must sit below the table and remain in single-row scroll frames`);
   check(page.includes('S.effortComparisonWorks') && page.includes('S.effortDocumentWorks') && page.includes('S.effortComparisonMatches') && page.includes('S.effortComparisonBlock'), `${language} both six-way reasoning-effort comparisons must participate in global search filtering`);
 }
-check(zhHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving (Max)') && enHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving (Max)'), 'Both languages must title the curated comparison with the three requested models');
+check(zhHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)') && enHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)'), 'Both languages must title the curated comparison with the three requested models');
+for (const page of [zhHome, enHome]) check(page.includes('<details class="model-gap-section" id="modelGapComparisons"') && page.includes('<summary class="model-gap-section-head">') && !page.includes('<div class="model-gap-section" id="modelGapComparisons"'), 'The model-gap comparison must be collapsed behind its title and description by default');
 check(zhHome.includes('各自得分更高的 #2') && enHome.includes('higher-scoring #2 run'), 'Both curated comparison introductions must disclose that Hy 4 uses its higher-scoring #2 runs');
 check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.includes('One GPT-5.6 Sol across six reasoning levels'), 'Both languages must title the six-way reasoning-effort comparison');
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
@@ -1290,9 +1304,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">48') && enHome.includes('id="aAll">48') && zhHome.includes('id="bAll">40') && enHome.includes('id="bAll">40') && zhHome.includes('id="tAll">88') && enHome.includes('id="tAll">88'), 'Both home pages must publish 48/40 and 88-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 48 件和文档组 40 件') && enHome.includes('prefer the 29 paired results over treating all 48 one-line and 40 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('29 组同模型') && enHome.includes('29 same-model') && zhHome.includes('51.86 / 70') && enHome.includes('51.86 / 70') && zhHome.includes('31.74 / 36') && enHome.includes('31.74 / 36'), 'Both home pages must publish the current V3 29-pair statistics');
+check(zhHome.includes('id="aAll">48') && enHome.includes('id="aAll">48') && zhHome.includes('id="bAll">42') && enHome.includes('id="bAll">42') && zhHome.includes('id="tAll">90') && enHome.includes('id="tAll">90'), 'Both home pages must publish 48/42 and 90-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 48 件和文档组 42 件') && enHome.includes('prefer the 29 paired results over treating all 48 one-line and 42 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('29 组同模型') && enHome.includes('29 same-model') && zhHome.includes('52.42 / 70') && enHome.includes('52.42 / 70') && zhHome.includes('31.59 / 36') && enHome.includes('31.59 / 36'), 'Both home pages must publish the current V3 29-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -1343,71 +1357,71 @@ close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
 check(stats.pairedSummary.n === 29, 'Paired statistics must use 29 visible pairs');
-close(stats.pairedSummary.coverage.a, 51.86034482758621, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.a, 52.421379310344825, 'Paired a coverage mean');
 close(stats.pairedSummary.coverage.b, 62.77931034482758, 'Paired b coverage mean');
 check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":25,"tie":1,"decline":3}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 30.53390804597701, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.735632183908038, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":16,"tie":3,"decline":10}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 78.46321839080461, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 89.30022988505749, 'Paired b exact mean');
+close(stats.pairedSummary.execution.a, 30.812068965517245, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 31.586781609195395, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":15,"tie":3,"decline":11}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 79.40586206896553, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 89.25482758620693, 'Paired b exact mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":24,"tie":1,"decline":4}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
       48,
-      52.036249999999974,
-      31.215625000000014,
-      79.68937499999998
+      52.37520833333331,
+      31.38368055555557,
+      80.25888888888888
     ],
     "b": [
-      40,
-      61.818,
-      30.538750000000004,
-      85.84208333333332
+      42,
+      61.921904761904756,
+      30.58214285714286,
+      86.37103174603173
     ]
   },
   "withoutReferences": {
     "a": [
       47,
-      51.78170212765956,
-      31.113829787234057,
-      79.25723404255318
+      52.12787234042552,
+      31.28546099290782,
+      79.83886524822694
     ],
     "b": [
-      40,
-      61.818,
-      30.538750000000004,
-      85.84208333333332
+      42,
+      61.921904761904756,
+      30.58214285714286,
+      86.37103174603173
     ]
   },
   "withoutTier4": {
     "a": [
       47,
-      52.384680851063806,
-      31.42730496453902,
-      80.1736879432624
+      52.73085106382977,
+      31.59893617021278,
+      80.75531914893617
     ],
     "b": [
-      37,
-      62.48972972972972,
-      31.85810810810811,
-      89.82927927927926
+      39,
+      62.56717948717947,
+      31.83717948717949,
+      90.19444444444444
     ]
   },
   "withoutReferencesOrTier4": {
     "a": [
       46,
-      52.13217391304346,
-      31.32789855072465,
-      79.74268115942027
+      52.48586956521737,
+      31.503260869565235,
+      80.33695652173913
     ],
     "b": [
-      37,
-      62.48972972972972,
-      31.85810810810811,
-      89.82927927927926
+      39,
+      62.56717948717947,
+      31.83717948717949,
+      90.19444444444444
     ]
   }
 };
@@ -1442,4 +1456,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log('\nScore validation passed: 108 audited records, 88 visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=106, and Tier 0 final max=109.');
+console.log(`\nScore validation passed: ${WORKS.length} audited records, ${visibleWorks.length} visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=106, and Tier 0 final max=109.`);
