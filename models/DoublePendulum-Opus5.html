@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="双摆混沌运动模型：实时数值积分、系综分岔、庞加莱截面与翻转时间分形。单文件，零依赖，可离线运行。">
+<title>混沌摆 · 双摆实验台</title>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   混沌摆 · 双摆实验台
+   单文件 / 零外部依赖 / 可离线 / Canvas 2D
+   ══════════════════════════════════════════════════════════════ */
+
+:root{
+  --bg:        #06070b;
+  --bg-2:      #0a0c13;
+  --panel:     rgba(18,22,32,.62);
+  --panel-2:   rgba(255,255,255,.028);
+  --line:      rgba(255,255,255,.075);
+  --line-2:    rgba(255,255,255,.15);
+  --txt:       #e7ecf6;
+  --muted:     #98a2b7;
+  --dim:       #626c83;
+  --accent:    #ffc857;   /* 主摆 / 强调 */
+  --accent-d:  #d99f2e;
+  --cyan:      #64d2ff;
+  --ok:        #58d9a0;
+  --warn:      #ffb44d;
+  --bad:       #ff6f6f;
+  --r:         10px;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+html,body{overscroll-behavior:none}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 800px at 22% -10%, #131a2b 0%, rgba(19,26,43,0) 62%),
+    radial-gradient(900px 700px at 110% 110%, #17131f 0%, rgba(23,19,31,0) 60%),
+    var(--bg);
+  color:var(--txt);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  display:flex; flex-direction:column;
+  min-height:100vh; min-height:100dvh;
+  overflow:hidden;
+}
+@media (max-width:1099px){ body{overflow:auto} }
+
+/* ── 可视隐藏 ── */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+    clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.skip{position:absolute;left:-999px;top:0;z-index:99;background:var(--accent);color:#111;
+      padding:8px 14px;border-radius:0 0 8px 0;font-weight:600}
+.skip:focus{left:0}
+
+:where(button,input,select,a,canvas,[tabindex]):focus-visible{
+  outline:2px solid var(--cyan); outline-offset:2px; border-radius:6px;
+}
+
+/* ══ 顶栏 ══ */
+.topbar{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:10px 18px; border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(12,15,23,.9), rgba(12,15,23,.55));
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  flex:0 0 auto; position:relative; z-index:5;
+}
+.brand{display:flex; align-items:baseline; gap:11px; margin-right:auto; min-width:0}
+.brand h1{
+  font-size:15.5px; font-weight:650; margin:0; letter-spacing:.01em; white-space:nowrap;
+}
+.brand .tag{
+  font-size:11.5px; color:var(--dim); white-space:nowrap;
+  border-left:1px solid var(--line-2); padding-left:11px;
+}
+@media (max-width:640px){ .brand .tag{display:none} }
+
+.tabs{display:flex; gap:3px; padding:3px; background:rgba(255,255,255,.04);
+      border:1px solid var(--line); border-radius:9px}
+.tabs button{
+  appearance:none; border:0; background:transparent; color:var(--muted);
+  font:inherit; font-size:12.5px; padding:6px 15px;
+  border-radius:6px; cursor:pointer; transition:background .18s, color .18s; min-height:32px;
+}
+.tabs button:hover{color:var(--txt)}
+.tabs button[aria-selected="true"]{background:rgba(255,200,87,.14); color:var(--accent)}
+
+/* ══ 主体网格 ══ */
+.grid{
+  flex:1 1 auto; min-height:0;
+  display:grid; gap:12px; padding:12px;
+  grid-template-columns:minmax(0,1fr) 336px;
+  grid-template-rows:minmax(0,1fr) auto;
+  grid-template-areas:"stage panel" "charts panel";
+}
+.grid.mode-frac{grid-template-rows:minmax(0,1fr); grid-template-areas:"stage panel"}
+@media (max-width:1099px){
+  .grid{grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto;
+        grid-template-areas:"stage" "panel" "charts"}
+  .grid.mode-frac{grid-template-rows:auto auto; grid-template-areas:"stage" "panel"}
+}
+
+/* ── 卡片通用 ── */
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  position:relative; overflow:hidden;
+}
+.card::before{ /* 顶部高光发丝线 */
+  content:""; position:absolute; inset:0 0 auto 0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+  pointer-events:none;
+}
+
+/* ── 舞台 ── */
+.stage{grid-area:stage; min-width:0; min-height:0; display:flex; flex-direction:column}
+@media (max-width:1099px){ .stage{height:min(70vh,560px); height:min(70dvh,560px)} }
+.stage canvas{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
+.stage canvas.grabbing{cursor:grabbing}
+.stage-wrap{position:relative; flex:1 1 auto; min-height:0}
+
+.hud{
+  position:absolute; left:12px; top:11px; display:flex; flex-direction:column; gap:5px;
+  pointer-events:none; font-family:var(--mono); font-size:11px;
+}
+.chip{
+  display:flex; align-items:baseline; gap:7px;
+  background:rgba(8,10,16,.6); border:1px solid var(--line);
+  border-radius:7px; padding:3px 9px; backdrop-filter:blur(8px);
+  width:max-content;
+}
+.chip b{color:var(--dim); font-weight:400; font-family:var(--sans); font-size:10.5px}
+.chip span{font-variant-numeric:tabular-nums; min-width:8ch; color:var(--txt)}
+.chip.ok span{color:var(--ok)} .chip.warn span{color:var(--warn)} .chip.bad span{color:var(--bad)}
+
+.hint{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+  font-size:11.5px; color:var(--muted); pointer-events:none;
+  background:rgba(8,10,16,.55); border:1px solid var(--line); border-radius:20px;
+  padding:5px 14px; white-space:nowrap; transition:opacity .5s; backdrop-filter:blur(8px);
+}
+.badge{
+  position:absolute; right:12px; top:11px; display:flex; gap:6px; align-items:center;
+  font-size:11px; color:var(--dim); font-family:var(--mono);
+  background:rgba(8,10,16,.6); border:1px solid var(--line); border-radius:7px; padding:3px 9px;
+  pointer-events:none;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.dot.pause{background:var(--dim);box-shadow:none}
+
+/* ── 图表行 ── */
+.charts{
+  grid-area:charts; display:grid; gap:12px; min-width:0;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+@media (max-width:760px){ .charts{grid-template-columns:minmax(0,1fr)} }
+.chart{padding:9px 11px 8px; display:flex; flex-direction:column; gap:6px; min-width:0}
+.chart h3{
+  margin:0; font-size:11px; font-weight:500; color:var(--muted);
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.chart h3 em{font-style:normal; color:var(--dim); font-family:var(--mono); font-size:10px;
+             font-variant-numeric:tabular-nums}
+.chart .cwrap{position:relative; height:132px}
+@media (max-width:1099px){ .chart .cwrap{height:150px} }
+.chart canvas{display:block; width:100%; height:100%}
+
+/* ── 控制面板 ── */
+.panel{grid-area:panel; overflow-y:auto; overflow-x:hidden; padding:0; min-height:0;
+       display:flex; flex-direction:column}
+#sec-frac{order:-1}
+.sec{flex:0 0 auto}
+@media (max-width:1099px){ .panel{max-height:none} }
+.panel::-webkit-scrollbar{width:9px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12); border-radius:9px;
+                                border:2px solid transparent; background-clip:content-box}
+.sec{padding:12px 14px; border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec > h2::before{content:""; width:3px; height:11px; border-radius:2px; background:var(--accent); opacity:.75; flex:0 0 auto}
+.sec > h2{
+  margin:0 0 10px; font-size:11px; font-weight:600; color:var(--muted);
+  display:flex; align-items:center; gap:7px;
+}
+
+.row{display:flex; align-items:center; gap:9px; margin-bottom:9px}
+.row:last-child{margin-bottom:0}
+.row label{flex:0 0 76px; font-size:12px; color:var(--muted)}
+.row input[type=range]{flex:1 1 auto; min-width:0}
+.row output{
+  flex:0 0 auto; min-width:7.2ch; text-align:right; font-family:var(--mono); font-size:11.5px;
+  color:var(--txt); font-variant-numeric:tabular-nums;
+}
+
+input[type=range]{
+  -webkit-appearance:none; appearance:none; height:22px; background:transparent; cursor:pointer; margin:0;
+}
+input[type=range]::-webkit-slider-runnable-track{
+  height:3px; border-radius:3px; background:rgba(255,255,255,.13);
+}
+input[type=range]::-moz-range-track{height:3px; border-radius:3px; background:rgba(255,255,255,.13)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%; margin-top:-5.5px;
+  background:var(--accent); border:0; box-shadow:0 0 0 3px rgba(255,200,87,.14);
+  transition:box-shadow .16s, transform .16s;
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;background:var(--accent);border:0;
+  box-shadow:0 0 0 3px rgba(255,200,87,.14);
+}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.12)}
+input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(255,200,87,.2)}
+
+.btns{display:flex; flex-wrap:wrap; gap:6px}
+button.btn{
+  appearance:none; font:inherit; font-size:12px;
+  color:var(--txt); background:rgba(255,255,255,.055); border:1px solid var(--line);
+  border-radius:7px; padding:7px 12px; cursor:pointer; min-height:34px;
+  transition:background .16s, border-color .16s, color .16s;
+}
+button.btn:hover{background:rgba(255,255,255,.1); border-color:var(--line-2)}
+button.btn:active{transform:translateY(1px)}
+button.btn.primary{background:rgba(255,200,87,.16); border-color:rgba(255,200,87,.34); color:var(--accent)}
+button.btn.primary:hover{background:rgba(255,200,87,.24)}
+button.btn[aria-pressed="true"]{background:rgba(100,210,255,.15); border-color:rgba(100,210,255,.35); color:var(--cyan)}
+button.btn.wide{flex:1 1 auto}
+
+.presets{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.presets button{
+  text-align:left; padding:8px 10px; line-height:1.35;
+  display:flex; flex-direction:column; gap:2px;
+}
+.presets button i{font-style:normal; font-size:12px; color:var(--txt)}
+.presets button u{
+  text-decoration:none; font-size:10px; color:var(--dim); font-family:var(--mono);
+  font-variant-numeric:tabular-nums;
+}
+
+.toggles{display:flex; flex-wrap:wrap; gap:6px}
+
+.note{
+  font-size:11.5px; color:var(--dim); line-height:1.65; margin:0;
+}
+.note b{color:var(--muted); font-weight:500}
+.note code{font-family:var(--mono); color:var(--accent-d); font-size:11px}
+
+/* ── 分形视图 ── */
+.fractal{grid-area:stage; min-width:0; min-height:0; display:flex; flex-direction:column}
+@media (max-width:1099px){ .fractal{height:min(78vh,620px)} }
+.fr-wrap{
+  position:relative; flex:1 1 auto; min-height:0;
+  display:flex; align-items:center; justify-content:center; padding:10px;
+}
+.fr-box{position:relative; width:100%; height:100%}
+.fr-box canvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none}
+#cv-frac{image-rendering:auto; border-radius:4px}
+#cv-frac-ui{cursor:crosshair}
+.fr-legend{
+  position:absolute; right:14px; top:14px; width:132px;
+  background:rgba(8,10,16,.72); border:1px solid var(--line); border-radius:8px;
+  padding:8px 9px; font-size:10.5px; color:var(--muted); backdrop-filter:blur(10px);
+  pointer-events:none;
+}
+.fr-bar{height:9px; border-radius:3px; margin:5px 0 4px; border:1px solid rgba(255,255,255,.1)}
+.fr-scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:9.5px; color:var(--dim)}
+.fr-key{display:flex; align-items:center; gap:6px; margin-top:5px; font-size:10px}
+.fr-key i{width:11px;height:11px;border-radius:3px;border:1px solid rgba(255,255,255,.12);flex:0 0 auto}
+.fr-prog{
+  position:absolute; left:14px; bottom:14px; font-family:var(--mono); font-size:11px; color:var(--muted);
+  background:rgba(8,10,16,.66); border:1px solid var(--line); border-radius:7px; padding:4px 10px;
+  backdrop-filter:blur(8px); pointer-events:none; display:flex; align-items:center; gap:8px;
+}
+.fr-prog .bar{width:78px;height:3px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.fr-prog .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .2s}
+
+/* ── toast ── */
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translate(-50%,10px);
+  background:rgba(30,16,16,.94); border:1px solid rgba(255,111,111,.45); color:#ffd9d9;
+  padding:9px 16px; border-radius:9px; font-size:12.5px; z-index:50;
+  opacity:0; transition:opacity .25s, transform .25s; pointer-events:none;
+  backdrop-filter:blur(10px); max-width:min(90vw,460px);
+}
+.toast.show{opacity:1; transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms!important; animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#panel">跳到控制面板</a>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>混沌摆 · 双摆实验台</h1>
+    <span class="tag">DETERMINISTIC&nbsp;&nbsp;≠&nbsp;&nbsp;PREDICTABLE</span>
+  </div>
+  <div class="tabs" role="tablist" aria-label="视图切换">
+    <button type="button" role="tab" id="tab-lab"  aria-selected="true"  aria-controls="view-lab">实验台</button>
+    <button type="button" role="tab" id="tab-frac" aria-selected="false" aria-controls="view-frac">翻转分形</button>
+  </div>
+</header>
+
+<main class="grid" id="grid">
+
+  <!-- ══════ 主舞台 ══════ -->
+  <section class="card stage" id="view-lab" role="tabpanel" aria-labelledby="tab-lab">
+    <div class="stage-wrap">
+      <canvas id="cv-stage" tabindex="0" role="img"
+              aria-label="双摆实时动画：多个初始条件几乎相同的副本同时演化">
+        你的浏览器不支持 HTML5 Canvas，无法显示双摆动画。
+      </canvas>
+
+      <div class="hud" aria-hidden="true">
+        <div class="chip"><b>时间</b><span id="ro-t">0.00 s</span></div>
+        <div class="chip"><b>能量</b><span id="ro-E">0.000 J</span></div>
+        <div class="chip" id="chip-drift"><b>能量漂移</b><span id="ro-drift">—</span></div>
+        <div class="chip" id="chip-lam"><b>λ</b><span id="ro-lam">测量中…</span></div>
+        <div class="chip"><b>副本分离</b><span id="ro-sep">0.0e+0</span></div>
+      </div>
+
+      <div class="badge" aria-hidden="true">
+        <i class="dot" id="run-dot"></i><span id="ro-fps">—</span>
+      </div>
+
+      <p class="hint" id="hint">拖动任一摆球设定初始角度 · 空格暂停 · R 重置</p>
+    </div>
+  </section>
+
+  <!-- ══════ 分形视图 ══════ -->
+  <section class="card fractal" id="view-frac" role="tabpanel" aria-labelledby="tab-frac" hidden>
+    <div class="fr-wrap">
+      <div class="fr-box" id="fr-box">
+        <canvas id="cv-frac" role="img"
+                aria-label="翻转时间分形：以初始角度为坐标，颜色表示下摆第一次翻过顶点所需的时间">
+          翻转时间分形（需 Canvas 支持）
+        </canvas>
+        <canvas id="cv-frac-ui"></canvas>
+      </div>
+      <div class="fr-legend" aria-hidden="true">
+        <div style="color:var(--txt);font-size:11px">首次翻转时间</div>
+        <div class="fr-bar" id="fr-bar"></div>
+        <div class="fr-scale"><span id="fr-lo">0s</span><span id="fr-hi">20s</span></div>
+        <div class="fr-key"><i style="background:#1e2a3d"></i>能量不足，永不翻转</div>
+        <div class="fr-key"><i style="background:#0d1017"></i>时限内未翻转</div>
+      </div>
+      <div class="fr-prog" id="fr-prog" aria-hidden="true">
+        <span id="fr-prog-t">计算中</span><span class="bar"><i id="fr-prog-b"></i></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 控制面板 ══════ -->
+  <aside class="card panel" id="panel" aria-label="参数控制">
+
+    <div class="sec" id="sec-presets">
+      <h2>演示预设</h2>
+      <div class="presets" id="presets"></div>
+      <p class="note" id="preset-note" style="margin-top:9px"></p>
+    </div>
+
+    <div class="sec" id="sec-run">
+      <h2>运行</h2>
+      <div class="btns" style="margin-bottom:10px">
+        <button type="button" class="btn primary wide" id="btn-play">暂停</button>
+        <button type="button" class="btn" id="btn-reset">重置</button>
+        <button type="button" class="btn" id="btn-clear">清轨迹</button>
+      </div>
+      <div class="row">
+        <label for="s-speed">速度</label>
+        <input type="range" id="s-speed" min="0.1" max="4" step="0.1" value="1">
+        <output for="s-speed" id="o-speed">1.0×</output>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-ens">
+      <h2>系综 · 蝴蝶效应</h2>
+      <div class="row">
+        <label for="s-clones">副本数</label>
+        <input type="range" id="s-clones" min="1" max="48" step="1" value="16">
+        <output for="s-clones" id="o-clones">16</output>
+      </div>
+      <div class="row">
+        <label for="s-eps">初始差异</label>
+        <input type="range" id="s-eps" min="-10" max="-2" step="1" value="-6">
+        <output for="s-eps" id="o-eps">1e-6</output>
+      </div>
+      <div class="toggles" style="margin-top:10px">
+        <button type="button" class="btn" id="t-log"   aria-pressed="false">级联扰动</button>
+        <button type="button" class="btn" id="t-fan"   aria-pressed="true">分离扇形</button>
+        <button type="button" class="btn" id="t-trail" aria-pressed="true">拖尾</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label for="s-trail">拖尾长度</label>
+        <input type="range" id="s-trail" min="0" max="900" step="30" value="420">
+        <output for="s-trail" id="o-trail">420</output>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-phys">
+      <h2>摆的参数</h2>
+      <div class="row"><label for="s-m1">上球质量</label><input type="range" id="s-m1" min="0.1" max="4" step="0.05" value="1"><output for="s-m1" id="o-m1">1.00 kg</output></div>
+      <div class="row"><label for="s-m2">下球质量</label><input type="range" id="s-m2" min="0.1" max="4" step="0.05" value="1"><output for="s-m2" id="o-m2">1.00 kg</output></div>
+      <div class="row"><label for="s-L1">上臂长度</label><input type="range" id="s-L1" min="0.2" max="2" step="0.02" value="1"><output for="s-L1" id="o-L1">1.00 m</output></div>
+      <div class="row"><label for="s-L2">下臂长度</label><input type="range" id="s-L2" min="0.2" max="2" step="0.02" value="1"><output for="s-L2" id="o-L2">1.00 m</output></div>
+      <div class="row"><label for="s-g">重力</label><input type="range" id="s-g" min="0" max="25" step="0.01" value="9.81"><output for="s-g" id="o-g">9.81</output></div>
+      <div class="row"><label for="s-b">阻尼</label><input type="range" id="s-b" min="0" max="0.4" step="0.005" value="0"><output for="s-b" id="o-b">0</output></div>
+      <div class="btns" style="margin-top:10px">
+        <button type="button" class="btn wide" id="btn-std">恢复标准参数</button>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-frac" hidden>
+      <h2>分形计算</h2>
+      <div class="row">
+        <label for="s-fres">分辨率</label>
+        <input type="range" id="s-fres" min="0" max="3" step="1" value="1">
+        <output for="s-fres" id="o-fres">256²</output>
+      </div>
+      <div class="row">
+        <label for="s-fT">时间上限</label>
+        <input type="range" id="s-fT" min="5" max="40" step="1" value="20">
+        <output for="s-fT" id="o-fT">20 s</output>
+      </div>
+      <div class="btns" style="margin-top:10px">
+        <button type="button" class="btn primary wide" id="btn-frecalc">重新计算</button>
+        <button type="button" class="btn" id="btn-fzoom">复位视野</button>
+      </div>
+      <p class="note" style="margin-top:10px">
+        每个像素是一组初始角度 <code>(θ₁,θ₂)</code>，从静止释放，颜色表示<b>下摆第一次翻过顶点</b>所需时间。
+        中心那片光滑区域是<b>能量不足</b>——它永远翻不过去，边界处处是无穷细的分形结构：
+        相邻两个像素、相差万分之一弧度的两次释放，一个 3 秒翻转，另一个永远不翻。
+        <br><br>点击图上任意一点即可把该初始条件装入实验台；拖框放大可以一直放大下去。
+      </p>
+    </div>
+
+    <div class="sec">
+      <h2>这是什么</h2>
+      <p class="note">
+        双摆由<b>完全确定的</b>牛顿方程支配，没有任何随机数。所有副本用同一套方程、同一个积分器推进，
+        唯一的差别是上臂的初始角度，彼此相差不超过 <span id="note-digits">1.5e-5</span> 弧度。
+        <br><br>
+        <b>λ &gt; 0 即为混沌</b>：偏差按 <code>e^(λt)</code> 放大，可预测时间 ≈ <code>ln(1/初始误差)/λ</code>。
+        在当前这条轨道上，每多算一位精度只多买到约 <span id="note-buy">—</span> 秒的预测能力。
+        <br><br>
+        右上角的<b>能量漂移</b>是积分器的自检：它证明的是「算得准」，不是「测得准」——
+        在小振幅预设下 λ 应当趋近于 0，如果不是，那这个读数就是错的。
+      </p>
+    </div>
+  </aside>
+
+  <!-- ══════ 三个分析图 ══════ -->
+  <section class="charts" id="charts">
+    <figure class="card chart">
+      <h3>发散度 log₁₀‖Δ状态‖<em id="ro-sep2">—</em></h3>
+      <div class="cwrap"><canvas id="cv-diverge" role="img" aria-label="副本间距离随时间的对数图"></canvas></div>
+    </figure>
+    <figure class="card chart">
+      <h3>相图 θ₁–ω₁<em id="ro-phase">—</em></h3>
+      <div class="cwrap"><canvas id="cv-phase" role="img" aria-label="上臂相空间轨迹"></canvas></div>
+    </figure>
+    <figure class="card chart">
+      <h3>庞加莱截面<em id="ro-poin">—</em></h3>
+      <div class="cwrap"><canvas id="cv-poincare" role="img" aria-label="庞加莱截面散点图"></canvas></div>
+    </figure>
+  </section>
+
+</main>
+
+<p id="a11y-live" class="vh" role="status" aria-live="polite" aria-atomic="true"></p>
+<div id="toast" class="toast" role="alert"></div>
+<script>
+(function(){
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §1  常量
+   ══════════════════════════════════════════════════════════════════════════ */
+var H           = 1/960;   // 积分步长（秒）。60Hz 下正好 16 子步，120Hz 下 8 步，无余数。
+var MAX_FRAME_DT= 0.05;    // 单帧最多补算 3 个显示帧
+var PANIC_DT    = 0.50;    // 超过则整段丢弃（切标签页、断点、合盖）
+var MAX_STEPS   = 200;     // 每帧子步硬预算
+var MAX_CLONES  = 48;
+var TRAIL_MAX   = 900;
+var READOUT_MS  = 100;
+var A11Y_MS     = 2500;
+
+var LYAP_D0   = 1e-8;      // 影子轨道距离，实测 1e-4…1e-10 结果一致到 4 位
+var LYAP_TAU  = 0.5;       // 重整化周期
+var LYAP_WARM = 2.0;       // 前 2 s 只重整化不累加，去掉方向弛豫瞬态
+var LYAP_CHAOS= 0.05;      // 判据阈值：规则态实测 0.006–0.02，混沌态 0.22–1.45
+
+var SEC_H      = 1/480;    // 截面引擎步长（统计图像，精度要求低于主仿真）
+var SEC_TARGET = 1600;     // 目标点数
+var SEC_BUDGET = 5200;     // 每帧步数预算
+
+var DIV_N   = 1500, DIV_DT = 0.05;   // 发散度采样：0.05 仿真秒一点
+var PHASE_N = 3000, PHASE_DT= 0.02;  // 相图采样
+
+var FRAC_RES = [192, 256, 384, 512];
+var FRAC_H   = 1/200;      // 实测：翻转时间在 h=1/100…1/4000 之间稳定到 4 位有效数字
+var TAU_FLIP = 0.30;       // 颜色映射的对数偏移
+
+/* 副本颜色：截断的 viridis 类色带（单调亮度，色盲友好），跳过最暗的紫色 */
+var RAMP = [
+  [ 45, 62,120],[ 41, 92,141],[ 38,120,146],[ 41,146,140],
+  [ 68,170,120],[122,190, 85],[189,203, 51],[253,215, 47]
+];
+
+/* 分形色标：自制的 magma 类色带（暗背景上单调提亮） */
+var FRAC_RAMP = [
+  [0.00, 11, 13, 43],[0.18, 59, 31,110],[0.38,140, 47,107],
+  [0.58,210, 80, 79],[0.76,245,147, 49],[0.90,251,211, 91],[1.00,253,246,201]
+];
+var C_FORBID = [30, 42, 61];   // 能量不足，永不翻转
+var C_NEVER  = [13, 16, 23];   // 时限内未翻转
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §2  DOM
+   ══════════════════════════════════════════════════════════════════════════ */
+function $(id){ return document.getElementById(id); }
+var E = {};
+['cv-stage','cv-phase','cv-poincare','cv-diverge','cv-frac','cv-frac-ui','fr-box',
+ 'ro-t','ro-E','ro-drift','ro-lam','ro-sep','ro-sep2','ro-phase','ro-poin','ro-fps',
+ 'chip-drift','chip-lam','run-dot','hint','toast','a11y-live','grid','charts',
+ 'view-lab','view-frac','tab-lab','tab-frac','panel','sec-frac','presets','preset-note',
+ 'btn-play','btn-reset','btn-clear','btn-std','btn-frecalc','btn-fzoom',
+ 't-log','t-fan','t-trail','note-digits','note-buy',
+ 'fr-bar','fr-lo','fr-hi','fr-prog','fr-prog-t','fr-prog-b'
+].forEach(function(k){ E[k] = $(k); });
+
+var SLIDERS = ['speed','clones','eps','trail','m1','m2','L1','L2','g','b','fres','fT'];
+SLIDERS.forEach(function(k){ E['s-'+k] = $('s-'+k); E['o-'+k] = $('o-'+k); });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §3  状态
+   ══════════════════════════════════════════════════════════════════════════ */
+/* P 的键集固定不变、值恒为 number —— derivs 是全场最热的函数，
+   一次隐藏类变化就会让它掉出优化层。 */
+var P = { m1:1, m2:1, L1:1, L2:1, g:9.81, b:0 };
+
+var U = {                       // 非物理的界面参数
+  speed:1, clones:16, epsExp:-6, trail:420,
+  logSpread:false, showFan:true, showTrail:true,
+  fres:1, fT:20
+};
+
+var S = {
+  t:0, acc:0, run:true, dragging:-1,
+  E0:0, Escale:1, drift:0, maxDrift:0, tau0:0.3193,
+  sep:0, sepTime:-1, flashT:-1, narr:0, d0:1e-6, dMax:1.5e-5,
+  fps:60, frameEMA:16.7, steps:0,
+  base: new Float64Array([Math.PI/2, Math.PI/2, 0, 0]),
+  preset: 4
+};
+
+var Y  = new Float64Array(MAX_CLONES*4);   // 活动状态
+var SH = new Float64Array(4);              // 李雅普诺夫影子轨道
+var PV = new Float64Array(4);              // 上一子步的参考态（庞加莱穿越检测）
+var L  = { sum:0, el:0, timer:0, warm:LYAP_WARM, val:NaN };
+
+/* RK4 暂存：模块级预分配，所有副本、所有子步共用。
+   JS 单线程且 step() 不可重入，因此共用是安全的。热路径内零分配。 */
+var K1=new Float64Array(4), K2=new Float64Array(4),
+    K3=new Float64Array(4), K4=new Float64Array(4), YT=new Float64Array(4);
+
+/* 拖尾：世界坐标（米），不是屏幕像素 ——
+   否则改 L1/L2、缩放窗口、换显示器都会让历史轨迹整体变形。 */
+var trX = new Float32Array(MAX_CLONES*TRAIL_MAX),
+    trY = new Float32Array(MAX_CLONES*TRAIL_MAX),
+    trH = new Int32Array(MAX_CLONES), trN = new Int32Array(MAX_CLONES);
+
+var divT=new Float32Array(DIV_N), divA=new Float32Array(DIV_N),
+    divLo=new Float32Array(DIV_N), divHi=new Float32Array(DIV_N);
+var divN=0, divHead=0, divTimer=0;
+
+var phX=new Float32Array(PHASE_N), phY=new Float32Array(PHASE_N);
+var phN=0, phHead=0, phTimer=0, phScale=3;
+
+var secY=new Float64Array(4), secPts=new Float32Array(SEC_TARGET*2),
+    secN=0, secPrev=new Float64Array(4), secT=0, secDone=false, secScale=3, secDrawn=0;
+
+var CLONE_CSS = [], CLONE_RGB = [], CLONE_TRAIL = [];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §4  物理内核
+   ══════════════════════════════════════════════════════════════════════════ */
+function wrapPi(a){
+  a = (a + Math.PI) % (2*Math.PI);
+  if (a < 0) a += 2*Math.PI;
+  return a - Math.PI;
+}
+
+/* 运动方程 —— 2×2 质量矩阵形式，显式求逆。
+   M q̈ = f,  M = [[(m1+m2)L1, m2 L2 cosΔ],[L1 cosΔ, L2]]   (第二式已除以 m2 L2)
+                f = [ -m2 L2 ω2² sinΔ - (m1+m2) g sinθ1 ,  L1 ω1² sinΔ - g sinθ2 ]
+   det M = L1 L2 (m1 + m2 sin²Δ) > 0 恒成立（m1 > 0 时），无奇异点。
+   选矩阵形式而非那个到处能搜到的紧凑闭式：阻尼、驱动、第三节杆都只是往 f 里加项，
+   不必重新推导；而且每一项都能读出物理含义，符号写错一眼能看出来。
+   已验证：两种形式在 20 万个随机状态上最大相对差 9.4e-12。 */
+function derivs(y, o, out, q){
+  var t1=y[o], t2=y[o+1], w1=y[o+2], w2=y[o+3];
+  var d = t1 - t2, c = Math.cos(d), s = Math.sin(d);
+  var m1=P.m1, m2=P.m2, L1=P.L1, L2=P.L2, g=P.g, b=P.b;
+  var f1 = -m2*L2*w2*w2*s - (m1+m2)*g*Math.sin(t1);
+  var f2 =     L1*w1*w1*s -          g*Math.sin(t2);
+  if (b !== 0){                       // 广义力，除以与建 f 时相同的因子
+    f1 += -b*w1/L1;                   // 精确满足 dE/dt = -b(ω1²+ω2²)，已数值验证
+    f2 += -b*w2/(m2*L2);
+  }
+  var den = m1 + m2*s*s;
+  out[q]   = w1;
+  out[q+1] = w2;
+  out[q+2] = (f1 - m2*c*f2) / (L1*den);
+  out[q+3] = ((m1+m2)*f2 - c*f1) / (L2*den);
+}
+
+/* 经典四阶 RK。不要"改进"成 velocity-Verlet：双摆的哈密顿量非可分
+   （动能是 pᵀM(q)⁻¹p），显式辛方法根本不存在；且加速度依赖速度，
+   Verlet 的半步踢腿会退化成隐式方程。等代价实测 60 s 能量漂移：
+   RK4 9.8e-9 / RK2 中点 6.6e-6 / 半隐式欧拉 损失 11% 能量。 */
+function step(y, o, h){
+  var i, h6 = h/6;
+  derivs(y, o, K1, 0);
+  for(i=0;i<4;i++) YT[i] = y[o+i] + 0.5*h*K1[i];
+  derivs(YT, 0, K2, 0);
+  for(i=0;i<4;i++) YT[i] = y[o+i] + 0.5*h*K2[i];
+  derivs(YT, 0, K3, 0);
+  for(i=0;i<4;i++) YT[i] = y[o+i] + h*K3[i];
+  derivs(YT, 0, K4, 0);
+  for(i=0;i<4;i++) y[o+i] += h6*(K1[i] + 2*K2[i] + 2*K3[i] + K4[i]);
+}
+
+function energy(y, o){
+  var t1=y[o], t2=y[o+1], w1=y[o+2], w2=y[o+3];
+  var m1=P.m1, m2=P.m2, L1=P.L1, L2=P.L2, g=P.g;
+  return 0.5*(m1+m2)*L1*L1*w1*w1 + 0.5*m2*L2*L2*w2*w2
+       + m2*L1*L2*w1*w2*Math.cos(t1-t2)          // ← 耦合交叉项，漏掉它漂移读数会 ~1Hz 摆动 10%
+       - (m1+m2)*g*L1*Math.cos(t1) - m2*g*L2*Math.cos(t2);
+}
+function energyMin(){ return -(P.m1+P.m2)*P.g*P.L1 - P.m2*P.g*P.L2; }
+
+/* 状态空间距离。角度差必须先 wrap（否则相对转了 20 圈会读成 125 rad），
+   角速度按自然时间尺度 τ0=√(L1/g) 加权，使范数量纲一致。 */
+function dist(a, ao, b, bo){
+  var t0 = S.tau0;
+  var d1 = wrapPi(a[ao]   - b[bo]),   d2 = wrapPi(a[ao+1] - b[bo+1]);
+  var d3 = t0*(a[ao+2] - b[bo+2]),    d4 = t0*(a[ao+3] - b[bo+3]);
+  return Math.sqrt(d1*d1 + d2*d2 + d3*d3 + d4*d4);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §5  系综
+   ══════════════════════════════════════════════════════════════════════════ */
+function perturb(c){
+  if (c === 0) return 0;
+  if (U.logSpread){                      // 级联：各副本按数量级依次剥离
+    var n = U.clones - 1;
+    var f = n <= 1 ? 1 : (c-1)/(n-1);
+    return Math.pow(10, -12 + (U.epsExp + 12)*f);
+  }
+  return c * Math.pow(10, U.epsExp);      // 同量级：整扇一起炸开
+}
+
+function seedAll(){
+  S.t = 0; S.acc = 0;                    // 状态回到初值，时钟必须一起归零
+  for (var c = 0; c < MAX_CLONES; c++){
+    var o = c*4;
+    Y[o]   = S.base[0] + perturb(c);
+    Y[o+1] = S.base[1];
+    Y[o+2] = S.base[2];
+    Y[o+3] = S.base[3];
+  }
+  SH[0] = Y[0] + LYAP_D0; SH[1] = Y[1]; SH[2] = Y[2]; SH[3] = Y[3];
+  L.sum = 0; L.el = 0; L.timer = 0; L.warm = LYAP_WARM; L.val = NaN;
+  S.sep = 0; S.sepTime = -1; S.flashT = -1; S.narr = 0;
+  clearTrails(); clearSeries(); resetSection();
+  rebaseline();
+  /* 副本是线性铺开的，所以整族的最大差异是 (n−1)·ε 而不是 ε。
+     理论线和文案都用这里量出来的真实值，不用滑块上那个数。 */
+  var sum = 0, n = U.clones;
+  for (var k = 1; k < n; k++) sum += dist(Y, 0, Y, k*4);
+  S.d0 = n > 1 ? Math.max(1e-300, sum/(n-1)) : 0;
+  S.dMax = (n > 1) ? (n-1)*Math.pow(10, U.epsExp) : 0;
+}
+
+function clearTrails(){ trH.fill(0); trN.fill(0); }
+function clearSeries(){
+  divN = 0; divHead = 0; divTimer = 0;
+  phN = 0; phHead = 0; phTimer = 0; phScale = 3;
+}
+
+function rebaseline(){
+  S.tau0 = P.g > 1e-6 ? Math.sqrt(P.L1/P.g) : 1;
+  S.E0 = energy(Y, 0);
+  S.Escale = S.E0 - energyMin();
+  S.drift = 0; S.maxDrift = 0;
+}
+
+/* 每帧一次的 NaN / 发散防线。副本坏了就地重生，参考摆坏了整体重置。 */
+function guardState(){
+  var n = U.clones, bad = -1;
+  for (var c = 0; c < n; c++){
+    var o = c*4;
+    for (var i = 0; i < 4; i++){
+      var v = Y[o+i];
+      if (v !== v || v > 1e12 || v < -1e12){ bad = c; break; }
+    }
+    if (bad === c) break;
+  }
+  if (bad < 0) return;
+  if (bad === 0){ hardReset('数值发散，已自动重置'); }
+  else {
+    var o2 = bad*4;
+    Y[o2]=Y[0]+perturb(bad); Y[o2+1]=Y[1]; Y[o2+2]=Y[2]; Y[o2+3]=Y[3];
+    trH[bad]=0; trN[bad]=0;
+  }
+}
+
+function hardReset(msg){
+  S.t = 0; S.acc = 0;
+  seedAll();
+  if (msg) toast(msg);
+}
+
+/* 主推进：所有副本 + 影子轨道 + 庞加莱穿越检测，全部同一个 h。 */
+function stepAll(h){
+  var n = U.clones, c;
+  PV[0]=Y[0]; PV[1]=Y[1]; PV[2]=Y[2]; PV[3]=Y[3];
+  for (c = 0; c < n; c++) step(Y, c*4, h);
+  step(SH, 0, h);
+  S.t += h;
+
+  /* 庞加莱：θ1 ≡ 0 (mod 2π) 且 ω1 > 0。在未缠绕坐标里找穿越，插值后再 wrap。 */
+  var u = wrapPi(PV[0]), v = wrapPi(Y[0]);
+  if (u < 0 && v >= 0 && (v - u) < 1.0 && Y[2] > 0){
+    var f = (0 - u) / (v - u);
+    addSection(wrapPi(PV[1] + f*(Y[1]-PV[1])), PV[3] + f*(Y[3]-PV[3]), true);
+  }
+
+  /* 李雅普诺夫：Benettin 双轨道重整化。累加 log 之和再一次性除以时间，
+     不要对每段的 λ 求平均，也不要用 EMA —— 这个估计量按定义就是时间平均。 */
+  L.timer += h;
+  if (L.timer >= LYAP_TAU){
+    L.timer -= LYAP_TAU;
+    var d = dist(Y, 0, SH, 0);
+    if (!(d > 0)){                       // 影子轨道退化或变成 NaN：就地重播种
+      SH[0] = Y[0] + LYAP_D0; SH[1] = Y[1]; SH[2] = Y[2]; SH[3] = Y[3];
+    } else {
+      if (L.warm > 0) L.warm -= LYAP_TAU;
+      else { L.sum += Math.log(d/LYAP_D0); L.el += LYAP_TAU; }
+      var k = LYAP_D0/d;
+      for (var i = 0; i < 4; i++) SH[i] = Y[i] + (SH[i]-Y[i])*k;
+      if (L.el > 0) L.val = L.sum / L.el;
+    }
+  }
+}
+
+function bobX2(o){ return P.L1*Math.sin(Y[o]) + P.L2*Math.sin(Y[o+1]); }
+function bobY2(o){ return P.L1*Math.cos(Y[o]) + P.L2*Math.cos(Y[o+1]); }
+
+function sampleTrails(){
+  if (!U.showTrail || U.trail === 0) return;
+  var n = U.clones;
+  for (var c = 0; c < n; c++){
+    var o = c*4, base = c*TRAIL_MAX, h = trH[c];
+    trX[base+h] = bobX2(o); trY[base+h] = bobY2(o);
+    trH[c] = (h+1) % TRAIL_MAX;
+    if (trN[c] < TRAIL_MAX) trN[c]++;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §6  分析：发散度 / 相图 / 庞加莱截面引擎
+   ══════════════════════════════════════════════════════════════════════════ */
+function sampleSeries(dt){
+  phTimer += dt;
+  if (phTimer >= PHASE_DT){
+    phTimer = 0;
+    phX[phHead] = wrapPi(Y[0]); phY[phHead] = Y[2];
+    phHead = (phHead+1) % PHASE_N;
+    if (phN < PHASE_N) phN++;
+    var aw = Math.abs(Y[2]);
+    if (aw*1.12 > phScale) phScale = aw*1.12;      // 单调不减，避免坐标轴呼吸
+  }
+
+  divTimer += dt;
+  if (divTimer >= DIV_DT){
+    divTimer = 0;
+    var n = U.clones;
+    if (n < 2) return;
+    var lo = Infinity, hi = 0, sum = 0;
+    for (var c = 1; c < n; c++){
+      var d = dist(Y, 0, Y, c*4);
+      if (d < lo) lo = d;
+      if (d > hi) hi = d;
+      sum += d;
+    }
+    var mean = sum/(n-1);
+    S.sep = hi;
+    /* 既要宏观可见（>0.5 rad），也要确实长大了一个数量级以上 ——
+       只用绝对阈值的话，把 ε 和副本数拉满时初始就"分离"了。 */
+    if (S.sepTime < 0 && hi > 0.5 && hi > 10*S.d0){ S.sepTime = S.t; S.flashT = S.t; }
+    divT[divHead]  = S.t;
+    divA[divHead]  = Math.log(mean+1e-300)/Math.LN10;
+    divLo[divHead] = Math.log(lo+1e-300)/Math.LN10;
+    divHi[divHead] = Math.log(hi+1e-300)/Math.LN10;
+    divHead = (divHead+1) % DIV_N;
+    if (divN < DIV_N) divN++;
+  }
+}
+
+function addSection(th2, w2, live){
+  if (secN >= SEC_TARGET){                 // 环形覆盖最旧的点
+    var k = (secN % SEC_TARGET)*2;
+    secPts[k] = th2; secPts[k+1] = w2;
+  } else {
+    secPts[secN*2] = th2; secPts[secN*2+1] = w2;
+  }
+  secN++;
+  poinDirty = true;
+  var aw = Math.abs(w2);
+  if (aw*1.1 > secScale) secScale = aw*1.1;
+}
+
+function resetSection(){
+  secY[0]=S.base[0]; secY[1]=S.base[1]; secY[2]=S.base[2]; secY[3]=S.base[3];
+  secN = 0; secT = 0; secDone = false; secScale = 3; secDrawn = 0;
+  poinDirty = true;
+}
+
+/* 截面引擎：一条与参考摆同初值的轨道，用独立积分器远超实时地跑，
+   把截面在几秒内填满。实测活体轨道每秒只穿越 0.4–0.6 次 ——
+   光等它自己画，看一分钟只有 30 个点，什么也看不出来。 */
+function runSection(){
+  if (secDone || secN >= SEC_TARGET) { secDone = true; return; }
+  var budget = SEC_BUDGET, i;
+  for (i = 0; i < budget && secN < SEC_TARGET; i++){
+    secPrev[0]=secY[0]; secPrev[1]=secY[1]; secPrev[2]=secY[2]; secPrev[3]=secY[3];
+    step(secY, 0, SEC_H);
+    secT += SEC_H;
+    var u = wrapPi(secPrev[0]), v = wrapPi(secY[0]);
+    if (u < 0 && v >= 0 && (v-u) < 1.0 && secY[2] > 0){
+      var f = (0-u)/(v-u);
+      addSection(wrapPi(secPrev[1] + f*(secY[1]-secPrev[1])),
+                 secPrev[3] + f*(secY[3]-secPrev[3]), false);
+      poinDirty = true;
+    }
+    var s0 = secY[0];
+    if (s0 !== s0 || s0 > 1e12 || s0 < -1e12){ secDone = true; break; }
+  }
+  if (secN >= SEC_TARGET) secDone = true;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §7  画布
+   ══════════════════════════════════════════════════════════════════════════ */
+var poinDirty = true, needResize = true, tier = 0;
+var DPR_CAP = [2, 1.75, 1.25];
+var V = {};
+
+function makeView(el, opaque){
+  var ctx = el.getContext('2d', opaque ? {alpha:false} : {alpha:true});
+  return { el:el, ctx:ctx, w:1, h:1, r:1, invalid:true,
+           grid:document.createElement('canvas'), gctx:null };
+}
+function syncSize(v){
+  if (!v || !v.ctx) return;
+  var rect = v.el.getBoundingClientRect();
+  var cw = Math.max(1, rect.width), ch = Math.max(1, rect.height);
+  var dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP[tier]);
+  var big = Math.max(cw, ch)*dpr;
+  if (big > 2560) dpr *= 2560/big;                 // iOS 画布内存上限
+  var bw = Math.round(cw*dpr), bh = Math.round(ch*dpr);
+  if (v.el.width !== bw || v.el.height !== bh){
+    v.el.width = bw; v.el.height = bh; v.invalid = true;
+  }
+  /* 赋值 canvas.width/height 会清空整个 2D 上下文状态，
+     所以 setTransform 每次都要重来，不能只在尺寸变化时做。
+     用精确比值 bw/cw 而不是 dpr —— 后者会在右下边缘累积半个像素的错位。 */
+  v.ctx.setTransform(bw/cw, 0, 0, bh/ch, 0, 0);
+  v.w = cw; v.h = ch; v.r = bw/cw;
+}
+function sizeFracBox(){
+  var box = E['fr-box'], wrap = box ? box.parentElement : null;
+  if (!box || !wrap) return;
+  var side = Math.min(wrap.clientWidth, wrap.clientHeight);
+  if (!(side > 0)) return;                       // 视图还没布局，等下一帧
+  box.style.width = side+'px'; box.style.height = side+'px';
+}
+function resizeAll(){
+  sizeFracBox();
+  for (var k in V) if (V[k]) syncSize(V[k]);
+  fitCamera(true);
+  poinDirty = true;
+  needResize = false;
+}
+
+var cam = { s:100, tgt:100, ox:0, oy:0 };
+function fitCamera(snap){
+  var v = V.stage; if (!v) return;
+  var R = (P.L1 + P.L2) * 1.17;
+  cam.tgt = Math.min(v.w, v.h) / (2*R);
+  if (snap) cam.s = cam.tgt;
+  cam.ox = v.w/2; cam.oy = v.h/2;
+}
+function sx(x){ return cam.ox + x*cam.s; }
+function sy(y){ return cam.oy + y*cam.s; }
+function crisp(v, r){ return (Math.round(v*r) + 0.5)/r; }
+
+/* 辉光精灵：离屏烘焙一次，之后只 drawImage。
+   绝不在循环里用 shadowBlur —— 同样的图元要贵 10–50 倍。 */
+var spriteCache = {};
+function glowSprite(rgb){
+  var key = rgb[0]+','+rgb[1]+','+rgb[2];
+  if (spriteCache[key]) return spriteCache[key];
+  var R = 64, cv = document.createElement('canvas');
+  cv.width = cv.height = R*2;
+  var g = cv.getContext('2d');
+  var grd = g.createRadialGradient(R, R, 0, R, R, R);
+  grd.addColorStop(0,    'rgba('+key+',0.95)');
+  grd.addColorStop(0.14, 'rgba('+key+',0.55)');
+  grd.addColorStop(0.40, 'rgba('+key+',0.16)');
+  grd.addColorStop(1,    'rgba('+key+',0)');
+  g.fillStyle = grd; g.fillRect(0, 0, R*2, R*2);
+  spriteCache[key] = cv;
+  return cv;
+}
+
+/* 副本配色：截断 viridis，单调亮度 —— 扇形读起来是"有序的一扫"而不是彩虹乱码。 */
+function rampAt(t){
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  var f = t*(RAMP.length-1), i = Math.min(RAMP.length-2, Math.floor(f)), k = f - i;
+  var a = RAMP[i], b = RAMP[i+1];
+  return [Math.round(a[0]+(b[0]-a[0])*k), Math.round(a[1]+(b[1]-a[1])*k), Math.round(a[2]+(b[2]-a[2])*k)];
+}
+function buildColors(){
+  CLONE_CSS.length = 0; CLONE_RGB.length = 0; CLONE_TRAIL.length = 0;
+  var n = Math.max(2, U.clones);
+  for (var c = 0; c < MAX_CLONES; c++){
+    var rgb = rampAt(0.10 + 0.90*(c/(n-1)));
+    CLONE_RGB.push(rgb);
+    CLONE_CSS.push('rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')');   // 预生成，循环里绝不拼字符串
+    CLONE_TRAIL.push('rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.26)');
+  }
+  CLONE_TRAIL[0] = 'rgba(255,216,146,0.62)';
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §8  渲染
+   ══════════════════════════════════════════════════════════════════════════ */
+function renderStage(){
+  var v = V.stage; if (!v) return;
+  var c = v.ctx, w = v.w, h = v.h;
+
+  c.fillStyle = '#07080d'; c.fillRect(0, 0, w, h);
+
+  cam.s += (cam.tgt - cam.s)*0.15;
+
+  /* 可达域：两个同心圆 —— 静态图形吸附到半设备像素，运动图形绝不吸附 */
+  c.strokeStyle = 'rgba(255,255,255,0.05)'; c.lineWidth = 1;
+  c.beginPath(); c.arc(cam.ox, cam.oy, P.L1*cam.s, 0, 6.2832); c.stroke();
+  c.strokeStyle = 'rgba(255,255,255,0.035)';
+  c.beginPath(); c.arc(cam.ox, cam.oy, (P.L1+P.L2)*cam.s, 0, 6.2832); c.stroke();
+  c.strokeStyle = 'rgba(255,255,255,0.05)';
+  c.beginPath();
+  c.moveTo(crisp(cam.ox, v.r), cam.oy - 14); c.lineTo(crisp(cam.ox, v.r), cam.oy + 14);
+  c.moveTo(cam.ox - 14, crisp(cam.oy, v.r)); c.lineTo(cam.ox + 14, crisp(cam.oy, v.r));
+  c.stroke();
+
+  var n = U.clones, i, cl, o;
+
+  /* ── 拖尾（世界坐标 → 屏幕，缩放与窗口变化自动跟随）── */
+  if (U.showTrail && U.trail > 0){
+    var len = Math.min(U.trail, TRAIL_MAX);
+    c.lineWidth = 1.15; c.lineJoin = 'round'; c.lineCap = 'round';
+    for (cl = n-1; cl >= 0; cl--){
+      var cnt = Math.min(trN[cl], len); if (cnt < 2) continue;
+      var base = cl*TRAIL_MAX, head = trH[cl];
+      c.strokeStyle = CLONE_TRAIL[cl];
+      c.beginPath();
+      for (i = 0; i < cnt; i++){
+        var idx = (head - cnt + i + TRAIL_MAX) % TRAIL_MAX;
+        var X = sx(trX[base+idx]), Yy = sy(trY[base+idx]);
+        if (i === 0) c.moveTo(X, Yy); else c.lineTo(X, Yy);
+      }
+      c.stroke();
+    }
+  }
+
+  /* ── 分离扇形：同步时面积严格为 0（不可见），散开后是一大片光斑。
+        面积从 0 变大，就是整个页面要讲的那件事。 ── */
+  if (U.showFan && n > 2){
+    c.beginPath();
+    c.moveTo(cam.ox, cam.oy);
+    for (cl = 0; cl < n; cl++){ o = cl*4; c.lineTo(sx(bobX2(o)), sy(bobY2(o))); }
+    c.closePath();
+    c.fillStyle = 'rgba(120,190,255,0.085)'; c.fill();
+  }
+
+  /* ── 副本（倒序画，参考摆压在最上面）── */
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  for (cl = n-1; cl >= 1; cl--){
+    o = cl*4;
+    var x1 = sx(P.L1*Math.sin(Y[o])), y1 = sy(P.L1*Math.cos(Y[o]));
+    var x2 = sx(bobX2(o)),            y2 = sy(bobY2(o));
+    c.strokeStyle = CLONE_CSS[cl]; c.globalAlpha = 0.62; c.lineWidth = 1.8;
+    c.beginPath(); c.moveTo(cam.ox, cam.oy); c.lineTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+    c.globalAlpha = 0.85; c.fillStyle = CLONE_CSS[cl];
+    c.beginPath(); c.arc(x1, y1, 2.6, 0, 6.2832); c.fill();
+    c.beginPath(); c.arc(x2, y2, 3.4, 0, 6.2832); c.fill();
+  }
+  c.globalAlpha = 1;
+
+  /* ── 参考摆 ── */
+  var r1 = Math.max(5, 5.2*Math.pow(P.m1, 0.34)) * Math.min(1.9, cam.s/100);
+  var r2 = Math.max(5, 5.2*Math.pow(P.m2, 0.34)) * Math.min(1.9, cam.s/100);
+  var ax1 = sx(P.L1*Math.sin(Y[0])), ay1 = sy(P.L1*Math.cos(Y[0]));
+  var ax2 = sx(bobX2(0)),            ay2 = sy(bobY2(0));
+
+  c.strokeStyle = 'rgba(232,238,247,0.30)'; c.lineWidth = 5.5;
+  c.beginPath(); c.moveTo(cam.ox, cam.oy); c.lineTo(ax1, ay1); c.lineTo(ax2, ay2); c.stroke();
+  c.strokeStyle = '#e9eef8'; c.lineWidth = 2.1;
+  c.beginPath(); c.moveTo(cam.ox, cam.oy); c.lineTo(ax1, ay1); c.lineTo(ax2, ay2); c.stroke();
+
+  drawBob(c, ax1, ay1, r1, [255, 205, 110]);
+  drawBob(c, ax2, ay2, r2, [255, 168,  92]);
+
+  c.fillStyle = '#0b0d13'; c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 1.6;
+  c.beginPath(); c.arc(cam.ox, cam.oy, 4.2, 0, 6.2832); c.fill(); c.stroke();
+
+  /* ── 分离时刻的一次闪光 + 永久回执 ── */
+  if (S.sepTime >= 0){
+    var age = S.t - S.sepTime;
+    if (age < 0.9){
+      c.strokeStyle = 'rgba(255,200,87,'+(0.5*(1-age/0.9)).toFixed(3)+')';
+      c.lineWidth = 2; c.strokeRect(1, 1, w-2, h-2);
+    }
+  }
+}
+
+function drawBob(c, x, y, r, rgb){
+  var sp = glowSprite(rgb), G = r*4.6;
+  c.globalCompositeOperation = 'lighter';
+  c.drawImage(sp, x-G, y-G, G*2, G*2);
+  c.globalCompositeOperation = 'source-over';
+  var g = c.createRadialGradient(x-r*0.36, y-r*0.4, r*0.1, x, y, r);
+  g.addColorStop(0, 'rgb('+Math.min(255,rgb[0]+40)+','+Math.min(255,rgb[1]+40)+','+Math.min(255,rgb[2]+40)+')');
+  g.addColorStop(1, 'rgb('+Math.round(rgb[0]*0.62)+','+Math.round(rgb[1]*0.62)+','+Math.round(rgb[2]*0.62)+')');
+  c.fillStyle = g;
+  c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+  c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 1;
+  c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.stroke();
+}
+
+/* ── 图表通用 ── */
+var PAD = { l:31, r:7, t:8, b:15 };
+var SUP = ['⁰','¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹'];
+function supNum(n){
+  var s = '', neg = n < 0; n = Math.abs(n);
+  if (n === 0) s = '⁰';
+  while (n > 0){ s = SUP[n%10] + s; n = (n/10)|0; }
+  return (neg ? '⁻' : '') + s;
+}
+function ensureGrid(v, key, fn){
+  if (v.gkey === key && !v.invalid) return;
+  v.gkey = key; v.invalid = false;
+  var g = v.grid;
+  g.width = Math.max(1, Math.round(v.w*v.r));
+  g.height = Math.max(1, Math.round(v.h*v.r));
+  var gc = g.getContext('2d');
+  gc.setTransform(v.r, 0, 0, v.r, 0, 0);
+  gc.clearRect(0, 0, v.w, v.h);
+  gc.font = '9.5px ui-monospace, Menlo, monospace';
+  gc.textBaseline = 'middle';
+  fn(gc, v);
+}
+
+/* ── 发散度（对数纵轴固定分度，指数增长在这里就是一条直线）── */
+function renderDiverge(){
+  var v = V.diverge; if (!v) return;
+  var c = v.ctx, w = v.w, h = v.h;
+  c.clearRect(0, 0, w, h);
+  var LO = U.epsExp - 1, HI = 1;
+  var pw = w - PAD.l - PAD.r, ph = h - PAD.t - PAD.b;
+  if (pw < 10 || ph < 10) return;
+
+  ensureGrid(v, 'd'+LO+'_'+w+'x'+h, function(g){
+    g.strokeStyle = 'rgba(255,255,255,0.07)'; g.lineWidth = 1;
+    g.fillStyle = 'rgba(150,160,180,0.75)'; g.textAlign = 'right';
+    for (var d = LO; d <= HI; d++){
+      var y = PAD.t + ph*(1 - (d-LO)/(HI-LO));
+      g.beginPath(); g.moveTo(PAD.l, crisp(y, v.r)); g.lineTo(w-PAD.r, crisp(y, v.r)); g.stroke();
+      if ((d - LO) % 2 === 0 || d === HI) g.fillText('10' + supNum(d), PAD.l-5, y);
+    }
+    /* D > 1 rad：已经不是"误差"而是完全不同的运动 */
+    var y1 = PAD.t + ph*(1 - (0-LO)/(HI-LO));
+    g.fillStyle = 'rgba(255,111,111,0.07)';
+    g.fillRect(PAD.l, PAD.t, pw, Math.max(0, y1-PAD.t));
+    g.fillStyle = 'rgba(255,140,140,0.5)'; g.textAlign = 'left';
+    g.fillText('完全失联', PAD.l+5, PAD.t+7);
+  });
+  c.drawImage(v.grid, 0, 0, w, h);
+
+  if (divN < 2 || U.clones < 2){
+    c.fillStyle = 'rgba(150,160,180,0.5)'; c.textAlign = 'center';
+    c.font = '11px system-ui, sans-serif';
+    c.fillText(U.clones < 2 ? '副本数设为 ≥ 2 才有分离度' : '采样中…', w/2, h/2);
+    return;
+  }
+
+  var t1 = Math.max(60, S.t), t0 = Math.max(0, t1-60);
+  var X = function(t){ return PAD.l + pw*(t-t0)/(t1-t0); };
+  var Yv = function(d){ return PAD.t + ph*(1 - (d-LO)/(HI-LO)); };
+  var i, k, first;
+
+  /* 最小/最大包络 */
+  c.beginPath(); first = true;
+  for (i = 0; i < divN; i++){
+    k = (divHead - divN + i + DIV_N) % DIV_N;
+    if (divT[k] < t0) continue;
+    var x = X(divT[k]), y = Yv(Math.max(LO, Math.min(HI, divHi[k])));
+    if (first){ c.moveTo(x, y); first = false; } else c.lineTo(x, y);
+  }
+  for (i = divN-1; i >= 0; i--){
+    k = (divHead - divN + i + DIV_N) % DIV_N;
+    if (divT[k] < t0) continue;
+    c.lineTo(X(divT[k]), Yv(Math.max(LO, Math.min(HI, divLo[k]))));
+  }
+  c.closePath();
+  c.fillStyle = 'rgba(120,190,255,0.16)'; c.fill();
+
+  /* 均值 */
+  c.beginPath(); first = true;
+  for (i = 0; i < divN; i++){
+    k = (divHead - divN + i + DIV_N) % DIV_N;
+    if (divT[k] < t0) continue;
+    var xx = X(divT[k]), yy = Yv(Math.max(LO, Math.min(HI, divA[k])));
+    if (first){ c.moveTo(xx, yy); first = false; } else c.lineTo(xx, yy);
+  }
+  c.strokeStyle = '#8fd0ff'; c.lineWidth = 1.5; c.stroke();
+
+  /* 理论线 D = ε·e^{λt}，斜率用的是当下实测的 λ。
+     云沿着虚线爬 —— 理论与测量当场对上。 */
+  if (isFinite(L.val) && L.val > LYAP_CHAOS && S.t > 3){
+    var e0 = Math.log(S.d0)/Math.LN10, sl = L.val/Math.LN10;
+    c.save(); c.setLineDash([4, 4]);
+    c.strokeStyle = 'rgba(255,200,87,0.55)'; c.lineWidth = 1.2;
+    c.beginPath();
+    c.moveTo(X(Math.max(t0, 0)), Yv(Math.max(LO, Math.min(HI, e0 + sl*Math.max(t0, 0)))));
+    var tEnd = Math.min(t1, (HI - e0)/sl);
+    c.lineTo(X(tEnd), Yv(Math.max(LO, Math.min(HI, e0 + sl*tEnd))));
+    c.stroke(); c.restore();
+  }
+
+  /* 分离时刻 */
+  if (S.sepTime >= t0){
+    var xs = X(S.sepTime);
+    c.strokeStyle = 'rgba(255,200,87,0.45)'; c.lineWidth = 1;
+    c.setLineDash([2, 3]);
+    c.beginPath(); c.moveTo(xs, PAD.t); c.lineTo(xs, PAD.t+ph); c.stroke();
+    c.setLineDash([]);
+  }
+  c.fillStyle = 'rgba(150,160,180,0.7)'; c.textAlign = 'right';
+  c.font = '9.5px ui-monospace, Menlo, monospace';
+  c.fillText(t1.toFixed(0)+'s', w-PAD.r, h-6);
+  c.textAlign = 'left';
+  c.fillText(t0.toFixed(0)+'s', PAD.l, h-6);
+}
+
+/* ── 相图 θ₁ (mod 2π) – ω₁ ── */
+function renderPhase(){
+  var v = V.phase; if (!v) return;
+  var c = v.ctx, w = v.w, h = v.h;
+  c.clearRect(0, 0, w, h);
+  var pw = w - PAD.l - PAD.r, ph = h - PAD.t - PAD.b;
+  if (pw < 10 || ph < 10) return;
+  var sc = Math.max(0.8, phScale);
+
+  ensureGrid(v, 'p'+w+'x'+h, function(g){
+    g.strokeStyle = 'rgba(255,255,255,0.07)';
+    g.fillStyle = 'rgba(150,160,180,0.7)'; g.textAlign = 'center';
+    var lbl = ['−π','−π/2','0','π/2','π'];
+    for (var i = 0; i < 5; i++){
+      var x = crisp(PAD.l + pw*i/4, v.r);
+      g.beginPath(); g.moveTo(x, PAD.t); g.lineTo(x, PAD.t+ph); g.stroke();
+      g.fillText(lbl[i], PAD.l + pw*i/4, h-7);
+    }
+    g.strokeStyle = 'rgba(255,255,255,0.12)';
+    var ym = crisp(PAD.t + ph/2, v.r);
+    g.beginPath(); g.moveTo(PAD.l, ym); g.lineTo(w-PAD.r, ym); g.stroke();
+  });
+  c.drawImage(v.grid, 0, 0, w, h);
+
+  c.fillStyle = 'rgba(150,160,180,0.7)'; c.textAlign = 'right';
+  c.font = '9.5px ui-monospace, Menlo, monospace'; c.textBaseline = 'middle';
+  c.fillText('+'+sc.toFixed(1), PAD.l-5, PAD.t+7);
+  c.fillText('−'+sc.toFixed(1), PAD.l-5, PAD.t+ph-7);
+
+  var X = function(a){ return PAD.l + pw*(a+Math.PI)/(2*Math.PI); };
+  var Yv= function(o){ return PAD.t + ph*(0.5 - o/(2*sc)); };
+
+  /* 三遍重绘做拖影：全程 / 最近 5 s / 最近 1 s。
+     不用半透明矩形淡出 —— 8 位合成下增量会被舍入抹平，留下永久灰膜。 */
+  function pass(count, alpha, lw){
+    if (phN < 2) return;
+    var m = Math.min(count, phN), px = NaN, py = NaN;
+    c.strokeStyle = 'rgba(143,208,255,'+alpha+')'; c.lineWidth = lw;
+    c.beginPath();
+    for (var i = 0; i < m; i++){
+      var k = (phHead - m + i + PHASE_N) % PHASE_N;
+      var x = X(phX[k]), y = Yv(phY[k]);
+      if (i === 0 || Math.abs(x-px) > pw*0.5) c.moveTo(x, y); else c.lineTo(x, y);
+      px = x; py = y;
+    }
+    c.stroke();
+  }
+  pass(phN, 0.20, 1.0);
+  pass(260, 0.5, 1.15);
+  pass(60, 1.0, 1.7);
+
+  /* 各副本当前点：16 个点先叠在一个像素上，然后抹开整幅 —— 相空间版的扇形 */
+  var n = U.clones;
+  for (var cl = 1; cl < n; cl++){
+    var o = cl*4;
+    c.fillStyle = CLONE_CSS[cl]; c.globalAlpha = 0.9;
+    c.fillRect(X(wrapPi(Y[o]))-1, Yv(Y[o+2])-1, 2.4, 2.4);
+  }
+  c.globalAlpha = 1;
+  c.fillStyle = '#ffd479';
+  c.beginPath(); c.arc(X(wrapPi(Y[0])), Yv(Y[2]), 2.6, 0, 6.2832); c.fill();
+}
+
+/* ── 庞加莱截面 ── */
+function renderPoincare(){
+  var v = V.poincare; if (!v) return;
+  if (!poinDirty) return;
+  poinDirty = false;
+  var c = v.ctx, w = v.w, h = v.h;
+  c.clearRect(0, 0, w, h);
+  var pw = w - PAD.l - PAD.r, ph = h - PAD.t - PAD.b;
+  if (pw < 10 || ph < 10) return;
+  var sc = Math.max(1, secScale);
+
+  ensureGrid(v, 'k'+w+'x'+h, function(g){
+    g.strokeStyle = 'rgba(255,255,255,0.07)';
+    g.fillStyle = 'rgba(150,160,180,0.7)'; g.textAlign = 'center';
+    var lbl = ['−π','0','π'];
+    for (var i = 0; i < 3; i++){
+      var x = crisp(PAD.l + pw*i/2, v.r);
+      g.beginPath(); g.moveTo(x, PAD.t); g.lineTo(x, PAD.t+ph); g.stroke();
+      g.fillText(lbl[i], PAD.l + pw*i/2, h-7);
+    }
+    var ym = crisp(PAD.t + ph/2, v.r);
+    g.beginPath(); g.moveTo(PAD.l, ym); g.lineTo(w-PAD.r, ym); g.stroke();
+  });
+  c.drawImage(v.grid, 0, 0, w, h);
+
+  c.fillStyle = 'rgba(150,160,180,0.7)'; c.textAlign = 'right';
+  c.font = '9.5px ui-monospace, Menlo, monospace'; c.textBaseline = 'middle';
+  c.fillText('ω₂ '+sc.toFixed(0), PAD.l-5, PAD.t+7);
+
+  var m = Math.min(secN, SEC_TARGET);
+  c.globalCompositeOperation = 'lighter';
+  c.fillStyle = 'rgba(120,200,255,0.55)';
+  for (var i = 0; i < m; i++){
+    var a = secPts[i*2], b = secPts[i*2+1];
+    var x = PAD.l + pw*(a+Math.PI)/(2*Math.PI);
+    var y = PAD.t + ph*(0.5 - b/(2*sc));
+    if (y < PAD.t || y > PAD.t+ph) continue;
+    c.fillRect(x|0, y|0, 1.4, 1.4);
+  }
+  c.globalCompositeOperation = 'source-over';
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §9  翻转时间分形
+   每个像素是一组初始角度 (θ₁,θ₂)，从静止释放，积分到下摆第一次翻过顶点。
+   ══════════════════════════════════════════════════════════════════════════ */
+var F = {
+  N:256, T:20, x0:-Math.PI, x1:Math.PI, y0:-Math.PI, y1:Math.PI,
+  flip:null, done:null, level:null, img:null, ctx:null,
+  strides:[8,4,2,1], pi:0, cur:0, gw:0, total:0,
+  running:false, calibrated:false, count:0, work:1,
+  llo:0, lhi:1, mirror:true, stack:[], hover:-1, hx:0, hy:0,
+  dragging:false, dx0:0, dy0:0, dx1:0, dy1:0, stale:false,
+  m1:1, m2:1, L1:1, L2:1, g:9.81
+};
+var FLUT = new Uint8Array(256*3);
+
+function buildFracLUT(){
+  for (var i = 0; i < 256; i++){
+    var t = i/255, k = 0;
+    while (k < FRAC_RAMP.length-2 && t > FRAC_RAMP[k+1][0]) k++;
+    var a = FRAC_RAMP[k], b = FRAC_RAMP[k+1];
+    var f = (t - a[0])/(b[0] - a[0] || 1);
+    FLUT[i*3]   = Math.round(a[1] + (b[1]-a[1])*f);
+    FLUT[i*3+1] = Math.round(a[2] + (b[2]-a[2])*f);
+    FLUT[i*3+2] = Math.round(a[3] + (b[3]-a[3])*f);
+  }
+}
+
+/* 单像素求解：能量预判 + 内联 RK4 + 穿越线性插值。
+   零分配，全部走局部变量 —— 这个函数会被调用几十万次。 */
+function flipTime(t10, t20, T, h, m1, m2, L1, L2, g){
+  var M = m1 + m2;
+  /* 能量禁区：ω=0 释放时 E = V(θ₁,θ₂)。下摆要翻过顶点，θ₂ 必须到达 ±π，
+     那一刻的势能至少是 −M g L₁ + m₂ g L₂（θ₁ 取最有利的 0）。
+     E 低于它就永远翻不过去 —— 这一大片可以零成本直接填色。 */
+  var Vf = -M*g*L1 + m2*g*L2;
+  var E  = -M*g*L1*Math.cos(t10) - m2*g*L2*Math.cos(t20);
+  if (E < Vf) return -2;
+
+  var t1=t10, t2=t20, w1=0, w2=0, t=0;
+  var h2 = h*0.5, h6 = h/6;
+  var d, c, s, den, f1, f2;
+  var k1a,k1b,k1c,k1d, k2a,k2b,k2c,k2d, k3a,k3b,k3c,k3d, k4a,k4b,k4c,k4d;
+  var T1,T2,W1,W2, p2;
+
+  while (t < T){
+    p2 = t2;
+    d=t1-t2; c=Math.cos(d); s=Math.sin(d); den=m1+m2*s*s;
+    f1=-m2*L2*w2*w2*s - M*g*Math.sin(t1);  f2=L1*w1*w1*s - g*Math.sin(t2);
+    k1a=w1; k1b=w2; k1c=(f1-m2*c*f2)/(L1*den); k1d=(M*f2-c*f1)/(L2*den);
+
+    T1=t1+h2*k1a; T2=t2+h2*k1b; W1=w1+h2*k1c; W2=w2+h2*k1d;
+    d=T1-T2; c=Math.cos(d); s=Math.sin(d); den=m1+m2*s*s;
+    f1=-m2*L2*W2*W2*s - M*g*Math.sin(T1);  f2=L1*W1*W1*s - g*Math.sin(T2);
+    k2a=W1; k2b=W2; k2c=(f1-m2*c*f2)/(L1*den); k2d=(M*f2-c*f1)/(L2*den);
+
+    T1=t1+h2*k2a; T2=t2+h2*k2b; W1=w1+h2*k2c; W2=w2+h2*k2d;
+    d=T1-T2; c=Math.cos(d); s=Math.sin(d); den=m1+m2*s*s;
+    f1=-m2*L2*W2*W2*s - M*g*Math.sin(T1);  f2=L1*W1*W1*s - g*Math.sin(T2);
+    k3a=W1; k3b=W2; k3c=(f1-m2*c*f2)/(L1*den); k3d=(M*f2-c*f1)/(L2*den);
+
+    T1=t1+h*k3a; T2=t2+h*k3b; W1=w1+h*k3c; W2=w2+h*k3d;
+    d=T1-T2; c=Math.cos(d); s=Math.sin(d); den=m1+m2*s*s;
+    f1=-m2*L2*W2*W2*s - M*g*Math.sin(T1);  f2=L1*W1*W1*s - g*Math.sin(T2);
+    k4a=W1; k4b=W2; k4c=(f1-m2*c*f2)/(L1*den); k4d=(M*f2-c*f1)/(L2*den);
+
+    t1 += h6*(k1a+2*k2a+2*k3a+k4a);
+    t2 += h6*(k1b+2*k2b+2*k3b+k4b);
+    w1 += h6*(k1c+2*k2c+2*k3c+k4c);
+    w2 += h6*(k1d+2*k2d+2*k3d+k4d);
+    t += h;
+
+    if (t2 > Math.PI || t2 < -Math.PI){
+      var tgt = t2 > 0 ? Math.PI : -Math.PI;
+      return t - h + h*(tgt - p2)/(t2 - p2);      // 线性插值到截面，去掉 dt 造成的色带
+    }
+    if (t1 !== t1) return -1;
+  }
+  return -1;                                       // 时限内未翻转
+}
+
+function fracStart(){
+  var N = FRAC_RES[U.fres];
+  F.N = N; F.T = U.fT;
+  /* 快照参数：整张图必须出自同一套物理参数 */
+  F.m1 = P.m1; F.m2 = P.m2; F.L1 = P.L1; F.L2 = P.L2; F.g = P.g;
+  F.flip  = new Float32Array(N*N);
+  F.done  = new Uint8Array(N*N);
+  F.level = new Uint8Array(N*N); F.level.fill(255);
+  F.strides = N > 256 ? [16,8,4,2,1] : [8,4,2,1];
+  F.pi = 0; F.cur = 0; F.count = 0;
+  F.hover = -1;                  // 网格换了，旧的悬停索引必须作废
+  F.calibrated = false;
+  /* 精确对称性：(θ₁,θ₂,ω₁,ω₂) → (−θ₁,−θ₂,−ω₁,−ω₂) 给出严格镜像轨迹，
+     翻转时间完全相同（已逐位验证）。只在视域关于原点对称时成立。 */
+  F.mirror = Math.abs(F.x0 + F.x1) < 1e-12 && Math.abs(F.y0 + F.y1) < 1e-12;
+  F.work = F.mirror ? N*N/2 : N*N;
+
+  var cv = E['cv-frac'];
+  cv.width = N; cv.height = N;
+  F.ctx = cv.getContext('2d');
+  F.img = F.ctx.createImageData(N, N);
+  var dta = F.img.data;
+  for (var i = 0; i < N*N; i++){
+    dta[i*4] = 7; dta[i*4+1] = 8; dta[i*4+2] = 13; dta[i*4+3] = 255;
+  }
+  F.ctx.putImageData(F.img, 0, 0);
+  setPass(0);
+  F.stale = false;
+  E['btn-frecalc'].textContent = '重新计算';
+  F.running = true;
+  E['fr-prog'].style.display = '';
+}
+
+function setPass(k){
+  F.pi = k;
+  if (k >= F.strides.length){ F.running = false; return; }
+  var st = F.strides[k];
+  F.gw = Math.ceil(F.N/st);
+  F.total = F.gw*F.gw;
+  F.cur = 0;
+}
+
+function fracPaint(i, j, stride, val){
+  var N = F.N, d = F.img.data;
+  var r, g, b;
+  if (val === -2){ r=C_FORBID[0]; g=C_FORBID[1]; b=C_FORBID[2]; }
+  else if (val === -1){ r=C_NEVER[0]; g=C_NEVER[1]; b=C_NEVER[2]; }
+  else {
+    var x = (Math.log(val + TAU_FLIP) - F.llo)/(F.lhi - F.llo);
+    var q = x <= 0 ? 0 : x >= 1 ? 255 : (x*255)|0;
+    r = FLUT[q*3]; g = FLUT[q*3+1]; b = FLUT[q*3+2];
+  }
+  var i0 = (i/stride|0)*stride, j0 = (j/stride|0)*stride;
+  var iEnd = Math.min(N, i0+stride), jEnd = Math.min(N, j0+stride);
+  for (var jj = j0; jj < jEnd; jj++){
+    var row = jj*N;
+    for (var ii = i0; ii < iEnd; ii++){
+      var p = row + ii;
+      if (F.level[p] < stride) continue;            // 细的不让粗的覆盖
+      F.level[p] = stride;
+      var q4 = p*4;
+      d[q4] = r; d[q4+1] = g; d[q4+2] = b;
+    }
+  }
+}
+
+function repaintAll(){
+  var N = F.N, st = F.strides[0];
+  F.level.fill(255);
+  for (var j = 0; j < N; j += st)
+    for (var i = 0; i < N; i += st){
+      var p = j*N + i;
+      if (F.done[p]) fracPaint(i, j, st, F.flip[p]);
+    }
+}
+
+/* 归一化：用最粗一遍（就是一次天然的均匀采样）的 2%/98% 分位数定色标，
+   之后冻结。否则每细化一遍调色板都会整体重映射，图像会"呼吸"。 */
+function calibrate(){
+  var N = F.N, arr = [], p;
+  for (p = 0; p < N*N; p++) if (F.done[p] && F.flip[p] >= 0) arr.push(F.flip[p]);
+  if (arr.length < 8){ F.llo = Math.log(0.5+TAU_FLIP); F.lhi = Math.log(F.T+TAU_FLIP); }
+  else {
+    arr.sort(function(a,b){ return a-b; });
+    var lo = arr[Math.floor(arr.length*0.02)], hi = arr[Math.floor(arr.length*0.98)];
+    if (!(hi > lo)) { lo = arr[0]; hi = arr[arr.length-1] + 0.5; }
+    F.llo = Math.log(lo + TAU_FLIP); F.lhi = Math.log(hi + TAU_FLIP);
+    E['fr-lo'].textContent = lo.toFixed(1)+'s';
+    E['fr-hi'].textContent = hi.toFixed(1)+'s';
+  }
+  F.calibrated = true;
+  buildBarCSS();
+  repaintAll();
+}
+
+function buildBarCSS(){
+  var stops = [];
+  for (var i = 0; i <= 10; i++){
+    var q = (i*25.5)|0;
+    stops.push('rgb('+FLUT[q*3]+','+FLUT[q*3+1]+','+FLUT[q*3+2]+') '+(i*10)+'%');
+  }
+  E['fr-bar'].style.background = 'linear-gradient(90deg,'+stops.join(',')+')';
+}
+
+function fracTick(budgetMs){
+  if (!F.running) return;
+  var t0 = performance.now();
+  var N = F.N, m1=F.m1, m2=F.m2, L1=F.L1, L2=F.L2, g=F.g, T=F.T;
+  var dx = (F.x1-F.x0)/N, dy = (F.y1-F.y0)/N;
+  var checked = 0, painted = false;
+
+  while (F.running){
+    if (F.cur >= F.total){
+      if (F.pi === 0 && !F.calibrated){ calibrate(); painted = true; }
+      setPass(F.pi + 1);
+      if (!F.running) break;
+      continue;
+    }
+    var st = F.strides[F.pi];
+    var gi = F.cur % F.gw, gj = (F.cur/F.gw)|0;
+    F.cur++;
+    var i = gi*st, j = gj*st;
+    if (i >= N || j >= N) continue;
+    var p = j*N + i;
+    if (F.done[p]){
+      /* 镜像得到的像素不落在粗糙网格上，之前只被邻居的块色覆盖过。
+         最后一遍按它自己存下的值重涂，否则整整 25% 的像素会永久显示邻居的颜色 ——
+         在分形边界上，邻居可以是"3 秒翻转"对"永不翻转"。 */
+      if (st === 1 && F.calibrated && F.level[p] > 1){ fracPaint(i, j, 1, F.flip[p]); painted = true; }
+      continue;
+    }
+
+    var th1 = F.x0 + dx*(i+0.5), th2 = F.y0 + dy*(j+0.5);
+    var val = flipTime(th1, th2, T, FRAC_H, m1, m2, L1, L2, g);
+    F.flip[p] = val; F.done[p] = 1; F.count++;
+    if (F.calibrated){ fracPaint(i, j, st, val); painted = true; }
+
+    if (F.mirror){
+      var mi = N-1-i, mj = N-1-j, mp = mj*N + mi;
+      if (!F.done[mp]){
+        F.flip[mp] = val; F.done[mp] = 1; F.count++;
+        if (F.calibrated){ fracPaint(mi, mj, st, val); painted = true; }
+      }
+    }
+
+    if ((++checked & 31) === 0 && performance.now() - t0 > budgetMs) break;
+  }
+
+  if (painted) F.ctx.putImageData(F.img, 0, 0);
+
+  var pct = Math.min(100, 100*F.count/(F.N*F.N));
+  E['fr-prog-b'].style.width = pct.toFixed(1)+'%';
+  if (!F.running){
+    E['fr-prog-t'].textContent = F.N+'² · 完成';
+    setTimeout(function(){ if (!F.running) E['fr-prog'].style.display = 'none'; }, 1400);
+  } else {
+    E['fr-prog-t'].textContent = F.N+'² · '+pct.toFixed(0)+'%';
+  }
+}
+
+/* ── 分形覆盖层：坐标轴、当前初始条件十字线、悬停读数、拖框缩放 ── */
+function renderFracUI(){
+  var v = V.fracUI; if (!v) return;
+  var c = v.ctx, w = v.w, h = v.h;
+  c.clearRect(0, 0, w, h);
+  c.font = '10px ui-monospace, Menlo, monospace';
+  c.fillStyle = 'rgba(190,200,215,0.75)';
+
+  function px(t1){ return (t1 - F.x0)/(F.x1 - F.x0)*w; }
+  function py(t2){ return (t2 - F.y0)/(F.y1 - F.y0)*h; }
+
+  /* 当前初始条件 */
+  var b1 = S.base[0], b2 = S.base[1];
+  if (b1 >= F.x0 && b1 <= F.x1 && b2 >= F.y0 && b2 <= F.y1){
+    var X = px(b1), Yb = py(b2);
+    c.beginPath();
+    c.moveTo(X-11, Yb); c.lineTo(X-4, Yb); c.moveTo(X+4, Yb); c.lineTo(X+11, Yb);
+    c.moveTo(X, Yb-11); c.lineTo(X, Yb-4); c.moveTo(X, Yb+4); c.lineTo(X, Yb+11);
+    c.arc(X, Yb, 7, 0, 6.2832);
+    c.strokeStyle = 'rgba(0,0,0,0.75)'; c.lineWidth = 3.2; c.stroke();
+    c.strokeStyle = '#ffe08a';           c.lineWidth = 1.4; c.stroke();
+  }
+
+  /* 坐标标注 */
+  c.textAlign = 'left';  c.fillText('θ₁ →', 7, h-8);
+  c.save(); c.translate(9, 9); c.textAlign = 'left'; c.textBaseline = 'top';
+  c.fillText('θ₂ ↓', 0, 0); c.restore();
+  c.textAlign = 'right'; c.textBaseline = 'bottom';
+  c.fillStyle = 'rgba(190,200,215,0.55)';
+  c.fillText(fmtRad(F.x0)+' … '+fmtRad(F.x1), w-8, h-8);
+
+  /* 悬停读数 */
+  if (F.hover >= 0 && F.hover < F.N*F.N && F.flip){
+    var val = F.flip[F.hover];
+    var txt = val === -2 ? '能量不足 · 永不翻转'
+            : val === -1 ? '≥ '+F.T+' s 未翻转'
+            : '翻转于 '+val.toFixed(2)+' s';
+    var t1h = F.x0 + (F.x1-F.x0)*((F.hover % F.N)+0.5)/F.N;
+    var t2h = F.y0 + (F.y1-F.y0)*(((F.hover/F.N)|0)+0.5)/F.N;
+    var line2 = 'θ₁='+t1h.toFixed(4)+'  θ₂='+t2h.toFixed(4);
+    c.font = '10.5px ui-monospace, Menlo, monospace';
+    var bw = Math.max(c.measureText(txt).width, c.measureText(line2).width) + 16;
+    var bx = Math.min(w - bw - 6, Math.max(6, F.hx + 12));
+    var by = Math.min(h - 38, Math.max(6, F.hy + 12));
+    c.fillStyle = 'rgba(8,10,16,0.86)'; c.strokeStyle = 'rgba(255,255,255,0.14)';
+    c.lineWidth = 1;
+    c.beginPath(); c.rect(bx, by, bw, 32); c.fill(); c.stroke();
+    c.fillStyle = '#e7ecf6'; c.textAlign = 'left'; c.textBaseline = 'top';
+    c.fillText(txt, bx+8, by+5);
+    c.fillStyle = 'rgba(150,160,180,0.85)';
+    c.fillText(line2, bx+8, by+18);
+    c.strokeStyle = 'rgba(255,255,255,0.45)';
+    c.beginPath(); c.moveTo(F.hx-6, F.hy); c.lineTo(F.hx+6, F.hy);
+    c.moveTo(F.hx, F.hy-6); c.lineTo(F.hx, F.hy+6); c.stroke();
+  }
+
+  /* 拖框 */
+  if (F.dragging){
+    var x0 = Math.min(F.dx0, F.dx1), y0 = Math.min(F.dy0, F.dy1);
+    var sz = Math.max(Math.abs(F.dx1-F.dx0), Math.abs(F.dy1-F.dy0));
+    c.strokeStyle = 'rgba(255,200,87,0.9)'; c.lineWidth = 1.2;
+    c.setLineDash([4,3]);
+    c.strokeRect(x0, y0, sz, sz);
+    c.setLineDash([]);
+  }
+}
+function fmtRad(a){
+  var k = a/Math.PI;
+  if (Math.abs(k) < 1e-9) return '0';
+  if (Math.abs(Math.abs(k)-1) < 1e-9) return (k<0?'−':'')+'π';
+  return (k<0?'−':'')+Math.abs(k).toFixed(3)+'π';
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §10  预设
+   ══════════════════════════════════════════════════════════════════════════ */
+var PRESETS = [
+  { n:'微幅摆动',   t1:0.20,        t2:0.20,  k:'λ≈0.006',
+    d:'对照组。两臂几乎像单摆一样规律往返，所有副本全程重合。λ 停在 0 附近——如果这里 λ 不趋近 0，那读数本身就是错的。' },
+  { n:'准周期环面', t1:0.90,        t2:-0.60, k:'λ≈0.02',
+    d:'两个不可通约的频率互相穿插，摆动带着缓慢拍频。发散曲线缓慢上升而非笔直——这是幂律，不是指数。' },
+  { n:'临界之下',   t1:1.30,        t2:1.30,  k:'λ≈0.012',
+    d:'摆幅已达 74°，看起来"应该"混沌了，但副本永不分开。这是最反直觉的一个——请紧接着点下一个。' },
+  { n:'跨过临界',   t1:1.40,        t2:1.40,  k:'λ≈0.60',
+    d:'与上一个只差 0.1 弧度（5.7°），λ 却从 0.012 跳到 0.60，截面从一条曲线变成散点的海。来回点这两个按钮，是本页最强的论证。' },
+  { n:'经典混沌',   t1:Math.PI/2,   t2:Math.PI/2, k:'λ≈0.88',
+    d:'教科书构型，总能量恰好为 0。前十几秒副本完全重合，随后扇形炸开；发散曲线贴着 e^(λt) 理论虚线爬升六个数量级后饱和。' },
+  { n:'狂暴翻转',   t1:2.00,        t2:2.00,  k:'λ≈1.34',
+    d:'λ 最大，约 5 秒下臂就翻过顶点，十几秒内副本散尽。视觉最猛，但太快，反而讲不好"先重合再分开"的故事。' },
+  { n:'隐藏的混沌', t1:Math.PI/2,   t2:0,     k:'λ≈0.22',
+    d:'上臂水平、下臂竖直静止释放。运动看着温和，两分钟内从不翻转——但 λ=0.22，截面是一片海。看起来规则 ≠ 规则，只有测量能分辨。' }
+];
+
+function buildPresets(){
+  var html = '';
+  for (var i = 0; i < PRESETS.length; i++){
+    var p = PRESETS[i];
+    html += '<button type="button" class="btn" data-p="'+i+'"><i>'+p.n+'</i><u>'+p.k+'</u></button>';
+  }
+  E.presets.innerHTML = html;
+  E.presets.addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-p]');
+    if (b) applyPreset(+b.getAttribute('data-p'));
+  });
+}
+
+function applyPreset(i){
+  var p = PRESETS[i]; if (!p) return;
+  S.preset = i;
+  P.m1 = 1; P.m2 = 1; P.L1 = 1; P.L2 = 1; P.g = 9.81; P.b = 0;
+  ['m1','m2','L1','L2','g','b'].forEach(function(k){ E['s-'+k].value = P[k]; });
+  S.base[0] = p.t1; S.base[1] = p.t2; S.base[2] = 0; S.base[3] = 0;
+  S.t = 0; S.acc = 0;
+  seedAll(); fitCamera(false); syncOutputs();
+  E['preset-note'].textContent = p.d;
+  var btns = E.presets.querySelectorAll('button');
+  for (var k = 0; k < btns.length; k++) btns[k].setAttribute('aria-pressed', k === i ? 'true' : 'false');
+  if (viewMode === 'frac') fracStart();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §11  界面
+   ══════════════════════════════════════════════════════════════════════════ */
+var viewMode = 'lab', rafId = 0, errCount = 0;
+
+function syncOutputs(){
+  E['o-speed'].textContent  = U.speed.toFixed(1)+'×';
+  E['o-clones'].textContent = U.clones;
+  E['o-eps'].textContent    = '1e'+U.epsExp;
+  E['o-trail'].textContent  = U.trail === 0 ? '关' : U.trail;
+  E['o-m1'].textContent = P.m1.toFixed(2)+' kg';
+  E['o-m2'].textContent = P.m2.toFixed(2)+' kg';
+  E['o-L1'].textContent = P.L1.toFixed(2)+' m';
+  E['o-L2'].textContent = P.L2.toFixed(2)+' m';
+  E['o-g'].textContent  = P.g.toFixed(2);
+  E['o-b'].textContent  = P.b === 0 ? '0' : P.b.toFixed(3);
+  E['o-fres'].textContent = FRAC_RES[U.fres]+'²';
+  E['o-fT'].textContent   = U.fT+' s';
+  E['note-digits'].textContent = sci((Math.max(1,U.clones)-1)*Math.pow(10, U.epsExp));
+}
+
+function onParam(){
+  U.speed  = +E['s-speed'].value;
+  U.trail  = +E['s-trail'].value;
+  var oldC = U.clones, oldE = U.epsExp;
+  U.clones = Math.max(1, Math.min(MAX_CLONES, Math.round(+E['s-clones'].value)));
+  U.epsExp = Math.round(+E['s-eps'].value);
+  /* 下限在滑块 min 和这里各卡一次：number 输入和方向键都能越过 min 属性，
+     m1=0 会让分母 m1+m2sin²Δ 在 θ1=θ2 时归零，下一帧整个系综变 NaN。 */
+  var pm1=P.m1, pL1=P.L1, pL2=P.L2, pm2=P.m2, pg=P.g, pb=P.b;
+  P.m1 = Math.max(0.05, +E['s-m1'].value);
+  P.m2 = Math.max(0.05, +E['s-m2'].value);
+  P.L1 = Math.max(0.05, +E['s-L1'].value);
+  P.L2 = Math.max(0.05, +E['s-L2'].value);
+  P.g  = Math.max(0,    +E['s-g'].value);
+  P.b  = Math.max(0,    +E['s-b'].value);
+  U.fres = Math.round(+E['s-fres'].value);
+  U.fT   = Math.round(+E['s-fT'].value);
+
+  if (U.clones !== oldC || U.epsExp !== oldE){ buildColors(); seedAll(); }
+  var physChanged = (pm1!==P.m1||pm2!==P.m2||pL1!==P.L1||pL2!==P.L2||pg!==P.g||pb!==P.b);
+  if (physChanged){
+    /* 能量是参数的函数：不重设基准的话，动一下滑块就会显示出 100% 的"漂移"。 */
+    rebaseline(); resetSection(); clearSeries(); fitCamera(false);
+    if (F.flip){ F.stale = true; E['btn-frecalc'].textContent = '参数已变 · 重新计算'; }
+  }
+  syncOutputs();
+}
+
+function setPlay(on){
+  S.run = on;
+  E['btn-play'].textContent = on ? '暂停' : '播放';
+  E['run-dot'].className = on ? 'dot' : 'dot pause';
+}
+
+function loadIC(t1, t2){
+  if (!isFinite(t1) || !isFinite(t2)) return;
+  S.base[0] = t1; S.base[1] = t2; S.base[2] = 0; S.base[3] = 0;
+  S.t = 0; S.acc = 0;
+  seedAll();
+  E['preset-note'].textContent = '初始条件来自分形图：θ₁='+t1.toFixed(4)+'，θ₂='+t2.toFixed(4)+'，静止释放。';
+  var btns = E.presets.querySelectorAll('button');
+  for (var k = 0; k < btns.length; k++) btns[k].setAttribute('aria-pressed', 'false');
+}
+
+/* ── 拖动摆球设定初始条件 ── */
+var stageRect = null;
+function rectOf(el){ return el.getBoundingClientRect(); }
+function stagePos(ev){
+  if (!stageRect) stageRect = rectOf(E['cv-stage']);
+  return { x: ev.clientX - stageRect.left, y: ev.clientY - stageRect.top };
+}
+function bindStage(){
+  var cv = E['cv-stage'];
+  cv.addEventListener('pointerdown', function(ev){
+    stageRect = rectOf(cv);
+    var p = stagePos(ev);
+    var x1 = sx(P.L1*Math.sin(Y[0])), y1 = sy(P.L1*Math.cos(Y[0]));
+    var x2 = sx(bobX2(0)),            y2 = sy(bobY2(0));
+    var R = Math.max(22, 14*Math.min(1.9, cam.s/100));
+    var d2 = (p.x-x2)*(p.x-x2) + (p.y-y2)*(p.y-y2);
+    var d1 = (p.x-x1)*(p.x-x1) + (p.y-y1)*(p.y-y1);
+    if (d2 <= R*R)      S.dragging = 2;
+    else if (d1 <= R*R) S.dragging = 1;
+    else return;
+    ev.preventDefault();
+    /* 先把"当前看到的姿态"写进 base。不这样做的话，第一次 pointermove 里的
+       seedAll() 会用几十秒前的 base 重播种，另一节手臂当场瞬移。 */
+    S.base[0] = wrapPi(Y[0]); S.base[1] = wrapPi(Y[1]);
+    S.base[2] = 0; S.base[3] = 0;
+    cv.setPointerCapture(ev.pointerId);
+    cv.classList.add('grabbing');
+    S.acc = 0;
+  }, {passive:false});
+
+  cv.addEventListener('pointermove', function(ev){
+    if (S.dragging < 0) return;
+    ev.preventDefault();
+    var p = stagePos(ev);
+    /* θ 自下垂方向起量，所以是 atan2(x, y)——x 在前。写反了摆会镜像并偏 90°，
+       而且"看起来仍然像个摆"，随手测试根本发现不了。 */
+    var raw, prev;
+    if (S.dragging === 1){
+      raw = Math.atan2(p.x - cam.ox, p.y - cam.oy);
+      prev = S.base[0];
+      S.base[0] = prev + wrapPi(raw - prev);          // 解缠，避免跨 ±π 时跳变
+    } else {
+      var ax = sx(P.L1*Math.sin(S.base[0])), ay = sy(P.L1*Math.cos(S.base[0]));
+      raw = Math.atan2(p.x - ax, p.y - ay);
+      prev = S.base[1];
+      S.base[1] = prev + wrapPi(raw - prev);
+    }
+    S.base[2] = 0; S.base[3] = 0;      // 绝不从指针速度推角速度：一次快甩能注入几百焦耳
+    S.t = 0; S.acc = 0;
+    seedAll();
+  }, {passive:false});
+
+  function endDrag(ev){
+    if (S.dragging < 0) return;
+    S.dragging = -1;
+    cv.classList.remove('grabbing');
+    try{ cv.releasePointerCapture(ev.pointerId); }catch(e){}
+    S.acc = 0;
+    seedAll();
+  }
+  cv.addEventListener('pointerup', endDrag);
+  cv.addEventListener('pointercancel', endDrag);
+}
+
+/* ── 分形交互 ── */
+function bindFrac(){
+  var cv = E['cv-frac-ui'];
+  var rect = null, downX = 0, downY = 0, moved = false;
+  function pos(ev){
+    if (!rect) rect = rectOf(cv);
+    return { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+  }
+  cv.addEventListener('pointermove', function(ev){
+    rect = rectOf(cv);
+    var p = pos(ev);
+    F.hx = p.x; F.hy = p.y;
+    if (F.dragging){ F.dx1 = p.x; F.dy1 = p.y; }
+    var cw = cv.clientWidth, ch = cv.clientHeight;
+    if (!(cw > 0) || !(ch > 0) || !F.done){ F.hover = -1; return; }
+    var i = Math.floor(p.x/cw*F.N), j = Math.floor(p.y/ch*F.N);
+    F.hover = (i >= 0 && i < F.N && j >= 0 && j < F.N && F.done[j*F.N+i]) ? j*F.N+i : -1;
+  });
+  cv.addEventListener('pointerleave', function(){ F.hover = -1; F.dragging = false; });
+  cv.addEventListener('pointerdown', function(ev){
+    rect = rectOf(cv);
+    var p = pos(ev);
+    downX = p.x; downY = p.y; moved = false;
+    F.dragging = true; F.dx0 = p.x; F.dy0 = p.y; F.dx1 = p.x; F.dy1 = p.y;
+    cv.setPointerCapture(ev.pointerId);
+  });
+  cv.addEventListener('pointerup', function(ev){
+    if (!F.dragging) return;
+    F.dragging = false;
+    try{ cv.releasePointerCapture(ev.pointerId); }catch(e){}
+    var p = pos(ev);
+    var sz = Math.max(Math.abs(p.x-downX), Math.abs(p.y-downY));
+    var W = cv.clientWidth, Hh = cv.clientHeight;
+    if (!(W > 0) || !(Hh > 0)) return;
+    if (sz > 14){                                    // 拖框 → 放大
+      var fx0 = Math.min(downX, p.x)/W, fy0 = Math.min(downY, p.y)/Hh;
+      var fs  = sz/W;
+      F.stack.push([F.x0, F.x1, F.y0, F.y1]);
+      var nx0 = F.x0 + (F.x1-F.x0)*fx0, ny0 = F.y0 + (F.y1-F.y0)*fy0;
+      var nw  = (F.x1-F.x0)*fs,          nh = (F.y1-F.y0)*fs;
+      F.x0 = nx0; F.x1 = nx0 + nw; F.y0 = ny0; F.y1 = ny0 + nh;
+      fracStart();
+    } else {                                          // 点击 → 装入实验台
+      /* 吸附到像素中心：必须和悬停读数、以及求解时用的是同一个点，
+         否则 tooltip 说"3.2 秒翻转"，装进去的却是隔壁像素的初值。 */
+      var ci = Math.min(F.N-1, Math.max(0, Math.floor(p.x/W*F.N)));
+      var cj = Math.min(F.N-1, Math.max(0, Math.floor(p.y/Hh*F.N)));
+      var t1 = F.x0 + (F.x1-F.x0)*(ci+0.5)/F.N;
+      var t2 = F.y0 + (F.y1-F.y0)*(cj+0.5)/F.N;
+      loadIC(t1, t2);
+      switchView('lab');
+      toastOK('已装入初始条件 θ₁='+t1.toFixed(4)+'，θ₂='+t2.toFixed(4));
+    }
+  });
+}
+
+function switchView(m){
+  viewMode = m;
+  var lab = m === 'lab';
+  E['view-lab'].hidden = !lab;
+  E['view-frac'].hidden = lab;
+  E['charts'].hidden = !lab;
+  E['sec-frac'].hidden = lab;
+  E['grid'].classList.toggle('mode-frac', !lab);
+  E['tab-lab'].setAttribute('aria-selected', lab ? 'true' : 'false');
+  E['tab-frac'].setAttribute('aria-selected', lab ? 'false' : 'true');
+  needResize = true;
+  if (!lab){ sizeFracBox(); syncSize(V.fracUI); if (!F.flip) fracStart(); }
+}
+
+function toast(msg){
+  E.toast.textContent = msg;
+  E.toast.classList.add('show');
+  clearTimeout(E.toast.__t);
+  E.toast.__t = setTimeout(function(){ E.toast.classList.remove('show'); }, 4000);
+}
+function toastOK(msg){
+  E.toast.style.borderColor = 'rgba(88,217,160,.45)';
+  E.toast.style.background = 'rgba(14,32,26,.94)';
+  E.toast.style.color = '#c9f5e2';
+  toast(msg);
+  setTimeout(function(){ E.toast.style.cssText = ''; }, 4300);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §12  读数（节流到 10 Hz，写前先比对）
+   ══════════════════════════════════════════════════════════════════════════ */
+function setText(el, s){ if (el && el.__v !== s){ el.__v = s; el.textContent = s; } }
+function sci(x){
+  if (!isFinite(x)) return '—';
+  if (x === 0) return '0';
+  var e = Math.floor(Math.log(Math.abs(x))/Math.LN10);
+  var m = x/Math.pow(10, e);
+  return m.toFixed(1)+'e'+(e<0?'-':'+')+Math.abs(e);
+}
+var lastReadout = 0, lastA11y = 0;
+
+function updateReadout(now){
+  if (now - lastReadout < READOUT_MS) return;
+  lastReadout = now;
+
+  setText(E['ro-t'], S.t.toFixed(2)+' s');
+  var Ecur = energy(Y, 0);
+  var Esh = Math.abs(Ecur) < 5e-4 ? 0 : Ecur;
+  setText(E['ro-E'], (Esh >= 0 ? ' ' : '') + Esh.toFixed(3)+' J');
+
+  if (P.b > 0){
+    /* 有阻尼时能量本就该下降，再显示"漂移"会像积分器坏了 */
+    var frac = 100*(Ecur - energyMin())/Math.max(1e-9, S.Escale);
+    setText(E['ro-drift'], (frac < 0 ? 0 : frac).toFixed(1)+'% (耗散中)');
+    E['chip-drift'].className = 'chip';
+    E['chip-drift'].firstChild.textContent = '剩余能量';
+  } else {
+    E['chip-drift'].firstChild.textContent = '能量漂移';
+    setText(E['ro-drift'], sci(S.maxDrift));
+    E['chip-drift'].className = 'chip ' + (S.maxDrift < 1e-6 ? 'ok' : S.maxDrift < 1e-4 ? 'warn' : 'bad');
+  }
+
+  if (!isFinite(L.val) || L.el < 6){
+    setText(E['ro-lam'], '测量中…');
+    E['chip-lam'].className = 'chip';
+  } else {
+    var chaotic = L.val > LYAP_CHAOS;
+    setText(E['ro-lam'], L.val.toFixed(3)+' s⁻¹  '+(chaotic ? '混沌' : '规则'));
+    E['chip-lam'].className = 'chip ' + (chaotic ? 'warn' : 'ok');
+  }
+
+  setText(E['ro-sep'], U.clones < 2 ? '—' : sci(S.sep)+' rad');
+  setText(E['note-buy'], isFinite(L.val) && L.val > LYAP_CHAOS
+          ? (Math.LN10/L.val).toFixed(1) : '—');
+  setText(E['ro-fps'], Math.round(S.fps)+' fps');
+
+  setText(E['ro-sep2'], S.sepTime >= 0 ? '分离于 '+S.sepTime.toFixed(1)+' s'
+                       : (U.clones < 2 ? '需 ≥2 副本' : '仍然重合'));
+  setText(E['ro-phase'], 'ω₁ '+(Y[2] >= 0 ? '+' : '')+Y[2].toFixed(2));
+  setText(E['ro-poin'], secDone ? secN+' 点' : Math.round(100*secN/SEC_TARGET)+'% 采样中');
+
+  /* 叙述文案：让文字跟着现象走，而不是提前剧透 */
+  var msg;
+  if (S.dragging >= 0) msg = '松手即以该角度、零初速重新开始';
+  else if (U.clones < 2) msg = '把副本数调到 2 以上，才能看见蝴蝶效应';
+  else if (S.sepTime >= 0)
+    msg = '它们已经完全不同了 —— 确定性混沌：微小误差按 e^(λt) 放大';
+  else if (S.t < 3) msg = '拖动任一摆球设定初始角度 · 空格暂停 · R 重置';
+  else msg = U.clones+' 个摆的初始角度两两相差不超过 '+sci(S.dMax)+' 弧度，方程完全相同，没有随机数';
+  setText(E['hint'], msg);
+
+  if (now - lastA11y > A11Y_MS){
+    lastA11y = now;
+    var a = (S.run ? '运行中' : '已暂停') + '，仿真时间 ' + S.t.toFixed(0) + ' 秒，'
+          + (S.sepTime >= 0 ? '副本已在 '+S.sepTime.toFixed(1)+' 秒时分离。' : '副本仍然重合。')
+          + (isFinite(L.val) && L.el >= 6 ? '李雅普诺夫指数 '+L.val.toFixed(2) : '');
+    setText(E['a11y-live'], a);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §13  主循环
+   ══════════════════════════════════════════════════════════════════════════ */
+var prevTs = 0;
+function frame(ts){
+  rafId = requestAnimationFrame(frame);
+  try{
+    var raw = prevTs ? (ts - prevTs)/1000 : 0;
+    prevTs = ts;
+    if (!(raw > 0)) raw = 0;
+    S.frameEMA += (Math.min(raw*1000, 100) - S.frameEMA)*0.06;
+    S.fps = 1000/Math.max(1, S.frameEMA);
+
+    /* 钳位阶梯：先按原始 dt 钳，再乘速度。顺序反了的话，
+       后台十分钟的标签页回来会拿到 600 s，乘 4 倍速就是二百多万子步。 */
+    var dt = raw > PANIC_DT ? 0 : Math.min(raw, MAX_FRAME_DT);
+
+    if (needResize) resizeAll();
+
+    if (S.run && S.dragging < 0){
+      S.acc += dt*U.speed;
+      if (S.acc > H*MAX_STEPS) S.acc = H*MAX_STEPS;
+      var n = 0;
+      while (S.acc >= H && n < MAX_STEPS){ stepAll(H); S.acc -= H; n++; }
+      if (n >= MAX_STEPS) S.acc = 0;          // 欠债一笔勾销，绝不进入死亡螺旋
+      S.steps = n;
+      guardState();
+      if (n > 0){
+        var Ecur = energy(Y, 0);
+        var dr = Math.abs(Ecur - S.E0)/Math.max(1e-9, S.Escale);
+        S.drift = dr; if (dr > S.maxDrift && P.b === 0) S.maxDrift = dr;
+        sampleTrails();
+        sampleSeries(n*H);
+      }
+    }
+
+    if (viewMode === 'lab'){
+      if (!secDone) runSection();
+      renderStage();
+      renderDiverge();
+      renderPhase();
+      renderPoincare();
+      if (F.running) fracTick(2);            // 分形在后台慢慢算完
+    } else {
+      fracTick(11);
+      renderFracUI();
+    }
+
+    updateReadout(ts);
+    errCount = 0;
+  } catch(err){
+    errCount++;
+    if (errCount === 1) toast('渲染出错：' + (err && err.message ? err.message : err));
+    if (errCount > 30){ cancelAnimationFrame(rafId); rafId = 0; toast('已停止：连续出错太多'); }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §14  启动
+   ══════════════════════════════════════════════════════════════════════════ */
+function selfTest(){
+  var sp = { m1:P.m1, m2:P.m2, L1:P.L1, L2:P.L2, g:P.g, b:P.b };
+  P.m1=1; P.m2=1; P.L1=1; P.L2=1; P.g=9.81; P.b=0;
+  var y = new Float64Array([2, 1, -3, 4.5]), o = new Float64Array(4);
+  derivs(y, 0, o, 0);
+  var ok = Math.abs(o[2] + 20.205183881204704) < 1e-9
+        && Math.abs(o[3] - 10.235315943810274) < 1e-9
+        && Math.abs(energy(y, 0) - 14.695354183268595) < 1e-9;
+  /* 静止下垂必须零加速度 */
+  var z = new Float64Array([0,0,0,0]); derivs(z, 0, o, 0);
+  ok = ok && Math.abs(o[2]) < 1e-12 && Math.abs(o[3]) < 1e-12;
+  /* atan2 约定：θ 自 +y（下）起量，参数顺序是 (x, y) */
+  ok = ok && Math.atan2(0,1) === 0 && Math.abs(Math.atan2(1,0) - Math.PI/2) < 1e-12;
+  /* 小振幅简正频率 ω² = (2∓√2)g/L */
+  var eps = 1e-6, a1 = new Float64Array(4), a2 = new Float64Array(4);
+  derivs(new Float64Array([eps,0,0,0]), 0, a1, 0);
+  derivs(new Float64Array([0,eps,0,0]), 0, a2, 0);
+  var A00=a1[2]/eps, A01=a2[2]/eps, A10=a1[3]/eps, A11=a2[3]/eps;
+  var tr=A00+A11, de=A00*A11-A01*A10, disc=Math.sqrt(Math.max(0,tr*tr-4*de));
+  var wSlow = Math.sqrt(Math.max(0,-(tr+disc)/2)), wFast = Math.sqrt(Math.max(0,-(tr-disc)/2));
+  var lo = Math.min(wSlow,wFast), hi = Math.max(wSlow,wFast);
+  ok = ok && Math.abs(lo - Math.sqrt(9.81*(2-Math.SQRT2))) < 1e-3
+          && Math.abs(hi - Math.sqrt(9.81*(2+Math.SQRT2))) < 1e-3;
+  P.m1=sp.m1; P.m2=sp.m2; P.L1=sp.L1; P.L2=sp.L2; P.g=sp.g; P.b=sp.b;
+  if (!ok) console.warn('[混沌摆] 物理内核自检未通过');
+  return ok;
+}
+
+function bindAll(){
+  SLIDERS.forEach(function(k){
+    var el = E['s-'+k]; if (!el) return;
+    el.addEventListener('input', function(){
+      onParam();
+      if (viewMode === 'frac' && (k === 'fres' || k === 'fT')) return;   // 等按"重新计算"
+    });
+  });
+  E['btn-play'].addEventListener('click', function(){ setPlay(!S.run); });
+  E['btn-reset'].addEventListener('click', function(){ seedAll(); });
+  E['btn-clear'].addEventListener('click', function(){ clearTrails(); clearSeries(); });
+  E['btn-std'].addEventListener('click', function(){
+    P.m1=1; P.m2=1; P.L1=1; P.L2=1; P.g=9.81; P.b=0;
+    ['m1','m2','L1','L2','g','b'].forEach(function(k){ E['s-'+k].value = P[k]; });
+    onParam(); rebaseline(); resetSection(); clearSeries(); fitCamera(false);
+  });
+  E['btn-frecalc'].addEventListener('click', function(){ fracStart(); });
+  E['btn-fzoom'].addEventListener('click', function(){
+    F.x0=-Math.PI; F.x1=Math.PI; F.y0=-Math.PI; F.y1=Math.PI; F.stack.length=0; fracStart();
+  });
+
+  function toggle(el, key, after){
+    el.addEventListener('click', function(){
+      var on = el.getAttribute('aria-pressed') !== 'true';
+      el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      U[key] = on; if (after) after();
+    });
+  }
+  toggle(E['t-log'],   'logSpread', function(){ seedAll(); });
+  toggle(E['t-fan'],   'showFan');
+  toggle(E['t-trail'], 'showTrail', function(){ clearTrails(); });
+
+  /* 鼠标点击（detail>0）后摘掉焦点，否则点一次按钮就再也用不了快捷键；
+     键盘激活（detail===0）保留焦点，不破坏无障碍。 */
+  document.addEventListener('click', function(ev){
+    var b = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+    if (b && ev.detail > 0) b.blur();
+  });
+  E['tab-lab'].addEventListener('click', function(){ switchView('lab'); });
+  E['tab-frac'].addEventListener('click', function(){ switchView('frac'); });
+
+  document.addEventListener('keydown', function(ev){
+    var tg = ev.target, tn = tg && tg.tagName;
+    if (tn === 'INPUT' || tn === 'SELECT' || tn === 'TEXTAREA') return;
+    /* 只有空格/回车会和按钮的默认激活冲突，其余按键不必让路 */
+    if (tn === 'BUTTON' && (ev.key === ' ' || ev.key === 'Enter')) return;
+    if (ev.isComposing || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    var k = ev.key;
+    if (k === ' '){ ev.preventDefault(); setPlay(!S.run); }
+    else if (k === 'r' || k === 'R'){ seedAll(); }
+    else if (k === 'c' || k === 'C'){ clearTrails(); clearSeries(); }
+    else if (k === 'ArrowLeft'){ ev.preventDefault(); E['s-speed'].value = Math.max(0.1, U.speed-0.1); onParam(); }
+    else if (k === 'ArrowRight'){ ev.preventDefault(); E['s-speed'].value = Math.min(4, U.speed+0.1); onParam(); }
+    else if (k >= '1' && k <= '7'){ applyPreset(+k - 1); }
+  });
+
+  window.addEventListener('resize', function(){ needResize = true; stageRect = null; });
+  window.addEventListener('scroll', function(){ stageRect = null; }, true);
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden){ cancelAnimationFrame(rafId); rafId = 0; }
+    else { prevTs = 0; S.acc = 0; if (!rafId) rafId = requestAnimationFrame(frame); }
+  });
+  if (window.ResizeObserver){
+    /* 观察器回调里只置标记，绝不在里面改尺寸 ——
+       那会引发布局抖动和 "ResizeObserver loop completed" 控制台报错。 */
+    var ro = new ResizeObserver(function(){ needResize = true; stageRect = null; });
+    ['cv-stage','cv-phase','cv-poincare','cv-diverge','fr-box'].forEach(function(k){
+      if (E[k]) ro.observe(E[k]);
+    });
+  }
+  /* ResizeObserver 不会因为 DPR 变化触发（把窗口拖到另一块屏幕，CSS 尺寸没变），
+     所以还要一个自我重挂的 matchMedia 监听。 */
+  (function watchDPR(){
+    try{
+      var mq = matchMedia('(resolution: '+(window.devicePixelRatio||1)+'dppx)');
+      var h = function(){ needResize = true; watchDPR(); };
+      if (mq.addEventListener) mq.addEventListener('change', h, {once:true});
+      else if (mq.addListener) mq.addListener(h);
+    }catch(e){}
+  })();
+}
+
+function boot(){
+  buildFracLUT(); buildColors(); buildPresets(); buildBarCSS();
+  V.stage    = makeView(E['cv-stage'], true);
+  V.phase    = makeView(E['cv-phase'], false);
+  V.poincare = makeView(E['cv-poincare'], false);
+  V.diverge  = makeView(E['cv-diverge'], false);
+  V.fracUI   = makeView(E['cv-frac-ui'], false);
+  bindAll(); bindStage(); bindFrac();
+  onParam();
+  applyPreset(4);
+  resizeAll();
+  selfTest();
+  var calm = false;
+  try{ calm = matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  if (calm){ U.trail = 160; E['s-trail'].value = 160; syncOutputs(); }
+  setPlay(!calm);
+  rafId = requestAnimationFrame(frame);
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+
+})();
+</script>
+</body>
+</html>
