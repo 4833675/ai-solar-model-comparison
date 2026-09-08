@@ -1294,6 +1294,24 @@
       correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
       note: '离线原生 WebGL2 版完整实现 JPL 世纪率/开普勒轨道、七颗卫星、四颗周期彗星、双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 实跑为 4× MSAA、约 144 FPS，控制台无错误，轨道诊断残差为零；拖拽误点抑制、安全缩放、聚焦、真实比例与暂停均有效，主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+    },
+    'DeepSeekV4.1Flash0910(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 15, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 4.5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 一句话版完整实现 JPL 世纪率/开普勒轨道、15 颗卫星、土星和天王星环及双向环影、小行星带与柯伊伯带、Bloom/ACES、大气和持续跟随。1440×900 高倍推进稳定且无控制台错误；海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转，其他母星赤道卫星的倾角又绕世界 X 轴施加，只能近似对应真实参考面。它没有哈雷彗星；缩放可进入大型天体，R 键只恢复速度和镜头，不恢复时间、曝光与显示状态。'
+    },
+    'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系与双向环影、小行星带和柯伊伯带、Bloom/ACES、大气及持续跟随。1440×900 高倍推进保持有限坐标且无控制台错误；海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转。哈雷按 75.32 年密切周期从 1986 年近日点推进，下一次模型近日点约落在 2061-06-08，比文案所述 2061 年 7 月提前约 50 天。缩放可进入大型天体，“此刻”只恢复日期，不提供完整状态重置。'
     }
   };
 })();

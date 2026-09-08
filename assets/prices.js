@@ -38,6 +38,7 @@
     ['Kimi K3', 3, 15, .3, 'kimi'],
     ['DeepSeek V4 Pro 0813', 1.32, 3.96, .044, 'deepseek'],
     ['DeepSeek V4 Flash 0731', .44, 1.32, .014, 'deepseek'],
+    ['DeepSeek V4.1 Flash 0910', .44, 1.32, .014, 'deepseek', null, '2026-09-08'],
     ['Qwen 3.8 Max', 2, 6, .25, 'qwen', 'qwenCache'],
     ['Qwen 3.8 Flash', .15, .47, .016, 'qwen'],
     ['GLM 5.3', 1.4, 4.4, .26, 'glm'],

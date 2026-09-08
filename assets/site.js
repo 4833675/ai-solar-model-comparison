@@ -34,6 +34,7 @@
     'Kimi K3 (Max)': { direction: 'up', count: 1, zh: '性价比不够', en: 'Not cost-effective enough' },
     'DeepSeek V4 Pro 0813 (Max)': { direction: 'down', count: 1, zh: '梁子要加油啊', en: 'Liangzi needs to step it up' },
     'DeepSeek V4 Flash 0731 (Max)': { direction: 'down', count: 3, zh: '看看GLM Flash？', en: 'Maybe look at GLM Flash?' },
+    'DeepSeek V4.1 Flash 0910 (Max)': { direction: 'down', count: 3, zh: '梁子继续加油啊', en: 'Keep it up, Liangzi' },
     'Qwen 3.8 Max (Max)': { direction: 'down', count: 1, zh: '纯属骗钱', en: 'A pure rip-off' },
     'Qwen 3.8 Flash (xHigh)': { direction: 'down', count: 4, zh: '一个任务花了¥20！', en: '¥20 for a single task!' },
     'Gemini 3.7 Flash (high)': { direction: 'up', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
