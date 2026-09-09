@@ -1575,7 +1575,7 @@ window.WORKS=[
  {
   "id": "GPT5.6SolUltra-WebGL2",
   "file": "models/GPT5.6SolUltra-WebGL2.html",
-  "model": "GPT-5.6 Sol (Ultra) #1",
+  "model": "GPT-5.6 Sol (Ultra)",
   "group": "A",
   "pair": "gpt56sol",
   "featured": true,

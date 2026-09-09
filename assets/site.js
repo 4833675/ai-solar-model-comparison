@@ -96,11 +96,48 @@
     const match = MODEL_LOGOS.find(([pattern]) => pattern.test(model));
     return match ? `assets/logos/${match[1]}.png` : null;
   };
+  const compactTierLabel = work => [0, 1, 2, 3].includes(work.tier) ? `T${work.tier}` : tierLabel(work.tier);
+  const variantPopoverId = work => `table-variants-${String(work.id || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+  const nestedVariantRuns = variant => {
+    const runs = variant.tableAlternates || [];
+    if (!runs.length) return '';
+    const summary = t(runs.length === 1 ? 'table.variants.moreOne' : 'table.variants.more', { count: runs.length });
+    return `<details class="table-variant-reruns"><summary>${esc(summary)}<b aria-hidden="true">⌄</b></summary>
+      <div>${runs.map(run => `<div class="table-variant-rerun">
+        <a href="${link(run)}" aria-label="${esc(t('card.openAria', { name: run.model }))}"><span>${esc(run.model)}</span><i aria-hidden="true">↗</i></a>
+        <span>${scoreCell(run)}</span>
+      </div>`).join('')}</div></details>`;
+  };
+  const variantList = work => {
+    const alternates = work.tableAlternates || [];
+    if (!alternates.length) return '';
+    const id = variantPopoverId(work);
+    const base = work.tableVariantBase || recommendationModelKey(work.model);
+    const effortGroup = work.tableVariantType === 'effort';
+    const openLabel = effortGroup
+      ? t('table.efforts.openAria', { name: base, count: alternates.length })
+      : t(alternates.length === 1 ? 'table.variants.openAriaOne' : 'table.variants.openAria', { name: base, count: alternates.length });
+    return `<button type="button" class="table-variants-trigger" popovertarget="${esc(id)}"
+      aria-label="${esc(openLabel)}" title="${esc(openLabel)}" aria-expanded="false"></button>
+      <div class="table-variants-popover" id="${esc(id)}" popover="auto" role="dialog"
+        aria-label="${esc(openLabel)}">
+        <header><div><span>${t(effortGroup ? 'table.efforts.title' : 'table.variants.title')}</span><strong>${esc(base)}</strong></div>
+          <button type="button" class="table-variants-close" popovertarget="${esc(id)}" popovertargetaction="hide"
+            aria-label="${esc(t(effortGroup ? 'table.efforts.closeAria' : 'table.variants.closeAria'))}">×</button></header>
+        <div class="table-variants-list">${alternates.map(variant => `<article class="table-variant-item">
+          <a href="${link(variant)}" aria-label="${esc(t('card.openAria', { name: variant.model }))}"><span>${esc(variant.model)}</span><i aria-hidden="true">↗</i></a>
+          <div class="table-variant-score">${scoreCell(variant)}</div>
+          <div class="table-variant-meta"><span>${esc(compactTierLabel(variant))}</span><span>${esc(variant.environment)}</span>
+            <span>${variant.tech === 'WebGL2' ? t('tech.nativeWebgl2') : esc(variant.tech)}</span><span>${codeSizeCell(variant)}</span></div>
+          ${nestedVariantRuns(variant)}
+        </article>`).join('')}</div>
+      </div>`;
+  };
   const modelCell = work => {
     const logo = modelLogoFor(work);
-    return `<a class="table-model" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work && work.model }))}">${logo
+    return `<span class="table-model-wrap"><a class="table-model" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work && work.model }))}">${logo
       ? `<span class="table-model-logo"><img src="${logo}" alt="" width="20" height="20" loading="lazy" decoding="async" aria-hidden="true"></span>`
-      : ''}<span>${esc(work && work.model)}</span></a>`;
+      : ''}<span>${esc(work && work.model)}</span></a>${variantList(work)}</span>`;
   };
   const codeSizeCell = work => `<span class="table-code-size">${t('unit.lines', { count: work.lines })} <small>(${kb(work.bytes)})</small></span>`;
   const environmentName = work => environmentTag(work).replace(/^in\s+/i, '');
@@ -132,15 +169,14 @@
       ? `<a class="table-price" href="${esc(value.source)}" target="_blank" rel="noopener noreferrer" title="${esc(title)}" aria-label="${esc(work.model + ': ' + text + '. ' + title)}">${text}</a>`
       : `<span class="table-price" title="${esc(title)}">${text}</span>`;
   }
-  function tableRows(works, key, direction, locale) {
-    const rows = works.map(work => {
+  const enrichTableRows = works => works.map(work => {
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
       return Object.assign({}, work, { environment: environmentName(work), personal,
         recommendation: personal ? personal.sortValue : 0,
         score: score ? score.total : -1,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
     });
-    return rows.sort((a, b) => {
+  const sortTableRows = (rows, key, direction, locale) => rows.sort((a, b) => {
       const x = a[key], y = b[key];
       if (PRICE_KEYS.includes(key)) {
         if (x == null || y == null) return x == null && y == null ? a.model.localeCompare(b.model, locale) : x == null ? 1 : -1;
@@ -155,6 +191,92 @@
       }
       return a.tier - b.tier || scoreOrder(a, b);
     });
+  function tableRows(works, key, direction, locale) {
+    return sortTableRows(enrichTableRows(works), key, direction, locale);
+  }
+  const numberedModel = work => {
+    const model = String(work && work.model || '');
+    const match = model.match(/^(.*?) #(\d+)(?: \(\d{6}\))?$/);
+    return match ? { base: match[1], run: Number(match[2]) } : null;
+  };
+  function collapseNumberedVariants(rows) {
+    const buckets = new Map();
+    rows.forEach(row => {
+      const variant = numberedModel(row);
+      const key = variant ? `${row.group || ''}\u0000${variant.base}` : `\u0000${row.id}`;
+      if (!buckets.has(key)) buckets.set(key, { base: variant && variant.base, rows: [] });
+      buckets.get(key).rows.push(row);
+    });
+    return [...buckets.values()].map(bucket => {
+      if (!bucket.base || bucket.rows.length < 2) return bucket.rows[0];
+      const ranked = bucket.rows.slice().sort((a, b) => scoreOrder(a, b));
+      return Object.assign({}, ranked[0], { tableVariantBase: bucket.base, tableVariantType: 'runs', tableAlternates: ranked.slice(1) });
+    });
+  }
+  const SOL_EFFORT_ORDER = { Ultra: 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
+  const solEffortLevel = work => {
+    const model = String(work && work.model || '').replace(/ \(\d{6}\)$/, '');
+    const match = model.match(/^GPT-5\.6 Sol \((Ultra|Max|xHigh|high|Medium|Light)\)(?: #\d+)?$/);
+    return match ? match[1] : null;
+  };
+  function collapseSolEfforts(rows) {
+    const regular = [], efforts = new Map();
+    rows.forEach(row => {
+      const level = solEffortLevel(row);
+      if (!level) return regular.push(row);
+      const key = row.group || '';
+      if (!efforts.has(key)) efforts.set(key, []);
+      efforts.get(key).push({ row, level });
+    });
+    efforts.forEach(items => {
+      if (items.length < 2) return regular.push(...items.map(item => item.row));
+      const ordered = items.slice().sort((a, b) => SOL_EFFORT_ORDER[a.level] - SOL_EFFORT_ORDER[b.level]);
+      const ultra = ordered.find(item => item.level === 'Ultra') || ordered[0];
+      regular.push(Object.assign({}, ultra.row, {
+        tableVariantBase: 'GPT-5.6 Sol',
+        tableVariantType: 'effort',
+        tableAlternates: ordered.filter(item => item !== ultra).map(item => item.row),
+      }));
+    });
+    return regular;
+  }
+  const collapseTableVariants = rows => collapseSolEfforts(collapseNumberedVariants(rows));
+  function tableDisplayRows(works, key, direction, locale) {
+    return sortTableRows(collapseTableVariants(enrichTableRows(works)), key, direction, locale);
+  }
+  const tableDisplayRowCount = works => collapseTableVariants(works).length;
+
+  function installTableVariantPopovers() {
+    if (document.documentElement.dataset.tableVariantPopovers === 'ready') return;
+    document.documentElement.dataset.tableVariantPopovers = 'ready';
+    let active = null;
+    const triggerFor = popover => [...document.querySelectorAll('.table-variants-trigger')]
+      .find(button => button.getAttribute('popovertarget') === popover.id);
+    const place = popover => {
+      const trigger = triggerFor(popover);
+      if (!trigger || !popover.matches(':popover-open')) return;
+      const rect = trigger.getBoundingClientRect(), edge = 12, gap = 8;
+      const left = Math.max(edge, Math.min(innerWidth - popover.offsetWidth - edge,
+        rect.right - popover.offsetWidth));
+      const below = innerHeight - rect.bottom - gap - edge;
+      const above = rect.top - gap - edge;
+      const useAbove = below < Math.min(popover.offsetHeight, 240) && above > below;
+      popover.style.maxHeight = `${Math.max(160, Math.floor(useAbove ? above : below))}px`;
+      const top = useAbove ? rect.top - popover.offsetHeight - gap : rect.bottom + gap;
+      popover.style.left = `${Math.round(left)}px`;
+      popover.style.top = `${Math.round(Math.max(edge, top))}px`;
+    };
+    document.addEventListener('toggle', event => {
+      const popover = event.target;
+      if (!popover.classList || !popover.classList.contains('table-variants-popover')) return;
+      const trigger = triggerFor(popover);
+      const open = event.newState === 'open';
+      if (trigger) trigger.setAttribute('aria-expanded', String(open));
+      active = open ? popover : active === popover ? null : active;
+      if (open) requestAnimationFrame(() => place(popover));
+    }, true);
+    addEventListener('resize', () => active && place(active));
+    addEventListener('scroll', () => active && place(active), true);
   }
   const MODEL_GAP_DEFS = [
     { key: 'prompt', leftId: 'Opus5Ultra-WebGL2', middleId: 'Hy4Preview(high)V2', rightId: 'DoubaoSeedEvolving0827(Max)V1' },
@@ -953,7 +1075,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId: id => visibleWorks().find(w => w.id === id),

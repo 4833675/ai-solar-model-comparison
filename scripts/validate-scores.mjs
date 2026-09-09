@@ -73,7 +73,7 @@ const CANONICAL_NAMES = {
   'GPT5.6LunaMax-TasksAssignedByOpus5': 'GPT-5.6 Luna (Max)',
   'GPT5.6Sol(Max)V1': 'GPT-5.6 Sol (Max)',
   'GPT5.6SolUltra-TasksAssignedByOpus5': 'GPT-5.6 Sol (Ultra)',
-  'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra) #1',
+  'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra)',
   'GPT5.6SolUltra': 'GPT-5.6 Sol (Ultra) #2',
   'GPT5.6Sol(xhigh)V1': 'GPT-5.6 Sol (xHigh) #1',
   'GPT5.6Sol(xhigh)V2': 'GPT-5.6 Sol (xHigh) #2',
@@ -559,6 +559,20 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
+for (const [group, expectedCount] of [['A', 29], ['B', 28]]) {
+  const groupWorks = visibleWorks.filter(work => work.group === group);
+  const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
+  check(displayRows.length === expectedCount && SITE.tableDisplayRowCount(groupWorks) === expectedCount, `${group}: numbered reruns must collapse to the expected model-row count`);
+  for (const row of displayRows.filter(work => work.tableAlternates)) {
+      check(row.tableAlternates.every(alternate => SITE.scoreOrder(row, alternate) <= 0), `${group} ${row.tableVariantBase}: primary table row must retain the highest-scoring run`);
+  }
+  const sol = displayRows.find(work => work.tableVariantType === 'effort');
+  check(sol?.id === (group === 'A' ? 'GPT5.6SolUltra-WebGL2' : 'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === 5, `${group}: GPT-5.6 Sol must default to Ultra and collapse the other five effort levels`);
+  if (group === 'A') {
+    const xhigh = sol.tableAlternates.find(work => /\(xHigh\)/.test(work.model));
+    check(xhigh?.tableAlternates?.length === 2, 'A: collapsed GPT-5.6 Sol xHigh effort must retain its two lower-scoring reruns');
+  }
+}
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
@@ -1027,7 +1041,7 @@ check(siteSource.includes("Math.min(3, r.otherComets)") && siteSource.includes("
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
 check(!siteSource.includes("w.tech === 'Canvas2D' ? 10") && !siteSource.includes("parts.visual"), 'Canvas2D and legacy visual evidence must not receive score deductions or points');
 check((siteSource.match(/s\.total >= 95/g) || []).length === 2, 'Both score badge and tooltip must use the inclusive 95-point green threshold for every non-benchmark entry');
-check((siteSource.match(/card\.openAria/g) || []).length === 5, 'Table model links, pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
+check((siteSource.match(/card\.openAria/g) || []).length >= 6, 'Table model links, rerun popovers, pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
 check(cssSource.includes('.model-gap-model>div:first-child>span{') && !cssSource.includes('.model-gap-model span{'), 'Model-gap eyebrow styling must not turn nested Ultra or score spans into block elements');
@@ -1081,6 +1095,7 @@ for (const lang of ['zh', 'en']) {
     vm.runInContext(read(file), sandbox, { filename: file });
   const localSite = sandbox.window.SITE;
   localSite.installScoreTooltip = () => {};
+  localSite.installTableVariantPopovers = () => {};
   localSite.renderProbe = () => {};
   const home = lang === 'zh' ? zhHome : enHome;
   const inline = [...home.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(match => match[1].includes('const S=window.SITE'));
@@ -1088,12 +1103,13 @@ for (const lang of ['zh', 'en']) {
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
   const countRows = () => (body().match(/<tr>/g) || []).length;
-  check(countRows() === 47 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to the 47 one-line works without Claude Fable 5');
+  check(countRows() === 29 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 29 one-line model rows without Claude Fable 5');
+  check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
   for (const [index,group] of ['A','B'].entries()) {
     tabs[index].listeners.click();
     const works = localSite.visibleWorks().filter(work => work.group === group);
-    check(countRows() === works.length, lang + ': tab must show only its own group');
+    check(countRows() === localSite.tableDisplayRowCount(works), lang + ': tab must show one primary row per numbered model family in its own group');
     check(tabs[index].attributes['aria-selected'] === 'true' && tabs[index].tabIndex === 0 && tabs[1-index].tabIndex === -1, lang + ': selected tab must expose accessible state');
     check(one('#tablePanel').attributes['aria-labelledby'] === 'tableTab'+group, lang + ': panel must be named by the selected tab');
     for (const button of buttons) {
@@ -1101,7 +1117,7 @@ for (const lang of ['zh', 'en']) {
         button.onclick();
         check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
         check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
-        const first = localSite.tableRows(works,button.dataset.priceSort,direction,lang)[0];
+        const first = localSite.tableDisplayRows(works,button.dataset.priceSort,direction,lang)[0];
         check(body().startsWith('<tr>\n      <td class="table-model-cell">' + localSite.modelCell(first) + '</td>'), lang + ': sort must reorder only the selected group');
       }
     }
@@ -1115,7 +1131,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
   check(countRows() === 2, lang + ': model search must filter the active one-line tab');
-  check(one('#tableCountA').textContent === '2 / 47' && one('#tableCountB').textContent === '2 / 43', lang + ': both tabs must show filtered and total counts');
+  check(one('#tableCountA').textContent === '2 / 29' && one('#tableCountB').textContent === '2 / 28', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[1].listeners.click();
   check(countRows() === 2 && body().includes('Opus5Ultra-TasksAssignedByOpus5') && body().includes('Opus5(Low)V1-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
@@ -1125,9 +1141,9 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   check(body().includes('colspan="9"'), lang + ': empty state must span all nine columns');
   one('#modelSearchClear').listeners.click();
-  check(countRows() === 43, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 28, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 47, lang + ': one-line tab must restore its 47 entries');
+  check(countRows() === 29, lang + ': one-line tab must restore its 29 primary model rows');
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('105') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current score with two other-comet points');
@@ -1232,7 +1248,7 @@ for (const id of ['Opus5Ultra-WebGL2', 'Hy4Preview(high)V2', 'DoubaoSeedEvolving
 }
 check(typeof SITE.effortComparisonWorks === 'function' && typeof SITE.effortDocumentWorks === 'function' && typeof SITE.effortComparisonBlock === 'function' && typeof SITE.effortComparisonMatches === 'function', 'SITE must expose both six-way reasoning-effort comparison APIs');
 const effortWorks = SITE.effortComparisonWorks();
-check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6Sol(Max)V1', 'GPT5.6Sol(xhigh)V3', 'GPT5.6Sol(high)V1', 'GPT5.6Sol(Medium)V1', 'GPT5.6Sol(Light)V1']), 'The reasoning-effort comparison must preserve Ultra #1, Max, xHigh #3, high, Medium, and Light');
+check(JSON.stringify(effortWorks.map(work => work.id)) === JSON.stringify(['GPT5.6SolUltra-WebGL2', 'GPT5.6Sol(Max)V1', 'GPT5.6Sol(xhigh)V3', 'GPT5.6Sol(high)V1', 'GPT5.6Sol(Medium)V1', 'GPT5.6Sol(Light)V1']), 'The reasoning-effort comparison must preserve Ultra, Max, xHigh #3, high, Medium, and Light');
 check(SITE.effortComparisonMatches(effortWorks, 'GPT-5.6 Sol') && SITE.effortComparisonMatches(effortWorks, 'xhigh') && !SITE.effortComparisonMatches(effortWorks, 'Kimi'), 'The reasoning-effort comparison must follow model-name search filtering');
 const effortHtml = SITE.effortComparisonBlock(effortWorks);
 for (const work of effortWorks) {
@@ -1288,7 +1304,7 @@ check(enHome.includes('<th data-k="model">Model</th><th data-k="tier">Tier</th><
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
-  check(page.includes('S.tableRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes('S.recommendationSymbols(w.personal)'), 'Table rows must render colored family-level personal recommendations');
+  check(page.includes('S.tableDisplayRows(works.filter(w=>w.group===tableGroup),sk,sd,') && page.includes('S.recommendationSymbols(w.personal)'), 'Table rows must collapse numbered reruns while rendering colored family-level personal recommendations');
   check(page.includes('S.modelCell(w)') && page.includes('S.codeSizeCell(w)') && !page.includes('>运行 →</a>') && !page.includes('>Run →</a>'), 'Model names must open entries and replace the old Action column');
   check(page.includes('S.recommendationSymbols(w.personal)') && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use the normalized colored triangle renderer instead of thumb emoji');
 }
