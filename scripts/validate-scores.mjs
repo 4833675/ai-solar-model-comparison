@@ -132,6 +132,8 @@ const CANONICAL_NAMES = {
   'OmenAlpha(Max)V1': 'Omen Alpha (Max)',
   'OmenAlpha(Max)V1-TasksAssignedByOpus5': 'Omen Alpha (Max)',
   'GPT6Astra(Ultra)V1': 'GPT-6 Astra (Ultra)',
+  'GPT6Astra(Max)V1': 'GPT-6 Astra (Max)',
+  'GPT6Astra(xhigh)V1': 'GPT-6 Astra (xHigh)',
   'DeepSeekV4.1Flash0910(Max)V1': 'DeepSeek V4.1 Flash 0910 (Max)',
   'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5': 'DeepSeek V4.1 Flash 0910 (Max)',
 };
@@ -245,6 +247,8 @@ const EXPECTED_EXACT = {
   "OmenAlpha(Max)V1": 88.95,
   "OmenAlpha(Max)V1-TasksAssignedByOpus5": 96,
   "GPT6Astra(Ultra)V1": 100.5,
+  "GPT6Astra(Max)V1": 84.5,
+  "GPT6Astra(xhigh)V1": 84.5,
   "DeepSeekV4.1Flash0910(Max)V1": 90.983333333333,
   "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": 90.216666666667,
 };
@@ -362,6 +366,8 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   'OmenAlpha(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|4.5|4|-|1|0.5|1|1|0.5|-|-',
   'OmenAlpha(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-',
   'GPT6Astra(Ultra)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|3|5|5|5|-|1|1|1|1|0.5|-|-',
+  'GPT6Astra(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
+  'GPT6Astra(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
   'DeepSeekV4.1Flash0910(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-',
   'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-',
 };
@@ -378,10 +384,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 110, `WORKS count must be 110, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 110, `SCORES count must be 110, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 110, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 110, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 112, `WORKS count must be 112, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 112, `SCORES count must be 112, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 112, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 112, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -395,7 +401,7 @@ for (const work of WORKS) {
   check(stripCreationDate(work.model) === CANONICAL_NAMES[work.id], `${work.id}: dated model name must preserve its canonical base name`);
 }
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
-check(WORKS.filter(w => w.group === 'A').length === 61, 'Audited Group A count must be 61 after adding DeepSeek V4.1 Flash 0910');
+check(WORKS.filter(w => w.group === 'A').length === 63, 'Audited Group A count must be 63 after adding GPT-6 Astra Max and xHigh');
 check(WORKS.filter(w => w.group === 'B').length === 49, 'Audited Group B count must be 49 after adding DeepSeek V4.1 Flash 0910');
 const expectedHiddenIds = [
   'Qwen3.8Max-TasksAssignedByOpus5',
@@ -421,8 +427,8 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 90, 'Visible WORKS count must be 90');
-check(visibleWorks.filter(w => w.group === 'A').length === 47, 'Visible Group A count must be 47');
+check(visibleWorks.length === 92, 'Visible WORKS count must be 92');
+check(visibleWorks.filter(w => w.group === 'A').length === 49, 'Visible Group A count must be 49');
 check(visibleWorks.filter(w => w.group === 'B').length === 43, 'Visible Group B count must be 43');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -566,11 +572,13 @@ for (const [group, expectedCount] of [['A', 29], ['B', 28]]) {
   for (const row of displayRows.filter(work => work.tableAlternates)) {
       check(row.tableAlternates.every(alternate => SITE.scoreOrder(row, alternate) <= 0), `${group} ${row.tableVariantBase}: primary table row must retain the highest-scoring run`);
   }
-  const sol = displayRows.find(work => work.tableVariantType === 'effort');
+  const sol = displayRows.find(work => work.tableVariantBase === 'GPT-5.6 Sol');
   check(sol?.id === (group === 'A' ? 'GPT5.6SolUltra-WebGL2' : 'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === 5, `${group}: GPT-5.6 Sol must default to Ultra and collapse the other five effort levels`);
   if (group === 'A') {
     const xhigh = sol.tableAlternates.find(work => /\(xHigh\)/.test(work.model));
     check(xhigh?.tableAlternates?.length === 2, 'A: collapsed GPT-5.6 Sol xHigh effort must retain its two lower-scoring reruns');
+    const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
+    check(astra?.id === 'GPT6Astra(Ultra)V1' && JSON.stringify(astra.tableAlternates.map(work => work.id)) === JSON.stringify(['GPT6Astra(Max)V1', 'GPT6Astra(xhigh)V1']), 'A: GPT-6 Astra must default to Ultra and collapse Max plus xHigh');
   }
 }
 
@@ -667,7 +675,7 @@ const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
   const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
-  check(count === 110, `scores.js source key ${key} must occur exactly 110 times; duplicate/missing key detected (${count})`);
+  check(count === WORKS.length, `scores.js source key ${key} must occur exactly ${WORKS.length} times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
   check(!new RegExp(`\\b${old}\\s*:`).test(source), `scores.js still contains old score field ${old}`);
@@ -690,6 +698,8 @@ for (const [key, values] of numbered) {
 const doubaoOneLine = WORKS.find(w => w.id === 'DoubaoSeedEvolving0827(Max)V1');
 const doubaoDetailed = WORKS.find(w => w.id === 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5');
 const astraLightDetailed = WORKS.find(w => w.id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5');
+const astraMaxOneLine = WORKS.find(w => w.id === 'GPT6Astra(Max)V1');
+const astraXHighOneLine = WORKS.find(w => w.id === 'GPT6Astra(xhigh)V1');
 const opusLowDetailed = WORKS.find(w => w.id === 'Opus5(Low)V1-TasksAssignedByOpus5');
 const deepSeek41OneLine = WORKS.find(w => w.id === 'DeepSeekV4.1Flash0910(Max)V1');
 const deepSeek41Detailed = WORKS.find(w => w.id === 'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5');
@@ -717,6 +727,14 @@ check(doubaoOneLine?.pair === 'doubao' && doubaoDetailed?.pair === 'doubao', 'Do
 check(JSON.stringify(doubaoOneLine?.tags) === JSON.stringify(['in Zcode']) && JSON.stringify(doubaoDetailed?.tags) === JSON.stringify(['in Zcode']), 'Both Doubao 0827 runs must show in Zcode');
 check(doubaoOneLine?.bytes === 56571 && doubaoOneLine?.lines === 1378 && doubaoDetailed?.bytes === 92053 && doubaoDetailed?.lines === 2115, 'Doubao 0827 source metadata must match the supplied files');
 check(astraLightDetailed?.group === 'B' && astraLightDetailed?.tier === 1 && astraLightDetailed?.pair === null && JSON.stringify(astraLightDetailed?.tags) === JSON.stringify(['in Codex']), 'GPT-6 Astra Light must be an unpaired Tier 1 detailed-spec Codex run');
+for (const work of [astraMaxOneLine, astraXHighOneLine]) {
+  check(work?.group === 'A' && work?.tier === 1 && work?.pair === null && JSON.stringify(work?.tags).startsWith('["in Codex"'), `${work?.id || 'GPT-6 Astra effort'} must be an unpaired Tier 1 one-line Codex run`);
+  check(work?.tech === 'Three.js' && work?.needsFloat === true && work?.msaa === true && work?.net.length === 0, `${work?.id || 'GPT-6 Astra effort'} must be offline bundled Three.js with HDR and MSAA`);
+  check(WORK_CREATION_DATES[work.id] === '260910' && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} must use its filesystem creation date and saved screenshot`);
+  check(SITE.scoreFor(work).exact === 84.5 && SITE.scoreFor(work).total === 85, `${work.id} evidence score must be 84.5 / 85`);
+}
+check(astraMaxOneLine?.bytes === 9685732 && astraMaxOneLine?.lines === 199, 'GPT-6 Astra Max source metadata must match the supplied file');
+check(astraXHighOneLine?.bytes === 10213750 && astraXHighOneLine?.lines === 230, 'GPT-6 Astra xHigh source metadata must match the supplied file');
 check(opusLowDetailed?.group === 'B' && opusLowDetailed?.tier === 1 && opusLowDetailed?.pair === null && JSON.stringify(opusLowDetailed?.tags) === JSON.stringify(['in Claude Code']), 'Claude Opus 5 Low must be an unpaired Tier 1 detailed-spec Claude Code run');
 check(astraLightDetailed?.bytes === 46568 && astraLightDetailed?.lines === 94 && astraLightDetailed?.msaa === true && opusLowDetailed?.bytes === 85421 && opusLowDetailed?.lines === 1713 && opusLowDetailed?.msaa === true, 'Astra Light and Opus Low source metadata must match the supplied files');
 check(deepSeek41OneLine?.group === 'A' && deepSeek41Detailed?.group === 'B' && deepSeek41OneLine?.tier === 3 && deepSeek41Detailed?.tier === 3, 'Both DeepSeek V4.1 Flash 0910 runs must be Tier 3');
@@ -1105,6 +1123,7 @@ for (const lang of ['zh', 'en']) {
   const countRows = () => (body().match(/<tr>/g) || []).length;
   check(countRows() === 29 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 29 one-line model rows without Claude Fable 5');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
+  check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 2 个推理强度' : 'Show 2 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
   for (const [index,group] of ['A','B'].entries()) {
     tabs[index].listeners.click();
@@ -1334,8 +1353,8 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">47') && enHome.includes('id="aAll">47') && zhHome.includes('id="bAll">43') && enHome.includes('id="bAll">43') && zhHome.includes('id="tAll">90') && enHome.includes('id="tAll">90'), 'Both home pages must publish 47/43 and 90-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 47 件和文档组 43 件') && enHome.includes('prefer the 30 paired results over treating all 47 one-line and 43 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">49') && enHome.includes('id="aAll">49') && zhHome.includes('id="bAll">43') && enHome.includes('id="bAll">43') && zhHome.includes('id="tAll">92') && enHome.includes('id="tAll">92'), 'Both home pages must publish 49/43 and 92-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 49 件和文档组 43 件') && enHome.includes('prefer the 30 paired results over treating all 49 one-line and 43 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('30 组同模型') && enHome.includes('30 same-model') && zhHome.includes('52.81 / 70') && enHome.includes('52.81 / 70') && zhHome.includes('31.61 / 36') && enHome.includes('31.61 / 36'), 'Both home pages must publish the current V3 30-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
@@ -1397,10 +1416,10 @@ check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"im
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      47,
-      52.46361702127658,
-      31.334397163120573,
-      80.09588652482269
+      49,
+      52.34265306122448,
+      31.484013605442186,
+      80.27564625850339
     ],
     "b": [
       43,
@@ -1411,10 +1430,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferences": {
     "a": [
-      46,
-      52.21282608695651,
-      31.232971014492764,
-      79.66318840579708
+      48,
+      52.099791666666654,
+      31.389930555555566,
+      79.8647222222222
     ],
     "b": [
       43,
@@ -1425,10 +1444,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutTier4": {
     "a": [
-      46,
-      52.82891304347825,
-      31.55326086956523,
-      80.59956521739128
+      48,
+      52.69020833333332,
+      31.69687500000001,
+      80.76208333333331
     ],
     "b": [
       40,
@@ -1439,10 +1458,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferencesOrTier4": {
     "a": [
-      45,
-      52.58066666666665,
-      31.454444444444455,
-      80.16844444444442
+      47,
+      52.44957446808509,
+      31.605319148936182,
+      80.35276595744679
     ],
     "b": [
       40,

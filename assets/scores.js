@@ -1295,6 +1295,24 @@
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
       note: '离线原生 WebGL2 版完整实现 JPL 世纪率/开普勒轨道、七颗卫星、四颗周期彗星、双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 实跑为 4× MSAA、约 144 FPS，控制台无错误，轨道诊断残差为零；拖拽误点抑制、安全缩放、聚焦、真实比例与暂停均有效，主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
     },
+    'GPT6Astra(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线自包含 Three.js 一句话版完整实现 JPL 世纪率/开普勒轨道、地球月球、土星环双向阴影、小行星带、Bloom/ACES、大气、持续跟随和真实比例。1440×900 实跑为 HDR、4× MSAA、约 60 FPS；以 1 年/秒推进到 2047 年仍保持有限坐标，暂停可锁住日期，土星聚焦与安全缩放有效。它没有哈雷或其他彗星，也没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+    },
+    'GPT6Astra(xhigh)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
+      note: '离线自包含 Three.js 一句话版完整实现 JPL 世纪率/开普勒轨道、地球月球、土星环双向阴影、独立运行的小行星带、Bloom/ACES、大气、持续跟随及三种空间比例。1440×900 以 365 天/秒推进约 803 天后坐标仍全部有限且无控制台错误；暂停锁住日期，土星聚焦与安全缩放有效。它没有哈雷或其他彗星，也没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+    },
     'DeepSeekV4.1Flash0910(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },

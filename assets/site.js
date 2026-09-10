@@ -213,34 +213,39 @@
       return Object.assign({}, ranked[0], { tableVariantBase: bucket.base, tableVariantType: 'runs', tableAlternates: ranked.slice(1) });
     });
   }
-  const SOL_EFFORT_ORDER = { Ultra: 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
-  const solEffortLevel = work => {
+  const EFFORT_ORDER = { Ultra: 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
+  const EFFORT_FAMILIES = ['GPT-5.6 Sol', 'GPT-6 Astra'];
+  const effortInfo = work => {
     const model = String(work && work.model || '').replace(/ \(\d{6}\)$/, '');
-    const match = model.match(/^GPT-5\.6 Sol \((Ultra|Max|xHigh|high|Medium|Light)\)(?: #\d+)?$/);
-    return match ? match[1] : null;
+    for (const family of EFFORT_FAMILIES) {
+      const prefix = family.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const match = model.match(new RegExp(`^${prefix} \\((Ultra|Max|xHigh|high|Medium|Light)\\)(?: #\\d+)?$`));
+      if (match) return { family, level: match[1] };
+    }
+    return null;
   };
-  function collapseSolEfforts(rows) {
+  function collapseEffortLevels(rows) {
     const regular = [], efforts = new Map();
     rows.forEach(row => {
-      const level = solEffortLevel(row);
-      if (!level) return regular.push(row);
-      const key = row.group || '';
+      const info = effortInfo(row);
+      if (!info) return regular.push(row);
+      const key = `${row.group || ''}\u0000${info.family}`;
       if (!efforts.has(key)) efforts.set(key, []);
-      efforts.get(key).push({ row, level });
+      efforts.get(key).push({ row, ...info });
     });
     efforts.forEach(items => {
       if (items.length < 2) return regular.push(...items.map(item => item.row));
-      const ordered = items.slice().sort((a, b) => SOL_EFFORT_ORDER[a.level] - SOL_EFFORT_ORDER[b.level]);
+      const ordered = items.slice().sort((a, b) => EFFORT_ORDER[a.level] - EFFORT_ORDER[b.level]);
       const ultra = ordered.find(item => item.level === 'Ultra') || ordered[0];
       regular.push(Object.assign({}, ultra.row, {
-        tableVariantBase: 'GPT-5.6 Sol',
+        tableVariantBase: ultra.family,
         tableVariantType: 'effort',
         tableAlternates: ordered.filter(item => item !== ultra).map(item => item.row),
       }));
     });
     return regular;
   }
-  const collapseTableVariants = rows => collapseSolEfforts(collapseNumberedVariants(rows));
+  const collapseTableVariants = rows => collapseEffortLevels(collapseNumberedVariants(rows));
   function tableDisplayRows(works, key, direction, locale) {
     return sortTableRows(collapseTableVariants(enrichTableRows(works)), key, direction, locale);
   }
