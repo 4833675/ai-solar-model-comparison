@@ -51,6 +51,7 @@
     'Grok 4.6 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
     'Claude Sonnet 5 (Ultra)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
     'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
+    'MiMo X Pro Preview (Unknown)': { direction: 'down', count: 3, zh: '这是反向升级？', en: 'Is this a downgrade?' },
     'MiMo 2.5 Pro (high)': { direction: 'down', count: 1, zh: '小爱同学…', en: 'XiaoAi…' },
     'Gemini 3.6 Flash (high)': { direction: 'down', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
     'Doubao Seed Evolving 0827 (Max)': { direction: 'up', count: 3, zh: '豆包怎么了？现在挺好的', en: 'What is wrong with Doubao? It is pretty good now' },

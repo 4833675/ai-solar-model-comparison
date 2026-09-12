@@ -1330,6 +1330,24 @@
       correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
       interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
       note: '离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系与双向环影、小行星带和柯伊伯带、Bloom/ACES、大气及持续跟随。1440×900 高倍推进保持有限坐标且无控制台错误；海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转。哈雷按 75.32 年密切周期从 1986 年近日点推进，下一次模型近日点约落在 2061-06-08，比文案所述 2061 年 7 月提前约 50 天。缩放可进入大型天体，“此刻”只恢复日期，不提供完整状态重置。'
+    },
+    'MiMoXProPreview(Unknown)V1': {
+      reference: false,
+      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 0.5, pauseReset: 0.5 }, fatal: null,
+      note: "联网 Three.js 一句话版具备 J2000 开普勒轨道、月球、小行星带和 Bloom/ACES，1440×900 实跑无控制台错误。土星环没有双向环影，大气仅为不考虑太阳方向的边缘光；“真实尺寸”只是更改非线性放大系数，且没有同步云层、大气和月球尺寸。聚焦只把相机一次插值到目标的 55%，后续仅移动观察目标，近景与持续跟随不完整。金星和天王星的负自转周期与大倾角叠加产生重复逆行；没有彗星，空格可暂停，但没有完整状态重置。"
+    },
+    'MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 0.5, epoch: 1 },
+      orbitRuntime: { pathFit: 0, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 2.5, integrity: 3.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系及双向环影、小行星带、Bloom/ACES 和大气，1440×900 为 HDR/4× MSAA，加速推进约 24 年后坐标仍有限且无控制台错误。行星位置直接采用黄道坐标，轨道线却转换为 Y 轴向上，导致行星明显脱离轨道线；卫星参考面也与母星公转平面错配。海卫一负周期与大倾角重复翻转方向，哈雷下一次模型近日点约为 2061-06-08。滚轮缩放会被未结束的聚焦目标距离拉回；天体列表漏掉月球，“此刻”只恢复日期与速度，没有完整状态重置。"
     }
   };
 })();
