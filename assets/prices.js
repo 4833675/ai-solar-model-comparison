@@ -14,6 +14,7 @@
     qwen: 'https://www.alibabacloud.com/help/en/model-studio/model-pricing',
     glm: 'https://docs.z.ai/guides/overview/pricing',
     longcat: 'https://longcat.ai/platform/docs/Pricing/LongCat-2.0.html',
+    stepfun: 'https://platform.stepfun.ai/docs/en/guides/pricing/details',
     mimo: 'https://mimo.mi.com/models/mimo-v2.5-pro',
     minimax: 'https://platform.minimax.io/docs/guides/pricing-paygo',
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
@@ -45,6 +46,7 @@
     ['GLM 5.3 Flash', .15, .5, .03, 'glm'],
     ['Doubao Seed Evolving 0827', .9, 4.47, .18, null, 'estimated'],
     ['LongCat 2.0', .75, 2.95, .015, 'longcat'],
+    ['Step 5 Preview', 1, 2.7, .05, 'stepfun', null, '2026-09-22'],
     ['MiMo 2.5 Pro', .435, .87, .0036, 'mimo'],
     ['MiniMax M3', 1.2, 4.8, .24, 'minimax', 'minimaxList'],
   ];

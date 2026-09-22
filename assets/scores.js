@@ -1348,6 +1348,26 @@
       correctness: { runtime: 5, data: 2.5, integrity: 3.5 }, visualBase: null,
       interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
       note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系及双向环影、小行星带、Bloom/ACES 和大气，1440×900 为 HDR/4× MSAA，加速推进约 24 年后坐标仍有限且无控制台错误。行星位置直接采用黄道坐标，轨道线却转换为 Y 轴向上，导致行星明显脱离轨道线；卫星参考面也与母星公转平面错配。海卫一负周期与大倾角重复翻转方向，哈雷下一次模型近日点约为 2061-06-08。滚轮缩放会被未结束的聚焦目标距离拉回；天体列表漏掉月球，“此刻”只恢复日期与速度，没有完整状态重置。"
+    },
+    'Step5Preview(high)V1': {
+      reference: false,
+      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0.5, stability: 0.5 }, moons: 12, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 3, data: 2, integrity: 2 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 0.5, pauseReset: 0.5 }, fatal: 'L2',
+      fatalReason: "选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。",
+      note: "联网 Three.js 一句话版包含 JPL 世纪率/开普勒行星轨道、12 颗卫星、哈雷参数、小行星带与柯伊伯带、Bloom/ACES。默认 1440×900 可运行，但选择月球后 updateClock 读取不存在的轨道根数，每帧抛出异常并跳过最终绘制，按 L2 封顶。轨道线把近日点黄经直接作为近心点幅角，与行星位置错位；哈雷同样混淆近日点角度与历元。土星环额外旋转 90°且阴影判定反向，大气只是边缘光；地球云层半径为 6453.823 显示单位，而地球仅 1.05。卫星统一使用黄道参考面，海卫一重复翻转逆行，行星聚焦为了容纳全部卫星而过远；真实比例未同步卫星尺寸，缺少完整重置。"
+    },
+    'Step5Preview(high)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 0.4, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 0, hasEarthMoon: false, halley: true, otherComets: 0,
+      correctness: { runtime: 4, data: 2, integrity: 1 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 0.5, follow: 0, pauseReset: 0.5 }, fatal: 'L2',
+      fatalReason: "八颗卫星绘制矩阵为 NaN，且全屏合成布局错误导致画面与标签错位。",
+      note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒行星轨道、哈雷、环影、小行星带、ACES 与大气。八颗卫星都缺少 tilt、poleLon、rotH，导致自转轴和绘制矩阵出现 NaN，实体无法正常绘制，卫星不计有效数量；全屏三角形数据又被按错误的交错步长读取，使合成画面与标签、拾取位置错位，按 L2 封顶。加速推进约 664 天后行星位置有限且轨道残差为零，但聚焦目标仍停在旧位置；暂停只停止公转，行星仍自转。距离读数把压缩显示单位当 AU，光行时单位错误，哈雷模型近日点约 2061-06-08，缩放可进入天体，“此刻”只恢复日期。"
     }
   };
 })();
