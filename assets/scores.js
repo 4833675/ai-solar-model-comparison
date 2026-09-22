@@ -1368,6 +1368,42 @@
       interaction: { drag: 1, zoom: 0.5, focus: 0.5, follow: 0, pauseReset: 0.5 }, fatal: 'L2',
       fatalReason: "八颗卫星绘制矩阵为 NaN，且全屏合成布局错误导致画面与标签错位。",
       note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒行星轨道、哈雷、环影、小行星带、ACES 与大气。八颗卫星都缺少 tilt、poleLon、rotH，导致自转轴和绘制矩阵出现 NaN，实体无法正常绘制，卫星不计有效数量；全屏三角形数据又被按错误的交错步长读取，使合成画面与标签、拾取位置错位，按 L2 封顶。加速推进约 664 天后行星位置有限且轨道残差为零，但聚焦目标仍停在旧位置；暂停只停止公转，行星仍自转。距离读数把压缩显示单位当 AU，光行时单位错误，哈雷模型近日点约 2061-06-08，缩放可进入天体，“此刻”只恢复日期。"
+    },
+    'MiMo2.6Flash(Unknown)V1': {
+      reference: false,
+      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 0.4, atmo: 0.4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线打包 Three.js 一句话版具备 J2000 开普勒轨道、月球、小行星带和自制 Bloom；1440×900 加速推进约 927 天后位置有限且暂停锁住日期，聚焦跟随可用。土星环无双向环影，大气只是边缘光；默认 Bloom 路径的离屏材质没有启用色调映射，最终合成也未调用 ACES，只有关闭 Bloom 后直接渲染才使用 ACES。小行星带按墙钟整体旋转，暂停仍运动；金星和天王星的负自转周期与大倾角叠加造成重复逆行。“10y/s”实际为 912.5 天/秒；没有彗星，系统视图仅复位镜头。"
+    },
+    'MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 3, data: 3.5, integrity: 3 }, visualBase: null,
+      interaction: { drag: 0.5, zoom: 0.5, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系与双向环影、小行星带、Bloom/ACES 和大气。1440×900 为 HDR/4× MSAA，加速约 860 天后位置有限，暂停同时停止公转和自转。但选择非地球行星时 updateInfoPanel 再赋值 const lightMin，反复抛出异常，信息面板保留旧内容且阻断自动拉近镜头；渲染循环仍继续，故不作致命封顶。拖拽后仍可误选天体，缩放可进入天体。卫星使用统一的 30 小时自转周期，海卫一重复翻转逆行；哈雷模型近日点为 2061-06-08，与界面 7 月 28 日不符，重置视角并非完整状态重置。"
+    },
+    'MiMo2.6Pro(Unknown)V1': {
+      reference: false,
+      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: null,
+      interaction: { drag: 0.5, zoom: 0.5, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "联网 Three.js 一句话版具备 J2000 开普勒轨道、六颗卫星、小行星带、Bloom/ACES 和持续跟随；1440×900 默认及聚焦运行无脚本错误。土星环没有双向环影，大气仅为边缘光；卫星轨道都相对于世界平面，未使用母星赤道参考面。行星自转和小行星带按墙钟推进，暂停 0.3 秒后地球仍转约 0.105 弧度；负自转周期与大倾角叠加也使金星和天王星方向重复翻转。按下鼠标就选中，拖拽易误选；点选任意卫星都会跳到月球，镜头插值未完成即结束且缩放可进入大型天体。没有彗星，总览只恢复镜头。"
+    },
+    'MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 3.5, integrity: 3.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多类小天体带、Bloom/ACES 和大气。1440×900 为 HDR/4× MSAA，加速约 876 天后所有天体位置有限，暂停同时停止公转和自转，聚焦持续跟随。真实距离比例关闭后 compressTarget 虽回到 0.62，动画仍固定插值到 1，不能恢复压缩视图。海卫一重复翻转逆行；哈雷的离子尾方向指向太阳，模型近日点为 2061-06-08，与文案 7 月底不符。卫星实时距离混合真实 AU 与压缩坐标，存在数值失真；缩放可进入天体，“此刻”只恢复日期，缺少完整重置。"
     }
   };
 })();

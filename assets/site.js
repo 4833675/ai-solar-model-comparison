@@ -52,6 +52,8 @@
     'Claude Sonnet 5 (Ultra)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
     'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
     'Step 5 Preview (high)': { direction: 'down', count: 4, zh: '慢的离谱，蠢的吓人', en: 'Absurdly slow, frighteningly stupid' },
+    'MiMo 2.6 Flash (Unknown)': { direction: 'up', count: 2, zh: '也就是那么回事', en: 'Nothing particularly special' },
+    'MiMo 2.6 Pro (Unknown)': { direction: 'up', count: 2, zh: '也就是那么回事', en: 'Nothing particularly special' },
     'MiMo X Pro Preview (Unknown)': { direction: 'down', count: 3, zh: '这是反向升级？', en: 'Is this a downgrade?' },
     'MiMo 2.5 Pro (high)': { direction: 'down', count: 1, zh: '小爱同学…', en: 'XiaoAi…' },
     'Gemini 3.6 Flash (high)': { direction: 'down', count: 1, zh: '你就说快不快吧', en: 'You cannot deny it is fast' },
