@@ -48,6 +48,7 @@
     'GPT-5.5 (xHigh)': { direction: 'down', count: 5, zh: '你不喜欢Sol？', en: 'You do not like Sol?' },
     'LongCat 2.0 (high)': { direction: 'down', count: 3, zh: '我外卖到哪了？', en: 'Where is my food delivery?' },
     'MiniMax M3 (high)': { direction: 'down', count: 3, zh: '你还是老实的做视频吧', en: 'You should probably stick to making videos' },
+    'Grok 4.7 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
     'Grok 4.6 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
     'Claude Sonnet 5 (Ultra)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
     'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },

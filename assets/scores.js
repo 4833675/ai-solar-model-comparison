@@ -1404,6 +1404,24 @@
       correctness: { runtime: 5, data: 3.5, integrity: 3.5 }, visualBase: null,
       interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
       note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多类小天体带、Bloom/ACES 和大气。1440×900 为 HDR/4× MSAA，加速约 876 天后所有天体位置有限，暂停同时停止公转和自转，聚焦持续跟随。真实距离比例关闭后 compressTarget 虽回到 0.62，动画仍固定插值到 1，不能恢复压缩视图。海卫一重复翻转逆行；哈雷的离子尾方向指向太阳，模型近日点为 2061-06-08，与文案 7 月底不符。卫星实时距离混合真实 AU 与压缩坐标，存在数值失真；缩放可进入天体，“此刻”只恢复日期，缺少完整重置。"
+    },
+    'Grok4.7(xhigh)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true, otherComets: 1,
+      correctness: { runtime: 5, data: 4.5, integrity: 4 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线打包 Three.js、13 颗卫星及哈雷与恩克两颗彗星；采用 JPL 世纪率/开普勒轨道、双向环影、随时间运动的小天体带、Bloom/ACES、大气和聚焦跟随。1440×900 纹理全部加载，跳转至 2061 年哈雷场景后坐标保持有限，暂停锁住日期且无 WebGL/脚本错误。缩放下限仅 0.0004，可进入天体；“回到此刻”与场景预设只恢复日期或镜头，不一次恢复全部状态。海卫一的近似轨道与真实参考面仍有偏差。"
+    },
+    'Grok4.7(xhigh)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒行星轨道、八颗卫星、哈雷、土星和天王星环及双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 加速到 2029 年仍约 60 fps，所有天体位置有限，暂停锁住日期，土星聚焦工作且无 WebGL/脚本错误。海卫一同时采用负周期和 156.9° 倾角，逆行方向被重复翻转；滚轮下限 0.45 可进入大型天体，“此刻”仅恢复日期而非完整状态。"
     }
   };
 })();
