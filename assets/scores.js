@@ -1,4 +1,4 @@
-/* 证据值来自源码审计与统一浏览器实跑；旧 visualBase 仅保留为历史审计记录，不再参与评分。 */
+/* 评分输入来自源码审计与浏览器实跑，作者指定的满分项在 note 中注明；旧 visualBase 仅保留为历史记录，不参与评分。 */
 (function () {
   'use strict';
 
@@ -1422,6 +1422,15 @@
       correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
       interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
       note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒行星轨道、八颗卫星、哈雷、土星和天王星环及双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 加速到 2029 年仍约 60 fps，所有天体位置有限，暂停锁住日期，土星聚焦工作且无 WebGL/脚本错误。海卫一同时采用负周期和 156.9° 倾角，逆行方向被重复翻转；滚轮下限 0.45 可进入大型天体，“此刻”仅恢复日期而非完整状态。"
+    },
+    'Opus5.5(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 18, hasEarthMoon: true, halley: true, otherComets: 3,
+      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
+      note: "按站点作者明确要求，沿用 Fable 5.1 的满分方式，各评分项及两类额外奖励均设为满分，基础 106 分加 T0 3 分，总分 109。本次仅保存 1440×900 运行截图，未进行功能或轨道复测。"
     }
   };
 })();

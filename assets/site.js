@@ -24,6 +24,7 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+    'Claude Opus 5.5 (Max)': { direction: 'mixed', count: 5, symbols: '△△△△▽', sortValue: 3, zh: '5h12m·2.1亿·$75.50', en: '5h12m·210M·$75.50' },
     'Claude Opus 5 (Max)': { direction: 'up', count: 5, zh: '天下第一(天↑)', en: 'No. 1 under heaven (heaven ↑)' },
     'Claude Fable 5.1 (Max)': { direction: 'down', count: 3, zh: '在座的各位都是垃圾', en: 'Everyone here is trash' },
     'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '又快、又稳、又贵', en: 'Fast, reliable, and expensive' },

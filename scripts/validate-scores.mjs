@@ -24,6 +24,8 @@ const allowed = (value, values, label) => check(values.includes(value), `${label
 const finiteRange = (value, min, max, label) => check(Number.isFinite(value) && value >= min && value <= max, `${label}: expected finite ${min}..${max}, got ${value}`);
 
 const CANONICAL_NAMES = {
+  'Opus5.5(Max)V1': 'Claude Opus 5.5 (Max)',
+
   'Grok4.7(xhigh)V1': 'Grok 4.7 (xHigh)',
   'Grok4.7(xhigh)V1-TasksAssignedByOpus5': 'Grok 4.7 (xHigh)',
 
@@ -153,6 +155,8 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  'Opus5.5(Max)V1': 109,
+
   'Grok4.7(xhigh)V1': 95.45,
   'Grok4.7(xhigh)V1-TasksAssignedByOpus5': 92.45,
 
@@ -286,6 +290,8 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  'Opus5.5(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-',
+
   'Grok4.7(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|1|5|4.5|4|-|1|0.5|1|1|0.5|-|-',
   'Grok4.7(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|-|1|0.5|1|1|0.5|-|-',
 
@@ -426,10 +432,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|');
 
-check(Array.isArray(WORKS) && WORKS.length === 122, `WORKS count must be 122, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 122, `SCORES count must be 122, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 122, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 122, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 123, `WORKS count must be 123, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 123, `SCORES count must be 123, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 123, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 123, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -443,7 +449,7 @@ for (const work of WORKS) {
   check(stripCreationDate(work.model) === CANONICAL_NAMES[work.id], `${work.id}: dated model name must preserve its canonical base name`);
 }
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
-check(WORKS.filter(w => w.group === 'A').length === 68, 'Audited Group A count must be 68 after adding Grok 4.7');
+check(WORKS.filter(w => w.group === 'A').length === 69, 'Group A count must be 69 after adding author-scored Opus 5.5');
 check(WORKS.filter(w => w.group === 'B').length === 54, 'Audited Group B count must be 54 after adding Grok 4.7');
 const expectedHiddenIds = [
   'DeepSeek-V4-Flash-0731',
@@ -474,8 +480,8 @@ const expectedHiddenIds = [
 ].sort();
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
-check(visibleWorks.length === 98, 'Visible WORKS count must be 98');
-check(visibleWorks.filter(w => w.group === 'A').length === 53, 'Visible Group A count must be 53');
+check(visibleWorks.length === 99, 'Visible WORKS count must be 99');
+check(visibleWorks.filter(w => w.group === 'A').length === 54, 'Visible Group A count must be 54');
 check(visibleWorks.filter(w => w.group === 'B').length === 45, 'Visible Group B count must be 45');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
@@ -578,7 +584,7 @@ for (const [part, maximum] of Object.entries({features:12, orbit:30, moons:12, m
 check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SITE.scoreTipHtml(opusMax, opusMaxScore)), 'Opus 5 (Max) tooltip must contain only the current scoring treatment');
 
 const expectedPrices = {
-  'Claude Fable 5.1':[10,50,.25], 'Claude Opus 5':[5,25,.5],
+  'Claude Fable 5.1':[10,50,.25], 'Claude Opus 5':[5,25,.5], 'Claude Opus 5.5':[4,20,.2],
   'Claude Opus 4.8':[5,25,.5], 'Claude Sonnet 5':[2,10,.2], 'GPT-6 Astra':[20,75,2], 'GPT-5.6 Sol':[10,45,1],
   'GPT-5.6 Terra':[4,18,.4], 'GPT-5.6 Luna':[.4,1.8,.04], 'GPT-5.5':[10,45,1],
   'Gemini 3.1 Pro':[4,18,.4], 'Gemini 3.6 Flash':[1.5,7.5,.15], 'Gemini 3.7 Flash':[1.5,7.5,.15], 'Gemini 3.8 Flash':[1.5,7.5,.15],
@@ -641,7 +647,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 33], ['B', 32]]) {
+for (const [group, expectedCount] of [['A', 34], ['B', 32]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   check(displayRows.length === expectedCount && SITE.tableDisplayRowCount(groupWorks) === expectedCount, `${group}: numbered reruns must collapse to the expected model-row count`);
@@ -687,6 +693,7 @@ const expectedOtherComets = {
   'Grok4.5': 1,
   'LongCat2.0': 3,
   'GPT6Astra(Ultra)V1': 3,
+  'Opus5.5(Max)V1': 3,
   'Grok4.7(xhigh)V1': 1,
 };
 check(Math.max(...Object.values(expectedOtherComets)) === 3 && expectedOtherComets['Fable5.1(Max)V1'] === 3 && expectedOtherComets['GPT6Astra(Ultra)V1'] === 3, 'The audited maximum must be four total comets: Halley plus three others');
@@ -1198,7 +1205,7 @@ for (const lang of ['zh', 'en']) {
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
   const countRows = () => (body().match(/<tr>/g) || []).length;
-  check(countRows() === 33 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 33 one-line model rows without Claude Fable 5');
+  check(countRows() === 34 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 34 one-line model rows without Claude Fable 5');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 2 个推理强度' : 'Show 2 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -1226,8 +1233,8 @@ for (const lang of ['zh', 'en']) {
   tabs[0].listeners.click();
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
-  check(countRows() === 2, lang + ': model search must filter the active one-line tab');
-  check(one('#tableCountA').textContent === '2 / 33' && one('#tableCountB').textContent === '2 / 32', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(countRows() === 3, lang + ': model search must filter the active one-line tab');
+  check(one('#tableCountA').textContent === '3 / 34' && one('#tableCountB').textContent === '2 / 32', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[1].listeners.click();
   check(countRows() === 2 && body().includes('Opus5Ultra-TasksAssignedByOpus5') && body().includes('Opus5(Low)V1-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
@@ -1239,7 +1246,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchClear').listeners.click();
   check(countRows() === 32, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 33, lang + ': one-line tab must restore its 33 primary model rows');
+  check(countRows() === 34, lang + ': one-line tab must restore its 34 primary model rows');
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('105') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current score with two other-comet points');
@@ -1276,6 +1283,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
+  'Claude Opus 5.5 (Max)': ['mixed', 5, '5h12m·2.1亿·$75.50', '△△△△▽', 3],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
   'Claude Opus 5 (Ultra)': ['up', 5, '又快、又稳、又贵'],
   'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
@@ -1437,8 +1445,8 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">53') && enHome.includes('id="aAll">53') && zhHome.includes('id="bAll">45') && enHome.includes('id="bAll">45') && zhHome.includes('id="tAll">98') && enHome.includes('id="tAll">98'), 'Both home pages must publish 53/45 and 98-entry visible counts before JavaScript runs');
-check(zhHome.includes('一句话组 53 件和文档组 45 件') && enHome.includes('prefer the 34 paired results over treating all 53 one-line and 45 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">54') && enHome.includes('id="aAll">54') && zhHome.includes('id="bAll">45') && enHome.includes('id="bAll">45') && zhHome.includes('id="tAll">99') && enHome.includes('id="tAll">99'), 'Both home pages must publish 54/45 and 99-entry visible counts before JavaScript runs');
+check(zhHome.includes('一句话组 54 件和文档组 45 件') && enHome.includes('prefer the 34 paired results over treating all 54 one-line and 45 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('34 组同模型') && enHome.includes('34 same-model') && zhHome.includes('53.36 / 70') && enHome.includes('53.36 / 70') && zhHome.includes('30.76 / 36') && enHome.includes('30.76 / 36'), 'Both home pages must publish the current V3 34-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
@@ -1500,10 +1508,10 @@ check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"im
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      53,
-      52.72924528301886,
-      31.25597484276731,
-      80.1861006289308
+      54,
+      53.04907407407407,
+      31.343827160493838,
+      80.71969135802468
     ],
     "b": [
       45,
@@ -1514,10 +1522,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferences": {
     "a": [
-      52,
-      52.512499999999996,
-      31.1647435897436,
-      79.80506410256407
+      53,
+      52.84245283018867,
+      31.25597484276731,
+      80.3559119496855
     ],
     "b": [
       45,
@@ -1528,10 +1536,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutTier4": {
     "a": [
-      52,
-      53.05749999999999,
-      31.44807692307694,
-      80.63339743589742
+      53,
+      53.37716981132074,
+      31.53396226415096,
+      81.16861635220124
     ],
     "b": [
       43,
@@ -1542,10 +1550,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferencesOrTier4": {
     "a": [
-      51,
-      52.842941176470575,
-      31.358823529411783,
-      80.25366013071893
+      52,
+      53.1728846153846,
+      31.44807692307694,
+      80.80647435897433
     ],
     "b": [
       43,
@@ -1586,4 +1594,4 @@ for (const [label, groups] of Object.entries(stats.wholeGroup)) {
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
 console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
-console.log(`\nScore validation passed: ${WORKS.length} audited records, ${visibleWorks.length} visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=106, and Tier 0 final max=109.`);
+console.log(`\nScore validation passed: ${WORKS.length} score records, ${visibleWorks.length} visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=106, and Tier 0 final max=109.`);
