@@ -106,6 +106,9 @@
     return match ? `assets/logos/${match[1]}.png` : null;
   };
   const compactTierLabel = work => [0, 1, 2, 3].includes(work.tier) ? `T${work.tier}` : tierLabel(work.tier);
+  const tableModelName = work => String(work && work.model || '').replace(/\s+\(\d{6}\)$/, '');
+  const testDateFor = work => (window.WORK_CREATION_DATES || {})[work && work.id]
+    || (String(work && work.model || '').match(/\((\d{6})\)$/) || [])[1] || '';
   const variantPopoverId = work => `table-variants-${String(work.id || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
   const nestedVariantRuns = variant => {
     const runs = variant.tableAlternates || [];
@@ -113,8 +116,9 @@
     const summary = t(runs.length === 1 ? 'table.variants.moreOne' : 'table.variants.more', { count: runs.length });
     return `<details class="table-variant-reruns"><summary>${esc(summary)}<b aria-hidden="true">⌄</b></summary>
       <div>${runs.map(run => `<div class="table-variant-rerun">
-        <a href="${link(run)}" aria-label="${esc(t('card.openAria', { name: run.model }))}"><span>${esc(run.model)}</span><i aria-hidden="true">↗</i></a>
+        <a href="${link(run)}" aria-label="${esc(t('card.openAria', { name: run.model }))}"><span>${esc(tableModelName(run))}</span><i aria-hidden="true">↗</i></a>
         <span>${scoreCell(run)}</span>
+        <small class="table-variant-rerun-date">${esc(t('table.testDate', { date: testDateFor(run) }))}</small>
       </div>`).join('')}</div></details>`;
   };
   const variantList = work => {
@@ -134,9 +138,9 @@
           <button type="button" class="table-variants-close" popovertarget="${esc(id)}" popovertargetaction="hide"
             aria-label="${esc(t(effortGroup ? 'table.efforts.closeAria' : 'table.variants.closeAria'))}">×</button></header>
         <div class="table-variants-list">${alternates.map(variant => `<article class="table-variant-item">
-          <a href="${link(variant)}" aria-label="${esc(t('card.openAria', { name: variant.model }))}"><span>${esc(variant.model)}</span><i aria-hidden="true">↗</i></a>
+          <a href="${link(variant)}" aria-label="${esc(t('card.openAria', { name: variant.model }))}"><span>${esc(tableModelName(variant))}</span><i aria-hidden="true">↗</i></a>
           <div class="table-variant-score">${scoreCell(variant)}</div>
-          <div class="table-variant-meta"><span>${esc(compactTierLabel(variant))}</span><span>${esc(variant.environment)}</span>
+          <div class="table-variant-meta"><span>${esc(t('table.testDate', { date: testDateFor(variant) }))}</span><span>${esc(compactTierLabel(variant))}</span><span>${esc(variant.environment)}</span>
             <span>${variant.tech === 'WebGL2' ? t('tech.nativeWebgl2') : esc(variant.tech)}</span><span>${codeSizeCell(variant)}</span></div>
           ${nestedVariantRuns(variant)}
         </article>`).join('')}</div>
@@ -146,7 +150,7 @@
     const logo = modelLogoFor(work);
     return `<span class="table-model-wrap"><a class="table-model" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work && work.model }))}">${logo
       ? `<span class="table-model-logo"><img src="${logo}" alt="" width="20" height="20" loading="lazy" decoding="async" aria-hidden="true"></span>`
-      : ''}<span>${esc(work && work.model)}</span></a>${variantList(work)}</span>`;
+      : ''}<span>${esc(tableModelName(work))}</span></a>${variantList(work)}</span>`;
   };
   const codeSizeCell = work => `<span class="table-code-size">${t('unit.lines', { count: work.lines })} <small>(${kb(work.bytes)})</small></span>`;
   const environmentName = work => environmentTag(work).replace(/^in\s+/i, '');
@@ -180,7 +184,7 @@
   }
   const enrichTableRows = works => works.map(work => {
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
-      return Object.assign({}, work, { environment: environmentName(work), personal,
+      return Object.assign({}, work, { environment: environmentName(work), testDate: testDateFor(work), personal,
         recommendation: personal ? personal.sortValue : 0,
         score: score ? score.total : -1,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });

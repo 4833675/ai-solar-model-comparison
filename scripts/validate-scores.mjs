@@ -670,6 +670,16 @@ check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'S
 for (const [group, expectedCount] of [['A', 36], ['B', 33]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
+  for (const row of displayRows) {
+    const name = row.model.replace(/\s+\(\d{6}\)$/, '');
+    check(row.testDate === WORK_CREATION_DATES[row.id], `${row.id}: table date must retain the saved filesystem creation date`);
+    const cell = SITE.modelCell(row);
+    check(cell.includes(`>${name}</span>`) && !cell.includes(`>${row.model}</span>`), `${row.id}: table model link must show the name without its date suffix`);
+  }
+  for (const direction of [1, -1]) {
+    const dated = SITE.tableDisplayRows(groupWorks, 'testDate', direction, 'zh');
+    check(dated.every((row, index) => !index || (Number(row.testDate) - Number(dated[index - 1].testDate)) * direction >= 0), `${group}: test dates must sort chronologically in both directions`);
+  }
   check(displayRows.length === expectedCount && SITE.tableDisplayRowCount(groupWorks) === expectedCount, `${group}: numbered reruns must collapse to the expected model-row count`);
   for (const row of displayRows.filter(work => work.tableAlternates)) {
       check(row.tableAlternates.every(alternate => SITE.scoreOrder(row, alternate) <= 0), `${group} ${row.tableVariantBase}: primary table row must retain the highest-scoring run`);
@@ -1262,7 +1272,7 @@ for (const lang of ['zh', 'en']) {
   check(one('#gridA').innerHTML.includes('Opus5(Max)V1') && one('#gridB').innerHTML.includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': tab switching must not filter the galleries');
   one('#modelSearchInput').value = 'no-such-model';
   one('#modelSearchInput').listeners.input();
-  check(body().includes('colspan="9"'), lang + ': empty state must span all nine columns');
+  check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   check(countRows() === 33, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
@@ -1418,6 +1428,8 @@ for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(!page.includes('effort-caveat') && !page.includes('ULTRA ≠ MAX'), `${language} must remove the Ultra notice box`);
   const modelGapStart = page.indexOf('id="modelGapComparisons"');
   const tableStart = page.indexOf('class="tablewrap"');
+  const testNoteStart = page.indexOf('class="table-test-note"');
+  check(testNoteStart > rulesStart && testNoteStart < tableStart, `${language} detailed-spec testing note must sit between the score rules and the table`);
   check(modelGapStart > rulesStart && modelGapStart < tableStart && page.includes('id="modelGapList"'), `${language} model-gap section must sit between the score rules and the table`);
   check(page.includes('S.modelGapComparisons') && page.includes('S.modelGapMatches'), `${language} model-gap section must participate in global search filtering`);
   check(page.indexOf('<section id="table"') < page.indexOf('<section id="pairs"'), `${language} total table must appear before the same-model comparison`);
@@ -1432,8 +1444,8 @@ check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.in
 check(!zhHome.includes('不能用来证明的：模型能力排序') && !zhHome.includes('Claude Fable 5 (Max) 仍没有文档版') && !zhHome.includes('思考档位说明：'), 'Chinese method section must remove the three requested explanatory paragraphs');
 check(!enHome.includes('What it cannot demonstrate: an overall ranking of model capability') && !enHome.includes('Claude Fable 5 (Max) still has no specification-based version') && !enHome.includes('Reasoning-level note:'), 'English method section must remove the corresponding three explanatory paragraphs');
 check(enHome.includes("works.length===1?'entry':'entries'") && enHome.includes("pairs.length===1?'comparison':'comparisons'"), 'English live search status must use singular nouns for one result');
-check(zhHome.includes('<th data-k="model">模型</th><th data-k="tier">梯队</th><th data-k="score" class="n">得分</th><th data-k="environment">环境</th>\n      <th data-k="recommendation">推荐</th><th>理由</th><th data-k="tech">渲染</th><th data-k="lines">行数(大小)</th>'), 'Chinese table must use the requested Model, Tier, Score, Environment, Pick, Reason, Renderer, Lines/Size order');
-check(enHome.includes('<th data-k="model">Model</th><th data-k="tier">Tier</th><th data-k="score" class="n">Score</th><th data-k="environment">Environment</th>\n      <th data-k="recommendation">Pick</th><th>Reason</th><th data-k="tech">Renderer</th><th data-k="lines">Lines (Size)</th>'), 'English table must mirror the requested column order');
+check(zhHome.includes('<th data-k="model">模型</th><th data-k="testDate">测评日</th><th data-k="tier">梯队</th><th data-k="score" class="n">得分</th>\n      <th data-k="recommendation">推荐(测评日)</th><th>理由</th><th data-k="environment">环境</th><th data-k="tech">渲染</th><th data-k="lines">行数(大小)</th>'), 'Chinese table must use the requested Model, Test Date, Tier, Score, Pick at Test Date, Reason, Environment, Renderer, Lines/Size order');
+check(enHome.includes('<th data-k="model">Model</th><th data-k="testDate">Test Date</th><th data-k="tier">Tier</th><th data-k="score" class="n">Score</th>\n      <th data-k="recommendation">Pick (Test Date)</th><th>Reason</th><th data-k="environment">Environment</th><th data-k="tech">Renderer</th><th data-k="lines">Lines (Size)</th>'), 'English table must mirror the requested column order');
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
@@ -1447,11 +1459,11 @@ for (const page of [zhHome,enHome]) {
   const table = page.slice(page.indexOf('<table id="tbl">'),page.indexOf('</table>',page.indexOf('<table id="tbl">'))+8);
   check(!/data-k="(?:bytes|group)"/.test(table) && table.includes('data-k="lines"'), 'Lines and size must share one sortable column while Brief stays hidden');
   check((page.match(/role="tab"/g)||[]).length === 2 && page.includes('role="tablist"') && page.includes('role="tabpanel"'), 'Both pages must expose two prompt-format tabs and their table panel');
-  check((table.match(/<th[ >]/g)||[]).length === 9, 'Revised table must have nine columns');
+  check((table.match(/<th[ >]/g)||[]).length === 10, 'Revised table must have ten columns');
   check(table.indexOf('data-k="lines"') < table.indexOf('data-price-sort') && table.indexOf('data-k="environment"') < table.indexOf('data-price-sort'), 'Price must be the final column');
   check(table.includes(') $/M</th>'), 'Both price headings must visibly include the dollar symbol');
   check((table.match(/data-price-sort=/g)||[]).length === 3, 'Each price component must be independently sortable');
-  check(page.includes('colspan="9"') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, empty state and price script must be synchronized');
+  check(page.includes('colspan="10"') && page.includes('S.esc(w.testDate') && page.includes('S.priceCell(w)') && page.includes('assets/prices.js'), 'Rows, date column, empty state and price script must be synchronized');
   check(page.includes('button.dataset.priceSort') && page.includes('tbl(searchWorks())'), 'Price sorting must preserve active model search');
   check(page.includes('2026-09-03') && page.includes('2026-09-05') && page.includes('$20 / $75 / $2') && page.includes('$0.90 / $4.47 / $0.18') && page.includes('OpenRouter'), 'Price notes must disclose the general date, Astra price/date, Doubao estimate, and OpenRouter exception');
   for (const match of page.matchAll(/<script>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
