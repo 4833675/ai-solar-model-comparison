@@ -3,6 +3,15 @@
   'use strict';
 
   window.SCORES = {
+    'Sonnet5.5(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 67, hasEarthMoon: true, halley: true, otherComets: 3,
+      correctness: { runtime: 5, data: 4.5, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 使用 DE441 锚点与 IAS15/1PN N 体积分、卫星星历插值、真实小天体根数，包含 67 颗卫星、哈雷及超过三颗额外彗星、环与双向环影、随时间运动的小天体带、Bloom/ACES、大气与持续聚焦跟随。1440×900 默认约 60 fps，跳转至 2061 年土星近景后全部天体坐标有限；暂停日期不漂移，拖拽、缩放与安全距离有效，无脚本或 WebGL 错误。哈雷仍用固定二体根数，推算下一次近日点为 2062-01-08，与界面列出的 2061-07-28 不符；“现在”和“恢复默认设置”分别只恢复时间或显示参数，没有完整状态复位。两类额外奖励均按三分上限计，T0 另加三分。"
+    },
     'Opus5(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },

@@ -326,6 +326,7 @@
   };
 
   const SCORE_NOTES_EN = {
+    'Sonnet5.5(Max)V1': 'This offline native-WebGL2 build uses DE441 anchors, IAS15/1PN N-body integration, interpolated moon ephemerides, and real small-body elements. It includes 67 moons, Halley and more than three other comets, rings with bidirectional shadows, moving small-body belts, Bloom/ACES, atmospheres, and continuous focus-follow controls. At 1440×900 the default view runs at about 60 fps. Jumping to Saturn in 2061 keeps every body position finite; pause has no date drift, drag and zoom work, safe distance is enforced, and no script or WebGL errors occur. Halley uses fixed two-body elements and predicts its next perihelion on 2062-01-08, inconsistent with the UI’s 2061-07-28 date. Now and Restore defaults reset only time or display parameters, without a complete state reset. Both extra bonuses cap at three, and Tier 0 adds three more points.',
     'Opus5(Max)V1': 'The offline native-WebGL2 build uses JPL secular elements and a Kepler solver, with 21 moons, three comets including Halley, planetary rings, small-body belts, Bloom/ACES, atmospheres, and controls for display, scale, imaging, and quality.',
     'Opus5.5(Max)V1': 'At the site author’s explicit request, this entry follows Fable 5.1’s full-score treatment: every scoring component and both extra bonuses receive full credit, yielding 106 plus the Tier 0 supplement of 3, for 109. This update only saves a 1440×900 runtime screenshot and does not re-test features or orbits.',
     'Fable5.1(Max)V1': 'The offline native-WebGL2 build implements true scale, eighteen moons, four comets, continent outlines, Bloom/ACES, ring shadows, and atmospheres, with event jumps and rendering-performance controls. Tier 0 adds a supplementary +3.',
@@ -457,6 +458,7 @@
   const WORK_TEXT_EN = {
     'Opus5(Max)V1': { title: 'Solar System · Orrery', note: 'Offline native WebGL2 with true default scale, 21 moons, three comets, and display, imaging, and quality controls.' },
     'Opus5.5(Max)V1': { title: 'Solar System · True-Gravity Model', note: 'At the site author’s request, all scoring components and extra bonuses receive full credit. A runtime screenshot is saved.' },
+    'Sonnet5.5(Max)V1': { title: 'Solar System · True-Motion Model', note: 'Offline native WebGL2 with IAS15/1PN gravity, 67 moons, multiple comets, ring shadows, and full post-processing; approximate Halley return date and no full-state reset.' },
     'Fable5.1(Max)V1': { title: 'Solar System · True-Scale Motion Model', note: 'True scale, eighteen moons, and four comets, with event jumps, rendering-performance controls, and Earth generated from continent outlines.', tags: ['in Claude Code', 'True scale · 18 moons · 4 comets'] },
     'Hy4Preview(high)V1': { title: 'Hy4 · Solar-System Motion Model (High) V1' },
     'Hy4Preview(high)V2': { title: 'Solar System · Real-Time Orbital Model · Hy4 V2' },
