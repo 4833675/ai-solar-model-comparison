@@ -48,6 +48,8 @@
     'GPT-5.6 Sol (Light)': { direction: 'down', count: 3, zh: '你想干啥？？？', en: 'What exactly are you trying to do???' },
     'GPT-5.5 (xHigh)': { direction: 'down', count: 5, zh: '你不喜欢Sol？', en: 'You do not like Sol?' },
     'LongCat 2.0 (high)': { direction: 'down', count: 3, zh: '我外卖到哪了？', en: 'Where is my food delivery?' },
+    'MiniMax M3.1 Flash Preview (Max)': { direction: 'up', count: 2, zh: '凑什么"Flash"的热闹', en: 'Why join the "Flash" hype?' },
+    'GPT-6.1 Sol (Ultra)': { direction: 'up', count: 5, zh: '这水平难道不是应该有的吗？', en: 'Isn’t this the level we should expect?' },
     'MiniMax M3 (high)': { direction: 'down', count: 3, zh: '你还是老实的做视频吧', en: 'You should probably stick to making videos' },
     'Grok 4.7 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
     'Grok 4.6 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },

@@ -1431,6 +1431,33 @@
       correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
       note: "按站点作者明确要求，沿用 Fable 5.1 的满分方式，各评分项及两类额外奖励均设为满分，基础 106 分加 T0 3 分，总分 109。本次仅保存 1440×900 运行截图，未进行功能或轨道复测。"
+    },
+    'MiniMaxM3.1FlashPreview(Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 0.5 }, moons: 20, hasEarthMoon: true, halley: false, otherComets: 0,
+      correctness: { runtime: 4, data: 3, integrity: 3.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 一句话版包含 JPL 世纪率/开普勒行星轨道、20 颗卫星、Meeus 截断月球模型、环影、小行星带与柯伊伯带、Bloom/ACES、大气和安全缩放。默认实跑约 27 fps，控制台无脚本错误。setInterval 每 120 毫秒调用会再次注册 rAF 的 loop，导致动画帧链持续累积；虽然 frame 用 8 毫秒门限避免重复绘制，实跑 1.2 秒仍登记约 42662 次帧请求，稳定性只给部分分。地球位置错误地把完整月球地心位移加到地月质心，造成日心位置偏差。聚焦按钮只切换观察目标，双击才拉近；回到当前时间只恢复日期。没有彗星。"
+    },
+    'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: null,
+      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系及双向环影、多类小天体带、Bloom/ACES、大气和持续跟随。1440×900 为 4× MSAA/RGBA16F，加速推进到约 2028 年后天体位置有限且无 WebGL/脚本错误；暂停锁住日期，土星聚焦距离设为 16。海卫一负周期与 156.9° 倾角重复翻转方向；谷神星、妊神星等矮行星的小时自转数又被乘以 24，冥王星自转也存在单位错误，多处说明文案混淆共振和物理参数。滚轮下限 0.35 可进入大型天体，“此刻”只恢复日期，没有完整状态重置。"
+    },
+    'GPT6.1Sol(Ultra)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 一句话版内嵌 14 张纹理，包含 JPL 世纪率/开普勒轨道、13 颗卫星、哈雷、土星和天王星环及双向环影、按开普勒周期运动的小天体带、Bloom/ACES、大气和持续聚焦跟随。1440×900 HDR 实跑约 60 fps，以 1000 天/秒加速到 2034 年后检查的行星、月球、海卫一和哈雷位置均有限，暂停日期增量为零，土星聚焦工作且无 WebGL/脚本错误。安全缩放会随天体半径调整；主要缺项是没有恢复全部时间、镜头和显示状态的完整重置。卫星和哈雷仍用近似固定根数，部分公转参考面和回归日期存在偏差。"
     }
   };
 })();
