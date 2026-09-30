@@ -3,6 +3,167 @@
   'use strict';
 
   window.SCORES = {
+    "GPT6Astra(Light)V1": {
+      reference: false,
+      featureMap: {
+        rings: 0.4,
+        belt: 0.4,
+        bloom: 0,
+        aces: 0,
+        atmo: 0.4
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 0,
+      hasEarthMoon: false,
+      halley: false,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL1 使用 JPL 世纪率/开普勒轨道根数，八大行星的相位、轨道线与日期一致，聚焦后可持续跟随并按天体半径限制缩放。原有 1440×900 截图复用；暂停与推进约六百天后位置均有限，无脚本或 WebGL 错误。小行星带为静止点阵；土星只把行星阴影投到环上，缺少环投影到行星，大气主要是边缘辉光，均只给部分功能分。太阳光晕为加法 billboard，没有实际 Bloom/ACES 后期；没有卫星或彗星，“此刻”和“全景”只分别恢复日期或镜头，缺少完整复位。"
+    },
+    "GPT6Astra(Medium)V1-TasksAssignedByOpus5": {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL2 文档版完整覆盖 JPL 世纪率/开普勒行星轨道、八颗卫星、哈雷、双向环影、多类小天体、Bloom/ACES、大气及持续聚焦跟随。原有 1440×900 截图复用；跳到 2030 年后 HDR、4× MSAA 正常且无脚本或 WebGL 错误。海卫一轨道使用正的角速度与 156.9° 倾角，未重复翻转逆行；缩放下限按目标半径设置。主要缺项仍为没有一次恢复时间、镜头和显示参数的完整状态复位。"
+    },
+    "GPT6Luna(Max)V1": {
+      reference: false,
+      featureMap: {
+        rings: 0.4,
+        belt: 1,
+        bloom: 0,
+        aces: 0,
+        atmo: 0.4
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 1,
+      hasEarthMoon: true,
+      halley: false,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 0.5,
+        follow: 0,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线 Canvas2D 一句话版使用 JPL 世纪率/开普勒轨道根数和同一投影绘制行星与轨道线，小行星带随时间运动。1440×900 页面稳定，暂停日期不漂移，高倍时间推进与镜头复位可用。月球在地球旁按周期作屏幕空间椭圆运动，不能随三维视角旋转，按半颗有效卫星计；土星环和大气为部分示意，没有彗星及实际 Bloom/ACES 后期。点击行星只更新参数和选中标记，没有镜头聚焦或持续跟随；复位只恢复视角。Canvas2D 本身不另扣分。",
+      moonQuality: 0.5
+    },
+    "GPT6Luna(Max)V1-TasksAssignedByOpus5": {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 4,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 1,
+        follow: 0.5,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、小天体带、HDR/Bloom/ACES 与行星聚焦跟随。1440×900 保存运行截图，推进约八百天后各天体位置有限，暂停锁住日期且无脚本或 WebGL 错误。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷固定周期推算下一次近日点在 2061 年 6 月，却写成 7 月底。选择哈雷时 camera.follow 被清空，彗星聚焦不能持续跟随；缩放全局下限保持在最大天体表面之外，但“此刻”只恢复时间，没有完整状态重置。"
+    },
     'Sonnet5.5(Max)V1': {
       reference: false,
       featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },

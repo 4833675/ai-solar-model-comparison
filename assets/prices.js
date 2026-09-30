@@ -30,6 +30,7 @@
     ['Claude Sonnet 5.5', 2, 10, .2, 'claude', null, '2026-09-30'],
     ['GPT-6 Astra', 20, 75, 2, 'openai', null, '2026-09-05'],
     ['GPT-6.1 Sol', 4, 15, .2, 'openai', null, '2026-09-30'],
+    ['GPT-6 Luna', .2, .75, .02, 'openai', null, '2026-09-30'],
     ['GPT-5.6 Sol', 10, 45, 1, 'openai', 'solReference'],
     ['GPT-5.6 Terra', 4, 18, .4, 'openai'],
     ['GPT-5.6 Luna', .4, 1.8, .04, 'openai'],

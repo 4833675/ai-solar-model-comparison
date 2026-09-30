@@ -1,11 +1,16 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"0":"第0梯队","1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","gpt6astralight","gpt6luna"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)"};
+window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultra)","gpt56sol":"GPT-5.6 Sol (Ultra)","opus48":"Claude Opus 4.8 (Max → Ultra)","gpt56terra":"GPT-5.6 Terra (Ultra)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultra)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","KimiK3(Max)V3","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5"];
 window.WORK_CREATION_DATES={
+ "GPT6Astra(Light)V1":"260905",
+ "GPT6Astra(Medium)V1-TasksAssignedByOpus5":"260905",
+ "GPT6Luna(Max)V1":"260923",
+ "GPT6Luna(Max)V1-TasksAssignedByOpus5":"260923",
+
  "Sonnet5.5(Max)V1":"260930",
  "MiniMaxM3.1FlashPreview(Max)V1":"260928",
  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5":"260930",
@@ -3386,7 +3391,7 @@ window.WORKS=[
   "file": "models/GPT6Astra(Light)V1-TasksAssignedByOpus5.html",
   "model": "GPT-6 Astra (Light)",
   "group": "B",
-  "pair": null,
+  "pair": "gpt6astralight",
   "featured": false,
   "tech": "WebGL2",
   "bytes": 46568,
@@ -4076,6 +4081,143 @@ window.WORKS=[
  "note":"离线原生 WebGL2 与 IAS15/1PN 真实引力积分，67 颗卫星、多颗彗星、环影和完整后期；哈雷回归日期近似，缺少完整状态重置。",
  "issue":null, "net":[], "fix":null,
  "tags":["in Claude Code"], "tier":0, "rank":0
+},
+{
+  "id": "GPT6Astra(Light)V1",
+  "file": "models/GPT6Astra(Light)V1.html",
+  "model": "GPT-6 Astra (Light)",
+  "group": "A",
+  "pair": "gpt6astralight",
+  "featured": false,
+  "tech": "WebGL",
+  "bytes": 43447,
+  "lines": 136,
+  "title": "日心 · HELIOCENTRIC — Solar System Observatory",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "atmo"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/GPT6Astra(Light)V1.jpg",
+  "jsErrors": 0,
+  "note": "离线原生 WebGL1，JPL/开普勒八行星与聚焦跟随；小行星带静止，仅有单向环影和边缘大气示意，没有卫星、彗星及 Bloom/ACES 后期。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Codex"
+  ],
+  "tier": 2,
+  "rank": 0
+},
+{
+  "id": "GPT6Astra(Medium)V1-TasksAssignedByOpus5",
+  "file": "models/GPT6Astra(Medium)V1-TasksAssignedByOpus5.html",
+  "model": "GPT-6 Astra (Medium)",
+  "group": "B",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 63943,
+  "lines": 170,
+  "title": "日序 · 太阳系观测台",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/GPT6Astra(Medium)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "离线原生 WebGL2，八卫星、哈雷、双向环影、HDR/Bloom/ACES 和安全缩放；海卫一逆行处理正确，缺少完整状态重置。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Codex"
+  ],
+  "tier": 1,
+  "rank": 0
+},
+{
+  "id": "GPT6Luna(Max)V1",
+  "file": "models/GPT6Luna(Max)V1.html",
+  "model": "GPT-6 Luna (Max)",
+  "group": "A",
+  "pair": "gpt6luna",
+  "featured": false,
+  "tech": "Canvas2D",
+  "bytes": 40902,
+  "lines": 624,
+  "title": "太阳系 · 动态星图",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "atmo",
+    "moons"
+  ],
+  "weight": "light",
+  "shot": "assets/shots/GPT6Luna(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": "离线 Canvas2D 与 JPL/开普勒行星轨道；月球仅为屏幕空间示意，缺少彗星及 Bloom/ACES，没有镜头聚焦或持续跟随。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Codex"
+  ],
+  "tier": 3,
+  "rank": 0
+},
+{
+  "id": "GPT6Luna(Max)V1-TasksAssignedByOpus5",
+  "file": "models/GPT6Luna(Max)V1-TasksAssignedByOpus5.html",
+  "model": "GPT-6 Luna (Max)",
+  "group": "B",
+  "pair": "gpt6luna",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 94259,
+  "lines": 242,
+  "title": "太阳系 · 实时轨道模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/GPT6Luna(Max)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "离线原生 WebGL2，八卫星、哈雷、环影和 HDR/Bloom/ACES；海卫一逆行重复翻转，哈雷回归日期不符，彗星缺持续跟随及完整复位。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Codex"
+  ],
+  "tier": 2,
+  "rank": 0
 }
 ];
 window.WORKS.forEach(function(work){
