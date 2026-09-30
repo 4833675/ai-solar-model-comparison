@@ -74,18 +74,31 @@
     'Claude Opus 5 (Low)': { direction: 'up', count: 2, zh: '不努力完全不是一个东西', en: 'Without the effort, it is a completely different thing' },
     'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 5, symbols: '△△△▽▽', sortValue: 1, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
   };
+  const LEGACY_MODEL_FAMILIES = new Set([
+    'Claude Opus 5', 'Claude Opus 4.8', 'Claude Sonnet 5',
+    'GPT-5.6 Sol', 'GPT-5.6 Terra', 'GPT-5.5', 'GPT-5.6 Luna',
+    'LongCat 2.0', 'MiMo 2.5 Pro',
+  ]);
   const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
-    const value = PERSONAL_RECOMMENDATIONS[recommendationModelKey(work && work.model)];
+    const modelKey = recommendationModelKey(work && work.model);
+    const value = PERSONAL_RECOMMENDATIONS[modelKey];
+    if (LEGACY_MODEL_FAMILIES.has(modelKey.replace(/\s+\([^()]*\)$/, ''))) return {
+      reason: value ? (I18N.en ? value.en : value.zh) : '—',
+      symbols: '-', direction: 'legacy', count: 0, sortValue: 0,
+      tooltip: I18N.en ? 'Older models are not recommended for use' : '老模型都不推荐使用',
+    };
     return value ? Object.assign({
       reason: I18N.en ? value.en : value.zh,
       symbols: value.symbols || (value.direction === 'up' ? '△' : '▽').repeat(value.count),
       sortValue: Number.isFinite(value.sortValue) ? value.sortValue : (value.direction === 'up' ? value.count : -value.count),
     }, value) : null;
   };
-  const recommendationSymbols = personal => personal
-    ? esc(personal.symbols).replace(/△/g, '<span class="recommend-symbol-up">△</span>').replace(/▽/g, '<span class="recommend-symbol-down">▽</span>')
-    : '—';
+  const recommendationSymbols = personal => {
+    if (!personal) return '—';
+    if (personal.direction === 'legacy') return `<span class="recommend-symbol-legacy" title="${esc(personal.tooltip)}" aria-label="${esc(personal.tooltip)}" tabindex="0">-</span>`;
+    return esc(personal.symbols).replace(/△/g, '<span class="recommend-symbol-up">△</span>').replace(/▽/g, '<span class="recommend-symbol-down">▽</span>');
+  };
   const MODEL_LOGOS = [
     [/^(?:Claude\b|Claude Fable\b)/, 'anthropic'],
     [/^GPT-/, 'openai'],
