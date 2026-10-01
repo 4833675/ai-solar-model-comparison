@@ -15,8 +15,11 @@
   const scoreNote = (work, fallback) => I18N.scoreNote(work, fallback);
   const tierLabel = tier => t(`tier.${tier}`);
   const hiddenWorkIds = new Set(window.HIDDEN_WORK_IDS || []);
+  const isArchivedWork = work => !!work && hiddenWorkIds.has(work.id);
   const isVisibleWork = work => !!work && !hiddenWorkIds.has(work.id);
   const visibleWorks = () => (window.WORKS || []).filter(isVisibleWork);
+  const archivedWorks = () => (window.WORKS || []).filter(isArchivedWork);
+  const byId = id => (window.WORKS || []).find(work => work.id === id);
   const modelSearchKey = value => String(value == null ? '' : value)
     .normalize('NFKC').toLocaleLowerCase().replace(/[\s()[\]{}·._/\\-]+/g, '');
   const modelMatches = (work, query) => {
@@ -83,7 +86,7 @@
   const personalRecommendationFor = work => {
     const modelKey = recommendationModelKey(work && work.model);
     const value = PERSONAL_RECOMMENDATIONS[modelKey];
-    if (LEGACY_MODEL_FAMILIES.has(modelKey.replace(/\s+\([^()]*\)$/, ''))) return {
+    if (isArchivedWork(work) || LEGACY_MODEL_FAMILIES.has(modelKey.replace(/\s+\([^()]*\)$/, ''))) return {
       reason: value ? (I18N.en ? value.en : value.zh) : '—',
       symbols: '-', direction: 'legacy', count: 0, sortValue: 0,
       tooltip: I18N.en ? 'Older models are not recommended for use' : '老模型都不推荐使用',
@@ -795,7 +798,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       tip.style.top = `${Math.round(Math.max(edge, top))}px`;
     };
     const show = button => {
-      const w = visibleWorks().find(item => item.id === button.dataset.scoreId);
+      const w = byId(button.dataset.scoreId);
       const s = w && scoreFor(w);
       if (!w || !s) return;
       if (active && active !== button) {
@@ -1014,9 +1017,9 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     return (window.PAIR_TITLES || {})[pair.a.pair] || pair.a.model;
   }
 
-  function scorePairs() {
+  function scorePairs(works = visibleWorks()) {
     const matched = {};
-    visibleWorks().forEach(w => {
+    works.forEach(w => {
       if (!w.pair) return;
       (matched[w.pair] = matched[w.pair] || {})[w.group === 'A' ? 'a' : 'b'] = w;
     });
@@ -1109,10 +1112,10 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
-    byId: id => visibleWorks().find(w => w.id === id),
+    byId,
     pairs: scorePairs,
     displayPairs,
   };
