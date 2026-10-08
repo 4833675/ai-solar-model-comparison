@@ -1405,7 +1405,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 }
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
-  'Claude Haiku 5.5 (Ultracode)': ['up', 5, '这性价比绝了'],
+  'Claude Haiku 5.5 (Ultracode)': ['up', 5, '这价格，有问题都是我的问题'],
   'GPT-6 Astra (Medium)': ['up', 3, '质量不错，但还是用不起'],
   'GPT-6 Luna (Max)': ['up', 3, '便宜是真便宜，仅能完成任务'],
   'Claude Sonnet 5.5 (Max)': ['up', 5, '马甲脱了！你到底是谁？'],
