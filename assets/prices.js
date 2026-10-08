@@ -28,6 +28,7 @@
     ['Claude Opus 4.8', 5, 25, .5, 'claude'],
     ['Claude Sonnet 5', 2, 10, .2, 'claude'],
     ['Claude Sonnet 5.5', 2, 10, .2, 'claude', null, '2026-09-30'],
+    ['Claude Haiku 5.5', .5, 2.5, .05, 'claude', 'haiku55Context', '2026-10-08'],
     ['GPT-6 Astra', 20, 75, 2, 'openai', null, '2026-09-05'],
     ['GPT-6.1 Sol', 4, 15, .2, 'openai', null, '2026-09-30'],
     ['GPT-6 Luna', .2, .75, .02, 'openai', null, '2026-09-30'],

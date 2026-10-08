@@ -27,6 +27,7 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+    'Claude Haiku 5.5 (Ultracode)': { direction: 'up', count: 5, zh: '这性价比绝了', en: 'What fantastic value for money' },
     'Claude Sonnet 5.5 (Max)': { direction: 'up', count: 5, zh: '马甲脱了！你到底是谁？', en: 'The disguise is off! Who are you really?' },
     'Claude Opus 5.5 (Max)': { direction: 'mixed', count: 5, symbols: '△△△△▽', sortValue: 3, zh: '5h12m·2.1亿·$75.50', en: '5h12m·210M·$75.50' },
     'Claude Opus 5 (Max)': { direction: 'up', count: 5, zh: '天下第一(天↑)', en: 'No. 1 under heaven (heaven ↑)' },
@@ -185,12 +186,14 @@
       estimated: 'Approximate reference selected by the site author, not a verified official USD quote.',
       minimaxList: 'Crossed-out list price above 512K, before the advertised permanent 50% discount.',
       qwenCache: 'Implicit cache hit: $0.25/M. Explicit cache read is separately priced at $0.17/M.',
+      haiku55Context: 'Standard rates for prompts over 100K tokens. At up to 100K tokens, input/output/cache read are $0.10/$0.50/$0.01 per million tokens.',
     } : {
       openrouter: '站点作者提供的 OpenRouter 参考价，非 Meta 直连 API 官方报价。',
       solReference: '促销前长上下文参考价；查询时实际促销读/写/缓存读为 $8/$30/$0.80，不代表承诺恢复的未来价格。',
       estimated: '站点作者采用的估算参考，非已核实的官方美元报价。',
       minimaxList: '超过 512K 的划线原价，未计官网标注的永久五折。',
       qwenCache: '隐式缓存命中 $0.25/M；显式缓存读取另为 $0.17/M。',
+      haiku55Context: '采用超过 100K 提示 Token 的标准价；不超过 100K 时，读/写/缓存读为 $0.10/$0.50/$0.01 每百万 Token。',
     };
     const title = (I18N.en ? 'USD / 1M tokens · Input / Output / Cache read · ' : '美元 / 百万 Token · 读 / 写 / 缓存读 · ') +
       (value.date || window.MODEL_PRICE_DATE) + (value.note ? '\n' + notes[value.note] : '');

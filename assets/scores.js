@@ -3,6 +3,86 @@
   'use strict';
 
   window.SCORES = {
+    "Haiku5.5(Ultracode)V1": {
+      reference: false,
+      featureMap: {
+        rings: 0.4,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 0.4
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 0.5,
+        stability: 1
+      },
+      moons: 6,
+      hasEarthMoon: true,
+      halley: true,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 5,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 0.5,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "在线 Three.js r160/WebGL2 在 1440×900 实跑正常，六颗卫星、哈雷、双粒子带、浮点 HDR、Bloom/ACES 与持续聚焦跟随均可运行，控制台无错误。行星使用 JPL 世纪率根数与开普勒求解，月球采用 Meeus 级数，木卫与土卫位于母星赤道面；地球运动正常，但轨道绘制将 earth 改传为未定义的 emb，导致该轨道退化到太阳位置，其余路径仍有效。土星与天王星环缺少双向物理环影，大气主要为边缘辉光；近距缩放能穿入天体，复位只恢复镜头。"
+    },
+    "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
+      reference: false,
+      featureMap: {
+        rings: 1,
+        belt: 1,
+        bloom: 1,
+        aces: 1,
+        atmo: 1
+      },
+      orbitModel: {
+        geometry: 1,
+        kepler: 1,
+        elements: 1,
+        orientation: 1,
+        epoch: 1
+      },
+      orbitRuntime: {
+        pathFit: 1,
+        stability: 1
+      },
+      moons: 8,
+      hasEarthMoon: true,
+      halley: true,
+      otherComets: 0,
+      correctness: {
+        runtime: 5,
+        data: 4,
+        integrity: 5
+      },
+      visualBase: null,
+      interaction: {
+        drag: 1,
+        zoom: 1,
+        focus: 1,
+        follow: 1,
+        pauseReset: 0.5
+      },
+      fatal: null,
+      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、运动小天体带、HDR/Bloom/ACES、大气及安全缩放和持续聚焦跟随。1440×900 运行截图已保存，HDR与4× MSAA可用，浮点扩展缺失时可回退RGBA8。高倍时间推进、1800–2050年多个日期及更长跨度坐标均有限，暂停日期不漂移，拖拽、缩放和土星聚焦有效，无脚本或WebGL错误。月球黄道面与海卫一逆行处理正确；卫星使用圆轨道和预设J2000相位，与界面真实相位说明不符，数据项作部分扣分，不重复扣卫星或轨道分。“此刻”只恢复日期，取消聚焦只恢复部分镜头，没有一次恢复速度、镜头和显示参数的完整重置。"
+    },
     "GPT6Astra(Light)V1": {
       reference: false,
       featureMap: {
