@@ -345,6 +345,19 @@
     })).filter(row => row.left && row.middle && row.right);
   }
   const modelGapMatches = (row, query) => modelMatches(row.left, query) || modelMatches(row.middle, query) || modelMatches(row.right, query);
+  function lunaHaikuComparisons() {
+    const byId = new Map(visibleWorks().map(work => [work.id, work]));
+    return ['A', 'B'].map(group => {
+      const suffix = group === 'B' ? '-TasksAssignedByOpus5' : '';
+      return { group, luna: byId.get('GPT6Luna(Max)V1' + suffix), haiku: byId.get('Haiku5.5(Ultracode)V1' + suffix) };
+    }).filter(row => row.luna && row.haiku);
+  }
+  const lunaHaikuMatches = (row, query) => modelMatches(row.luna, query) || modelMatches(row.haiku, query);
+  function contextPriceFor(model, inputTokens) {
+    const rates = (window.MODEL_CONTEXT_PRICES || {})[model];
+    if (!rates || !Number.isFinite(inputTokens) || inputTokens < 0) return null;
+    return inputTokens > rates.threshold ? rates.long : rates.short;
+  }
   function effortComparisonWorks() {
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return SOL_EFFORT_IDS.map(id => byId.get(id)).filter(Boolean);
@@ -918,6 +931,44 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     </article>`;
   }
 
+  function lunaHaikuSide(work, role) {
+    const score = scoreFor(work);
+    const renderer = work.tech === 'WebGL2' ? t('tech.nativeWebgl2') : work.tech;
+    const recommendation = personalRecommendationFor(work);
+    return `<div class="lh-side" data-lh-model="${role}">
+      <header><div><a href="${link(work)}"><span class="table-model-logo"><img src="${modelLogoFor(work)}" alt="" width="20" height="20"></span><h5>${esc(tableModelName(work))}</h5></a>
+        <p>${esc(t('table.testDate', { date: testDateFor(work) }))} · <span class="tier-cell-${work.tier}">${esc(compactTierLabel(work))}</span> · ${esc(environmentName(work))} · ${esc(renderer)}</p></div>${scoreCell(work)}</header>
+      <a class="lh-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">
+        <img loading="lazy" src="${work.shot}" width="1440" height="900" alt="${esc(t('card.screenshotAlt', { name: work.model }))}"><span>${t('gap.open')}</span></a>
+      <div class="lh-score-meta">${t('lh.baseScore', { base: score.evidenceBase.toFixed(2), adjustment: (score.manualAdjustment > 0 ? '+' : '') + score.manualAdjustment })}</div>
+      <p class="lh-evidence">${t('lh.' + work.group + '.' + role)}</p>
+      <p class="lh-recommend">${recommendationSymbols(recommendation)} <span class="lh-reason">${esc(recommendation && recommendation.reason)}</span></p>
+    </div>`;
+  }
+
+  function lunaHaikuBlock(row) {
+    const luna = scoreFor(row.luna), haiku = scoreFor(row.haiku);
+    const signed = value => (value >= 0 ? '+' : '−') + Math.abs(value).toFixed(2);
+    return `<article class="lh-row${row.group === 'B' ? ' is-document' : ''}" data-lh-group="${row.group}">
+      <header class="lh-row-head"><div><span>${t(row.group === 'A' ? 'group.prompt' : 'group.document')}</span><h4>${t('lh.' + row.group + '.title')}</h4></div>
+        <a class="btn" href="${page('compare.html')}?c=luna-haiku&amp;g=${row.group}">${t('lh.run')} ↗</a></header>
+      <div class="lh-sides">${lunaHaikuSide(row.luna, 'luna')}${lunaHaikuSide(row.haiku, 'haiku')}</div>
+      <footer class="lh-delta"><strong>${t('lh.delta', { delta: signed(haiku.exact - luna.exact) })}</strong>
+        <span>${t('lh.deltaParts', { base: signed(haiku.evidenceBase - luna.evidenceBase), adjustment: signed(haiku.manualAdjustment - luna.manualAdjustment) })}</span></footer>
+    </article>`;
+  }
+
+  function lunaHaikuPriceBlock() {
+    const models = ['GPT-6 Luna', 'Claude Haiku 5.5'];
+    const scenarios = [[100000, 'short'], [272000, 'middle'], [272001, 'long']];
+    const price = rate => [rate.input, rate.output, rate.cache].map(value => '$' + value.toFixed(2)).join(' / ');
+    return `<div class="lh-pricing"><h4>${t('lh.priceTitle')}</h4><p>${t('lh.priceUnit')}</p>
+      <div class="tablewrap"><table><thead><tr><th scope="col">${t('lh.context')}</th>${models.map(model => `<th scope="col">${model}</th>`).join('')}<th scope="col">${t('lh.priceGap')}</th></tr></thead>
+      <tbody>${scenarios.map(([tokens, key]) => `<tr><th scope="row">${t('lh.context.' + key)}</th>${models.map(model => `<td>${price(contextPriceFor(model, tokens))}</td>`).join('')}<td>${t('lh.priceGap.' + key)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="lh-price-sources">${t('lh.priceChecked')} · ${models.map(model => `<a href="${esc(window.MODEL_CONTEXT_PRICES[model].source)}" target="_blank" rel="noopener">${model} ↗</a>`).join(' · ')}</p>
+      <p>${t('lh.priceNote')}</p></div>`;
+  }
+
   function effortRunCard(work, index, brief) {
     const isUltra = index === 0;
     const effort = isUltra ? t('effort.ultra') : (work.model.match(/\(([^)]+)\)/) || [])[1] || 'MODE';
@@ -1117,6 +1168,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
     environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
+    lunaHaikuComparisons, lunaHaikuMatches, lunaHaikuBlock, lunaHaikuPriceBlock, contextPriceFor,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
     byId,
     pairs: scorePairs,

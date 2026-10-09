@@ -682,6 +682,37 @@ for (const [model, values] of Object.entries(expectedPrices)) {
   const actual = context.window.MODEL_PRICES[model];
   ['input','output','cache'].forEach((key,i)=>close(actual[key],values[i],model+' '+key));
 }
+const expectedContextPrices = {
+  'GPT-6 Luna': { threshold: 272000, short: [.1, .5, .01], long: [.2, .75, .02], source: 'https://developers.openai.com/api/docs/models/gpt-6-luna' },
+  'Claude Haiku 5.5': { threshold: 100000, short: [.1, .5, .01], long: [.5, 2.5, .05], source: 'https://platform.claude.com/docs/en/about-claude/pricing' },
+};
+exactKeys(context.window.MODEL_CONTEXT_PRICES, Object.keys(expectedContextPrices), 'Luna/Haiku context-price families');
+for (const [model, expected] of Object.entries(expectedContextPrices)) {
+  const saved = context.window.MODEL_CONTEXT_PRICES[model];
+  check(saved.threshold === expected.threshold && saved.date === '2026-10-09' && saved.source === expected.source, model + ': context pricing must preserve the official threshold, source, and lookup date');
+  for (const inputTokens of [0, 99999, 100000, 100001, 271999, 272000, 272001]) {
+    const values = inputTokens > expected.threshold ? expected.long : expected.short;
+    const actual = SITE.contextPriceFor(model, inputTokens);
+    exactKeys(actual, ['input', 'output', 'cache'], model + ': context-price fields');
+    ['input', 'output', 'cache'].forEach((key, i) => close(actual[key], values[i], `${model} ${inputTokens} input tokens ${key}`));
+  }
+  for (const inputTokens of [-1, NaN, Infinity]) check(SITE.contextPriceFor(model, inputTokens) === null, model + ': invalid input lengths must not select a rate');
+  ['input', 'output', 'cache'].forEach((key, i) => close(context.window.MODEL_PRICES[model][key], expected.long[i], model + ': main-table pricing must keep the highest context band'));
+}
+check(SITE.contextPriceFor('unknown-model', 100000) === null, 'Unknown models must not acquire Luna/Haiku context pricing');
+const lunaHaikuRows = SITE.lunaHaikuComparisons();
+check(JSON.stringify(lunaHaikuRows.map(row => row.group)) === JSON.stringify(['A', 'B']), 'Luna/Haiku comparison must contain exactly the one-line and detailed-spec rows in order');
+for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [21.3, 15.3, 6] : [4.5, 1.5, 3]])) {
+  const suffix = row.group === 'B' ? '-TasksAssignedByOpus5' : '';
+  check(row.luna.id === 'GPT6Luna(Max)V1' + suffix && row.haiku.id === 'Haiku5.5(Ultracode)V1' + suffix && row.luna.group === row.group && row.haiku.group === row.group, row.group + ': comparison must pair the existing Luna and Haiku works for the same brief');
+  const luna = SITE.scoreFor(row.luna), haiku = SITE.scoreFor(row.haiku);
+  close(haiku.exact - luna.exact, expected[0], row.group + ': Luna/Haiku exact-score gap');
+  close(haiku.evidenceBase - luna.evidenceBase, expected[1], row.group + ': Luna/Haiku base-score gap');
+  close(haiku.manualAdjustment - luna.manualAdjustment, expected[2], row.group + ': Luna/Haiku tier-adjustment gap');
+  close(haiku.exact - luna.exact, haiku.evidenceBase - luna.evidenceBase + haiku.manualAdjustment - luna.manualAdjustment, row.group + ': exact gap must disclose both components');
+  for (const query of ['', 'Luna', 'Haiku']) check(SITE.lunaHaikuMatches(row, query), row.group + ': either model search must retain the comparison');
+  check(!SITE.lunaHaikuMatches(row, 'no-such-model'), row.group + ': unrelated model search must not match the comparison');
+}
 check(visibleWorks.filter(work => !work.id.startsWith('OmenAlpha') && !work.id.startsWith('MiMoXProPreview') && !work.id.startsWith('MiniMaxM3.1FlashPreview')).every(work=>SITE.priceFor(work)), 'Every visible identified work with published pricing must map to a saved price family');
 check(!SITE.priceFor(omenA) && !SITE.priceFor(omenB) && SITE.priceCell(omenA).includes('—'), 'Anonymous Omen Alpha pricing must remain undisclosed');
 check(SITE.priceFor(gpt6Astra).date === '2026-09-05' && SITE.priceCell(gpt6Astra).includes('20 / 75 / 2') && SITE.priceCell(gpt6Astra).includes('developers.openai.com/api/docs/pricing'), 'GPT-6 Astra must show its official long-context price and source date');
@@ -1268,6 +1299,37 @@ const enHome = read('index.en.html');
 for (const home of [zhHome, enHome]) {
   check(!/#data|id="data"|id="stats"|statpair|const PAIRS/.test(home), 'The removed quantitative section must have no markup, navigation, or rendering code');
   check(!home.includes('量化对比') && !home.includes('Turning the Differences into Numbers'), 'The quantitative comparison heading must be removed in both languages');
+  check(home.includes('class="lh-shortcut" href="#luna-haiku"') && home.includes('id="lunaHaikuRows"') && home.includes('id="lunaHaikuPricing"'), 'Both homes must provide the Luna/Haiku shortcut, comparison rows, and pricing container');
+  check(home.indexOf('id="luna-haiku"') > home.indexOf('id="tbl"') && home.indexOf('id="luna-haiku"') < home.indexOf('id="solEffortComparison"'), 'The independent Luna/Haiku comparison must follow the main table');
+}
+const expectedLunaHaikuKeys = ['A.title', 'B.title', 'A.luna', 'A.haiku', 'B.luna', 'B.haiku', 'baseScore', 'delta', 'deltaParts', 'run', 'priceTitle', 'priceUnit', 'context', 'context.short', 'context.middle', 'context.long', 'priceGap', 'priceGap.short', 'priceGap.middle', 'priceGap.long', 'priceChecked', 'priceNote'].map(key => 'lh.' + key).sort();
+for (const lang of ['zh', 'en']) {
+  const dictionary = i18nSource.split('    ' + lang + ': {')[1]?.split('\n    }')[0] || '';
+  const keys = [...dictionary.matchAll(/'(lh\.[^']+)':/g)].map(match => match[1]).sort();
+  check(JSON.stringify(keys) === JSON.stringify(expectedLunaHaikuKeys), lang + ': Luna/Haiku strings must be explicitly translated, without fallback or duplicate keys');
+}
+function validateLunaHaikuMarkup(site, lang, html, pricing) {
+  const comparisonRows = site.lunaHaikuComparisons();
+  check(JSON.stringify([...html.matchAll(/data-lh-group="([AB])"/g)].map(match => match[1])) === JSON.stringify(['A', 'B']), lang + ': rendered comparison must retain both brief rows');
+  const shots = [...html.matchAll(/<a class="lh-shot" href="([^"]+)"[\s\S]*?<img [^>]*src="([^"]+)"/g)];
+  check(shots.length === 4, lang + ': comparison must render exactly four screenshot links');
+  comparisonRows.flatMap(row => [row.luna, row.haiku]).forEach((work, index) => {
+    const href = `view${lang === 'en' ? '.en' : ''}.html?w=${encodeURIComponent(work.id)}`;
+    check(shots[index][1] === href && shots[index][2] === work.shot && fs.existsSync(asset(work.shot)), lang + ': screenshot must link the matching existing work in the same language: ' + work.id);
+  });
+  for (const row of comparisonRows) {
+    const block = site.lunaHaikuBlock(row);
+    const footer = block.match(/<footer class="lh-delta">([\s\S]*?)<\/footer>/)?.[1] || '';
+    const values = row.group === 'A' ? ['+21.30', '+15.30', '+6.00'] : ['+4.50', '+1.50', '+3.00'];
+    check(values.every(value => footer.includes(value)), lang + ': comparison must publish the exact, base, and tier gaps for ' + row.group);
+    check(block.includes(`href="compare${lang === 'en' ? '.en' : ''}.html?c=luna-haiku&amp;g=${row.group}"`), lang + ': side-by-side link must select the same brief');
+  }
+  const rateRows = [...pricing.matchAll(/<tr><th scope="row">([^<]*)<\/th><td>([^<]*)<\/td><td>([^<]*)<\/td>/g)];
+  const expectedRates = [['$0.10 / $0.50 / $0.01', '$0.10 / $0.50 / $0.01'], ['$0.10 / $0.50 / $0.01', '$0.50 / $2.50 / $0.05'], ['$0.20 / $0.75 / $0.02', '$0.50 / $2.50 / $0.05']];
+  check(rateRows.length === 3, lang + ': pricing must render exactly three input bands');
+  rateRows.forEach((row, index) => check(row[2] === expectedRates[index][0] && row[3] === expectedRates[index][1], lang + ': rendered rates must match input band ' + index));
+  check(pricing.includes('2026-10-09') && Object.values(expectedContextPrices).every(rate => pricing.includes(`href="${rate.source}"`)), lang + ': pricing must disclose its date and both official sources');
+  check(!/\blh\.|\{(?:base|adjustment|delta)\}/.test(html + pricing), lang + ': Luna/Haiku rendering must not leak translation keys or placeholders');
 }
 for (const lang of ['zh', 'en']) {
   const localized = { window: {}, document: { documentElement: { lang }, readyState: 'loading', addEventListener() {} } };
@@ -1279,6 +1341,7 @@ for (const lang of ['zh', 'en']) {
   const expectedMeta = lang === 'zh' ? '证据基础分 106 · 人工体验修正后 109' : 'Evidence base 106 · 109 after human-experience adjustment';
   check(tip.includes(expectedMeta), `${lang}: Fable 5.1 must use the new 106-to-109 scoring summary`);
   check(!/98\.97|†|作者|Author|author|原始审查|审查原始/.test(tip), `${lang}: Fable 5.1 must not render superseded score explanations`);
+  validateLunaHaikuMarkup(localizedSite, lang, localizedSite.lunaHaikuComparisons().map(localizedSite.lunaHaikuBlock).join(''), localizedSite.lunaHaikuPriceBlock());
 }
 check(enHome.includes("0:'Tier 0'") && i18nSource.includes("'tier.0': 'Tier 0'") && cssSource.includes('.tier-cell-0') && cssSource.includes('.tier.tier-0 .tier-hd'), 'Tier 0 must have an English table label, localized gallery label, and distinct color');
 check(zhHome.includes('<section id="glossary" class="glossary" hidden>') && enHome.includes('<section id="glossary" class="glossary" hidden>'), 'Both glossary sections must stay in source but remain hidden');
@@ -1317,6 +1380,13 @@ for (const lang of ['zh', 'en']) {
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
   const countRows = () => (body().match(/<tr>/g) || []).length;
+  const checkLunaHaikuHome = visible => {
+    check(one('#luna-haiku').hidden === !visible && one('.lh-shortcut').hidden === !visible, lang + ': comparison and shortcut must follow the model search');
+    const html = one('#lunaHaikuRows').innerHTML, pricing = one('#lunaHaikuPricing').innerHTML;
+    if (visible) validateLunaHaikuMarkup(localSite, lang, html, pricing);
+    else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
+  };
+  checkLunaHaikuHome(true);
   check(countRows() === 27 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 27 active one-line model rows without Claude Fable 5');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
@@ -1326,6 +1396,7 @@ for (const lang of ['zh', 'en']) {
     tabs[index].listeners.click();
     const works = (offline ? localSite.archivedWorks() : localSite.visibleWorks()).filter(work => work.group === group);
     check(countRows() === localSite.tableDisplayRowCount(works), lang + ': tab must show one primary row per numbered model family in its own group');
+    check(one('#luna-haiku').hidden === false && (one('#lunaHaikuRows').innerHTML.match(/data-lh-group="[AB]"/g) || []).length === 2, lang + ': all main-table tabs must leave the independent comparison on both briefs');
     check(tabs.every((tab,i)=>tab.attributes['aria-selected'] === String(i===index) && tab.tabIndex === (i===index?0:-1)), lang + ': exactly one of four tabs must expose selected state');
     check(one('#tablePanel').attributes['aria-labelledby'] === 'tableTab'+(offline?'Offline':'')+group, lang + ': panel must be named by the selected tab');
     if (offline) check(!body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': offline rows must show dash recommendations even for formerly recommended models');
@@ -1347,6 +1418,7 @@ for (const lang of ['zh', 'en']) {
   tabs[0].listeners.click();
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
+  checkLunaHaikuHome(false);
   check(countRows() === 3, lang + ': model search must filter the active one-line tab');
   check(one('#tableCountA').textContent === '3 / 27' && one('#tableCountB').textContent === '2 / 24', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
@@ -1365,14 +1437,85 @@ for (const lang of ['zh', 'en']) {
   tabs[1].listeners.click();
   one('#modelSearchInput').value = 'no-such-model';
   one('#modelSearchInput').listeners.input();
+  checkLunaHaikuHome(false);
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
+  checkLunaHaikuHome(true);
   check(countRows() === 24, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
   check(countRows() === 27, lang + ': one-line tab must restore its 27 primary model rows');
+  for (const query of ['Luna', 'Haiku']) {
+    one('#modelSearchInput').value = query;
+    one('#modelSearchInput').listeners.input();
+    checkLunaHaikuHome(true);
+    for (const tab of tabs.slice(0, 2)) {
+      tab.listeners.click();
+      checkLunaHaikuHome(true);
+    }
+  }
+  one('#modelSearchClear').listeners.click();
+  tabs[0].listeners.click();
+  checkLunaHaikuHome(true);
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('105') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current score with two other-comet points');
+}
+const compareIframeStyle = cssSource.match(/(?:^|\n)[^{}]*\.split>div>iframe[^{}]*\{([^}]*)\}/)?.[1] || '';
+for (const [property, value] of [['position', 'absolute'], ['inset', '0'], ['width', '100%'], ['height', '100%']]) {
+  check(new RegExp(`(?:^|;)\\s*${property}\\s*:\\s*${value}(?:;|$)`).test(compareIframeStyle), 'Comparison iframes must fill their side containers: ' + property);
+}
+// Execute comparison-page routing without loading any model iframe or browser.
+function simulateCompare(lang, search) {
+  const source = read(lang === 'en' ? 'compare.en.html' : 'compare.html');
+  function element(tagName = 'div') {
+    return { tagName, className: '', dataset: {}, attributes: {}, listeners: {}, children: [], innerHTML: '', textContent: '',
+      setAttribute(key, value) { this.attributes[key] = value; },
+      addEventListener(key, listener) { this.listeners[key] = listener; },
+      appendChild(child) { child.parent = this; this.children.push(child); },
+      remove() { if (this.parent) this.parent.children = this.parent.children.filter(child => child !== this); },
+      querySelector(selector) { return this.children.find(child => selector.startsWith('.') && child.className.split(' ').includes(selector.slice(1))) || null; } };
+  }
+  const nodes = new Map(['#split', '#ttl', '#compareContext', '.back', '.lbl.a', '.lbl.b', '#mode', '#reload'].map(selector => [selector, element()]));
+  const split = nodes.get('#split');
+  for (let i = 0; i < 2; i++) {
+    const cell = element(), gate = element(); gate.className = 'gate'; cell.appendChild(gate); split.appendChild(cell);
+  }
+  nodes.get('.back').href = source.match(/<a class="back" href="([^"]+)"/)?.[1];
+  nodes.get('.lbl.a').textContent = source.match(/<span class="lbl a">([^<]*)/)?.[1];
+  nodes.get('.lbl.b').textContent = source.match(/<span class="lbl b">([^<]*)/)?.[1];
+  const sandbox = { window: {}, location: { search }, URLSearchParams, addEventListener() {},
+    document: { documentElement: { lang }, readyState: 'loading', addEventListener() {},
+      querySelector: selector => nodes.get(selector), querySelectorAll: () => [], createElement: element } };
+  vm.createContext(sandbox);
+  for (const file of ['assets/data.js', 'assets/i18n.js', 'assets/site.js']) vm.runInContext(read(file), sandbox, { filename: file });
+  sandbox.window.SITE.detect = () => {};
+  sandbox.window.SITE.workRisk = () => null;
+  const inline = [...source.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(match => match[1].includes('const S=window.SITE'));
+  check(Boolean(inline), lang + ': comparison behavior script must exist');
+  let notFound = false;
+  try { vm.runInContext(inline[1], sandbox, { filename: 'compare-' + lang }); }
+  catch (error) { if (error === 0) notFound = true; else throw error; }
+  return { nodes, split, notFound, frames: split.children.flatMap(cell => cell.children.filter(child => child.tagName === 'iframe')) };
+}
+for (const lang of ['zh', 'en']) {
+  const home = 'index' + (lang === 'en' ? '.en' : '') + '.html';
+  for (const row of lunaHaikuRows) {
+    const actual = simulateCompare(lang, '?c=luna-haiku&g=' + row.group);
+    check(!actual.notFound && actual.split.dataset.crossGroup === row.group, lang + ': new comparison route must select group ' + row.group);
+    check(JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([row.luna.file, row.haiku.file]), lang + ': cross-model route must load the matching Luna and Haiku originals');
+    check(actual.nodes.get('.back').href === home + '#luna-haiku' && actual.nodes.get('.lbl.a').textContent === 'GPT-6 Luna (Max)' && actual.nodes.get('.lbl.b').textContent === 'Claude Haiku 5.5 (Ultracode)', lang + ': cross-model route must expose model labels and its own return anchor');
+    const brief = lang === 'zh' ? (row.group === 'A' ? '同一句话任务' : '同一份详细文档') : (row.group === 'A' ? 'Same one-line prompt' : 'Same detailed specification');
+    check(actual.nodes.get('#compareContext').textContent === brief && actual.frames.every(frame => frame.attributes.title.includes(lang === 'zh' ? (row.group === 'A' ? '一句话' : '详细文档') : (row.group === 'A' ? 'one-line prompt' : 'detailed specification'))), lang + ': both cross-model iframe titles must identify the selected brief');
+  }
+  for (const pairName of ['gpt6luna', 'haiku55']) {
+    const actual = simulateCompare(lang, '?p=' + pairName), pair = SITE.pairs().find(pair => pair.a.pair === pairName);
+    check(!actual.notFound && !actual.split.dataset.crossGroup && JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([pair.a.file, pair.b.file]), lang + ': legacy pair route must retain one-line versus detailed-spec originals');
+    check(actual.nodes.get('.back').href === home + '#pairs' && actual.nodes.get('.lbl.a').textContent === (lang === 'zh' ? '一句话提示' : 'One-line prompt') && actual.nodes.get('.lbl.b').textContent === (lang === 'zh' ? '详细文档' : 'Detailed specification'), lang + ': legacy pair route must preserve its original labels and return anchor');
+  }
+  for (const search of ['?c=luna-haiku&g=C&p=gpt6luna', '?c=unknown&g=A&p=haiku55']) {
+    const actual = simulateCompare(lang, search);
+    check(actual.notFound && actual.frames.length === 0 && actual.split.innerHTML.includes(lang === 'zh' ? '找不到这组对照' : 'Comparison not found'), lang + ': invalid cross-model routes must show an empty state without falling back to a legacy pair');
+  }
 }
 const enSpec = read('spec.en.html');
 const visibleNamingSurface = [

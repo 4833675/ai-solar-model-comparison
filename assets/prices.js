@@ -63,4 +63,14 @@
   window.MODEL_PRICE_DATE = '2026-09-03';
   window.MODEL_PRICES = Object.fromEntries(entries.map(([model, input, output, cache, source, note, date]) =>
     [model, Object.freeze({ input, output, cache, source: sources[source] || null, note: note || null, date: date || null })]));
+
+  // Standard API rates by total input length; the main table keeps its highest-context rate.
+  window.MODEL_CONTEXT_PRICES = Object.freeze({
+    'GPT-6 Luna': Object.freeze({ threshold: 272000, date: '2026-10-09', source: 'https://developers.openai.com/api/docs/models/gpt-6-luna',
+      short: Object.freeze({ input: .1, output: .5, cache: .01 }),
+      long: Object.freeze({ input: .2, output: .75, cache: .02 }) }),
+    'Claude Haiku 5.5': Object.freeze({ threshold: 100000, date: '2026-10-09', source: sources.claude,
+      short: Object.freeze({ input: .1, output: .5, cache: .01 }),
+      long: Object.freeze({ input: .5, output: 2.5, cache: .05 }) }),
+  });
 })();
