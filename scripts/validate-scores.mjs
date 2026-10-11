@@ -24,8 +24,8 @@ const allowed = (value, values, label) => check(values.includes(value), `${label
 const finiteRange = (value, min, max, label) => check(Number.isFinite(value) && value >= min && value <= max, `${label}: expected finite ${min}..${max}, got ${value}`);
 
 const CANONICAL_NAMES = {
-  "Haiku5.5(Ultracode)V1": "Claude Haiku 5.5 (Ultracode)",
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode)",
+  "Haiku5.5(Ultracode)V1": "Claude Haiku 5.5 (Ultracode·xhigh)",
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode·xhigh)",
   "GPT6Astra(Light)V1": "GPT-6 Astra (Light)",
   "GPT6Astra(Medium)V1-TasksAssignedByOpus5": "GPT-6 Astra (Medium)",
   "GPT6Luna(Max)V1": "GPT-6 Luna (Max)",
@@ -485,17 +485,19 @@ const renamedUltraIds = {
   Claude: ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5Ultra-WebGL2', 'Opus4.8Ultra-TasksAssignedByOpus5', 'Sonnet5Ultra', 'Sonnet5Ultra-TasksAssignedByOpus5'],
   GPT: ['GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1'],
 };
+const renamedHaikuIds = ['Haiku5.5(Ultracode)V1', 'Haiku5.5(Ultracode)V1-TasksAssignedByOpus5'];
 check(WORKS.every(work => !/^(?:Claude |GPT-).*\(Ultra\)/.test(work.model)), 'WORKS must no longer display the standalone Claude/GPT Ultra name');
 for (const [family, ids] of Object.entries(renamedUltraIds)) {
   const effort = family === 'Claude' ? '(Ultracode·xhigh)' : '(Ultra·Max)';
+  const expectedIds = family === 'Claude' ? [...ids, ...renamedHaikuIds] : ids;
   const actualIds = WORKS.filter(work => work.model.startsWith(family === 'Claude' ? 'Claude ' : 'GPT-') && work.model.includes(effort)).map(work => work.id).sort();
-  check(JSON.stringify(actualIds) === JSON.stringify([...ids].sort()), family + ': display-only rename must cover exactly the existing ' + ids.length + ' Ultra records');
-  for (const id of ids) {
+  check(JSON.stringify(actualIds) === JSON.stringify([...expectedIds].sort()), family + ': display-only rename must cover exactly ' + expectedIds.length + ' records' + (family === 'Claude' ? ' (five former Ultra and two Haiku)' : ''));
+  for (const id of expectedIds) {
     const work = WORKS.find(work => work.id === id);
     check(work.file === `models/${id}.html` && work.shot === `assets/shots/${id}.jpg` && Object.hasOwn(SCORES, id), id + ': renamed display must preserve its original source, screenshot, and score key');
   }
 }
-check(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode\)/.test(work.model)).length === 2, 'The two existing Haiku Ultracode labels must remain unchanged');
+check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 75, 'Group A count must be 75 after adding Haiku 5.5');
 check(WORKS.filter(w => w.group === 'B').length === 58, 'Group B count must be 58 after adding Haiku 5.5');
@@ -1518,7 +1520,7 @@ for (const lang of ['zh', 'en']) {
     const actual = simulateCompare(lang, '?c=luna-haiku&g=' + row.group);
     check(!actual.notFound && actual.split.dataset.crossGroup === row.group, lang + ': new comparison route must select group ' + row.group);
     check(JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([row.luna.file, row.haiku.file]), lang + ': cross-model route must load the matching Luna and Haiku originals');
-    check(actual.nodes.get('.back').href === home + '#luna-haiku' && actual.nodes.get('.lbl.a').textContent === 'GPT-6 Luna (Max)' && actual.nodes.get('.lbl.b').textContent === 'Claude Haiku 5.5 (Ultracode)', lang + ': cross-model route must expose model labels and its own return anchor');
+    check(actual.nodes.get('.back').href === home + '#luna-haiku' && actual.nodes.get('.lbl.a').textContent === 'GPT-6 Luna (Max)' && actual.nodes.get('.lbl.b').textContent === 'Claude Haiku 5.5 (Ultracode·xhigh)', lang + ': cross-model route must expose model labels and its own return anchor');
     const brief = lang === 'zh' ? (row.group === 'A' ? '同一句话任务' : '同一份详细文档') : (row.group === 'A' ? 'Same one-line prompt' : 'Same detailed specification');
     check(actual.nodes.get('#compareContext').textContent === brief && actual.frames.every(frame => frame.attributes.title.includes(lang === 'zh' ? (row.group === 'A' ? '一句话' : '详细文档') : (row.group === 'A' ? 'one-line prompt' : 'detailed specification'))), lang + ': both cross-model iframe titles must identify the selected brief');
   }
@@ -1539,6 +1541,7 @@ const visibleNamingSurface = [
 ].join('\n');
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
 check(!/(?:Claude |GPT-)[^'"`\n<>]*\(Ultra\)/.test(visibleNamingSurface), 'Visible model names must use Ultracode·xhigh for Claude and Ultra·Max for GPT while old asset IDs remain unchanged');
+check(!/Claude Haiku 5\.5 \(Ultracode\)/.test(visibleNamingSurface), 'Visible Haiku names must use Ultracode·xhigh while old Ultracode asset IDs remain unchanged');
 const retiredClaudeUltraSurface = visibleNamingSurface + '\n' + cssSource;
 for (const stale of ['CLAUDE_ULTRA_RE', 'installClaudeUltra', 'highlightClaudeUltra', 'claude-ultra-effort', 'claude-ultra-tip', 'dynamic workflows']) {
   check(!retiredClaudeUltraSurface.includes(stale), 'The retired Claude Ultra highlight/tooltip implementation and explanation must be removed: ' + stale);
@@ -1568,7 +1571,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 }
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
-  'Claude Haiku 5.5 (Ultracode)': ['up', 5, '这价格，有问题都是我的问题'],
+  'Claude Haiku 5.5 (Ultracode·xhigh)': ['up', 5, '这价格，有问题都是我的问题'],
   'GPT-6 Astra (Medium)': ['up', 3, '质量不错，但还是用不起'],
   'GPT-6 Luna (Max)': ['up', 3, '便宜是真便宜，仅能完成任务'],
   'Claude Sonnet 5.5 (Max)': ['up', 5, '马甲脱了！你到底是谁？'],
@@ -1641,7 +1644,7 @@ for (const work of visibleWorks) {
   check(recommendation.direction === expected[0] && recommendation.count === expected[1] && recommendation.reason === expected[2], `${work.id}: personal recommendation mismatch`);
   check(recommendation.symbols === (expected[3] || (expected[0] === 'up' ? '△' : '▽').repeat(expected[1])) && recommendation.sortValue === (expected[4] ?? (expected[0] === 'up' ? expected[1] : -expected[1])), `${work.id}: recommendation symbols or sort value mismatch`);
 }
-for (const id of Object.values(renamedUltraIds).flat()) {
+for (const id of [...Object.values(renamedUltraIds).flat(), ...renamedHaikuIds]) {
   const work = SITE.byId(id), key = stripCreationDate(work.model).replace(/ #\d+$/, '');
   const expected = expectedRecommendations[key], recommendation = SITE.personalRecommendationFor(work);
   check(expected && recommendation?.reason === expected[2], id + ': display-only rename must retain the recommendation reason, including archived works');

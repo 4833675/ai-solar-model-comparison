@@ -506,7 +506,7 @@
   };
 
   const WORK_TEXT_EN = {
-    'Haiku5.5(Ultracode)V1': { title: 'Solar-System Motion Model · Claude Haiku 5.5 (Ultracode)', note: 'Online Three.js with six moons, Halley, and full post-processing; Earth’s orbit path collapses, with incomplete ring shadows, atmospheres, zoom, and reset.' },
+    'Haiku5.5(Ultracode)V1': { title: 'Solar-System Motion Model · Claude Haiku 5.5 (Ultracode·xhigh)', note: 'Online Three.js with six moons, Halley, and full post-processing; Earth’s orbit path collapses, with incomplete ring shadows, atmospheres, zoom, and reset.' },
     'Haiku5.5(Ultracode)V1-TasksAssignedByOpus5': { title: 'Real-Time Solar-System Motion Model', note: 'Offline WebGL2 with eight moons, Halley, bidirectional ring shadows, HDR/Bloom/ACES, and safe zoom; preset moon phases and no complete reset.' },
     'Opus5(Max)V1': { title: 'Solar System · Orrery', note: 'Offline native WebGL2 with true default scale, 21 moons, three comets, and display, imaging, and quality controls.' },
     'Opus5.5(Max)V1': { title: 'Solar System · True-Gravity Model', note: 'At the site author’s request, all scoring components and extra bonuses receive full credit. A runtime screenshot is saved.' },
