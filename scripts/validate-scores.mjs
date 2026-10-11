@@ -504,7 +504,9 @@ check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 76, 'Group A count must be 76 after adding Haiku 5.5 Ultracode·Max');
 check(WORKS.filter(w => w.group === 'B').length === 58, 'Group B count must be 58 after adding Haiku 5.5');
+const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const expectedHiddenIds = [
+  ...newlyArchivedIds,
   "GPT5.6Sol(high)V1",
   "GPT5.6Luna(Max)V1",
   "GPT5.6Luna(Max)V2",
@@ -572,23 +574,31 @@ const expectedHiddenIds = [
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
 const archivedWorks = SITE.archivedWorks();
-check(archivedWorks.length === 60 && archivedWorks.filter(w => w.group === 'A').length === 35 && archivedWorks.filter(w => w.group === 'B').length === 25, 'Offline tabs must retain the previous 39 offline works plus all 21 Sol/Terra/Luna/Sonnet entries');
+check(archivedWorks.length === 64 && archivedWorks.filter(w => w.group === 'A').length === 37 && archivedWorks.filter(w => w.group === 'B').length === 27, 'Offline tabs must retain the previous 60 works plus Opus 5 Max and all three MiniMax M3 high runs');
 check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols === '-' && SITE.isArchivedWork(work)), 'Every offline model must use a dash recommendation');
-check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 22 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 17, 'Offline tabs must preserve the existing rerun and effort folding rules');
+check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 24 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 18, 'Offline tabs must add two one-line rows and one folded MiniMax detailed row while preserving all previous folding rules');
 for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 74, 'Active WORKS count must be 74');
-check(visibleWorks.filter(w => w.group === 'A').length === 41, 'Active Group A count must be 41');
-check(visibleWorks.filter(w => w.group === 'B').length === 33, 'Active Group B count must be 33');
+check(visibleWorks.length === 70, 'Active WORKS count must be 70');
+check(visibleWorks.filter(w => w.group === 'A').length === 39, 'Active Group A count must be 39');
+check(visibleWorks.filter(w => w.group === 'B').length === 31, 'Active Group B count must be 31');
+check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
+for (const id of newlyArchivedIds) {
+  const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
+  check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': keep the original source and screenshot reachable only in the offline archive');
+  check(recommendation?.symbols === '-' && recommendation.count === 0 && recommendation.sortValue === 0 && SITE.recommendationSymbols(recommendation).replace(/<[^>]+>/g, '') === '-', id + ': archived recommendations must render a literal ASCII dash');
+}
+for (const id of ['Opus5Ultra-WebGL2', 'Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'MiniMaxM3.1FlashPreview(Max)V1', 'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5']) check(SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': neighboring Opus efforts and MiniMax M3.1 must remain current');
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) { const work=SITE.byId(id); check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': archive lookup must open the retained original and screenshot without entering active lists'); }
 check(PAIR_ORDER.length === 42 && new Set(PAIR_ORDER).size === 42, 'PAIR_ORDER must contain 42 configured pair keys, including Astra Light and Luna');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 28, 'Expected 28 complete active pairs');
+check(SITE.pairs().length === 27, 'Expected 27 complete active pairs after archiving MiniMax M3');
+check(!SITE.pairs().some(pair => pair.a.pair === 'minimax'), 'The retired MiniMax M3 pair must not appear in current comparisons');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
 check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(['gemini38flashv1', 'qwen38max', 'gpt6astralight', 'gpt6luna', 'kimik3v2', 'deepseekv4pro0813']), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
@@ -804,7 +814,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 28], ['B', 24]]) {
+for (const [group, expectedCount] of [['A', 26], ['B', 23]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -1172,6 +1182,8 @@ check(miniMax2?.bytes === 137459 && miniMax2?.lines === 3612 && miniMax2?.tech =
 check(SITE.chips(miniMax2, null).includes('in ClaudeCLI'), 'MiniMax detailed #2 context tag must render in its chip list');
 check(fs.existsSync(new URL(`../${miniMax2.shot}`, import.meta.url)), 'MiniMax detailed #2 screenshot asset must exist');
 check(stripCreationDate(WORKS.find(w => w.id === 'MiniMaxM3-TasksAssignedByOpus5')?.model) === 'MiniMax M3 (high) #1', 'Original MiniMax detailed run must be numbered #1');
+const miniMaxArchivedPair = SITE.pairs(SITE.archivedWorks()).find(pair => pair.a.pair === 'minimax');
+check(miniMaxArchivedPair?.a?.id === 'MiniMax_M3_thinking-1' && miniMaxArchivedPair?.b?.id === 'MiniMaxM3-TasksAssignedByOpus5', 'The original MiniMax M3 controlled pair must remain available in the archive without substituting detailed run #2');
 
 const qwenStable1 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V1');
 const qwenStable2 = WORKS.find(w => w.id === 'Qwen3.8Max(Max)V2');
@@ -1416,7 +1428,7 @@ for (const lang of ['zh', 'en']) {
     else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
   };
   checkLunaHaikuHome(true);
-  check(countRows() === 28 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 28 active one-line model rows including Haiku Ultracode·Max without Claude Fable 5');
+  check(countRows() === 26 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 26 active one-line model rows including Haiku Ultracode·Max without Claude Fable 5');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -1448,20 +1460,22 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').value = 'Opus 5';
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
-  check(countRows() === 3, lang + ': model search must filter the active one-line tab');
-  check(one('#tableCountA').textContent === '3 / 28' && one('#tableCountB').textContent === '2 / 24', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
+  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '2 / 23', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
+  tabs[2].listeners.click();
+  check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
   tabs[1].listeners.click();
   check(countRows() === 2 && body().includes('Opus5Ultra-TasksAssignedByOpus5') && body().includes('Opus5(Low)V1-TasksAssignedByOpus5'), lang + ': switching tabs must retain the model search');
   check(buttons[2].attributes['aria-pressed'] === 'true' && buttons[2].dataset.direction === 'desc', lang + ': switching tabs must retain price direction');
-  check(one('#gridA').innerHTML.includes('Opus5(Max)V1') && one('#gridB').innerHTML.includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': tab switching must not filter the galleries');
+  check(!one('#gridA').innerHTML.includes('Opus5(Max)V1') && one('#gridA').innerHTML.includes('Opus5Ultra-WebGL2') && one('#gridB').innerHTML.includes('Opus5Ultra-TasksAssignedByOpus5'), lang + ': tab switching must retain current Opus Ultra galleries and exclude archived Opus Max');
   one('#modelSearchInput').value = 'Omen Alpha';
   one('#modelSearchInput').listeners.input();
   check(countRows() === 0 && one('#modelSearchStatus').innerHTML.includes('2'), lang + ': search must include offline matches without placing them in an active table');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('view'+(lang==='en'?'.en':'')+'.html?w=OmenAlpha(Max)V1'), lang + ': offline one-line tab must open the retained Omen original');
   tabs[3].listeners.click();
-  check(countRows() === 1 && body().includes('OmenAlpha(Max)V1-TasksAssignedByOpus5') && one('#tableCountOfflineA').textContent === '1 / 22' && one('#tableCountOfflineB').textContent === '1 / 17', lang + ': offline detailed-spec tab must preserve search and update both archive counts');
+  check(countRows() === 1 && body().includes('OmenAlpha(Max)V1-TasksAssignedByOpus5') && one('#tableCountOfflineA').textContent === '1 / 24' && one('#tableCountOfflineB').textContent === '1 / 18', lang + ': offline detailed-spec tab must preserve search and update both archive counts');
   check(!one('#gridA').innerHTML.includes('OmenAlpha') && !one('#gridB').innerHTML.includes('OmenAlpha'), lang + ': archived search matches must stay out of active galleries');
   tabs[1].listeners.click();
   one('#modelSearchInput').value = 'no-such-model';
@@ -1470,9 +1484,9 @@ for (const lang of ['zh', 'en']) {
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   checkLunaHaikuHome(true);
-  check(countRows() === 24, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 23, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 28, lang + ': one-line tab must restore its 28 primary model rows');
+  check(countRows() === 26, lang + ': one-line tab must restore its 26 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
     one('#modelSearchInput').value = query;
     one('#modelSearchInput').listeners.input();
@@ -1483,6 +1497,16 @@ for (const lang of ['zh', 'en']) {
       if (query === 'Haiku') check(countRows() === (tab.dataset.tableGroup === 'A' ? 2 : 1), lang + ': Haiku search must show the new unpaired Max work only in the one-line table while preserving the original comparison');
     }
   }
+  one('#modelSearchInput').value = 'MiniMax M3 (high)';
+  one('#modelSearchInput').listeners.input();
+  for (const tab of tabs.slice(0, 2)) {
+    tab.listeners.click();
+    check(countRows() === 0, lang + ': MiniMax M3 high search must not insert archived works into either current tab');
+  }
+  tabs[2].listeners.click();
+  check(countRows() === 1 && body().includes('MiniMax_M3_thinking-1'), lang + ': MiniMax M3 high one-line source must remain searchable in the archive');
+  tabs[3].listeners.click();
+  check(countRows() === 1 && body().includes('MiniMaxM3-TasksAssignedByOpus5') && body().includes('MiniMaxM3(high)V2-TasksAssignedByOpus5') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': both retained MiniMax M3 detailed runs must fold into one offline row with dash recommendations');
   one('#modelSearchClear').listeners.click();
   tabs[0].listeners.click();
   checkLunaHaikuHome(true);
@@ -1761,9 +1785,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">41') && enHome.includes('id="aAll">41') && zhHome.includes('id="bAll">33') && enHome.includes('id="bAll">33') && zhHome.includes('id="tAll">134') && enHome.includes('id="tAll">134'), 'Both home pages must publish 41/33 active counts and 134 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 41 件和文档组 33 件') && enHome.includes('prefer the 28 paired results over treating all 41 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && zhHome.includes('54.30 / 70') && enHome.includes('54.30 / 70') && zhHome.includes('30.30 / 36') && enHome.includes('30.30 / 36'), 'Both home pages must publish the current V3 28-pair statistics');
+check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">31') && enHome.includes('id="bAll">31') && zhHome.includes('id="tAll">134') && enHome.includes('id="tAll">134'), 'Both home pages must publish 39/31 active counts and 134 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 39 件和文档组 31 件') && enHome.includes('prefer the 27 paired results over treating all 39 one-line and 31 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('27 组同模型') && enHome.includes('27 same-model') && zhHome.includes('54.99 / 70') && enHome.includes('54.99 / 70') && zhHome.includes('30.83 / 36') && enHome.includes('30.83 / 36'), 'Both home pages must publish the current V3 27-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -1810,52 +1834,52 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
-check(stats.pairedSummary.n === 28, 'Paired statistics must use 28 active pairs');
-close(stats.pairedSummary.coverage.a, 54.29714285714283, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 62.449999999999996, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":22,"tie":2,"decline":4}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 30.962500000000006, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 30.30238095238096, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":10,"tie":4,"decline":14}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 81.17559523809523, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 88.12940476190477, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":20,"tie":2,"decline":6}), 'exact paired outcomes must match the evidence');
+check(stats.pairedSummary.n === 27, 'Paired statistics must use 27 active pairs');
+close(stats.pairedSummary.coverage.a, 54.987407407407375, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 62.91851851851852, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":21,"tie":2,"decline":4}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.a, 31.321604938271612, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 30.828395061728404, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":10,"tie":4,"decline":13}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 82.0737037037037, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 90.46753086419754, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":20,"tie":2,"decline":5}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      41,
-      56.22341463414633,
-      31.835365853658548,
-      85.12333333333333
+      39,
+      56.42307692307691,
+      31.999572649572663,
+      85.33666666666667
     ],
     "b": [
-      33,
-      62.04727272727273,
-      29.674747474747477,
-      85.77646464646469
+      31,
+      62.83741935483871,
+      30.67956989247312,
+      89.69752688172048
     ]
   },
   "withoutReferences": {
     "a": [
-      40,
-      56.02899999999999,
-      31.73125000000001,
-      84.75141666666663
+      38,
+      56.2236842105263,
+      31.89429824561405,
+      84.95078947368417
     ],
     "b": [
-      33,
-      62.04727272727273,
-      29.674747474747477,
-      85.77646464646469
+      31,
+      62.83741935483871,
+      30.67956989247312,
+      89.69752688172048
     ]
   },
   "withoutTier4": {
     "a": [
-      40,
-      56.73749999999998,
-      32.09958333333336,
-      85.82824999999998
+      39,
+      56.4230769230769,
+      31.999572649572674,
+      85.33666666666664
     ],
     "b": [
       31,
@@ -1866,10 +1890,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferencesOrTier4": {
     "a": [
-      39,
-      56.55128205128203,
-      31.999572649572666,
-      85.46487179487173
+      38,
+      56.223684210526294,
+      31.894298245614053,
+      84.95078947368414
     ],
     "b": [
       31,
