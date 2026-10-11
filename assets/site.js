@@ -32,10 +32,10 @@
     'Claude Opus 5.5 (Max)': { direction: 'mixed', count: 5, symbols: '△△△△▽', sortValue: 3, zh: '5h12m·2.1亿·$75.50', en: '5h12m·210M·$75.50' },
     'Claude Opus 5 (Max)': { direction: 'up', count: 5, zh: '天下第一(天↑)', en: 'No. 1 under heaven (heaven ↑)' },
     'Claude Fable 5.1 (Max)': { direction: 'down', count: 3, zh: '在座的各位都是垃圾', en: 'Everyone here is trash' },
-    'Claude Opus 5 (Ultra)': { direction: 'up', count: 5, zh: '又快、又稳、又贵', en: 'Fast, reliable, and expensive' },
+    'Claude Opus 5 (Ultracode·xhigh)': { direction: 'up', count: 5, zh: '又快、又稳、又贵', en: 'Fast, reliable, and expensive' },
     'Hy 4 Preview (high)': { direction: 'down', count: 5, zh: '绝版测试。已经降智。', en: 'Archived test. The model has since regressed.' },
-    'GPT-5.6 Sol (Ultra)': { direction: 'up', count: 4, zh: '甩手掌柜', en: 'Hands-off delivery' },
-    'GPT-5.6 Terra (Ultra)': { direction: 'up', count: 2, zh: '感谢那个男人', en: 'Thanks to that man' },
+    'GPT-5.6 Sol (Ultra·Max)': { direction: 'up', count: 4, zh: '甩手掌柜', en: 'Hands-off delivery' },
+    'GPT-5.6 Terra (Ultra·Max)': { direction: 'up', count: 2, zh: '感谢那个男人', en: 'Thanks to that man' },
     'GPT-5.6 Luna (Max)': { direction: 'down', count: 1, zh: '别浪费token', en: 'Do not waste your tokens' },
     'Kimi K3 (Max)': { direction: 'up', count: 1, zh: '性价比不够', en: 'Not cost-effective enough' },
     'DeepSeek V4 Pro 0813 (Max)': { direction: 'down', count: 1, zh: '梁子要加油啊', en: 'Liangzi needs to step it up' },
@@ -54,13 +54,13 @@
     'GPT-5.5 (xHigh)': { direction: 'down', count: 5, zh: '你不喜欢Sol？', en: 'You do not like Sol?' },
     'LongCat 2.0 (high)': { direction: 'down', count: 3, zh: '我外卖到哪了？', en: 'Where is my food delivery?' },
     'MiniMax M3.1 Flash Preview (Max)': { direction: 'up', count: 2, zh: '凑什么"Flash"的热闹', en: 'Why join the "Flash" hype?' },
-    'GPT-6.1 Sol (Ultra)': { direction: 'up', count: 5, zh: '这水平难道不是应该有的吗？', en: 'Isn’t this the level we should expect?' },
+    'GPT-6.1 Sol (Ultra·Max)': { direction: 'up', count: 5, zh: '这水平难道不是应该有的吗？', en: 'Isn’t this the level we should expect?' },
     'GPT-6 Luna (Max)': { direction: 'up', count: 3, zh: '便宜是真便宜，仅能完成任务', en: 'It really is cheap; it only gets the task done' },
     'MiniMax M3 (high)': { direction: 'down', count: 3, zh: '你还是老实的做视频吧', en: 'You should probably stick to making videos' },
     'Grok 4.7 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
     'Grok 4.6 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
-    'Claude Sonnet 5 (Ultra)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
-    'Claude Opus 4.8 (Ultra)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
+    'Claude Sonnet 5 (Ultracode·xhigh)': { direction: 'up', count: 1, zh: '感觉不值得', en: 'Does not feel worth it' },
+    'Claude Opus 4.8 (Ultracode·xhigh)': { direction: 'down', count: 5, zh: '你不喜欢Opus5？', en: 'You do not like Opus 5?' },
     'Step 5 Preview (high)': { direction: 'down', count: 4, zh: '慢的离谱，蠢的吓人', en: 'Absurdly slow, frighteningly stupid' },
     'MiMo 2.6 Flash (Unknown)': { direction: 'up', count: 2, zh: '也就是那么回事', en: 'Nothing particularly special' },
     'MiMo 2.6 Pro (Unknown)': { direction: 'up', count: 2, zh: '也就是那么回事', en: 'Nothing particularly special' },
@@ -76,7 +76,7 @@
     'GPT-6 Astra (Light)': { direction: 'up', count: 3, zh: '质量不错，但还是用不起', en: 'Good quality, but still too expensive to use' },
     'GPT-6 Astra (Medium)': { direction: 'up', count: 3, zh: '质量不错，但还是用不起', en: 'Good quality, but still too expensive to use' },
     'Claude Opus 5 (Low)': { direction: 'up', count: 2, zh: '不努力完全不是一个东西', en: 'Without the effort, it is a completely different thing' },
-    'GPT-6 Astra (Ultra)': { direction: 'mixed', count: 5, symbols: '△△△▽▽', sortValue: 1, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
+    'GPT-6 Astra (Ultra·Max)': { direction: 'mixed', count: 5, symbols: '△△△▽▽', sortValue: 1, zh: '任何订阅都能用/太费太贵', en: 'Available on any subscription / far too resource-intensive and expensive' },
   };
   const LEGACY_MODEL_FAMILIES = new Set([
     'Claude Opus 5', 'Claude Opus 4.8', 'Claude Sonnet 5',
@@ -248,13 +248,13 @@
       return Object.assign({}, ranked[0], { tableVariantBase: bucket.base, tableVariantType: 'runs', tableAlternates: ranked.slice(1) });
     });
   }
-  const EFFORT_ORDER = { Ultra: 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
+  const EFFORT_ORDER = { 'Ultra·Max': 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
   const EFFORT_FAMILIES = ['GPT-5.6 Sol', 'GPT-6 Astra'];
   const effortInfo = work => {
     const model = String(work && work.model || '').replace(/ \(\d{6}\)$/, '');
     for (const family of EFFORT_FAMILIES) {
       const prefix = family.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const match = model.match(new RegExp(`^${prefix} \\((Ultra|Max|xHigh|high|Medium|Light)\\)(?: #\\d+)?$`));
+      const match = model.match(new RegExp(`^${prefix} \\((Ultra·Max|Max|xHigh|high|Medium|Light)\\)(?: #\\d+)?$`));
       if (match) return { family, level: match[1] };
     }
     return null;
@@ -271,7 +271,7 @@
     efforts.forEach(items => {
       if (items.length < 2) return regular.push(...items.map(item => item.row));
       const ordered = items.slice().sort((a, b) => EFFORT_ORDER[a.level] - EFFORT_ORDER[b.level]);
-      const ultra = ordered.find(item => item.level === 'Ultra') || ordered[0];
+      const ultra = ordered.find(item => item.level === 'Ultra·Max') || ordered[0];
       regular.push(Object.assign({}, ultra.row, {
         tableVariantBase: ultra.family,
         tableVariantType: 'effort',
@@ -367,119 +367,6 @@
     return SOL_EFFORT_DOCUMENT_IDS.map(id => byId.get(id)).filter(Boolean);
   }
   const effortComparisonMatches = (works, query) => works.some(work => modelMatches(work, query));
-
-  /* Claude Code 的 Ultracode 实际使用 xhigh + workflows；只给名称中的 Ultra 上语义色。 */
-  const CLAUDE_ULTRA_RE = /(Claude(?:\s+[A-Za-z0-9.-]+){1,4}\s+\()Ultra(\))/g;
-  function highlightClaudeUltra(root) {
-    const eligible = node => {
-      const parent = node.parentElement;
-      return parent && !parent.closest('script,style,textarea,.claude-ultra-effort') &&
-        /Claude(?:\s+[A-Za-z0-9.-]+){1,4}\s+\(Ultra\)/.test(node.nodeValue || '');
-    };
-    const nodes = [];
-    if (root.nodeType === Node.TEXT_NODE) {
-      if (eligible(root)) nodes.push(root);
-    } else if (root.nodeType === Node.ELEMENT_NODE || root.nodeType === Node.DOCUMENT_NODE) {
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode: node => eligible(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
-      });
-      while (walker.nextNode()) nodes.push(walker.currentNode);
-    }
-    nodes.forEach(node => {
-      if (!node.isConnected || !eligible(node)) return;
-      const fragment = document.createDocumentFragment();
-      const value = node.nodeValue;
-      let cursor = 0;
-      CLAUDE_ULTRA_RE.lastIndex = 0;
-      for (let match; (match = CLAUDE_ULTRA_RE.exec(value));) {
-        fragment.append(value.slice(cursor, match.index), match[1]);
-        const ultra = document.createElement('span');
-        ultra.className = 'claude-ultra-effort';
-        const note = I18N.en
-          ? 'Claude Code Ultracode uses xhigh effort plus dynamic workflows, not Max.'
-          : 'Claude Code Ultracode 使用 xhigh + dynamic workflows，而不是 Max。';
-        ultra.dataset.effortNote = note;
-        ultra.textContent = 'Ultra';
-        fragment.append(ultra, match[2]);
-        cursor = match.index + match[0].length;
-      }
-      fragment.append(value.slice(cursor));
-      node.replaceWith(fragment);
-    });
-  }
-  function installClaudeUltraTooltip() {
-    if (document.getElementById('claude-ultra-tip')) return;
-    const tip = document.createElement('div');
-    tip.id = 'claude-ultra-tip';
-    tip.className = 'claude-ultra-tip';
-    tip.setAttribute('role', 'tooltip');
-    tip.hidden = true;
-    document.body.appendChild(tip);
-
-    let active = null;
-    const place = () => {
-      if (!active || tip.hidden || !active.isConnected) return;
-      const rect = active.getBoundingClientRect();
-      const gap = 9, edge = 12;
-      const left = Math.max(edge, Math.min(innerWidth - tip.offsetWidth - edge,
-        rect.left + rect.width / 2 - tip.offsetWidth / 2));
-      const above = rect.top - tip.offsetHeight - gap;
-      const top = above >= edge ? above : rect.bottom + gap;
-      tip.style.left = `${Math.round(left)}px`;
-      tip.style.top = `${Math.round(top)}px`;
-    };
-    const show = target => {
-      active = target;
-      tip.textContent = target.dataset.effortNote || '';
-      tip.hidden = false;
-      target.setAttribute('aria-describedby', tip.id);
-      requestAnimationFrame(() => {
-        tip.classList.add('show');
-        place();
-      });
-    };
-    const hide = () => {
-      if (active) active.removeAttribute('aria-describedby');
-      active = null;
-      tip.classList.remove('show');
-      tip.hidden = true;
-    };
-    const enter = event => {
-      const target = event.target.closest && event.target.closest('.claude-ultra-effort');
-      if (target && target !== active) show(target);
-    };
-    const leave = event => {
-      const target = event.target.closest && event.target.closest('.claude-ultra-effort');
-      if (target && !target.contains(event.relatedTarget)) hide();
-    };
-    document.addEventListener('pointerover', enter);
-    document.addEventListener('mouseover', enter);
-    document.addEventListener('pointerout', leave);
-    document.addEventListener('mouseout', leave);
-    document.addEventListener('click', event => {
-      const target = event.target.closest && event.target.closest('.claude-ultra-effort');
-      if (!target) return hide();
-      if (target === active && !tip.hidden) hide();
-      else show(target);
-      event.stopPropagation();
-    });
-    addEventListener('resize', place);
-    addEventListener('scroll', place, true);
-  }
-  function installClaudeUltraHighlight() {
-    highlightClaudeUltra(document.body);
-    installClaudeUltraTooltip();
-    new MutationObserver(records => records.forEach(record =>
-      record.addedNodes.forEach(highlightClaudeUltra)
-    )).observe(document.body, { childList: true, subtree: true });
-  }
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', installClaudeUltraHighlight, { once: true });
-    } else {
-      installClaudeUltraHighlight();
-    }
-  }
 
   /* ---------------------------------------------------------- 环境自检 */
   const CAP = { done: false };

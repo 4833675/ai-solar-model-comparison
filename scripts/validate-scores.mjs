@@ -33,7 +33,7 @@ const CANONICAL_NAMES = {
   'Sonnet5.5(Max)V1': 'Claude Sonnet 5.5 (Max)',
   'MiniMaxM3.1FlashPreview(Max)V1': 'MiniMax M3.1 Flash Preview (Max)',
   'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5': 'MiniMax M3.1 Flash Preview (Max)',
-  'GPT6.1Sol(Ultra)V1': 'GPT-6.1 Sol (Ultra)',
+  'GPT6.1Sol(Ultra)V1': 'GPT-6.1 Sol (Ultra·Max)',
 
   'Opus5.5(Max)V1': 'Claude Opus 5.5 (Max)',
 
@@ -73,7 +73,7 @@ const CANONICAL_NAMES = {
   'GPT6Astra(Light)V1-TasksAssignedByOpus5': 'GPT-6 Astra (Light)',
   'Opus5(Low)V1-TasksAssignedByOpus5': 'Claude Opus 5 (Low)',
   'GPT5.6Sol(high)V1': 'GPT-5.6 Sol (high)',
-  'Opus5Ultra-TasksAssignedByOpus5': 'Claude Opus 5 (Ultra)',
+  'Opus5Ultra-TasksAssignedByOpus5': 'Claude Opus 5 (Ultracode·xhigh)',
   'DeepSeek-V4-Flash-0731': 'DeepSeek V4 Flash 0731 (Max)',
   'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': 'DeepSeek V4 Flash 0731 (Max) #1',
   'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': 'DeepSeek V4 Flash 0731 (Max) #2',
@@ -99,14 +99,14 @@ const CANONICAL_NAMES = {
   'GPT5.6Luna(Max)V2': 'GPT-5.6 Luna (Max) #2',
   'GPT5.6LunaMax-TasksAssignedByOpus5': 'GPT-5.6 Luna (Max)',
   'GPT5.6Sol(Max)V1': 'GPT-5.6 Sol (Max)',
-  'GPT5.6SolUltra-TasksAssignedByOpus5': 'GPT-5.6 Sol (Ultra)',
-  'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra)',
-  'GPT5.6SolUltra': 'GPT-5.6 Sol (Ultra) #2',
+  'GPT5.6SolUltra-TasksAssignedByOpus5': 'GPT-5.6 Sol (Ultra·Max)',
+  'GPT5.6SolUltra-WebGL2': 'GPT-5.6 Sol (Ultra·Max)',
+  'GPT5.6SolUltra': 'GPT-5.6 Sol (Ultra·Max) #2',
   'GPT5.6Sol(xhigh)V1': 'GPT-5.6 Sol (xHigh) #1',
   'GPT5.6Sol(xhigh)V2': 'GPT-5.6 Sol (xHigh) #2',
   'GPT5.6Sol(xhigh)V3': 'GPT-5.6 Sol (xHigh) #3',
-  'GPT5.6TerraUltra-Three': 'GPT-5.6 Terra (Ultra)',
-  'GPT5.6TerraUltra-TasksAssignedByOpus5': 'GPT-5.6 Terra (Ultra)',
+  'GPT5.6TerraUltra-Three': 'GPT-5.6 Terra (Ultra·Max)',
+  'GPT5.6TerraUltra-TasksAssignedByOpus5': 'GPT-5.6 Terra (Ultra·Max)',
   'GPT_5_5_xhigh': 'GPT-5.5 (xHigh)',
   'Gemini3.1Pro-TasksAssignedByOpus5': 'Gemini 3.1 Pro (high)',
   'Gemini3.5Flash-TasksAssignedByOpus5': 'Gemini 3.5 Flash (high)',
@@ -131,9 +131,9 @@ const CANONICAL_NAMES = {
   'MiniMaxM3-TasksAssignedByOpus5': 'MiniMax M3 (high) #1',
   'MiniMaxM3(high)V2-TasksAssignedByOpus5': 'MiniMax M3 (high) #2',
   'MiniMax_M3_thinking-1': 'MiniMax M3 (high)',
-  'Opus5Ultra-WebGL2': 'Claude Opus 5 (Ultra)',
+  'Opus5Ultra-WebGL2': 'Claude Opus 5 (Ultracode·xhigh)',
   'Opus_4_8_Max': 'Claude Opus 4.8 (Max)',
-  'Opus4.8Ultra-TasksAssignedByOpus5': 'Claude Opus 4.8 (Ultra)',
+  'Opus4.8Ultra-TasksAssignedByOpus5': 'Claude Opus 4.8 (Ultracode·xhigh)',
   'Qwen3.7Max': 'Qwen 3.7 Max (Max)',
   'Qwen3.8Max-TasksAssignedByOpus5': 'Qwen 3.8 Max Preview (Max) #1',
   'Qwen3.8MaxV2-TasksAssignedByOpus5': 'Qwen 3.8 Max Preview (Max) #2',
@@ -146,8 +146,8 @@ const CANONICAL_NAMES = {
   'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': 'Qwen 3.8 Max (Max)',
   'Qwen3.8Flash(xhigh)V1': 'Qwen 3.8 Flash (xHigh)',
   'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': 'Qwen 3.8 Flash (xHigh)',
-  'Sonnet5Ultra': 'Claude Sonnet 5 (Ultra)',
-  'Sonnet5Ultra-TasksAssignedByOpus5': 'Claude Sonnet 5 (Ultra)',
+  'Sonnet5Ultra': 'Claude Sonnet 5 (Ultracode·xhigh)',
+  'Sonnet5Ultra-TasksAssignedByOpus5': 'Claude Sonnet 5 (Ultracode·xhigh)',
   'MuseSpark1.3Contributor(xhigh)V1': 'MuseSpark 1.3 Contributor (xHigh) #1',
   'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': 'MuseSpark 1.3 Contributor (xHigh) #1',
   'Gemini3.8Flash(high)V1': 'Gemini 3.8 Flash (high) #1',
@@ -158,7 +158,7 @@ const CANONICAL_NAMES = {
   'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': 'MuseSpark 1.3 Contributor (xHigh) #2',
   'OmenAlpha(Max)V1': 'Omen Alpha (Max)',
   'OmenAlpha(Max)V1-TasksAssignedByOpus5': 'Omen Alpha (Max)',
-  'GPT6Astra(Ultra)V1': 'GPT-6 Astra (Ultra)',
+  'GPT6Astra(Ultra)V1': 'GPT-6 Astra (Ultra·Max)',
   'GPT6Astra(Max)V1': 'GPT-6 Astra (Max)',
   'GPT6Astra(xhigh)V1': 'GPT-6 Astra (xHigh)',
   'DeepSeekV4.1Flash0910(Max)V1': 'DeepSeek V4.1 Flash 0910 (Max)',
@@ -481,6 +481,21 @@ for (const work of WORKS) {
   check(/^\d{6}$/.test(date) && work.model.endsWith(` (${date})`), `${work.id}: model name must end with its YYMMDD filesystem creation date`);
   check(stripCreationDate(work.model) === CANONICAL_NAMES[work.id], `${work.id}: dated model name must preserve its canonical base name`);
 }
+const renamedUltraIds = {
+  Claude: ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5Ultra-WebGL2', 'Opus4.8Ultra-TasksAssignedByOpus5', 'Sonnet5Ultra', 'Sonnet5Ultra-TasksAssignedByOpus5'],
+  GPT: ['GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1'],
+};
+check(WORKS.every(work => !/^(?:Claude |GPT-).*\(Ultra\)/.test(work.model)), 'WORKS must no longer display the standalone Claude/GPT Ultra name');
+for (const [family, ids] of Object.entries(renamedUltraIds)) {
+  const effort = family === 'Claude' ? '(Ultracode·xhigh)' : '(Ultra·Max)';
+  const actualIds = WORKS.filter(work => work.model.startsWith(family === 'Claude' ? 'Claude ' : 'GPT-') && work.model.includes(effort)).map(work => work.id).sort();
+  check(JSON.stringify(actualIds) === JSON.stringify([...ids].sort()), family + ': display-only rename must cover exactly the existing ' + ids.length + ' Ultra records');
+  for (const id of ids) {
+    const work = WORKS.find(work => work.id === id);
+    check(work.file === `models/${id}.html` && work.shot === `assets/shots/${id}.jpg` && Object.hasOwn(SCORES, id), id + ': renamed display must preserve its original source, screenshot, and score key');
+  }
+}
+check(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode\)/.test(work.model)).length === 2, 'The two existing Haiku Ultracode labels must remain unchanged');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 75, 'Group A count must be 75 after adding Haiku 5.5');
 check(WORKS.filter(w => w.group === 'B').length === 58, 'Group B count must be 58 after adding Haiku 5.5');
@@ -557,7 +572,7 @@ check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols 
 check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 22 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 17, 'Offline tabs must preserve the existing rerun and effort folding rules');
 for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
-  check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5), `${group}: archived Sol must retain Ultra as primary and all other efforts/runs`);
+  check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
 check(visibleWorks.length === 73, 'Active WORKS count must be 73');
 check(visibleWorks.filter(w => w.group === 'A').length === 40, 'Active Group A count must be 40');
@@ -583,7 +598,7 @@ check(PAIR_ORDER[27] === 'musespark13' && PAIR_ORDER[28] === 'gemini38flashv1' &
 check(PAIR_ORDER[32] === 'deepseekv41flash0910' && context.window.PAIR_TITLES.deepseekv41flash0910 === 'DeepSeek V4.1 Flash 0910 (Max)', 'DeepSeek V4.1 Flash 0910 must be the final configured pair');
 
 const referenceIds = ['Opus5Ultra-WebGL2'];
-check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Only Claude Opus 5 (Ultra) may be flagged as the benchmark');
+check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Only Claude Opus 5 (Ultracode·xhigh) may be flagged as the benchmark');
 
 const fable51 = SITE.byId('Fable5.1(Max)V1');
 const fable51Score = SITE.scoreFor(fable51);
@@ -623,7 +638,7 @@ check((omenA.tags || []).includes('匿名参测') && (omenB.tags || []).includes
 for (const work of [omenA, omenB]) check(fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)) && work.jsErrors === 0, `${work.id}: source, screenshot, and clean runtime result must exist`);
 const gpt6Astra = SITE.byId('GPT6Astra(Ultra)V1');
 const gpt6AstraScore = SITE.scoreFor(gpt6Astra);
-check(gpt6Astra?.group === 'A' && gpt6Astra?.tier === 1 && gpt6Astra?.pair === null && stripCreationDate(gpt6Astra?.model) === 'GPT-6 Astra (Ultra)', 'GPT-6 Astra must be an unpaired Tier 1 one-line work');
+check(gpt6Astra?.group === 'A' && gpt6Astra?.tier === 1 && gpt6Astra?.pair === null && stripCreationDate(gpt6Astra?.model) === 'GPT-6 Astra (Ultra·Max)', 'GPT-6 Astra must be an unpaired Tier 1 one-line work');
 check(gpt6Astra?.bytes === 10045652 && gpt6Astra?.lines === 586 && gpt6Astra?.tech === 'WebGL2' && !gpt6Astra?.needsFloat && gpt6Astra?.msaa && gpt6Astra?.net.length === 0, 'GPT-6 Astra metadata must match the supplied source');
 check(SITE.environmentTag(gpt6Astra) === 'in Codex' && fs.existsSync(asset(gpt6Astra.file)) && fs.existsSync(asset(gpt6Astra.shot)) && gpt6Astra.jsErrors === 0, 'GPT-6 Astra must expose Codex, its source, screenshot, and clean runtime result');
 close(gpt6AstraScore.evidenceBase, 100.5, 'GPT-6 Astra evidence score with three other comets');
@@ -798,7 +813,7 @@ for (const [group, expectedCount] of [['A', 27], ['B', 24]]) {
   check(!displayRows.some(work => /GPT-5\.6 (Sol|Terra|Luna)|Claude Sonnet 5 \(/.test(work.model)), `${group}: newly archived families must not occur in active table rows`);
   if (group === 'A') {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
-    check(astra?.id === 'GPT6Astra(Ultra)V1' && JSON.stringify(astra.tableAlternates.map(work => work.id)) === JSON.stringify(['GPT6Astra(Max)V1', 'GPT6Astra(xhigh)V1', 'GPT6Astra(Light)V1']), 'A: GPT-6 Astra must default to Ultra and collapse Max, xHigh, and Light');
+    check(astra?.id === 'GPT6Astra(Ultra)V1' && stripCreationDate(astra.model) === 'GPT-6 Astra (Ultra·Max)' && JSON.stringify(astra.tableAlternates.map(work => work.id)) === JSON.stringify(['GPT6Astra(Max)V1', 'GPT6Astra(xhigh)V1', 'GPT6Astra(Light)V1']), 'A: GPT-6 Astra must default to Ultra·Max and collapse Max, xHigh, and Light');
   } else {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Medium)V1-TasksAssignedByOpus5' && astra.tableAlternates.length === 1 && astra.tableAlternates[0].id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5', 'B: Astra must display its highest available effort, Medium, and fold Light behind it');
@@ -1268,7 +1283,7 @@ for (const work of WORKS) {
 }
 
 const sonnetOneLine = WORKS.find(w => w.id === 'Sonnet5Ultra');
-check(sonnetOneLine?.title === '太阳系运动模型 · Claude Sonnet 5 (Ultra)', 'Claude Sonnet 5 visible subtitle must use the canonical model name');
+check(sonnetOneLine?.title === '太阳系运动模型 · Claude Sonnet 5 (Ultracode·xhigh)', 'Claude Sonnet 5 visible subtitle must use the canonical model name');
 const i18nSource = read('assets/i18n.js');
 check(i18nSource.includes("'card.openAria': '{name} 的作品截图'") === false, 'card.openAria must describe opening the full work, not only the screenshot');
 check(i18nSource.includes("'card.openAria': '打开 {name} 的完整作品'") && i18nSource.includes("'card.openAria': 'Open the complete {name} work'"), 'Pair screenshot links must have bilingual canonical accessible names');
@@ -1387,7 +1402,7 @@ for (const lang of ['zh', 'en']) {
     else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
   };
   checkLunaHaikuHome(true);
-  check(countRows() === 27 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 27 active one-line model rows without Claude Fable 5');
+  check(countRows() === 27 && body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 27 active one-line model rows without Claude Fable 5');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -1519,15 +1534,20 @@ for (const lang of ['zh', 'en']) {
 }
 const enSpec = read('spec.en.html');
 const visibleNamingSurface = [
-  read('assets/data.js'), i18nSource, zhHome, enHome, zhSpec, enSpec,
+  read('assets/data.js'), read('assets/scores.js'), siteSource, i18nSource, zhHome, enHome, zhSpec, enSpec,
   read('view.html'), read('view.en.html'), read('compare.html'), read('compare.en.html'),
 ].join('\n');
 check(!/\((?:max|MAX)\)/.test(visibleNamingSurface), 'Visible reasoning strength must use the exact casing (Max), never (max) or (MAX)');
+check(!/(?:Claude |GPT-)[^'"`\n<>]*\(Ultra\)/.test(visibleNamingSurface), 'Visible model names must use Ultracode·xhigh for Claude and Ultra·Max for GPT while old asset IDs remain unchanged');
+const retiredClaudeUltraSurface = visibleNamingSurface + '\n' + cssSource;
+for (const stale of ['CLAUDE_ULTRA_RE', 'installClaudeUltra', 'highlightClaudeUltra', 'claude-ultra-effort', 'claude-ultra-tip', 'dynamic workflows']) {
+  check(!retiredClaudeUltraSurface.includes(stale), 'The retired Claude Ultra highlight/tooltip implementation and explanation must be removed: ' + stale);
+}
 check(typeof SITE.modelMatches === 'function', 'SITE.modelMatches must expose the shared model-name search predicate');
 check(typeof SITE.personalRecommendationFor === 'function' && typeof SITE.recommendationSymbols === 'function', 'SITE must expose the personal recommendation lookup and colored-symbol renderer');
 check(typeof SITE.modelLogoFor === 'function' && typeof SITE.modelCell === 'function', 'SITE must expose shared model-logo rendering');
 const expectedModelLogos = {
-  'Claude Opus 5 (Ultra)': 'anthropic',
+  'Claude Opus 5 (Ultracode·xhigh)': 'anthropic',
   'GPT-5.6 Sol (Max)': 'openai', 'Gemini 3.7 Flash (high)': 'gemini',
   'Kimi K3 (Max)': 'kimi', 'DeepSeek V4 Pro 0813 (Max)': 'deepseek',
   'Qwen 3.8 Max (Max)': 'qwen', 'GLM 5.3 (Max)': 'glm', 'Hy 4 Preview (high)': 'hy',
@@ -1536,7 +1556,7 @@ const expectedModelLogos = {
   'MiMo 2.5 Pro (high)': 'mi',
   'Step 5 Preview (high)': 'stepfun',
   'MuseSpark 1.3 Contributor (xHigh)': 'meta',
-  'GPT-6 Astra (Ultra)': 'openai',
+  'GPT-6 Astra (Ultra·Max)': 'openai',
 };
 for (const [model, logo] of Object.entries(expectedModelLogos)) {
   const work = { model };
@@ -1555,10 +1575,10 @@ const expectedRecommendations = {
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
   'Claude Opus 5.5 (Max)': ['mixed', 5, '5h12m·2.1亿·$75.50', '△△△△▽', 3],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
-  'Claude Opus 5 (Ultra)': ['up', 5, '又快、又稳、又贵'],
+  'Claude Opus 5 (Ultracode·xhigh)': ['up', 5, '又快、又稳、又贵'],
   'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
-  'GPT-5.6 Sol (Ultra)': ['up', 4, '甩手掌柜'],
-  'GPT-5.6 Terra (Ultra)': ['up', 2, '感谢那个男人'],
+  'GPT-5.6 Sol (Ultra·Max)': ['up', 4, '甩手掌柜'],
+  'GPT-5.6 Terra (Ultra·Max)': ['up', 2, '感谢那个男人'],
   'GPT-5.6 Luna (Max)': ['down', 1, '别浪费token'],
   'Kimi K3 (Max)': ['up', 1, '性价比不够'],
   'DeepSeek V4 Pro 0813 (Max)': ['down', 1, '梁子要加油啊'],
@@ -1578,11 +1598,11 @@ const expectedRecommendations = {
   'LongCat 2.0 (high)': ['down', 3, '我外卖到哪了？'],
   'MiniMax M3 (high)': ['down', 3, '你还是老实的做视频吧'],
   'MiniMax M3.1 Flash Preview (Max)': ['up', 2, '凑什么"Flash"的热闹'],
-  'GPT-6.1 Sol (Ultra)': ['up', 5, '这水平难道不是应该有的吗？'],
+  'GPT-6.1 Sol (Ultra·Max)': ['up', 5, '这水平难道不是应该有的吗？'],
   'Grok 4.6 (xHigh)': ['up', 1, '平庸的中等生'],
   'Grok 4.7 (xHigh)': ['up', 1, '平庸的中等生'],
-  'Claude Sonnet 5 (Ultra)': ['up', 1, '感觉不值得'],
-  'Claude Opus 4.8 (Ultra)': ['down', 5, '你不喜欢Opus5？'],
+  'Claude Sonnet 5 (Ultracode·xhigh)': ['up', 1, '感觉不值得'],
+  'Claude Opus 4.8 (Ultracode·xhigh)': ['down', 5, '你不喜欢Opus5？'],
   'MiMo 2.5 Pro (high)': ['down', 1, '小爱同学…'],
   'MiMo X Pro Preview (Unknown)': ['down', 3, '这是反向升级？'],
   'MiMo 2.6 Flash (Unknown)': ['up', 2, '也就是那么回事'],
@@ -1598,7 +1618,7 @@ const expectedRecommendations = {
   'Omen Alpha (Max)': ['up', 1, '看起来好像很厉害？'],
   'GPT-6 Astra (Light)': ['up', 3, '质量不错，但还是用不起'],
   'Claude Opus 5 (Low)': ['up', 2, '不努力完全不是一个东西'],
-  'GPT-6 Astra (Ultra)': ['mixed', 5, '任何订阅都能用/太费太贵', '△△△▽▽', 1],
+  'GPT-6 Astra (Ultra·Max)': ['mixed', 5, '任何订阅都能用/太费太贵', '△△△▽▽', 1],
 };
 const legacyFamilies = new Set([
   'Claude Opus 5', 'Claude Opus 4.8', 'Claude Sonnet 5',
@@ -1620,6 +1640,12 @@ for (const work of visibleWorks) {
   }
   check(recommendation.direction === expected[0] && recommendation.count === expected[1] && recommendation.reason === expected[2], `${work.id}: personal recommendation mismatch`);
   check(recommendation.symbols === (expected[3] || (expected[0] === 'up' ? '△' : '▽').repeat(expected[1])) && recommendation.sortValue === (expected[4] ?? (expected[0] === 'up' ? expected[1] : -expected[1])), `${work.id}: recommendation symbols or sort value mismatch`);
+}
+for (const id of Object.values(renamedUltraIds).flat()) {
+  const work = SITE.byId(id), key = stripCreationDate(work.model).replace(/ #\d+$/, '');
+  const expected = expectedRecommendations[key], recommendation = SITE.personalRecommendationFor(work);
+  check(expected && recommendation?.reason === expected[2], id + ': display-only rename must retain the recommendation reason, including archived works');
+  if (SITE.isArchivedWork(work)) check(recommendation.symbols === '-' && recommendation.count === 0 && recommendation.sortValue === 0, id + ': renamed archived works must keep dash recommendations');
 }
 const astraRecommendationHtml = SITE.recommendationSymbols(SITE.personalRecommendationFor(gpt6Astra));
 check((astraRecommendationHtml.match(/recommend-symbol-up/g) || []).length === 3 && (astraRecommendationHtml.match(/recommend-symbol-down/g) || []).length === 2 && astraRecommendationHtml.replace(/<[^>]+>/g, '') === '△△△▽▽', 'GPT-6 Astra must render three green outline up-triangles and two red down-triangles');
@@ -1675,7 +1701,7 @@ for (const [page, language] of [[zhHome, 'Chinese'], [enHome, 'English']]) {
   check(effortStart > tableStart && effortStart < page.indexOf('<section id="pairs"') && page.includes('id="solEffortList"') && page.includes('id="solEffortDocumentList"') && (page.match(/class="effort-run-scroll"/g) || []).length === 2, `${language} both six-way reasoning-effort comparisons must sit below the table and remain in single-row scroll frames`);
   check(page.includes('S.effortComparisonWorks') && page.includes('S.effortDocumentWorks') && page.includes('S.effortComparisonMatches') && page.includes('S.effortComparisonBlock'), `${language} both six-way reasoning-effort comparisons must participate in global search filtering`);
 }
-check(zhHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)') && enHome.includes('Claude Opus 5 (Ultra) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)'), 'Both languages must title the curated comparison with the three requested models');
+check(zhHome.includes('Claude Opus 5 (Ultracode·xhigh) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)') && enHome.includes('Claude Opus 5 (Ultracode·xhigh) ｜ Hy 4 Preview (high) ｜ Doubao Seed Evolving 0827 (Max)'), 'Both languages must title the curated comparison with the three requested models');
 for (const page of [zhHome, enHome]) check(page.includes('<details class="model-gap-section" id="modelGapComparisons" aria-labelledby="modelGapTitle" hidden>') && page.includes('<summary class="model-gap-section-head">') && !page.includes("set('#modelGapComparisons'"), 'The retained model-gap comparison must stay hidden from the page and must not be restored by search');
 check(zhHome.includes('各自得分更高的 #2') && enHome.includes('higher-scoring #2 run'), 'Both curated comparison introductions must disclose that Hy 4 uses its higher-scoring #2 runs');
 check(zhHome.includes('同一个 GPT-5.6 Sol，六档推理强度') && enHome.includes('One GPT-5.6 Sol across six reasoning levels'), 'Both languages must title the six-way reasoning-effort comparison');
@@ -1721,7 +1747,7 @@ check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHo
 check(zhHome.includes('一句话组 40 件和文档组 33 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && zhHome.includes('54.30 / 70') && enHome.includes('54.30 / 70') && zhHome.includes('30.30 / 36') && enHome.includes('30.30 / 36'), 'Both home pages must publish the current V3 28-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
-check(zhHome.includes('仅 Claude Opus 5 (Ultra) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultra) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultra) as the only benchmark');
+check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
 check(zhHome.includes('两组非标杆作品的最终分均需大于等于 95') && enHome.includes('entries in both groups turn green only at 95 or higher'), 'Both home pages must publish the shared inclusive 95-point green threshold');
 for (const id of referenceIds) {
@@ -1744,7 +1770,7 @@ const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
 check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('80') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
 check(i18nSource.includes("'score.referenceAria': '{name}，标杆，证据评分 {score} 分，查看分项得分'") && i18nSource.includes("'score.referenceAria': '{name}, benchmark, Evidence Score {score}. View score breakdown.'"), 'Benchmark tooltip triggers must expose their scores to assistive technology in both languages');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
-check(zhSpec.includes('Claude Opus 5 (Ultra)') && enSpec.includes('Claude Opus 5 (Ultra)'), 'Specification author must be labeled Claude Opus 5 (Ultra) in both languages');
+check(zhSpec.includes('Claude Opus 5 (Ultracode·xhigh)') && enSpec.includes('Claude Opus 5 (Ultracode·xhigh)'), 'Specification author must be labeled Claude Opus 5 (Ultracode·xhigh) in both languages');
 check(!zhSpec.includes('Claude Opus 5 (Max)') && !enSpec.includes('Claude Opus 5 (Max)'), 'Specification author must not be mislabeled as Claude Opus 5 (Max)');
 for (const stale of ['Flash 用时', 'Pro 仅用', 'Flash 折算', 'Flash 执行', 'Flash Token', 'Flash 最终', 'Flash/Pro']) {
   check(!zhHome.includes(stale), `Chinese static copy still uses bare model shorthand: ${stale}`);

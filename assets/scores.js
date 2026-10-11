@@ -928,7 +928,7 @@
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
       correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 8.5,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '完整 J2000 元素、求解器、动态聚焦、哈雷与八卫星数据均稳定；视觉很强但仍低于 GPT-5.6 Sol (Ultra)。'
+      note: '完整 J2000 元素、求解器、动态聚焦、哈雷与八卫星数据均稳定；视觉很强但仍低于 GPT-5.6 Sol (Ultra·Max)。'
     },
     'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': {
       reference: false,
