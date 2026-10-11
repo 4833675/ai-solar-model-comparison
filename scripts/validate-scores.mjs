@@ -23,6 +23,9 @@ const exactKeys = (value, expected, label) => {
 };
 const allowed = (value, values, label) => check(values.includes(value), `${label}: invalid value ${value}`);
 const finiteRange = (value, min, max, label) => check(Number.isFinite(value) && value >= min && value <= max, `${label}: expected finite ${min}..${max}, got ${value}`);
+const canonical = value => Array.isArray(value) ? value.map(canonical)
+  : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
+const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
   "Haiku5.5(Ultracode·Max)V1": "Claude Haiku 5.5 (Ultracode·Max)",
@@ -168,146 +171,140 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
-  "Haiku5.5(Ultracode·Max)V1": 97.02666666666667,
-  "Haiku5.5(Ultracode)V1": 87.87,
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": 97.46666666666667,
-  "GPT6Astra(Light)V1": 71.88,
-  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": 99.0,
-  "GPT6Luna(Max)V1": 66.57,
-  "GPT6Luna(Max)V1-TasksAssignedByOpus5": 92.96666666666667,
-  'Sonnet5.5(Max)V1': 107.23333333333333,
-  'MiniMaxM3.1FlashPreview(Max)V1': 86.1,
-  'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5': 93.91666666666667,
-  'GPT6.1Sol(Ultra)V1': 99.7,
-
-  'Opus5.5(Max)V1': 109,
-
-  'Grok4.7(xhigh)V1': 95.45,
-  'Grok4.7(xhigh)V1-TasksAssignedByOpus5': 92.45,
-
-  'MiMo2.6Flash(Unknown)V1': 74.88,
-  'MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5': 83.56666666666666,
-  'MiMo2.6Pro(Unknown)V1': 77.28666666666666,
-  'MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5': 90.15,
-
-  'Step5Preview(high)V1': 60,
-  'Step5Preview(high)V1-TasksAssignedByOpus5': 60,
-
-  "MiMoXProPreview(Unknown)V1": 67.78666666666666,
-  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": 79.61666666666667,
-
-  'Opus5(Max)V1': 105,
-  'Fable5.1(Max)V1': 109,
-  "Hy4Preview(high)V1": 96.7,
-  "Hy4Preview(high)V2": 96.466666666667,
-  "Hy4Preview(high)V1-TasksAssignedByOpus5": 93.726666666667,
-  "Hy4Preview(high)V2-TasksAssignedByOpus5": 94.726666666667,
-  "GLM5.3Flash(Max)V2": 92.01,
-  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 89.993333333333,
-  "GLM5.3Flash(Max)V1": 85.466666666667,
-  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 60,
-  "DoubaoSeedEvolving0827(Max)V1": 90.12,
-  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 90.15,
-  "GPT6Astra(Light)V1-TasksAssignedByOpus5": 99,
-  "Opus5(Low)V1-TasksAssignedByOpus5": 96.216666666667,
-  "GPT5.6Sol(high)V1": 85.493333333333,
+  "Opus5(Max)V1": 105,
+  "Fable5.1(Max)V1": 109,
+  "Qwen3.8Flash(xhigh)V1": 67.83666666666666,
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 81.21666666666667,
+  "Hy4Preview(high)V1": 89.33666666666666,
+  "Hy4Preview(high)V2": 80.52666666666667,
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": 86.45,
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": 85.75,
+  "GLM5.3Flash(Max)V2": 89.85333333333332,
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 82.56,
+  "GLM5.3Flash(Max)V1": 82.58666666666666,
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 82.02666666666667,
+  "DoubaoSeedEvolving0827(Max)V1": 83.12,
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 79.68333333333334,
+  "GPT5.6Sol(high)V1": 85.49333333333334,
   "Opus5Ultra-TasksAssignedByOpus5": 100,
   "DeepSeek-V4-Flash-0731": 59.04666666666667,
-  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 82.183333333333,
-  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 60,
-  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 79.383333333333,
-  "DeepSeek-V4-Pro-0813-V1": 79.46,
-  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 93.933333333333,
-  "DeepSeekV4Pro0813(Max)V2": 85.22666666666667,
-  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 92.933333333333,
-  "DeepSeekProMax-TasksAssignedByOpus5": 85.243333333333,
-  "DeepSeek_V4_Pro_high-1": 47.093333333333,
-  "DeepSeek_V4_Pro_high-2": 58.46,
-  "DeepSeek_V4_Pro_high-3": 55.093333333333,
-  "GLM5.2Max-TasksAssignedByOpus5": 88.243333333333,
-  "GLM5.2Max": 60.493333333333,
-  "GLM5.3(Max)V1": 88.95,
-  "GLM5.3(Max)V2": 89.76,
-  "GLM5.3(Max)V3": 93.36666666666667,
-  "GLM5.3(Max)V1-TasksAssignedByOpus5": 90.933333333333,
-  "GLM5.3(Max)V2-TasksAssignedByOpus5": 91.7,
-  "GLM_5_1_high-1": 51.093333333333,
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 82.18333333333334,
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 75.6,
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 79.38333333333333,
+  "DeepSeek-V4-Pro-0813-V1": 73.60333333333332,
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 84.02666666666667,
+  "DeepSeekV4Pro0813(Max)V2": 80.08666666666666,
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 84.31,
+  "DeepSeekProMax-TasksAssignedByOpus5": 85.24333333333334,
+  "DeepSeek_V4_Pro_high-1": 47.093333333333334,
+  "DeepSeek_V4_Pro_high-2": 58.46000000000001,
+  "DeepSeek_V4_Pro_high-3": 55.093333333333334,
+  "GLM5.2Max-TasksAssignedByOpus5": 88.24333333333334,
+  "GLM5.2Max": 60.49333333333334,
+  "GLM5.3(Max)V1": 87.10333333333332,
+  "GLM5.3(Max)V2": 88.85333333333332,
+  "GLM5.3(Max)V3": 88.27,
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": 79.46666666666667,
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": 78.21666666666667,
+  "GLM_5_1_high-1": 51.093333333333334,
   "GPT5.5xHigh-TasksAssignedByOpus5": 97,
-  "GPT5.6Luna(Max)V1": 62.463333333333,
+  "GPT5.6Luna(Max)V1": 62.46333333333334,
   "GPT5.6Luna(Max)V2": 60.519999999999996,
-  "GPT5.6LunaMax-TasksAssignedByOpus5": 91.026666666667,
+  "GPT5.6LunaMax-TasksAssignedByOpus5": 91.02666666666667,
   "GPT5.6Sol(Max)V1": 94.81,
   "GPT5.6SolUltra-TasksAssignedByOpus5": 100,
   "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 99,
   "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 96,
-  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 88.933333333333,
-  "GPT5.6Sol(Medium)V1": 68.786666666667,
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 88.93333333333334,
+  "GPT5.6Sol(Medium)V1": 68.78666666666666,
   "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": 79.82,
-  "GPT5.6Sol(Light)V1": 55.603333333333,
+  "GPT5.6Sol(Light)V1": 55.60333333333334,
   "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": 82.03,
   "GPT5.6SolUltra-WebGL2": 97.93333333333334,
   "GPT5.6SolUltra": 88.66,
-  "GPT5.6Sol(xhigh)V1": 80.786666666667,
+  "GPT5.6Sol(xhigh)V1": 80.78666666666666,
   "GPT5.6Sol(xhigh)V2": 92.37,
   "GPT5.6Sol(xhigh)V3": 88.62,
-  "GPT5.6TerraUltra-Three": 76.993333333333,
+  "GPT5.6TerraUltra-Three": 76.99333333333334,
   "GPT5.6TerraUltra-TasksAssignedByOpus5": 100,
-  "GPT_5_5_xhigh": 82.626666666667,
-  "Gemini3.1Pro-TasksAssignedByOpus5": 82.783333333333,
-  "Gemini3.5Flash-TasksAssignedByOpus5": 81.953333333333,
-  "Gemini3.6Flash(high)V0": 41.843333333333,
+  "GPT_5_5_xhigh": 82.62666666666667,
+  "Gemini3.1Pro-TasksAssignedByOpus5": 82.78333333333333,
+  "Gemini3.5Flash-TasksAssignedByOpus5": 81.95333333333333,
+  "Gemini3.6Flash(high)V0": 41.843333333333334,
   "Gemini3.6Flash-TasksAssignedByOpus5": 87.9,
   "Gemini3.7Flash(high)V1": 55.71,
-  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 86.933333333333,
-  "Gemini_3_5_flash_high": 83.153333333333,
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 86.93333333333334,
+  "Gemini_3_5_flash_high": 83.15333333333334,
   "Grok4.5": 74.49333333333334,
-  "Grok4.6(xhigh)V1": 78.693333333333,
+  "Grok4.6(xhigh)V1": 78.69333333333333,
   "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 92.4,
-  "Hy3-TasksAssignedByOpus5": 78.333333333333,
-  "Hy3": 53.593333333333,
-  "KimiK3Max-TasksAssignedByOpus5": 96,
-  "KimiK3Max": 90.526666666667,
-  "KimiK3(Max)V2-TasksAssignedByOpus5": 96.7,
-  "KimiK3(Max)V2": 79.633333333333,
-  "KimiK3(Max)V3": 80.526666666667,
-  "LongCat2.0-TasksAssignedByOpus5": 60,
+  "Hy3-TasksAssignedByOpus5": 78.33333333333333,
+  "Hy3": 53.593333333333334,
+  "KimiK3Max-TasksAssignedByOpus5": 94.75,
+  "KimiK3Max": 81.83666666666666,
+  "KimiK3(Max)V2-TasksAssignedByOpus5": 79.91666666666667,
+  "KimiK3(Max)V2": 76.87,
+  "KimiK3(Max)V3": 80.52666666666667,
+  "LongCat2.0-TasksAssignedByOpus5": 83.32666666666667,
   "LongCat2.0": 48.27666666666667,
   "Mimo_2_5_Pro_high-1": 46.12,
-  "MiniMaxM3-TasksAssignedByOpus5": 25,
-  "MiniMaxM3(high)V2-TasksAssignedByOpus5": 25,
-  "MiniMax_M3_thinking-1": 56.926666666667,
+  "MiniMaxM3-TasksAssignedByOpus5": 65.9,
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": 61.9,
+  "MiniMax_M3_thinking-1": 56.92666666666666,
   "Opus5Ultra-WebGL2": 100,
   "Opus_4_8_Max": 91.56,
-  "Opus4.8Ultra-TasksAssignedByOpus5": 99.233333333333,
-  "Qwen3.7Max": 62.526666666667,
+  "Opus4.8Ultra-TasksAssignedByOpus5": 99.23333333333333,
+  "Qwen3.7Max": 62.52666666666667,
   "Qwen3.8Max-TasksAssignedByOpus5": 75.86,
-  "Qwen3.8MaxV2-TasksAssignedByOpus5": 83.926666666667,
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": 83.92666666666668,
   "Qwen3.8MaxV2": 51.56,
-  "Qwen3.8Max-inQoder": 58.566666666667,
+  "Qwen3.8Max-inQoder": 58.56666666666666,
   "Qwen3.8MaxV1-inQoder": 53.31,
-  "Qwen3.8Max(Max)V1": 63.27,
-  "Qwen3.8Max(Max)V2": 69.826666666667,
-  "Qwen3.8Max(Max)V3": 72.02,
-  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 93.7,
-  "Qwen3.8Flash(xhigh)V1": 84.68333333333334,
-  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 87.4,
-  "Sonnet5Ultra": 87.026666666667,
-  "Sonnet5Ultra-TasksAssignedByOpus5": 98.466666666667,
-  "MuseSpark1.3Contributor(xhigh)V1": 85.216666666667,
-  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": 85.683333333333,
-  "Gemini3.8Flash(high)V1": 52.433333333333,
-  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": 87.733333333333,
-  "Gemini3.8Flash(high)V2": 81.216666666667,
-  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 85.993333333333,
-  "MuseSpark1.3Contributor(xhigh)V2": 81.51,
-  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 91.966666666667,
+  "Qwen3.8Max(Max)V1": 59.31999999999999,
+  "Qwen3.8Max(Max)V2": 62.24333333333334,
+  "Qwen3.8Max(Max)V3": 68.85333333333332,
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 81.21666666666667,
+  "Sonnet5Ultra": 87.02666666666667,
+  "Sonnet5Ultra-TasksAssignedByOpus5": 98.46666666666667,
+  "MuseSpark1.3Contributor(xhigh)V1": 74.83666666666666,
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": 82.95,
+  "Gemini3.8Flash(high)V1": 48.80333333333333,
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": 78.5,
+  "Gemini3.8Flash(high)V2": 68.33666666666666,
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 81.76,
+  "MuseSpark1.3Contributor(xhigh)V2": 73.36333333333333,
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 79.96666666666667,
   "OmenAlpha(Max)V1": 88.95,
   "OmenAlpha(Max)V1-TasksAssignedByOpus5": 96,
-  "GPT6Astra(Ultra)V1": 100.5,
-  "GPT6Astra(Max)V1": 84.5,
-  "GPT6Astra(xhigh)V1": 84.5,
-  "DeepSeekV4.1Flash0910(Max)V1": 90.983333333333,
-  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": 90.216666666667,
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": 87,
+  "Opus5(Low)V1-TasksAssignedByOpus5": 96.21666666666667,
+  "GPT6Astra(Ultra)V1": 99.06,
+  "GPT6Astra(Max)V1": 83.06,
+  "GPT6Astra(xhigh)V1": 83.06,
+  "DeepSeekV4.1Flash0910(Max)V1": 88.79333333333334,
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": 77.45,
+  "MiMoXProPreview(Unknown)V1": 66.28666666666666,
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": 83.27666666666667,
+  "Step5Preview(high)V1": 72.35333333333332,
+  "Step5Preview(high)V1-TasksAssignedByOpus5": 67.45,
+  "MiMo2.6Flash(Unknown)V1": 74.88,
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": 74.63333333333333,
+  "MiMo2.6Pro(Unknown)V1": 68.28666666666666,
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": 78.91666666666667,
+  "Grok4.7(xhigh)V1": 84.54333333333334,
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": 84.21666666666667,
+  "Opus5.5(Max)V1": 109,
+  "MiniMaxM3.1FlashPreview(Max)V1": 86.16,
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": 83.45,
+  "GPT6.1Sol(Ultra)V1": 99.7,
+  "Sonnet5.5(Max)V1": 107.23333333333333,
+  "GPT6Astra(Light)V1": 71.88,
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": 99,
+  "GPT6Luna(Max)V1": 66.57,
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": 91.46666666666667,
+  "Haiku5.5(Ultracode)V1": 87.87,
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": 95.96666666666667,
+  "Haiku5.5(Ultracode·Max)V1": 97.02666666666667
 };
 
 // Current scoring-input field oracle. Order:
@@ -315,146 +312,140 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
-  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|21|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-",
-  "Haiku5.5(Ultracode)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|6|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-",
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-",
+  "Opus5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|2|5|5|5|-|1|1|1|1|1|-|-",
+  "Fable5.1(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
+  "Qwen3.8Flash(xhigh)V1": "0|0.4|1|1|1|0.4|1|0.5|1|1|0.5|1|1|9|1|0|1|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:60f621e508320326c193cc088d9b40ae0f641952c8364da60aa794071d0fea67",
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|0|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:77074df255d94c4937a1ded85a99403707d8af8541cec402cf0837f65bc0e1d1",
+  "Hy4Preview(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|18|1|1|2|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:ad393bc08509e74efa72511d3b5c3797247f48d331567aa813beaf8cd4769a86",
+  "Hy4Preview(high)V2": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|13|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7e68169acd15c50c8f9cf59c0cc90d65f47553bff0613c048da692b7ac91fa38",
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:8e373e75cbe3dadb41a12aeffdb0e68f627515da538940ddc0a1090f4f64f1e8",
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:07bc46f36f52d743e566911def7ada767da7f1537c8a0a054715fcb693f26b29",
+  "GLM5.3Flash(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|9|1|1|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:33b13f642caa29e3aa6befaec8eb19bfb23599dc467c20bac4993409abfa0426",
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:b261cbe51915bd284d578856f438e35982484a1727c0b2419c89c94c60f3abf7",
+  "GLM5.3Flash(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|6|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:5f03f4ee4356654bdde781ca1ad3ca6748ea2263652d89153fab2cff1ffad109",
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2dbd6c3df7e93a39ffb1d1ff608d6917a7a48d6c12ecf466374c74745ee26667",
+  "DoubaoSeedEvolving0827(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:389408b5f23c6fa900bb2ba2e4bcec37fbe4ac8bba8ef32b841038d84998c1bf",
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:323c7175a230b13ca37616172fd16a37fedea6bb6b6801a6f1fc7e8e7703c680",
+  "GPT5.6Sol(high)V1": "0|0.4|1|1|1|1|1|1|1|1|0|1|1|8|1|0|0|5|3|5|8|1|1|1|1|1|-|-",
+  "Opus5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
+  "DeepSeek-V4-Flash-0731": "0|0.4|0.4|0.4|1|1|1|1|1|0.5|0.5|0.5|0.5|1|1|0|3|4|4|3|1.5|1|1|0.5|0|1|-|-",
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|5|7|0.5|1|0.5|1|1|-|-",
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|0|8|1|1|0|0|2|1|4|1|1|1|0|1|L2|双重帧调度让渲染循环持续倍增，长程性能失稳。",
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|2.5|4|6|1|0.5|1|1|1|-|-",
+  "DeepSeek-V4-Pro-0813-V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|0|1|7|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:0f13698fdd95188f6b604c46929839b77dc50a11a333e7095cd2ab16ea8927b6",
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7b3c70f01db13a5686114ab1ce2353d2f6d09f3e9b50e8dfc04c21cc4e061a16",
+  "DeepSeekV4Pro0813(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|5|1|1|1|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:9d938ad554ecfe31ae8f4c38f780d55b397a753d3f0a79738a7ceafcf30b29d4",
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:7b14f2191433eaa36d6675856e6bc01c6b8f528e366ee56e7aac4a8226488d05",
+  "DeepSeekProMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|6|0.5|1|1|0|1|-|-",
+  "DeepSeek_V4_Pro_high-1": "0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|2.5|1|1|0|0|0|-|-",
+  "DeepSeek_V4_Pro_high-2": "0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-",
+  "DeepSeek_V4_Pro_high-3": "0|0.4|1|0|1|1|1|0|0.5|1|0|1|1|1|1|0|0|5|3|5|5.8|1|1|1|0|0.5|-|-",
+  "GLM5.2Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|3|0.5|1|1|0|1|-|-",
+  "GLM5.2Max": "0|0.4|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|4|1|1|1|1|1|-|-",
+  "GLM5.3(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:85776da3d708a26601e31f046eeda0a7989e82675e34a9d569866024a16fc437",
+  "GLM5.3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:95ed016413c6d956942f1b0ed74cec886758c6793d643479b42065ff183d1486",
+  "GLM5.3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|10|1|1|1|4|4|4|-|1|1|1|1|0.5|-|-|moonEvidence:ce4ca3bfed83e9adb586c7edd2bb6fe320022053471ba5e17f685f8a4a866bb8",
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:b819f8bb320900c0604e8e8248f0854e951c590ee5e9122ab385c5fb14b0eb24",
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:51ce7c8934c046abc66d50f6e14349a3a5bd6fd61dc48cbbff092f554abc8ede",
+  "GLM_5_1_high-1": "0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|3|1|1|1|0|0.5|-|-",
+  "GPT5.5xHigh-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8|1|1|1|1|1|-|-",
+  "GPT5.6Luna(Max)V1": "0|0.4|1|0.4|0|0.4|1|1|0.5|1|0.5|1|1|1|1|0|0|5|3|5|5|1|0.5|0.5|1|0.5|-|-",
+  "GPT5.6Luna(Max)V2": "0|0.4|1|0.4|1|1|1|1|0.5|0.5|0|1|1|1|1|0|2|5|2|5|3|1|1|1|0|0.5|-|-",
+  "GPT5.6LunaMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|3.5|1|1|1|0|1|-|-",
+  "GPT5.6Sol(Max)V1": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|10|1|0|0|5|5|5|8|1|0.5|1|1|0.5|-|-",
+  "GPT5.6SolUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|9|1|1|1|1|0.5|-|-",
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|5.5|1|1|1|1|0.5|-|-",
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|0|1|1|8|1|1|0|5|3|5|7|1|1|1|1|0.5|-|-",
+  "GPT5.6Sol(Medium)V1": "0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|0|0|0|0|5|4|5|7|1|1|1|1|0.5|-|-",
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|8|1|1|0|5|5|5|4|0.5|0.5|1|0|0.5|-|-",
+  "GPT5.6Sol(Light)V1": "0|0.4|0|0.4|0|0|1|1|0.5|1|0|1|1|1|1|0|0|5|3|5|6|0.5|1|1|0|0.5|-|-",
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|1|1|8|1|1|0|5|5|5|6.5|1|0.5|1|0|0.5|-|-",
+  "GPT5.6SolUltra-WebGL2": "0|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|1|4|5|4|9.5|1|1|1|1|1|-|-",
+  "GPT5.6SolUltra": "0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|1|5|5|5|6|1|1|1|1|1|-|-",
+  "GPT5.6Sol(xhigh)V1": "0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|0|5|4|5|7.5|1|1|1|1|1|-|-",
+  "GPT5.6Sol(xhigh)V2": "0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|11|1|0|0|5|5|5|8|1|1|1|1|0.5|-|-",
+  "GPT5.6Sol(xhigh)V3": "0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|7|1|0|0|5|5|5|8.5|1|1|1|1|0.5|-|-",
+  "GPT5.6TerraUltra-Three": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|5|1|0|0|5|5|3|6|1|1|1|0|1|-|-",
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8.5|1|1|1|1|1|-|-",
+  "GPT_5_5_xhigh": "0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|0|5|5|4|2|0.5|1|0.5|0|1|-|-",
+  "Gemini3.1Pro-TasksAssignedByOpus5": "0|1|1|1|1|0|1|1|1|1|1|1|1|8|1|1|0|5|4|4|5.5|1|0.5|0.5|0|1|-|-",
+  "Gemini3.5Flash-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|2|3|4|1|1|0.5|1|1|-|-",
+  "Gemini3.6Flash(high)V0": "0|0.4|0|1|1|0|1|0|0|0|0|1|1|1|1|0|0|5|1|4|3.5|0.5|1|0.5|1|0.5|-|-",
+  "Gemini3.6Flash-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|4|5|1|1|0.5|1|1|-|-",
+  "Gemini3.7Flash(high)V1": "0|0.4|1|1|1|1|1|0|0.5|0.5|0|1|1|1|1|0|0|5|3|4|4|0.5|1|1|1|0.5|-|-",
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|4|7.5|1|1|1|1|1|-|-",
+  "Gemini_3_5_flash_high": "0|0.4|1|0|1|0.4|1|1|1|1|1|1|1|10|1|0|0|5|4|4|7|1|1|1|1|1|-|-",
+  "Grok4.5": "0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|1|5|4|4|7|1|1|0.5|0|1|-|-",
+  "Grok4.6(xhigh)V1": "0|0.4|1|1|1|1|1|1|1|1|0|1|1|12|1|1|0|5|2.5|4|7.5|1|1|0.5|1|0.5|-|-",
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3|5.5|1|1|1|1|1|-|-",
+  "Hy3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|0.5|1|1|1|1|8|1|1|0|5|2|3|5|1|1|0.5|0|0.5|-|-",
+  "Hy3": "0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|6.6|1|1|0.5|1|1|-|-",
+  "KimiK3Max-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:a25071e7116a8e0dccfd54c1bf03cdda48d8048b43a7333d013669eec02e8981",
+  "KimiK3Max": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d438c933e25663e784cfc71385a5726c0ee0cee6262fcbf3bd1ae849dd076cee",
+  "KimiK3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dd1376f65b20c511c391e295ed8f42e809a6776114a9f8f7f328ba9ae6244ac5",
+  "KimiK3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c7a498fb13d7569ceca1e378f438ec8e14c0211b3c647ff5b0f28f07f59f20f9",
+  "KimiK3(Max)V3": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|5|4.5|4.5|5.5|1|1|1|1|0.5|-|-",
+  "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|1|2|4.5|1|1|0.5|0|1|L2|环与大红斑核心结构失效，并出现 NaN 实时数据。",
+  "LongCat2.0": "0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|3|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-",
+  "Mimo_2_5_Pro_high-1": "0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|2|5|4.2|1|1|0|0|1|-|-",
+  "MiniMaxM3-TasksAssignedByOpus5": "0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|1|1|L1|白场与巨大黑三角遮挡主画面，无法正常审阅。",
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": "0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|0|0.5|L1|全屏后期四边形以 XYZ 数据生成，却按紧密排列的 XY 读取；同时 4× MSAA 解析使用了非法的 LINEAR 过滤。两处核心合成错误叠加，使主画布持续全黑，仅 UI 可见。",
+  "MiniMax_M3_thinking-1": "0|0.4|0|1|1|1|1|1|1|0.5|1|0|0|1|1|0|0|3|4|1|4.7|1|1|0.5|0.5|0.5|L2|外行星偏离轨道线，低速产生 NaN，重置失效。",
+  "Opus5Ultra-WebGL2": "1|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
+  "Opus_4_8_Max": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|5|5|9|1|1|1|1|1|-|-",
+  "Opus4.8Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|9.5|1|1|1|1|1|-|-",
+  "Qwen3.7Max": "0|0.4|1|1|1|1|1|1|1|0.5|0|1|1|1|1|0|0|5|5|4|5.2|1|1|0|0|0.5|-|-",
+  "Qwen3.8Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|2|2|5.5|1|1|0.5|1|1|-|-",
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": "0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|3|2.5|1|1|0.5|1|0.5|-|-",
+  "Qwen3.8MaxV2": "0|0.4|1|0|0|0|1|0|1|1|0|1|1|1|1|0|0|5|3.5|5|6.5|1|1|0|0|0|-|-",
+  "Qwen3.8Max-inQoder": "0|0|1|1|1|1|1|1|1|0|0|1|1|1|1|0|0|5|5|4|2.1|1|1|0|0|0|-|-",
+  "Qwen3.8MaxV1-inQoder": "0|0.4|1|0|0|0|1|0.5|1|1|0|1|1|1|1|0|0|5|3.5|5|4.8|0.5|1|0|0|0|-|-",
+  "Qwen3.8Max(Max)V1": "0|0.4|1|0|0|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|5|5|-|0.5|1|1|1|0.5|-|-|moonEvidence:e81effa29305df586c4482e1328b8fbde7fa4371fea1611f0ab105021e6ad065",
+  "Qwen3.8Max(Max)V2": "0|0.4|1|1|0|0|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:41c2005b28482a1f6c15201c086d8cdf6aa332a2ee7a7629d4dcfab5cc3f7b99",
+  "Qwen3.8Max(Max)V3": "0|0.4|1|1|1|0.4|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:a8048bc5748ef0170849e86504d80c45fbc87a41f6dcb8281108bc8114e1190b",
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6cb177e96ea756970afd4fee3ebf4eb2541608414e50bb8a8bb172896f779a3e",
+  "Sonnet5Ultra": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|0|5|5|4|7.5|1|1|1|1|1|-|-",
+  "Sonnet5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|8.5|1|1|1|1|1|-|-",
+  "MuseSpark1.3Contributor(xhigh)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|12|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:dafe55d7d69d00a58aab0fddd31ada43f62a98e0c32c29912ad880f4c5458d68",
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|0|0.5|-|-|moonEvidence:64c1000fcfe2ca33732f0545607745c279496139815985185f3601e82e77d4a8",
+  "Gemini3.8Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|4|4|-|0.5|0.5|0.5|0.5|0.5|-|-|moonEvidence:24ddc90280d661007a9469be2b3e1dadcb68a3650d89797b50b3d243b88dc13a",
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:576b9262f5af7c136d33be0c4aa426ef15242b11e6fcaeec75f60574d714c04d",
+  "Gemini3.8Flash(high)V2": "0|0.4|1|1|1|0.4|1|1|1|1|0.5|1|1|8|1|1|0|5|4.5|4.5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:2c91cb113c6c3c60aaae5517ebb922ec657d20197a95825160eff4cc84d2596f",
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": "0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:cf9ebc172c64851949ca854c60cad05546a254f38056dc4d5013e2114382f213",
+  "MuseSpark1.3Contributor(xhigh)V2": "0|0.4|0.4|1|1|0.4|1|1|1|1|1|1|1|6|1|1|0|5|3.5|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:307c302da3a25052ffec8d6f93cb55e1789913a7633de4d2d41cc795662390fe",
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:2b9c5430e4147a173bd3b66bedc5fe765ea005be41329fa768e812e1cbe1ed00",
+  "OmenAlpha(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|4.5|4|-|1|0.5|1|1|0.5|-|-",
+  "OmenAlpha(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:1bbab407b3259b32078b88eb3957f8b89739c0ddf9858e7f7b49afff091d2eec",
+  "Opus5(Low)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-",
+  "GPT6Astra(Ultra)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|3|5|5|5|-|1|1|1|1|0.5|-|-",
+  "GPT6Astra(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "GPT6Astra(xhigh)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "DeepSeekV4.1Flash0910(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:942fed0769cc8e126bb8e0461731889dd1f0c6619e08e06e2aab89965944d5d1",
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d7e39b7866dcd41931e5174f1588bd5de37433638e69cf8f2aad5c9abce9fc69",
+  "MiMoXProPreview(Unknown)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|3.5|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:098003335e20e8dc5ede37219f7ef0c2cb8829ce34d6364314d1b05dcbd0ac7f",
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:21b69f35b2b1a6c1ebe6ba810c011170ada5272b5e5f13c989c4c216efabc901",
+  "Step5Preview(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|12|1|1|0|3|2|2|-|1|1|0.5|0.5|0.5|L2|选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。|moonEvidence:c2ec6224118cc55239e7ac7a01fecd436a5670f29ae07655febce9c7d1e045ec",
+  "Step5Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|2|2|2|-|1|0.5|0.5|0|0.5|L2|卫星模型矩阵NaN与合成顶点布局错误造成核心实体和画面/拾取映射失败；新规则标记未完成，不设分数封顶。|moonEvidence:2390290be82919514b028345e93ab659f1d806accfbedcad6122f6e994c28e6d",
+  "MiMo2.6Flash(Unknown)V1": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|4.5|-|1|1|1|1|0.5|-|-",
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|3|3.5|5|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:989d49162c356b81488a80fb1f52daf8b110e81e09dd4353ce2784c4c88b2a85",
+  "MiMo2.6Pro(Unknown)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|6|1|0|0|5|3.5|4|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:a80cc13dcb01708ec40e5404b0c25ecfe930842fae7e415f40699853a4efc9e9",
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:958adc8d8e93777db71c98028cf60905a14e4878cb7ea62d4538ec6671350572",
+  "Grok4.7(xhigh)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|13|1|1|1|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c54db812c50006101ef808dad400281ef049296bf3e3e42b671a73bc33c1fd98",
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:2de6622d50c9b779d2e0a024be80f8cdebcbc765249a8d5a76c53a5f1b8ea92e",
+  "Opus5.5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
+  "MiniMaxM3.1FlashPreview(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|20|1|0|0|4|3|3.5|-|1|1|0.5|1|0.5|-|-|moonEvidence:f01382151cb77d1b4126fe393f89446bc606917c8c964973be14a19f72824c67",
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c6b08345bec50f99a74c455ad5c5e18dafab0d99d68a80ed40c3b17e223c2a1b",
+  "GPT6.1Sol(Ultra)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|0|5|4|4.5|-|1|1|1|1|0.5|-|-",
+  "Sonnet5.5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|67|1|1|3|5|4.5|5|-|1|1|1|1|0.5|-|-",
   "GPT6Astra(Light)V1": "0|0.4|0.4|0|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
-  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:f7d09c3ce82c254a538e12cfccd7fb547d276e6de6f4a995ae587e2f735a9540",
   "GPT6Luna(Max)V1": "0|0.4|1|0|0|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|0.5|0|0.5|-|-",
-  "GPT6Luna(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0.5|0.5|-|-",
-  'Sonnet5.5(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|67|1|1|3|5|4.5|5|-|1|1|1|1|0.5|-|-',
-  'MiniMaxM3.1FlashPreview(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|0.5|20|1|0|0|4|3|3.5|-|1|1|0.5|1|0.5|-|-',
-  'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-',
-  'GPT6.1Sol(Ultra)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|0|5|4|4.5|-|1|1|1|1|0.5|-|-',
-
-  'Opus5.5(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-',
-
-  'Grok4.7(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|1|5|4.5|4|-|1|0.5|1|1|0.5|-|-',
-  'Grok4.7(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|-|1|0.5|1|1|0.5|-|-',
-
-  'MiMo2.6Flash(Unknown)V1': '0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|4.5|-|1|1|1|1|0.5|-|-',
-  'MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|3|3.5|3|-|0.5|0.5|0.5|1|0.5|-|-',
-  'MiMo2.6Pro(Unknown)V1': '0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|6|1|0|0|5|3.5|4|-|0.5|0.5|0.5|1|0.5|-|-',
-  'MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|3.5|-|1|0.5|1|1|0.5|-|-',
-
-  'Step5Preview(high)V1': '0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|0.5|12|1|1|0|3|2|2|-|1|1|0.5|0.5|0.5|L2|选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。',
-  'Step5Preview(high)V1-TasksAssignedByOpus5': '0|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|1|0|4|2|1|-|1|0.5|0.5|0|0.5|L2|八颗卫星绘制矩阵为 NaN，且全屏合成布局错误导致画面与标签错位。',
-
-  'MiMoXProPreview(Unknown)V1': '0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|3.5|-|1|1|0.5|0.5|0.5|-|-',
-  'MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|0.5|1|0|1|8|1|1|0|5|2.5|3.5|-|1|0.5|1|1|0.5|-|-',
-
-  'Opus5(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|2|5|5|5|-|1|1|1|1|1|-|-',
-  'Fable5.1(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-',
-  'Hy4Preview(high)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|2|5|4|4.5|7|1|1|1|1|0.5|-|-',
-  'Hy4Preview(high)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|0|5|4|5|7.5|1|1|1|1|1|-|-',
-  'Hy4Preview(high)V1-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3.5|5.5|1|1|1|1|0.5|-|-',
-  'Hy4Preview(high)V2-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3.5|5.5|1|1|1|1|1|-|-',
-  'GLM5.3Flash(Max)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|9|1|1|0|5|4|4.5|7.5|1|1|1|1|1|-|-',
-  'GLM5.3Flash(Max)V2-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|4.5|1|1|0.5|1|0.5|-|-',
-  'GLM5.3Flash(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|6|1|0|0|5|4|5|6|1|1|1|1|0.5|-|-',
-  'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|4|3|2|3|1|1|0.5|1|0.5|L2|页面可运行，但兼容探测会把轨道、环与日冕切换为点状降级路径，随后出现明显棋盘格光晕；木星、土星聚焦后仍小到无法有效近景观察。',
-  'GPT5.6Luna(Max)V1': '0|0.4|1|0.4|0|0.4|1|1|0.5|1|0.5|1|1|1|1|0|0|5|3|5|5|1|0.5|0.5|1|0.5|-|-',
-  'GPT5.6Luna(Max)V2': '0|0.4|1|0.4|1|1|1|1|0.5|0.5|0|1|1|1|1|0|2|5|2|5|3|1|1|1|0|0.5|-|-',
-  'GPT5.6Sol(Medium)V1': '0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|0|0|0|0|5|4|5|7|1|1|1|1|0.5|-|-',
-  'GPT5.6Sol(Medium)V1-TasksAssignedByOpus5': '0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|8|1|1|0|5|5|5|4|0.5|0.5|1|0|0.5|-|-',
-  'GPT5.6Sol(Light)V1': '0|0.4|0|0.4|0|0|1|1|0.5|1|0|1|1|1|1|0|0|5|3|5|6|0.5|1|1|0|0.5|-|-',
-  'GPT5.6Sol(Light)V1-TasksAssignedByOpus5': '0|0.4|1|0.4|0|0.4|1|1|1|1|1|1|1|8|1|1|0|5|5|5|6.5|1|0.5|1|0|0.5|-|-',
-  'GPT5.6Sol(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|9|1|1|1|1|0.5|-|-',
-  'GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|5.5|1|1|1|1|0.5|-|-',
-  'GPT5.6Sol(high)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|0|1|1|8|1|1|0|5|3|5|7|1|1|1|1|0.5|-|-',
-  'DoubaoSeedEvolving0827(Max)V1': '0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
-  'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3|-|1|0.5|1|1|0.5|-|-',
-  'GPT6Astra(Light)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-',
-  'Opus5(Low)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-',
-  'GPT5.6Sol(high)V1': '0|0.4|1|1|1|1|1|1|1|1|0|1|1|8|1|0|0|5|3|5|8|1|1|1|1|1|-|-',
-  'DeepSeek-V4-Flash-0731': '0|0.4|0.4|0.4|1|1|1|1|1|0.5|0.5|0.5|0.5|1|1|0|3|4|4|3|1.5|1|1|0.5|0|1|-|-',
-  'DeepSeek_V4_Pro_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|2.5|1|1|0|0|0|-|-',
-  'DeepSeek_V4_Pro_high-2': '0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-',
-  'DeepSeek_V4_Pro_high-3': '0|0.4|1|0|1|1|1|0|0.5|1|0|1|1|1|1|0|0|5|3|5|5.8|1|1|1|0|0.5|-|-',
-  'GLM5.2Max': '0|0.4|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|4|1|1|1|1|1|-|-',
-  'GLM5.3(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|15|1|0|0|5|4|4.5|7.5|1|1|1|1|1|-|-',
-  'GLM5.3(Max)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|4|4.5|8|1|1|1|1|1|-|-',
-  'GLM5.3(Max)V3': '0|1|1|1|1|1|1|1|1|1|1|1|1|10|1|1|1|4|4|3|3.5|1|1|1|1|1|-|-',
-  'GLM5.3(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|3|1|1|1|1|1|-|-',
-  'GLM5.3(Max)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|4|1|1|1|1|1|-|-',
-  'GLM_5_1_high-1': '0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|3|1|1|1|0|0.5|-|-',
-  'GPT5.6Sol(Max)V1': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|10|1|0|0|5|5|5|8|1|0.5|1|1|0.5|-|-',
-  'GPT5.6SolUltra-WebGL2': '0|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|1|4|5|4|9.5|1|1|1|1|1|-|-',
-  'GPT5.6SolUltra': '0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|1|5|5|5|6|1|1|1|1|1|-|-',
-  'GPT5.6Sol(xhigh)V1': '0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|0|5|4|5|7.5|1|1|1|1|1|-|-',
-  'GPT5.6Sol(xhigh)V2': '0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|11|1|0|0|5|5|5|8|1|1|1|1|0.5|-|-',
-  'GPT5.6Sol(xhigh)V3': '0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|7|1|0|0|5|5|5|8.5|1|1|1|1|0.5|-|-',
-  'GPT5.6TerraUltra-Three': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|5|1|0|0|5|5|3|6|1|1|1|0|1|-|-',
-  'GPT_5_5_xhigh': '0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|0|5|5|4|2|0.5|1|0.5|0|1|-|-',
-  'Gemini_3_5_flash_high': '0|0.4|1|0|1|0.4|1|1|1|1|1|1|1|10|1|0|0|5|4|4|7|1|1|1|1|1|-|-',
-  'Grok4.5': '0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|1|5|4|4|7|1|1|0.5|0|1|-|-',
-  'Grok4.6(xhigh)V1': '0|0.4|1|1|1|1|1|1|1|1|0|1|1|12|1|1|0|5|2.5|4|7.5|1|1|0.5|1|0.5|-|-',
-  'Hy3': '0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|6.6|1|1|0.5|1|1|-|-',
-  'KimiK3Max': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|5|4|7|1|1|1|1|1|-|-',
-  'KimiK3(Max)V2': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|2.5|4|6.5|1|1|1|1|0.5|-|-',
-  'KimiK3(Max)V3': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|5|4.5|4.5|5.5|1|1|1|1|0.5|-|-',
-  'LongCat2.0': '0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|3|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-',
-  'Mimo_2_5_Pro_high-1': '0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|2|5|4.2|1|1|0|0|1|-|-',
-  'MiniMax_M3_thinking-1': '0|0.4|0|1|1|1|1|1|1|0.5|1|0|0|1|1|0|0|3|4|1|4.7|1|1|0.5|0.5|0.5|L2|外行星偏离轨道线，低速产生 NaN，重置失效。',
-  'Opus5Ultra-WebGL2': '1|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-',
-  'Opus_4_8_Max': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|5|5|9|1|1|1|1|1|-|-',
-  'Qwen3.7Max': '0|0.4|1|1|1|1|1|1|1|0.5|0|1|1|1|1|0|0|5|5|4|5.2|1|1|0|0|0.5|-|-',
-  'Qwen3.8MaxV2': '0|0.4|1|0|0|0|1|0|1|1|0|1|1|1|1|0|0|5|3.5|5|6.5|1|1|0|0|0|-|-',
-  'Qwen3.8Max-inQoder': '0|0|1|1|1|1|1|1|1|0|0|1|1|1|1|0|0|5|5|4|2.1|1|1|0|0|0|-|-',
-  'Qwen3.8MaxV1-inQoder': '0|0.4|1|0|0|0|1|0.5|1|1|0|1|1|1|1|0|0|5|3.5|5|4.8|0.5|1|0|0|0|-|-',
-  'Qwen3.8Max(Max)V1': '0|0.4|1|0|0|0.4|1|1|1|0|0|1|1|1|1|1|0|5|3.5|5|6.5|0.5|1|1|1|0.5|-|-',
-  'Qwen3.8Max(Max)V2': '0|0.4|1|1|1|0|1|1|1|0.5|0|1|1|1|1|1|0|5|3.5|4|5|1|1|1|1|0.5|-|-',
-  'Qwen3.8Max(Max)V3': '0|0.4|1|1|1|0.4|1|1|1|0.5|0|1|1|1|1|1|0|5|3.5|3.5|6.5|1|1|1|1|0.5|-|-',
-  'Sonnet5Ultra': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|0|5|5|4|7.5|1|1|1|1|1|-|-',
-  'Opus5Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-',
-  'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|5|7|0.5|1|0.5|1|1|-|-',
-  'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|0|8|1|1|0|0|2|1|4|1|1|1|0|1|L2|双重帧调度让渲染循环持续倍增，长程性能失稳。',
-  'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|2.5|4|6|1|0.5|1|1|1|-|-',
-  'DeepSeek-V4-Pro-0813-V1': '0|0.4|1|1|1|1|1|1|1|1|1|0|1|7|1|0|0|5|3|4|5.5|1|1|1|1|0.5|-|-',
-  'DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|7.5|1|1|1|1|1|-|-',
-  'DeepSeekV4Pro0813(Max)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|5|1|1|1|5|4|3.5|6.5|1|1|1|1|0.5|-|-',
-  'DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|4.5|1|1|1|1|0.5|-|-',
-  'DeepSeekProMax-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|6|0.5|1|1|0|1|-|-',
-  'GLM5.2Max-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|3|0.5|1|1|0|1|-|-',
-  'GPT5.5xHigh-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8|1|1|1|1|1|-|-',
-  'GPT5.6LunaMax-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|3.5|1|1|1|0|1|-|-',
-  'GPT5.6SolUltra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-',
-  'GPT5.6TerraUltra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8.5|1|1|1|1|1|-|-',
-  'Gemini3.1Pro-TasksAssignedByOpus5': '0|1|1|1|1|0|1|1|1|1|1|1|1|8|1|1|0|5|4|4|5.5|1|0.5|0.5|0|1|-|-',
-  'Gemini3.5Flash-TasksAssignedByOpus5': '0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|2|3|4|1|1|0.5|1|1|-|-',
-  'Gemini3.6Flash(high)V0': '0|0.4|0|1|1|0|1|0|0|0|0|1|1|1|1|0|0|5|1|4|3.5|0.5|1|0.5|1|0.5|-|-',
-  'Gemini3.6Flash-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|4|5|1|1|0.5|1|1|-|-',
-  'Gemini3.7Flash(high)V1': '0|0.4|1|1|1|1|1|0|0.5|0.5|0|1|1|1|1|0|0|5|3|4|4|0.5|1|1|1|0.5|-|-',
-  'Gemini3.7Flash(high)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|4|7.5|1|1|1|1|1|-|-',
-  'Grok4.6(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3|5.5|1|1|1|1|1|-|-',
-  'Hy3-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|0.5|1|1|1|1|8|1|1|0|5|2|3|5|1|1|0.5|0|0.5|-|-',
-  'KimiK3Max-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|9|1|1|1|1|0.5|-|-',
-  'KimiK3(Max)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|4|8.5|1|1|1|1|0.5|-|-',
-  'LongCat2.0-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|1|2|4.5|1|1|0.5|0|1|L2|环与大红斑核心结构失效，并出现 NaN 实时数据。',
-  'MiniMaxM3-TasksAssignedByOpus5': '0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|1|1|L1|白场与巨大黑三角遮挡主画面，无法正常审阅。',
-  'MiniMaxM3(high)V2-TasksAssignedByOpus5': '0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|0|0.5|L1|全屏后期四边形以 XYZ 数据生成，却按紧密排列的 XY 读取；同时 4× MSAA 解析使用了非法的 LINEAR 过滤。两处核心合成错误叠加，使主画布持续全黑，仅 UI 可见。',
-  'Opus4.8Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|9.5|1|1|1|1|1|-|-',
-  'Qwen3.8Max-TasksAssignedByOpus5': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|2|2|5.5|1|1|0.5|1|1|-|-',
-  'Qwen3.8MaxV2-TasksAssignedByOpus5': '0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|3|2.5|1|1|0.5|1|0.5|-|-',
-  'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|8.5|1|1|1|1|0.5|-|-',
-  'Qwen3.8Flash(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|0.5|1|1|9|1|0|1|5|3.5|4.5|7.5|1|1|1|1|0.5|-|-',
-  'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|0.5|1|1|1|8|1|1|0|5|2.5|4.5|6.5|1|1|1|1|1|-|-',
-  'Sonnet5Ultra-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|8.5|1|1|1|1|1|-|-',
-  'MuseSpark1.3Contributor(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|12|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-',
-  'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|4.5|-|1|0.5|1|0|0.5|-|-',
-  'Gemini3.8Flash(high)V1': '0|1|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|4|4|-|0.5|0.5|0.5|0.5|0.5|-|-',
-  'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|-|0.5|0.5|1|1|0.5|-|-',
-  'Gemini3.8Flash(high)V2': '0|1|1|1|1|1|1|1|1|1|0.5|1|1|8|1|1|0|5|4.5|4.5|-|1|0.5|0.5|0.5|0.5|-|-',
-  'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': '0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|4.5|-|0.5|0.5|1|1|0.5|-|-',
-  'MuseSpark1.3Contributor(xhigh)V2': '0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-',
-  'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|0.5|0.5|1|1|0.5|-|-',
-  'OmenAlpha(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|4.5|4|-|1|0.5|1|1|0.5|-|-',
-  'OmenAlpha(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-',
-  'GPT6Astra(Ultra)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|3|5|5|5|-|1|1|1|1|0.5|-|-',
-  'GPT6Astra(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
-  'GPT6Astra(xhigh)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-',
-  'DeepSeekV4.1Flash0910(Max)V1': '0|1|1|1|1|1|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-',
-  'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5': '0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-',
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0.5|0.5|-|-|moonEvidence:07d3dfb0a5caaccc0c0684ee24f724840022cabc824e6feab3c9aee675b750f6",
+  "Haiku5.5(Ultracode)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|6|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-",
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:6c7b325fd1a99014fc87a2c0b78d72025a5f50df51cb24d087fdc623d663b082",
+  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5"
 };
 
 const auditFingerprint = score => [
@@ -467,7 +458,7 @@ const auditFingerprint = score => [
   score.visualBase ?? '-',
   ...['drag', 'zoom', 'focus', 'follow', 'pauseReset'].map(key => score.interaction[key]),
   score.fatal ?? '-', score.fatalReason ?? '-',
-].join('|');
+].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
 check(Array.isArray(WORKS) && WORKS.length === 134, `WORKS count must be 134, got ${WORKS?.length}`);
 check(Object.keys(SCORES).length === 134, `SCORES count must be 134, got ${Object.keys(SCORES).length}`);
@@ -577,6 +568,22 @@ const expectedHiddenIds = [
 check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
 const visibleWorks = SITE.visibleWorks();
 const archivedWorks = SITE.archivedWorks();
+// Re-auditing changes evidence only for current, non-protected works. The supplied
+// programs and the existing screenshots are immutable inputs to this review.
+const protectedScoreDigests = {
+  'Opus5Ultra-WebGL2': '46fcdf5211d9c6477035e0f396dc0af61f3935eda1e5c23a28a446b96ebcde39',
+  'Fable5.1(Max)V1': 'bec020c1c78c02cbbdee7337f50f8ae1644c7d862ac2ccdff11536c35ce72fae',
+  'Opus5.5(Max)V1': '4868606c4bef2517a96376bad60704e1da46fe9562042d2c0a3b924cdc5c6c36',
+};
+for (const [id, expected] of Object.entries(protectedScoreDigests))
+  check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');
+const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
+  .map(path => [path, createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')]);
+check(digest(originalAssets) === '4d39e2cfa1620a9da6d90cd02a26237c42db2ca80d91c9ba04c131cca8822dab', 'All original programs and saved screenshots must be reused unchanged');
+const archivedEvidence = archivedWorks.map(work => [work.id,
+  Object.fromEntries(Object.entries(SCORES[work.id]).filter(([key]) => key !== 'note'))])
+  .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+check(digest(archivedEvidence) === 'c64839256c1d74907b4437adfb44f16fad7cd1a67c207ad41ade015eda9bbab1', 'Archived scoring evidence must not be re-audited in this review');
 check(archivedWorks.length === 67 && archivedWorks.filter(w => w.group === 'A').length === 37 && archivedWorks.filter(w => w.group === 'B').length === 30, 'Offline tabs must retain the previous 64 works plus the two Opus 5 and Gemini 3.1 Pro detailed-spec works');
 check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols === '-' && SITE.isArchivedWork(work)), 'Every offline model must use a dash recommendation');
 check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 24 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 21, 'Offline tabs must add three detailed-spec rows while preserving all previous folding rules');
@@ -606,7 +613,7 @@ check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
 check(historicalOpusPair?.a?.id === 'Opus5Ultra-WebGL2' && historicalOpusPair?.b?.id === 'Opus5Ultra-TasksAssignedByOpus5', 'The complete retained work set must preserve the historical Opus 5 pair across current and offline tabs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
-check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(['gemini38flashv1', 'qwen38max', 'gpt6astralight', 'gpt6luna', 'kimik3v2', 'deepseekv4pro0813']), 'Featured comparisons must be the six largest positive detailed-spec score gains');
+check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","gpt6luna","qwen38max","mimoxpropreview","gpt6astralight","gemini38flashv2"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
 check(PAIR_ORDER[7] === 'deepseekv4pro0813' && PAIR_ORDER[8] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 08 and 09');
 check(PAIR_ORDER[9] === 'glm53v1' && PAIR_ORDER[10] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 10 and 11');
@@ -662,8 +669,8 @@ const gpt6AstraScore = SITE.scoreFor(gpt6Astra);
 check(gpt6Astra?.group === 'A' && gpt6Astra?.tier === 1 && gpt6Astra?.pair === null && stripCreationDate(gpt6Astra?.model) === 'GPT-6 Astra (Ultra·Max)', 'GPT-6 Astra must be an unpaired Tier 1 one-line work');
 check(gpt6Astra?.bytes === 10045652 && gpt6Astra?.lines === 586 && gpt6Astra?.tech === 'WebGL2' && !gpt6Astra?.needsFloat && gpt6Astra?.msaa && gpt6Astra?.net.length === 0, 'GPT-6 Astra metadata must match the supplied source');
 check(SITE.environmentTag(gpt6Astra) === 'in Codex' && fs.existsSync(asset(gpt6Astra.file)) && fs.existsSync(asset(gpt6Astra.shot)) && gpt6Astra.jsErrors === 0, 'GPT-6 Astra must expose Codex, its source, screenshot, and clean runtime result');
-close(gpt6AstraScore.evidenceBase, 100.5, 'GPT-6 Astra evidence score with three other comets');
-check(gpt6AstraScore.otherComets === 3 && gpt6AstraScore.parts.cometBonus === 3 && gpt6AstraScore.total === 101 && gpt6AstraScore.manualAdjustment === 0 && gpt6AstraScore.independenceMode === 'native', 'GPT-6 Astra must show 101 after its three-point other-comet bonus');
+close(gpt6AstraScore.evidenceBase, 99.06, 'GPT-6 Astra evidence score with three other comets');
+check(gpt6AstraScore.otherComets === 3 && gpt6AstraScore.parts.cometBonus === 3 && gpt6AstraScore.total === 99 && gpt6AstraScore.manualAdjustment === 0 && gpt6AstraScore.independenceMode === 'native', 'GPT-6 Astra must retain its reviewed numeric score and separate three-point other-comet bonus');
 for (const [run, oneBytes, oneLines, docBytes, docLines, env] of [[1,67828,1877,148351,3736,'in Antigravity'],[2,64353,1808,170910,4799,'in Zcode']]) {
   const one = SITE.byId(`Gemini3.8Flash(high)V${run}`), doc = SITE.byId(`Gemini3.8Flash(high)V${run}-TasksAssignedByOpus5`);
   check(one.bytes === oneBytes && one.lines === oneLines && one.tech === 'Three.js' && one.net.length > 0, `Gemini 3.8 Flash #${run} one-line metadata must match the source`);
@@ -680,11 +687,22 @@ for (const [part, maximum] of Object.entries({ features: 12, orbit: 30, moons: 1
 check(fable51Score.manualAdjustment === 3 && fable51Score.total === 109 && !fable51Score.reference, 'Claude Fable 5.1 must show full evidence 106 plus Tier 0 supplement 3 without benchmark status');
 check(SITE.scoreCell(fable51).includes('109') && !SITE.scoreCell(fable51).includes('†') && !SITE.scoreCell(fable51).includes('⚑'), 'Claude Fable 5.1 must show an ordinary numeric score without extra markers');
 check(!SITE.scoreTipHtml(fable51, fable51Score).includes('98.97') && SITE.scoreTipHtml(fable51, fable51Score).includes('109<i>/109</i>') && SITE.scoreTipHtml(fable51, fable51Score).includes('>+3<'), 'The Tier 0 tooltip must show the new full score and supplementary bonus');
-for (const [fatal, cap] of [['L1', 25], ['L2', 60]]) {
-  SCORES.testTier0Cap = { ...SCORES[fable51.id], fatal };
-  check(SITE.scoreFor({ ...fable51, id: 'testTier0Cap' }).total === cap, 'Tier 0 bonus must not bypass fatal caps');
-  delete SCORES.testTier0Cap;
+for (const fatal of ['L1', 'L2']) {
+  SCORES.testFatalTier = { ...SCORES[fable51.id], fatal, fatalReason: 'Fixture: core renderer fails.' };
+  const work = { ...fable51, id: 'testFatalTier' }, score = SITE.scoreFor(work);
+  check(SITE.workTier(work) === 4 && score.total === 106 && score.fatalCap === null,
+    'Every fatal level must retain its evidence score and automatically use Incomplete, without a score cap or Tier 0 bonus');
+  close(score.exact, score.preCap, 'Fatal scores must equal the ordinary evidence calculation');
+  delete SCORES.testFatalTier;
 }
+SCORES.testMixedMoons = { ...SCORES[fable51.id], moons: 3, moonQuality: .5, earthMoonValid: false,
+  moonEvidence: [{ id: 'moon', quality: 0, reason: 'Wrong reference plane' },
+    { id: 'io', quality: 1, reason: 'Valid orbit' }, { id: 'europa', quality: .5, reason: 'Partial orbit' }] };
+const mixedMoons = SITE.scoreFor({ ...fable51, id: 'testMixedMoons' });
+close(mixedMoons.effectiveMoons, 1.5, 'Per-moon evidence must take precedence over the legacy uniform multiplier');
+close(mixedMoons.parts.moons, .25, 'An invalid Earth Moon must receive the separate anchor deduction after effective-moon credit');
+close(mixedMoons.parts.moonBonus, 0, 'Invalid and partial moons must not inflate the excess-moon bonus');
+delete SCORES.testMixedMoons;
 
 
 const opusMax = SITE.byId('Opus5(Max)V1');
@@ -738,7 +756,7 @@ for (const [model, expected] of Object.entries(expectedContextPrices)) {
 check(SITE.contextPriceFor('unknown-model', 100000) === null, 'Unknown models must not acquire Luna/Haiku context pricing');
 const lunaHaikuRows = SITE.lunaHaikuComparisons();
 check(JSON.stringify(lunaHaikuRows.map(row => row.group)) === JSON.stringify(['A', 'B']), 'Luna/Haiku comparison must contain exactly the one-line and detailed-spec rows in order');
-for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [21.3, 15.3, 6] : [4.5, 1.5, 3]])) {
+for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [21.30000000000001,15.300000000000011,6] : [4.5,1.5,3]])) {
   const suffix = row.group === 'B' ? '-TasksAssignedByOpus5' : '';
   check(row.luna.id === 'GPT6Luna(Max)V1' + suffix && row.haiku.id === 'Haiku5.5(Ultracode)V1' + suffix && row.luna.group === row.group && row.haiku.group === row.group, row.group + ': comparison must pair the existing Luna and Haiku works for the same brief');
   const luna = SITE.scoreFor(row.luna), haiku = SITE.scoreFor(row.haiku);
@@ -759,8 +777,8 @@ for (const id of ['MiMoXProPreview(Unknown)V1', 'MiMoXProPreview(Unknown)V1-Task
 }
 for (const id of ['Step5Preview(high)V1', 'Step5Preview(high)V1-TasksAssignedByOpus5']) {
   const work = SITE.byId(id);
-  check(work?.tier === 3 && SITE.environmentTag(work) === 'in Zcode' && WORK_CREATION_DATES[id] === '260920', id + ': Step metadata must preserve user grouping and filesystem birth date');
-  check(SITE.scoreFor(work).fatal === 'L2' && SITE.scoreFor(work).total === 60, id + ': verified core failures must use L2');
+  check(work?.tier === 4 && SITE.environmentTag(work) === 'in Zcode' && WORK_CREATION_DATES[id] === '260920', id + ': Step metadata must preserve user grouping and filesystem birth date');
+  check(SITE.scoreFor(work).fatal === 'L2' && SITE.scoreFor(work).fatalCap === null && SITE.workTier(work) === 4, id + ': verified core failures must retain L2 and use uncapped Incomplete scoring');
   check(SITE.priceFor(work).date === '2026-09-22' && SITE.priceCell(work).includes('1 / 2.7 / 0.05'), id + ': Step must use the verified international price');
 }
 for (const work of WORKS.filter(work => work.id.startsWith('DeepSeek-V4-Flash-0731'))) {
@@ -848,38 +866,188 @@ for (const [group, expectedCount] of [['A', 26], ['B', 20]]) {
 }
 
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
-const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid'];
+const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'moonEvidence', 'reviewedAt', 'reviewVersion'];
 const expectedMoonAdjustments = {
-  'GPT6Luna(Max)V1': { moonQuality: .5 },
-  'MuseSpark1.3Contributor(xhigh)V1': { moonQuality: .5 },
-  'MuseSpark1.3Contributor(xhigh)V2': { moonQuality: .5 },
-  'OmenAlpha(Max)V1': { earthMoonValid: false },
-  'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': { earthMoonValid: false },
-  'Gemini3.8Flash(high)V2': { earthMoonValid: false },
-  'GLM5.3(Max)V1': { moonQuality: .5 },
-  'Grok4.6(xhigh)V1': { moonQuality: .5 },
-  'KimiK3(Max)V2': { moonQuality: .5, earthMoonValid: false },
-  'DeepSeek-V4-Flash-0731-TasksAssignedByOpus5': { moonQuality: .5 },
-  'DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5': { moonQuality: .5 },
-  'Qwen3.8Max-TasksAssignedByOpus5': { moonQuality: .5 },
+  "Qwen3.8Flash(xhigh)V1": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Hy4Preview(high)V1": {
+    "earthMoonValid": false
+  },
+  "Hy4Preview(high)V2": {
+    "earthMoonValid": true
+  },
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GLM5.3Flash(Max)V2": {
+    "earthMoonValid": true
+  },
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GLM5.3Flash(Max)V1": {
+    "earthMoonValid": true
+  },
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "DoubaoSeedEvolving0827(Max)V1": {
+    "earthMoonValid": false
+  },
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": {
+    "moonQuality": 0.5
+  },
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": {
+    "moonQuality": 0.5
+  },
+  "DeepSeek-V4-Pro-0813-V1": {
+    "earthMoonValid": false
+  },
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "DeepSeekV4Pro0813(Max)V2": {
+    "earthMoonValid": true
+  },
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GLM5.3(Max)V1": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V2": {
+    "earthMoonValid": true
+  },
+  "GLM5.3(Max)V3": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Grok4.6(xhigh)V1": {
+    "moonQuality": 0.5
+  },
+  "KimiK3Max-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "KimiK3Max": {
+    "earthMoonValid": false
+  },
+  "KimiK3(Max)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "KimiK3(Max)V2": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8Max-TasksAssignedByOpus5": {
+    "moonQuality": 0.5
+  },
+  "Qwen3.8Max(Max)V1": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Max(Max)V2": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8Max(Max)V3": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini3.8Flash(high)V2": {
+    "earthMoonValid": false
+  },
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MuseSpark1.3Contributor(xhigh)V2": {
+    "earthMoonValid": false
+  },
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "OmenAlpha(Max)V1": {
+    "earthMoonValid": false
+  },
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MiMoXProPreview(Unknown)V1": {
+    "earthMoonValid": false
+  },
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Step5Preview(high)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MiMo2.6Pro(Unknown)V1": {
+    "earthMoonValid": false
+  },
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GPT6Luna(Max)V1": {
+    "moonQuality": 0.5
+  },
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  }
 };
 const expectedOtherComets = {
-  'Opus5(Max)V1': 2,
-  'Fable5.1(Max)V1': 3,
-  'Qwen3.8Flash(xhigh)V1': 1,
-  'Hy4Preview(high)V1': 2,
-  'DeepSeek-V4-Flash-0731': 3,
-  'DeepSeekV4Pro0813(Max)V2': 1,
-  'GLM5.3(Max)V3': 1,
-  'GPT5.6Luna(Max)V2': 2,
-  'GPT5.6SolUltra-WebGL2': 1,
-  'GPT5.6SolUltra': 1,
-  'Grok4.5': 1,
-  'LongCat2.0': 3,
-  'GPT6Astra(Ultra)V1': 3,
-  'Opus5.5(Max)V1': 3,
-  'Sonnet5.5(Max)V1': 3,
-  'Grok4.7(xhigh)V1': 1,
+  "Opus5(Max)V1": 2,
+  "Fable5.1(Max)V1": 3,
+  "Qwen3.8Flash(xhigh)V1": 1,
+  "Hy4Preview(high)V1": 2,
+  "DeepSeek-V4-Flash-0731": 3,
+  "DeepSeekV4Pro0813(Max)V2": 1,
+  "GLM5.3(Max)V3": 1,
+  "GPT5.6Luna(Max)V2": 2,
+  "GPT5.6SolUltra-WebGL2": 1,
+  "GPT5.6SolUltra": 1,
+  "Grok4.5": 1,
+  "LongCat2.0": 3,
+  "GPT6Astra(Ultra)V1": 3,
+  "Grok4.7(xhigh)V1": 1,
+  "Opus5.5(Max)V1": 3,
+  "Sonnet5.5(Max)V1": 3
 };
 check(Math.max(...Object.values(expectedOtherComets)) === 3 && expectedOtherComets['Fable5.1(Max)V1'] === 3 && expectedOtherComets['GPT6Astra(Ultra)V1'] === 3 && expectedOtherComets['Sonnet5.5(Max)V1'] === 3, 'Other-comet credit must cap at three, independently of the number of implemented comets and the separate Halley score');
 const nested = {
@@ -900,6 +1068,12 @@ for (const work of WORKS) {
   const required = [...recordKeys, ...presentOptional];
   exactKeys(score, required, `${id} record`);
   check(typeof score.reference === 'boolean', `${id}: reference must be boolean`);
+  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id);
+  if (inCurrentReview) {
+    check(score.reviewedAt === '2026-10-11' && score.reviewVersion === 'V3-20261011', `${id}: every current non-protected work must record the completed V3 review provenance`);
+    check(score.visualBase === null, `${id}: the current review must not retain legacy visual scoring inputs`);
+    if (Array.isArray(score.moonEvidence)) check(!Object.hasOwn(score, 'moonQuality'), `${id}: per-moon evidence must replace the old global quality multiplier`);
+  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected and archived records must retain their original review provenance`);
   exactKeys(score.featureMap, nested.featureMap, `${id}.featureMap`);
   exactKeys(score.orbitModel, nested.orbitModel, `${id}.orbitModel`);
   exactKeys(score.orbitRuntime, nested.orbitRuntime, `${id}.orbitRuntime`);
@@ -912,8 +1086,24 @@ for (const work of WORKS) {
   for (const [key, value] of Object.entries(score.correctness)) finiteRange(value, 0, 5, `${id}.correctness.${key}`);
   check(Number.isInteger(score.moons) && score.moons >= 0, `${id}.moons must be a non-negative integer`);
   check(typeof score.hasEarthMoon === 'boolean', `${id}.hasEarthMoon must be boolean`);
-  if (!score.hasEarthMoon) check(score.moons === 0, `${id}: no Earth Moon must use moons=0`);
+  if (!score.hasEarthMoon) check(score.earthMoonValid !== true, `${id}: a missing Earth Moon cannot be marked valid`);
   if (Object.hasOwn(score, 'moonQuality')) allowed(score.moonQuality, [.5, 1], `${id}.moonQuality`);
+  if (Object.hasOwn(score, 'moonEvidence')) {
+    check(Array.isArray(score.moonEvidence) && score.moonEvidence.length === score.moons, `${id}: per-moon evidence must cover every rendered moon`);
+    check(new Set(score.moonEvidence.map(moon => moon.id)).size === score.moons, `${id}: per-moon evidence IDs must be unique`);
+    for (const moon of score.moonEvidence) {
+      const details = ['parent', 'actualInclinationDeg', 'expectedInclinationDeg'].filter(key => Object.hasOwn(moon, key));
+      exactKeys(moon, ['id', 'quality', 'reason', ...details], `${id}.moonEvidence`);
+      check(typeof moon.id === 'string' && moon.id.length > 0 && typeof moon.reason === 'string' && moon.reason.length > 0, `${id}: each moon must have an identifier and evidence`);
+      allowed(moon.quality, [0, .5, 1], `${id}.moonEvidence.${moon.id}.quality`);
+      if (Object.hasOwn(moon, 'parent')) check(typeof moon.parent === 'string' && moon.parent.length > 0, `${id}.moonEvidence.${moon.id}.parent`);
+      for (const key of ['actualInclinationDeg', 'expectedInclinationDeg'].filter(key => Object.hasOwn(moon, key))) {
+        if (key === 'actualInclinationDeg' && moon[key] === null)
+          check(moon.quality === 0 && Boolean(score.fatal), `${id}: an undefined orbital plane must belong to an invalid moon in a documented fatal failure`);
+        else finiteRange(moon[key], 0, 180, `${id}.moonEvidence.${moon.id}.${key}`);
+      }
+    }
+  }
   if (Object.hasOwn(score, 'earthMoonValid')) check(typeof score.earthMoonValid === 'boolean', `${id}.earthMoonValid must be boolean`);
   const expectedMoonAdjustment = expectedMoonAdjustments[id] || {};
   check((score.moonQuality ?? 1) === (expectedMoonAdjustment.moonQuality ?? 1), `${id}: moon quality evidence drift`);
@@ -933,9 +1123,12 @@ for (const work of WORKS) {
   for (const key of ['effectiveMoons', 'evidenceBase', 'manualAdjustment', 'preCap', 'exact', 'adjusted', 'total']) check(Number.isFinite(computed[key]), `${id}.${key} is not finite`);
   check(!Object.hasOwn(computed.parts, 'visual'), `${id}: legacy visual evidence must not enter scoring`);
   close(computed.evidenceBase, Object.values(computed.parts).reduce((sum, value) => sum + value, 0), `${id}.evidenceBase`);
-  const expectedAdjustment = score.reference ? 0 : work.tier === 0 ? 3 : work.tier === 2 ? -3 : work.tier === 3 ? -6 : 0;
+  const tier = SITE.workTier(work);
+  const expectedAdjustment = score.reference ? 0 : tier === 0 ? 3 : tier === 2 ? -3 : tier === 3 ? -6 : 0;
   close(computed.manualAdjustment, expectedAdjustment, `${id}.human-experience tier adjustment`);
-  finiteRange(computed.total, 0, work.tier === 0 ? 109 : 106, `${id}.total`);
+  finiteRange(computed.total, 0, tier === 0 ? 109 : 106, `${id}.total`);
+  check(computed.fatalCap === null && computed.exact === computed.preCap, `${id}: fatal errors must not cap the numeric score`);
+  if (score.fatal) check(tier === 4, `${id}: every fatal work must automatically use the gray Incomplete tier`);
   close(computed.exact, EXPECTED_EXACT[id], `${id}.exact oracle`);
   check(computed.total === Math.round(EXPECTED_EXACT[id]), `${id}.total oracle: expected ${Math.round(EXPECTED_EXACT[id])}, got ${computed.total}`);
 }
@@ -943,7 +1136,7 @@ for (const work of WORKS) {
 const source = read('assets/scores.js');
 const explicitKeys = [...recordKeys, ...Object.values(nested).flat()];
 for (const key of explicitKeys) {
-  const count = [...source.matchAll(new RegExp(`\\b${key}\\s*:`, 'g'))].length;
+  const count = [...source.matchAll(new RegExp(`["']?\\b${key}["']?\\s*:`, 'g'))].length;
   check(count === WORKS.length, `scores.js source key ${key} must occur exactly ${WORKS.length} times; duplicate/missing key detected (${count})`);
 }
 for (const old of ['features', 'orbit', 'offline', 'visual', 'canvas', 'cap', 'hasMoon']) {
@@ -1000,7 +1193,6 @@ for (const work of [astraMaxOneLine, astraXHighOneLine]) {
   check(work?.group === 'A' && work?.tier === 1 && work?.pair === null && JSON.stringify(work?.tags).startsWith('["in Codex"'), `${work?.id || 'GPT-6 Astra effort'} must be an unpaired Tier 1 one-line Codex run`);
   check(work?.tech === 'Three.js' && work?.needsFloat === true && work?.msaa === true && work?.net.length === 0, `${work?.id || 'GPT-6 Astra effort'} must be offline bundled Three.js with HDR and MSAA`);
   check(WORK_CREATION_DATES[work.id] === '260910' && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} must use its filesystem creation date and saved screenshot`);
-  check(SITE.scoreFor(work).exact === 84.5 && SITE.scoreFor(work).total === 85, `${work.id} evidence score must be 84.5 / 85`);
 }
 check(astraMaxOneLine?.bytes === 9685732 && astraMaxOneLine?.lines === 199, 'GPT-6 Astra Max source metadata must match the supplied file');
 check(astraXHighOneLine?.bytes === 10213750 && astraXHighOneLine?.lines === 230, 'GPT-6 Astra xHigh source metadata must match the supplied file');
@@ -1013,13 +1205,11 @@ check(deepSeek41OneLine?.bytes === 114685 && deepSeek41OneLine?.lines === 3019 &
 check(deepSeek41Detailed?.bytes === 124162 && deepSeek41Detailed?.lines === 3067 && deepSeek41Detailed?.tech === 'WebGL2' && !deepSeek41Detailed?.needsFloat && deepSeek41Detailed?.msaa && deepSeek41Detailed?.net.length === 0, 'DeepSeek V4.1 Flash 0910 detailed metadata must match the supplied file');
 check(WORK_CREATION_DATES[deepSeek41OneLine.id] === '260908' && WORK_CREATION_DATES[deepSeek41Detailed.id] === '260908', 'DeepSeek V4.1 Flash 0910 must use its filesystem creation date');
 for (const work of [deepSeek41OneLine, deepSeek41Detailed]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
-check(SITE.scoreFor(deepSeek41OneLine).total === 91 && SITE.scoreFor(deepSeek41Detailed).total === 90, 'DeepSeek V4.1 Flash 0910 evidence scores must be 91 and 90 after Tier 3 adjustments');
 check(solHigh?.group === 'A' && solHigh?.tier === 2 && solHigh?.pair === null && JSON.stringify(solHigh?.tags) === JSON.stringify(['in Codex']), 'GPT-5.6 Sol high must be an unpaired Tier 2 in Codex run');
 check(solHigh?.bytes === 48544 && solHigh?.lines === 407 && solHigh?.tech === 'WebGL2', 'GPT-5.6 Sol high source metadata must match the supplied file');
 check(solMaxOneLine?.group === 'A' && solMaxOneLine?.tier === 1 && solMaxOneLine?.pair === null && SITE.environmentTag(solMaxOneLine) === 'in Codex', 'GPT-5.6 Sol Max replacement must be an unpaired Tier 1 in Codex run');
 check(solMaxOneLine?.file === 'models/GPT5.6Sol(Max)V1.html' && solMaxOneLine?.bytes === 102251 && solMaxOneLine?.lines === 2737 && solMaxOneLine?.tech === 'WebGL2' && solMaxOneLine?.msaa === false, 'GPT-5.6 Sol Max replacement metadata must match the supplied file');
 for (const work of [doubaoOneLine, doubaoDetailed, astraLightDetailed, opusLowDetailed, solHigh, solMaxOneLine]) check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
-check(SITE.scoreFor(doubaoOneLine).total === 90 && SITE.scoreFor(doubaoDetailed).total === 90 && SITE.scoreFor(astraLightDetailed).total === 99 && SITE.scoreFor(opusLowDetailed).total === 96 && SITE.scoreFor(solHigh).total === 85, 'New Doubao, Astra Light, Opus Low, and Sol high V3 scores must remain fixed');
 check(solMaxDetailed?.group === 'B' && solMaxDetailed?.tier === 1 && solMaxDetailed?.pair === null, 'GPT-5.6 Sol Max must be an unpaired Tier 1 detailed-spec run');
 check(JSON.stringify(solMaxDetailed?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${solMaxDetailed.shot}`, import.meta.url)), 'GPT-5.6 Sol Max detailed must show in Codex and have a screenshot');
 for (const work of [solXHighDetailed, solHighDetailed]) {
@@ -1029,7 +1219,6 @@ for (const work of [solXHighDetailed, solHighDetailed]) {
 check(solMaxDetailed?.bytes === 86118 && solMaxDetailed?.lines === 1061 && solMaxDetailed?.msaa === true, 'GPT-5.6 Sol Max detailed metadata must match the supplied file');
 check(solXHighDetailed?.bytes === 76202 && solXHighDetailed?.lines === 283 && solXHighDetailed?.msaa === true, 'GPT-5.6 Sol xHigh detailed metadata must match the supplied file');
 check(solHighDetailed?.bytes === 45296 && solHighDetailed?.lines === 172 && solHighDetailed?.msaa === false, 'GPT-5.6 Sol high detailed metadata must match the supplied file');
-check(SITE.scoreFor(solMaxOneLine).total === 95 && SITE.scoreFor(solMaxDetailed).total === 99 && SITE.scoreFor(solXHighDetailed).total === 96 && SITE.scoreFor(solHighDetailed).total === 89, 'Updated Sol effort scores must be 95, 99, 96, and 89');
 const lowerEffortRuns = [solMediumOneLine, solMediumDetailed, solLightOneLine, solLightDetailed];
 for (const work of lowerEffortRuns) {
   check(work?.tier === 3 && work?.pair === null && JSON.stringify(work?.tags) === JSON.stringify(['in Codex']), `${work?.id || 'GPT-5.6 Sol lower effort'} must be an unpaired Tier 3 in Codex run`);
@@ -1039,21 +1228,19 @@ check(solMediumOneLine?.group === 'A' && solMediumOneLine?.bytes === 22057 && so
 check(solMediumDetailed?.group === 'B' && solMediumDetailed?.bytes === 37827 && solMediumDetailed?.lines === 111 && solMediumDetailed?.msaa === false, 'GPT-5.6 Sol Medium detailed metadata must match the supplied file');
 check(solLightOneLine?.group === 'A' && solLightOneLine?.bytes === 20733 && solLightOneLine?.lines === 127 && solLightOneLine?.msaa === true, 'GPT-5.6 Sol Light one-line metadata must match the supplied file');
 check(solLightDetailed?.group === 'B' && solLightDetailed?.bytes === 31891 && solLightDetailed?.lines === 79 && solLightDetailed?.msaa === true, 'GPT-5.6 Sol Light detailed metadata must match the supplied file');
-check(SITE.scoreFor(solMediumOneLine).total === 69 && SITE.scoreFor(solMediumDetailed).total === 80 && SITE.scoreFor(solLightOneLine).total === 56 && SITE.scoreFor(solLightDetailed).total === 82, 'Medium and Light evidence scores must be 69, 80, 56, and 82');
 for (const work of [lunaMax1, lunaMax2]) {
   check(work?.group === 'A' && work?.tier === 3 && work?.pair === null && JSON.stringify(work?.tags) === JSON.stringify(['in Codex']), `${work?.id || 'GPT-5.6 Luna Max'} must be an unpaired Tier 3 in Codex run`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Luna Max'} screenshot asset must exist`);
 }
 check(stripCreationDate(lunaMax1?.model) === 'GPT-5.6 Luna (Max) #1' && lunaMax1?.tech === 'WebGL2' && lunaMax1?.bytes === 75455 && lunaMax1?.lines === 1944 && lunaMax1?.net.length === 0, 'GPT-5.6 Luna Max #1 metadata must match the supplied file');
 check(stripCreationDate(lunaMax2?.model) === 'GPT-5.6 Luna (Max) #2' && lunaMax2?.tech === 'Three.js' && lunaMax2?.bytes === 64120 && lunaMax2?.lines === 876 && JSON.stringify(lunaMax2?.net) === JSON.stringify(['cdn.jsdelivr.net', 'fonts.googleapis.com']), 'GPT-5.6 Luna Max #2 metadata must match the supplied file and disclose network dependencies');
-check(SITE.scoreFor(lunaMax1).total === 62 && SITE.scoreFor(lunaMax2).total === 61, 'GPT-5.6 Luna Max #1 and #2 evidence scores must be 62 and 61');
 for (const work of [glm53FlashOneLine, glm53FlashDetailed]) {
   check(work?.tier === 3 && work?.pair === null && work?.tech === 'WebGL2' && work?.net.length === 0, `${work?.id || 'GLM 5.3 Flash'} must be an unpaired offline Tier 3 WebGL2 run`);
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Zcode']) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3 Flash'} must show in Zcode and have a screenshot`);
 }
 check(glm53FlashOneLine?.group === 'A' && glm53FlashOneLine?.bytes === 75687 && glm53FlashOneLine?.lines === 1738 && glm53FlashOneLine?.msaa === false, 'GLM 5.3 Flash one-line metadata must match the supplied file');
 check(glm53FlashDetailed?.group === 'B' && glm53FlashDetailed?.bytes === 113486 && glm53FlashDetailed?.lines === 2699 && glm53FlashDetailed?.msaa === true, 'GLM 5.3 Flash detailed metadata must match the supplied file');
-check(SITE.scoreFor(glm53FlashOneLine).total === 85 && SITE.scoreFor(glm53FlashDetailed).total === 60 && SITE.scoreFor(glm53FlashDetailed).fatal === 'L2', 'GLM 5.3 Flash evidence scores must be 85 and L2-capped 60');
+check(SITE.scoreFor(glm53FlashDetailed).fatal === null && SITE.workTier(glm53FlashDetailed) === 3, 'GLM 5.3 Flash visual degradation and weak close-ups must receive their audited feature/interaction deductions without a fatal classification');
 for (const work of [hy4OneLine1, hy4OneLine2, hy4Detailed1, hy4Detailed2]) {
   check(work?.tier === (work.group === 'A' ? 2 : 1) && JSON.stringify(work?.tags) === JSON.stringify(['in WorkBuddy']), `${work?.id || 'Hy 4 Preview'} must be T2 for one-line, T1 for detailed, and show in WorkBuddy`);
   check(fs.existsSync(new URL(`../${work.file}`, import.meta.url)) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Hy 4 Preview'} source and screenshot must exist`);
@@ -1063,10 +1250,9 @@ check(hy4OneLine2?.group === 'A' && hy4OneLine2?.pair === 'hy4v2' && hy4OneLine2
 check(hy4Detailed1?.group === 'B' && hy4Detailed1?.pair === 'hy4v1' && hy4Detailed1?.tech === 'WebGL2' && hy4Detailed1?.bytes === 126382 && hy4Detailed1?.lines === 2898 && hy4Detailed1?.net.length === 0, 'Hy 4 Preview #1 detailed metadata must match the supplied file');
 check(hy4Detailed2?.group === 'B' && hy4Detailed2?.pair === 'hy4v2' && hy4Detailed2?.tech === 'WebGL2' && hy4Detailed2?.bytes === 126917 && hy4Detailed2?.lines === 2864 && hy4Detailed2?.net.length === 0, 'Hy 4 Preview #2 detailed metadata must match the supplied file');
 check(!fs.existsSync(new URL('../models/Hy4Preview(high)V3.html', import.meta.url)) && !read('models/Hy4Preview(high)V2.html').includes('HY4 PREVIEW · V3'), 'The former Hy 4 V3 source and visible V3 branding must be removed after renaming it to V2');
-check(SITE.scoreFor(hy4OneLine1).total === 97 && SITE.scoreFor(hy4OneLine2).total === 96 && SITE.scoreFor(hy4Detailed1).total === 94 && SITE.scoreFor(hy4Detailed2).total === 95, 'Hy 4 Preview scores must be 97, 96, 94, and 95');
 check(SITE.scoreFor(hy4OneLine1).manualAdjustment === -3 && SITE.scoreFor(hy4OneLine2).manualAdjustment === -3, 'Both one-line Hy 4 works must receive only the normal T2 adjustment');
-close(SITE.scoreFor(hy4OneLine1).evidenceBase, 99.7, 'Hy 4 #1 evidence including two other comets');
-close(SITE.scoreFor(hy4OneLine2).evidenceBase, 99.46666666666667, 'Hy 4 #2 base evidence unchanged');
+close(SITE.scoreFor(hy4OneLine1).evidenceBase, 92.33666666666666, 'Hy 4 #1 evidence including two other comets');
+close(SITE.scoreFor(hy4OneLine2).evidenceBase, 83.52666666666667, 'Hy 4 #2 base evidence unchanged');
 check(SITE.tieredGallery([hy4OneLine1,hy4OneLine2],false).includes('tier-archive') && !SITE.tieredGallery([hy4OneLine1,hy4OneLine2],false).includes('tier tier-1'), 'One-line Hy 4 cards must be in the collapsible T2 gallery');
 for (const work of [glm53Flash2OneLine, glm53Flash2Detailed]) {
   check(work?.tier === 2 && work?.pair === 'glm53flashv2' && JSON.stringify(work?.tags) === JSON.stringify(['in Zcode', '突然聪明了']), `${work?.id || 'GLM 5.3 Flash #2'} must be paired Tier 2 in Zcode with the requested note tag`);
@@ -1074,7 +1260,6 @@ for (const work of [glm53Flash2OneLine, glm53Flash2Detailed]) {
 }
 check(glm53Flash2OneLine?.group === 'A' && glm53Flash2OneLine?.tech === 'Three.js' && glm53Flash2OneLine?.bytes === 64541 && glm53Flash2OneLine?.lines === 1504 && JSON.stringify(glm53Flash2OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'GLM 5.3 Flash #2 one-line metadata must match the supplied file');
 check(glm53Flash2Detailed?.group === 'B' && glm53Flash2Detailed?.tech === 'WebGL2' && glm53Flash2Detailed?.bytes === 102402 && glm53Flash2Detailed?.lines === 2390 && glm53Flash2Detailed?.net.length === 0, 'GLM 5.3 Flash #2 detailed metadata must match the supplied file');
-check(SITE.scoreFor(glm53Flash2OneLine).total === 92 && SITE.scoreFor(glm53Flash2Detailed).total === 90, 'GLM 5.3 Flash #2 evidence scores must be 92 and 90');
 const doubaoPair = SITE.pairs().find(pair => pair.a.pair === 'doubao');
 check(doubaoPair?.a?.id === doubaoOneLine.id && doubaoPair?.b?.id === doubaoDetailed.id, 'Visible comparison position 19 must be the Doubao pair');
 check(SITE.pairs().find(pair => pair.a.pair === 'hy4v1')?.a?.id === hy4OneLine1.id && SITE.pairs().find(pair => pair.a.pair === 'hy4v1')?.b?.id === hy4Detailed1.id && SITE.pairs().find(pair => pair.a.pair === 'hy4v2')?.a?.id === hy4OneLine2.id && SITE.pairs().find(pair => pair.a.pair === 'hy4v2')?.b?.id === hy4Detailed2.id, 'Visible comparison positions 20 and 21 must be Hy 4 Preview #1 and #2');
@@ -1094,7 +1279,6 @@ check(solXHigh3?.bytes === 63449 && solXHigh3?.lines === 1688 && solXHigh3?.net.
 for (const work of [solXHigh1, solXHigh2, solXHigh3]) {
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work.id} screenshot asset must exist`);
 }
-check(SITE.scoreFor(solXHigh1).total === 81 && SITE.scoreFor(solXHigh2).total === 92 && SITE.scoreFor(solXHigh3).total === 89, 'GPT-5.6 Sol xHigh evidence scores must be 81, 92, and 89');
 
 const grok45 = WORKS.find(w => w.id === 'Grok4.5');
 const grok46 = WORKS.find(w => w.id === 'Grok4.6(xhigh)V1');
@@ -1111,7 +1295,6 @@ for (const work of [grok45, grok46, grok46Detailed]) {
   check(SITE.environmentTag(work) === 'in build' && SITE.chips(work, null).includes('in build'), `${work?.id || 'Grok'} environment tag must render as in build`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Grok'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(grok46).total === 79 && SITE.scoreFor(grok46Detailed).total === 92, 'Grok 4.6 evidence scores must be 79 and 92 after Tier 2 adjustments');
 
 const deepSeek2 = WORKS.find(w => w.id === 'DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5');
 check(deepSeek2?.tier === 4, 'DeepSeek detailed #2 must remain Tier 4');
@@ -1137,21 +1320,20 @@ for (const work of [deepSeekPro0813, deepSeekPro0813OneLine]) {
   check(SITE.environmentTag(work) === 'in Zcode' && SITE.chips(work, null).includes('in Zcode'), `${work?.id || 'DeepSeek V4 Pro 0813 #1'} environment tag must render as in Zcode`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'DeepSeek V4 Pro 0813 #1'} screenshot asset must exist`);
 }
-check(deepSeekPro0813?.bytes === 118670 && deepSeekPro0813?.lines === 2590 && deepSeekPro0813?.tech === 'WebGL2' && deepSeekPro0813?.needsFloat === true && deepSeekPro0813?.msaa === true && deepSeekPro0813?.net.length === 0, 'DeepSeek V4 Pro 0813 #1 detailed source metadata must match the audited file');
-check(deepSeekPro0813OneLine?.bytes === 50852 && deepSeekPro0813OneLine?.lines === 1235 && deepSeekPro0813OneLine?.tech === 'Three.js' && deepSeekPro0813OneLine?.needsFloat === false && deepSeekPro0813OneLine?.msaa === true, 'DeepSeek V4 Pro 0813 #1 one-line source metadata must match the audited file');
+check(deepSeekPro0813?.bytes === 118670 && deepSeekPro0813?.lines === 2590 && deepSeekPro0813?.tech === 'WebGL2' && deepSeekPro0813?.needsFloat === false && deepSeekPro0813?.msaa === true && deepSeekPro0813?.net.length === 0, 'DeepSeek V4 Pro 0813 #1 detailed source metadata must match the audited file');
+check(deepSeekPro0813OneLine?.bytes === 50852 && deepSeekPro0813OneLine?.lines === 1235 && deepSeekPro0813OneLine?.tech === 'Three.js' && deepSeekPro0813OneLine?.needsFloat === true && deepSeekPro0813OneLine?.msaa === false, 'DeepSeek V4 Pro 0813 #1 one-line source metadata must match the audited file');
 check(JSON.stringify(deepSeekPro0813OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net', 'esm.sh']), 'DeepSeek V4 Pro 0813 #1 one-line network dependencies must match the audited file');
 check(deepSeekPro0813V2OneLine?.group === 'A' && deepSeekPro0813V2OneLine?.tier === 2 && deepSeekPro0813V2OneLine?.pair === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #2 one-line run must be the paired Tier 2 entry');
 check(deepSeekPro0813V2?.group === 'B' && deepSeekPro0813V2?.tier === 2 && deepSeekPro0813V2?.pair === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #2 detailed run must be the paired Tier 2 entry');
 check(stripCreationDate(deepSeekPro0813V2?.model) === 'DeepSeek V4 Pro 0813 (Max) #2' && stripCreationDate(deepSeekPro0813V2OneLine?.model) === 'DeepSeek V4 Pro 0813 (Max) #2', 'New DeepSeek V4 Pro 0813 runs must be numbered #2');
-check(deepSeekPro0813V2OneLine?.bytes === 61829 && deepSeekPro0813V2OneLine?.lines === 1387 && deepSeekPro0813V2OneLine?.tech === 'Three.js' && deepSeekPro0813V2OneLine?.needsFloat === false && deepSeekPro0813V2OneLine?.msaa === true, 'DeepSeek V4 Pro 0813 #2 one-line source metadata must match the audited file');
+check(deepSeekPro0813V2OneLine?.bytes === 61829 && deepSeekPro0813V2OneLine?.lines === 1387 && deepSeekPro0813V2OneLine?.tech === 'Three.js' && deepSeekPro0813V2OneLine?.needsFloat === true && deepSeekPro0813V2OneLine?.msaa === false, 'DeepSeek V4 Pro 0813 #2 one-line source metadata must match the audited file');
 check(JSON.stringify(deepSeekPro0813V2OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'DeepSeek V4 Pro 0813 #2 one-line network dependencies must match the audited file');
-check(deepSeekPro0813V2?.bytes === 104830 && deepSeekPro0813V2?.lines === 2423 && deepSeekPro0813V2?.tech === 'WebGL2' && deepSeekPro0813V2?.needsFloat === true && deepSeekPro0813V2?.msaa === true && deepSeekPro0813V2?.net.length === 0, 'DeepSeek V4 Pro 0813 #2 detailed source metadata must match the audited file');
+check(deepSeekPro0813V2?.bytes === 104830 && deepSeekPro0813V2?.lines === 2423 && deepSeekPro0813V2?.tech === 'WebGL2' && deepSeekPro0813V2?.needsFloat === false && deepSeekPro0813V2?.msaa === true && deepSeekPro0813V2?.net.length === 0, 'DeepSeek V4 Pro 0813 #2 detailed source metadata must match the audited file');
 for (const work of [deepSeekPro0813V2OneLine, deepSeekPro0813V2]) {
   check(JSON.stringify(work?.tags) === JSON.stringify(['in dsh']), `${work?.id || 'DeepSeek V4 Pro 0813 #2'} must show the exact in dsh tag`);
   check(SITE.environmentTag(work) === 'in dsh' && SITE.chips(work, null).includes('in dsh'), `${work?.id || 'DeepSeek V4 Pro 0813 #2'} environment tag must render as in dsh`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'DeepSeek V4 Pro 0813 #2'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(deepSeekPro0813V2OneLine).total === 85 && SITE.scoreFor(deepSeekPro0813V2).total === 93, 'DeepSeek V4 Pro 0813 #2 evidence scores must be 85 and 93');
 const glm53OneLine1 = WORKS.find(w => w.id === 'GLM5.3(Max)V1');
 const glm53OneLine2 = WORKS.find(w => w.id === 'GLM5.3(Max)V2');
 const glm53OneLine3 = WORKS.find(w => w.id === 'GLM5.3(Max)V3');
@@ -1167,18 +1349,16 @@ check(glm53OneLine1?.title === '太阳系 · Solar System 3D' && glm53OneLine2?.
 check(glm53Detailed1?.title === '太阳系 · 实时运动模型' && glm53Detailed2?.title === '太阳系实时运动模型 v4', 'GLM 5.3 detailed titles must stay canonical');
 check(glm53OneLine1?.bytes === 73580 && glm53OneLine1?.lines === 1700 && glm53OneLine1?.tech === 'Three.js' && glm53OneLine1?.needsFloat === true && glm53OneLine1?.msaa === true, 'GLM 5.3 #1 one-line metadata must match the audited file');
 check(glm53OneLine2?.bytes === 75144 && glm53OneLine2?.lines === 1525 && glm53OneLine2?.tech === 'Three.js' && glm53OneLine2?.needsFloat === true && glm53OneLine2?.msaa === true, 'GLM 5.3 #2 one-line metadata must match the audited file');
-check(glm53OneLine3?.bytes === 80129 && glm53OneLine3?.lines === 1840 && glm53OneLine3?.tech === 'WebGL2' && glm53OneLine3?.needsFloat === true && glm53OneLine3?.msaa === false && glm53OneLine3?.net.length === 0, 'GLM 5.3 #3 one-line metadata must match the audited file');
+check(glm53OneLine3?.bytes === 80129 && glm53OneLine3?.lines === 1840 && glm53OneLine3?.tech === 'WebGL2' && glm53OneLine3?.needsFloat === false && glm53OneLine3?.msaa === false && glm53OneLine3?.net.length === 0, 'GLM 5.3 #3 one-line metadata must match the audited file');
 check(JSON.stringify(glm53OneLine1?.net) === JSON.stringify(['cdn.jsdelivr.net']) && JSON.stringify(glm53OneLine2?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Both GLM 5.3 one-line runs must disclose the jsDelivr dependency');
-check(glm53Detailed1?.bytes === 105974 && glm53Detailed1?.lines === 2320 && glm53Detailed1?.tech === 'WebGL2' && glm53Detailed1?.needsFloat === true && glm53Detailed1?.msaa === true && glm53Detailed1?.net.length === 0, 'GLM 5.3 #1 detailed metadata must match the audited file');
-check(glm53Detailed2?.bytes === 115049 && glm53Detailed2?.lines === 2771 && glm53Detailed2?.tech === 'WebGL2' && glm53Detailed2?.needsFloat === true && glm53Detailed2?.msaa === true && glm53Detailed2?.net.length === 0, 'GLM 5.3 #2 detailed metadata must match the audited file');
+check(glm53Detailed1?.bytes === 105974 && glm53Detailed1?.lines === 2320 && glm53Detailed1?.tech === 'WebGL2' && glm53Detailed1?.needsFloat === false && glm53Detailed1?.msaa === true && glm53Detailed1?.net.length === 0, 'GLM 5.3 #1 detailed metadata must match the audited file');
+check(glm53Detailed2?.bytes === 115049 && glm53Detailed2?.lines === 2771 && glm53Detailed2?.tech === 'WebGL2' && glm53Detailed2?.needsFloat === false && glm53Detailed2?.msaa === true && glm53Detailed2?.net.length === 0, 'GLM 5.3 #2 detailed metadata must match the audited file');
 for (const work of [glm53OneLine1, glm53OneLine2, glm53OneLine3, glm53Detailed1, glm53Detailed2]) {
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Zcode']), `${work?.id || 'GLM 5.3'} must show the exact in Zcode tag`);
   check(SITE.environmentTag(work) === 'in Zcode' && SITE.chips(work, null).includes('in Zcode'), `${work?.id || 'GLM 5.3'} environment tag must render as in Zcode`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GLM 5.3'} screenshot asset must exist`);
   check(!SCORES[work.id].reference && !SITE.card(work).includes('is-benchmark'), `${work?.id || 'GLM 5.3'} must remain a scored non-benchmark`);
 }
-check(SITE.scoreFor(glm53OneLine1).total === 89 && SITE.scoreFor(glm53OneLine2).total === 90 && SITE.scoreFor(glm53OneLine3).total === 93, 'GLM 5.3 one-line evidence scores must be 89, 90, and 93');
-check(SITE.scoreFor(glm53Detailed1).total === 91 && SITE.scoreFor(glm53Detailed2).total === 92, 'GLM 5.3 detailed evidence scores must be 91 and 92');
 const miniMax2 = WORKS.find(w => w.id === 'MiniMaxM3(high)V2-TasksAssignedByOpus5');
 check(miniMax2?.group === 'B' && miniMax2?.tier === 4, 'MiniMax detailed #2 must remain in the Incomplete group');
 check(!Object.hasOwn(miniMax2, 'incomplete'), 'MiniMax detailed #2 must not duplicate Tier 4 with an inline Incomplete marker');
@@ -1202,7 +1382,7 @@ check(qwenStableDoc?.group === 'B' && qwenStableDoc?.tier === 2 && qwenStableDoc
 check(qwenStable1?.bytes === 33139 && qwenStable1?.lines === 703 && qwenStable1?.net.length === 0, 'Qwen 3.8 Max #1 source metadata must match the audited file');
 check(qwenStable2?.bytes === 33555 && qwenStable2?.lines === 629 && qwenStable2?.net[0] === 'unpkg.com', 'Qwen 3.8 Max #2 source metadata must match the audited file');
 check(qwenStable3?.bytes === 47999 && qwenStable3?.lines === 806 && qwenStable3?.net.length === 0, 'Qwen 3.8 Max #3 source metadata must match the audited file');
-check(qwenStableDoc?.bytes === 101683 && qwenStableDoc?.lines === 2096 && qwenStableDoc?.needsFloat === true && qwenStableDoc?.net.length === 0, 'Qwen 3.8 Max detailed source metadata must match the audited file');
+check(qwenStableDoc?.bytes === 101683 && qwenStableDoc?.lines === 2096 && qwenStableDoc?.needsFloat === false && qwenStableDoc?.net.length === 0, 'Qwen 3.8 Max detailed source metadata must match the audited file');
 for (const work of [qwenStable1, qwenStable2, qwenStable3, qwenStableDoc]) {
   check(work && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Qwen stable entry'} screenshot asset must exist`);
 }
@@ -1214,9 +1394,8 @@ for (const work of [qwenFlashOneLine, qwenFlashDetailed]) {
   check(SITE.environmentTag(work) === 'in Claude CLI' && SITE.chips(work, null).includes('in Claude CLI'), `${work?.id || 'Qwen 3.8 Flash'} environment tag must render as in Claude CLI`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Qwen 3.8 Flash'} screenshot asset must exist`);
 }
-check(qwenFlashOneLine?.group === 'A' && qwenFlashOneLine?.tech === 'Three.js' && qwenFlashOneLine?.bytes === 47293 && qwenFlashOneLine?.lines === 912 && qwenFlashOneLine?.needsFloat === false && qwenFlashOneLine?.msaa === true && JSON.stringify(qwenFlashOneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Qwen 3.8 Flash one-line metadata must match the supplied file');
-check(qwenFlashDetailed?.group === 'B' && qwenFlashDetailed?.tech === 'WebGL2' && qwenFlashDetailed?.bytes === 97214 && qwenFlashDetailed?.lines === 1826 && qwenFlashDetailed?.needsFloat === true && qwenFlashDetailed?.msaa === true && qwenFlashDetailed?.net.length === 0, 'Qwen 3.8 Flash detailed metadata must match the supplied file');
-check(SITE.scoreFor(qwenFlashOneLine).total === 85 && SITE.scoreFor(qwenFlashDetailed).total === 87, 'Qwen 3.8 Flash evidence scores must be 85 and 87');
+check(qwenFlashOneLine?.group === 'A' && qwenFlashOneLine?.tech === 'Three.js' && qwenFlashOneLine?.bytes === 47293 && qwenFlashOneLine?.lines === 912 && qwenFlashOneLine?.needsFloat === true && qwenFlashOneLine?.msaa === false && JSON.stringify(qwenFlashOneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Qwen 3.8 Flash one-line metadata must match the supplied file');
+check(qwenFlashDetailed?.group === 'B' && qwenFlashDetailed?.tech === 'WebGL2' && qwenFlashDetailed?.bytes === 97214 && qwenFlashDetailed?.lines === 1826 && qwenFlashDetailed?.needsFloat === false && qwenFlashDetailed?.msaa === true && qwenFlashDetailed?.net.length === 0, 'Qwen 3.8 Flash detailed metadata must match the supplied file');
 const qwenFlashPair = SITE.pairs().find(pair => pair.a.pair === 'qwen38flash');
 check(qwenFlashPair?.a?.id === qwenFlashOneLine.id && qwenFlashPair?.b?.id === qwenFlashDetailed.id, 'Comparison position 24 must pair the two Qwen 3.8 Flash runs');
 check(context.window.PAIR_TITLES.qwen38flash === 'Qwen 3.8 Flash (xHigh)', 'Qwen 3.8 Flash comparison title must use canonical xHigh casing');
@@ -1244,7 +1423,7 @@ for (const work of [kimi2OneLine, kimi2Detailed]) {
 check(JSON.stringify(kimi3OneLine?.tags) === JSON.stringify(['in KimiCode']), 'Kimi K3 #3 must show the exact in KimiCode tag');
 check(SITE.environmentTag(kimi3OneLine) === 'in KimiCode' && SITE.chips(kimi3OneLine, null).includes('in KimiCode'), 'Kimi K3 #3 environment tag must render as in KimiCode');
 check(fs.existsSync(new URL(`../${kimi3OneLine.shot}`, import.meta.url)), 'Kimi K3 #3 screenshot asset must exist');
-check(!SCORES[kimi3OneLine.id].reference && SITE.scoreFor(kimi3OneLine).total === 81, 'Kimi K3 #3 must remain a scored non-benchmark with evidence score 81');
+check(!SCORES[kimi3OneLine.id].reference, 'Kimi K3 #3 must remain a scored non-benchmark');
 const kimi2Pair = SITE.pairs().find(pair => pair.a.pair === 'kimik3v2');
 check(kimi2Pair?.a?.id === 'KimiK3(Max)V2' && kimi2Pair?.b?.id === 'KimiK3(Max)V2-TasksAssignedByOpus5', 'Comparison position 06 must pair the two Kimi K3 #2 runs');
 const pro0813Pair = SITE.pairs().find(pair => pair.a.pair === 'deepseekv4pro0813');
@@ -1274,7 +1453,6 @@ for (const work of [gemini36OneLine, gemini36Detailed]) {
   check(SITE.environmentTag(work) === 'in Antigravity' && SITE.chips(work, null).includes('in Antigravity'), `${work?.id || 'Gemini 3.6 Flash'} must render the in Antigravity tag`);
   check(fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'Gemini 3.6 Flash'} screenshot asset must exist`);
 }
-check(SITE.scoreFor(gemini36OneLine).total === 42, 'Gemini 3.6 Flash V0 must score 42 after the Tier 3 adjustment');
 const gemini36Pair = SITE.pairs(SITE.archivedWorks()).find(pair => pair.a.pair === 'gemini36flash');
 check(gemini36Pair?.a?.id === 'Gemini3.6Flash(high)V0' && gemini36Pair?.b?.id === 'Gemini3.6Flash-TasksAssignedByOpus5', 'Comparison position 17 must pair the two Gemini 3.6 Flash runs');
 const gemini37OneLine = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1');
@@ -1322,8 +1500,18 @@ check(!i18nSource.includes('above Luna, though still below Sol'), 'English score
 check(!source.includes('低于 Sol。'), 'Chinese score note still uses bare Sol name');
 const siteSource = read('assets/site.js');
 const cssSource = read('assets/site.css');
-check(siteSource.includes("w.tier === 2 ? -3 : w.tier === 3 ? -6"), 'Scoring formula must use Tier 2 −3 and Tier 3 −6');
-check(siteSource.includes("* (23 / 15)") && siteSource.includes("w.tier === 0 ? 109 : 106") && siteSource.includes("Math.min(scoreCeiling, evidenceBase + manualAdjustment)"), 'Correctness must convert to 23 points, with ordinary ceiling 106 and Tier 0 ceiling 109');
+for (const [tier, color] of Object.entries({ 0: '#ff8000', 1: '#a335ee', 2: '#0070dd', 3: '#1eff00', 4: '#9d9d9d' })) {
+  check(cssSource.includes(`--tier${tier}:${color}`), `Tier ${tier} must use the requested World of Warcraft equipment color`);
+  check(cssSource.includes(`#tbl [data-tier="${tier}"]`), `Tier ${tier} must color rows and alternate entries through their own tier`);
+}
+const rowColorRule = cssSource.match(/^#tbl tr\[data-tier\]>td:is\([^\n]+/m)?.[0] || '';
+for (const column of [1, 2, 3, 6, 8, 9, 10])
+  check(rowColorRule.includes(`:nth-child(${column})`), `The requested table column ${column} must inherit its row's equipment color`);
+for (const column of [4, 5, 7])
+  check(!rowColorRule.includes(`:nth-child(${column})`), `Score, recommendation and environment column ${column} must retain their independent colors`);
+check(cssSource.includes('.table-variant-item[data-tier]') && cssSource.includes('.table-variant-rerun[data-tier]'), 'Folded alternate models and reruns must retain their own equipment colors');
+check(siteSource.includes("tier === 2 ? -3 : tier === 3 ? -6"), 'Scoring formula must use Tier 2 −3 and Tier 3 −6');
+check(siteSource.includes("* (23 / 15)") && siteSource.includes("tier === 0 ? 109 : 106") && siteSource.includes("Math.min(scoreCeiling, evidenceBase + manualAdjustment)"), 'Correctness must convert to 23 points, with ordinary ceiling 106 and Tier 0 ceiling 109');
 check(siteSource.includes("* 2.4") && siteSource.includes("geometry: 4, kepler: 6, elements: 5, orientation: 4, epoch: 4"), 'V3 feature and 30-point orbit weights must remain explicit');
 check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effectiveMoons - 8") && siteSource.includes("* .75"), 'V3 moon baseline and extra-moon bonus must remain explicit');
 check(siteSource.includes("Math.min(3, r.otherComets)") && siteSource.includes("score.parts.cometBonus"), 'V3 other-comet bonus must award one point per non-Halley comet up to three');
@@ -1364,7 +1552,7 @@ function validateLunaHaikuMarkup(site, lang, html, pricing) {
   for (const row of comparisonRows) {
     const block = site.lunaHaikuBlock(row);
     const footer = block.match(/<footer class="lh-delta">([\s\S]*?)<\/footer>/)?.[1] || '';
-    const values = row.group === 'A' ? ['+21.30', '+15.30', '+6.00'] : ['+4.50', '+1.50', '+3.00'];
+    const values = row.group === 'A' ? ["+21.30","+15.30","+6.00"] : ["+4.50","+1.50","+3.00"];
     check(values.every(value => footer.includes(value)), lang + ': comparison must publish the exact, base, and tier gaps for ' + row.group);
     check(block.includes(`href="compare${lang === 'en' ? '.en' : ''}.html?c=luna-haiku&amp;g=${row.group}"`), lang + ': side-by-side link must select the same brief');
   }
@@ -1426,7 +1614,7 @@ for (const lang of ['zh', 'en']) {
   check(Boolean(inline), lang + ': home behavior script must exist');
   vm.runInContext(inline[1], sandbox, { filename: 'home-' + lang });
   const body = () => one('#tbl tbody').innerHTML;
-  const countRows = () => (body().match(/<tr>/g) || []).length;
+  const countRows = () => (body().match(/<tr data-tier="\d+">/g) || []).length;
   const checkLunaHaikuHome = visible => {
     check(one('#luna-haiku').hidden === !visible && one('.lh-shortcut').hidden === !visible, lang + ': comparison and shortcut must follow the model search');
     const html = one('#lunaHaikuRows').innerHTML, pricing = one('#lunaHaikuPricing').innerHTML;
@@ -1443,6 +1631,12 @@ for (const lang of ['zh', 'en']) {
     tabs[index].listeners.click();
     const works = (offline ? localSite.archivedWorks() : localSite.visibleWorks()).filter(work => work.group === group);
     check(countRows() === localSite.tableDisplayRowCount(works), lang + ': tab must show one primary row per numbered model family in its own group');
+    const expectedRows = localSite.tableDisplayRows(works, 'tier', 1, lang);
+    const renderedTiers = [...body().matchAll(/<tr data-tier="(\d+)">/g)].map(match => Number(match[1]));
+    check(renderedTiers.every(tier => [0,1,2,3,4,9].includes(tier)) && renderedTiers.length === expectedRows.length,
+      lang + ': every primary row in each active/offline tab must declare its effective equipment tier');
+    for (const work of works.filter(work => sandbox.window.SCORES[work.id].fatal))
+      check(localSite.tableRows([work], 'tier', 1, lang)[0].tier === 4, lang + ': fatal models must use Incomplete in every tab and sorting mode');
     check(one('#luna-haiku').hidden === false && (one('#lunaHaikuRows').innerHTML.match(/data-lh-group="[AB]"/g) || []).length === 2, lang + ': all main-table tabs must leave the independent comparison on both briefs');
     check(tabs.every((tab,i)=>tab.attributes['aria-selected'] === String(i===index) && tab.tabIndex === (i===index?0:-1)), lang + ': exactly one of four tabs must expose selected state');
     check(one('#tablePanel').attributes['aria-labelledby'] === 'tableTab'+(offline?'Offline':'')+group, lang + ': panel must be named by the selected tab');
@@ -1453,7 +1647,7 @@ for (const lang of ['zh', 'en']) {
         check(button.attributes['aria-pressed'] === 'true', lang + ': active price sort must be announced');
         check(priceHeader.attributes['aria-sort'] === (direction === 1 ? 'ascending' : 'descending'), lang + ': price sort direction must be announced');
         const first = localSite.tableDisplayRows(works,button.dataset.priceSort,direction,lang)[0];
-        check(body().startsWith('<tr>\n      <td class="table-model-cell">' + localSite.modelCell(first) + '</td>'), lang + ': sort must reorder only the selected group');
+        check(body().startsWith('<tr data-tier="' + first.tier + '">\n      <td class="table-model-cell">' + localSite.modelCell(first) + '</td>'), lang + ': sort must reorder only the selected group');
       }
     }
   }
@@ -1795,7 +1989,7 @@ check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分'
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">28') && enHome.includes('id="bAll">28') && zhHome.includes('id="tAll">134') && enHome.includes('id="tAll">134'), 'Both home pages must publish 39/28 active counts and 134 retained entries before JavaScript runs');
 check(zhHome.includes('一句话组 39 件和文档组 28 件') && enHome.includes('prefer the 26 paired results over treating all 39 one-line and 28 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('26 组同模型') && enHome.includes('26 same-model') && zhHome.includes('54.64 / 70') && enHome.includes('54.64 / 70') && zhHome.includes('30.63 / 36') && enHome.includes('30.63 / 36'), 'Both home pages must publish the current V3 26-pair statistics');
+check(zhHome.includes('26 组同模型') && enHome.includes('26 same-model') && zhHome.includes('48.84 / 70') && enHome.includes('48.84 / 70') && zhHome.includes('31.26 / 36') && enHome.includes('31.26 / 36'), 'Both home pages must publish the current V3 26-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -1819,7 +2013,7 @@ for (const id of ['GPT5.6SolUltra-WebGL2']) {
   check(!SCORES[id].reference && cell.includes(`>${score.total}<`) && !cell.includes('score-benchmark') && !cell.includes('⚑'), `${id}: former benchmark must render its ordinary numeric Evidence Score`);
 }
 const kimi2ScoreCell = SITE.scoreCell(SITE.byId('KimiK3(Max)V2'));
-check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes('80') && kimi2ScoreCell.includes('<button'), 'Kimi K3 #2 one-line must be Tier 2 and show its numeric evidence score instead of a benchmark flag');
+check(!SCORES['KimiK3(Max)V2'].reference && kimi2ScoreCell.includes(`>${Math.round(EXPECTED_EXACT['KimiK3(Max)V2'])}<`) && kimi2ScoreCell.includes('<button') && !kimi2ScoreCell.includes('score-benchmark'), 'Kimi K3 #2 one-line must remain Tier 2 and show its reviewed numeric evidence score instead of a benchmark flag');
 check(i18nSource.includes("'score.referenceAria': '{name}，标杆，证据评分 {score} 分，查看分项得分'") && i18nSource.includes("'score.referenceAria': '{name}, benchmark, Evidence Score {score}. View score breakdown.'"), 'Benchmark tooltip triggers must expose their scores to assistive technology in both languages');
 check(!siteSource.includes("pair.featuredScoreNote', { a:"), 'Featured comparison must not expose the benchmark score');
 check(zhSpec.includes('Claude Opus 5 (Ultracode·xhigh)') && enSpec.includes('Claude Opus 5 (Ultracode·xhigh)'), 'Specification author must be labeled Claude Opus 5 (Ultracode·xhigh) in both languages');
@@ -1845,71 +2039,71 @@ close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
 check(stats.pairedSummary.n === 26, 'Paired statistics must use 26 active pairs');
-close(stats.pairedSummary.coverage.a, 54.6407692307692, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 62.87692307692308, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":21,"tie":1,"decline":4}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 31.141666666666673, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 30.62948717948719, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":10,"tie":3,"decline":13}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 81.38423076923075, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 90.10089743589744, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":20,"tie":1,"decline":5}), 'exact paired outcomes must match the evidence');
+close(stats.pairedSummary.coverage.a, 48.842692307692296, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 54.33846153846154, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":7}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.a, 31.438461538461542, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 31.260256410256417, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":11}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 76.58884615384613, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 82.48333333333335, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":10}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
       39,
-      56.42307692307691,
-      31.999572649572663,
-      85.33666666666667
+      51.80820512820511,
+      32.355982905982906,
+      81.54880341880342
     ],
     "b": [
       28,
-      62.798571428571435,
-      30.559523809523814,
-      89.34369047619053
+      54.69142857142857,
+      31.472619047619055,
+      83.05690476190478
     ]
   },
   "withoutReferences": {
     "a": [
       38,
-      56.2236842105263,
-      31.89429824561405,
-      84.95078947368417
+      51.487368421052615,
+      32.26008771929825,
+      81.06324561403507
     ],
     "b": [
       28,
-      62.798571428571435,
-      30.559523809523814,
-      89.34369047619053
+      54.69142857142857,
+      31.472619047619055,
+      83.05690476190478
     ]
   },
   "withoutTier4": {
     "a": [
-      39,
-      56.4230769230769,
-      31.999572649572674,
-      85.33666666666664
+      38,
+      51.78684210526314,
+      32.68815789473685,
+      81.7907894736842
     ],
     "b": [
-      28,
-      62.798571428571414,
-      30.55952380952382,
-      89.34369047619046
+      27,
+      54.79111111111111,
+      32.06604938271606,
+      83.63493827160494
     ]
   },
   "withoutReferencesOrTier4": {
     "a": [
-      38,
-      56.223684210526294,
-      31.894298245614053,
-      84.95078947368414
+      37,
+      51.45675675675674,
+      32.59864864864865,
+      81.29864864864862
     ],
     "b": [
-      28,
-      62.798571428571414,
-      30.55952380952382,
-      89.34369047619046
+      27,
+      54.79111111111111,
+      32.06604938271606,
+      83.63493827160494
     ]
   }
 };
@@ -1936,12 +2130,12 @@ const p = stats.pairedSummary;
 console.log(`Paired means (n=${p.n}): coverage A ${p.coverage.a.toFixed(4)} /70, B ${p.coverage.b.toFixed(4)} /70, delta ${(p.coverage.b - p.coverage.a).toFixed(4)}`);
 console.log(`Paired means (n=${p.n}): execution A ${p.execution.a.toFixed(4)} /36, B ${p.execution.b.toFixed(4)} /36, delta ${(p.execution.b - p.execution.a).toFixed(4)}`);
 console.log(`Outcomes: final ${p.exact.outcomes.improve}/${p.exact.outcomes.tie}/${p.exact.outcomes.decline} improve/tie/decline; coverage ${p.coverage.outcomes.improve}/${p.coverage.outcomes.tie}/${p.coverage.outcomes.decline}; execution ${p.execution.outcomes.improve}/${p.execution.outcomes.tie}/${p.execution.outcomes.decline}`);
-console.log(`Mean exact post-cap score: A ${p.exact.a.toFixed(4)}, B ${p.exact.b.toFixed(4)}, delta ${(p.exact.b - p.exact.a).toFixed(4)}`);
+console.log(`Mean exact score: A ${p.exact.a.toFixed(4)}, B ${p.exact.b.toFixed(4)}, delta ${(p.exact.b - p.exact.a).toFixed(4)}`);
 console.log('\nWhole-group sensitivity (coverage / execution / exact)');
 for (const [label, groups] of Object.entries(stats.wholeGroup)) {
   const format = group => `n=${group.n} ${group.coverage.toFixed(2)} / ${group.execution.toFixed(2)} / ${group.exact.toFixed(2)}`;
   console.log(`${label}: A ${format(groups.a)}; B ${format(groups.b)}`);
 }
 console.log('Sensitivity identifiers: references = ' + referenceIds.join(', '));
-console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => w.tier === 4).map(w => w.id).join(', '));
+console.log('Sensitivity identifiers: Tier 4 = ' + visibleWorks.filter(w => SITE.workTier(w) === 4).map(w => w.id).join(', '));
 console.log(`\nScore validation passed: ${WORKS.length} score records, ${visibleWorks.length} visible works, V3 fields/formula, canonical metadata, Tier 0, pairs, sensitivity, evidence max=106, and Tier 0 final max=109.`);

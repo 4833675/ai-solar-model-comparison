@@ -12,8 +12,18 @@
   const t = (key, vars) => I18N.t(key, vars);
   const page = value => I18N.page(value);
   const workText = (work, key) => I18N.workText(work, key);
-  const scoreNote = (work, fallback) => I18N.scoreNote(work, fallback);
+  const LEGACY_FATAL_NOTE_REWRITES = {
+  "主画面与控制初始可用，故非 L1；但相机聚焦后只保留旧位置数组，不能持续跟随，双重帧调度还会让循环持续累积，因长程核心故障按 L2 封顶。": "主画面与控制初始可用，故非 L1；但相机聚焦后只保留旧位置数组，不能持续跟随，双重帧调度还会让循环持续累积，因长程核心故障标记为 L2 。",
+  "源码有名义功能与控制，但白场和巨大黑三角持续遮挡主画面，环着色器也丢弃输出；按 L1 主视图不可用封顶。": "源码有名义功能与控制，但白场和巨大黑三角持续遮挡主画面，环着色器也丢弃输出；标记为 L1 主视图不可用。",
+  "源码覆盖开普勒轨道、八颗卫星、哈雷彗星和完整控制框架，但逐轴距离压缩会把负坐标钳成正值，地球面板因此错报 39.0253 AU；聚焦不连续跟随，时间秒数显示 undefined，哈雷活跃期还会持续触发顶点缓冲不足警告。主视图不可用，按 L1 封顶。": "源码覆盖开普勒轨道、八颗卫星、哈雷彗星和完整控制框架，但逐轴距离压缩会把负坐标钳成正值，地球面板因此错报 39.0253 AU；聚焦不连续跟随，时间秒数显示 undefined，哈雷活跃期还会持续触发顶点缓冲不足警告。主视图不可用，标记为 L1 。",
+  "外行星会明显脱离轨道线，低速区间可产生 NaN，重置也不恢复视角；主画面仍可见，故按 L2 长程核心故障封顶。": "外行星会明显脱离轨道线，低速区间可产生 NaN，重置也不恢复视角；主画面仍可见，故标记为 L2 长程核心故障。"
+};
+  const scoreNote = (work, fallback) => {
+    const note = I18N.scoreNote(work, fallback);
+    return LEGACY_FATAL_NOTE_REWRITES[note] || note;
+  };
   const tierLabel = tier => t(`tier.${tier}`);
+  const workTier = work => (window.SCORES || {})[work && work.id]?.fatal ? 4 : work.tier;
   const hiddenWorkIds = new Set(window.HIDDEN_WORK_IDS || []);
   const isArchivedWork = work => !!work && hiddenWorkIds.has(work.id);
   const isVisibleWork = work => !!work && !hiddenWorkIds.has(work.id);
@@ -126,7 +136,7 @@
     const match = MODEL_LOGOS.find(([pattern]) => pattern.test(model));
     return match ? `assets/logos/${match[1]}.png` : null;
   };
-  const compactTierLabel = work => [0, 1, 2, 3].includes(work.tier) ? `T${work.tier}` : tierLabel(work.tier);
+  const compactTierLabel = work => [0, 1, 2, 3].includes(workTier(work)) ? `T${workTier(work)}` : tierLabel(workTier(work));
   const tableModelName = work => String(work && work.model || '').replace(/\s+\(\d{6}\)$/, '');
   const testDateFor = work => (window.WORK_CREATION_DATES || {})[work && work.id]
     || (String(work && work.model || '').match(/\((\d{6})\)$/) || [])[1] || '';
@@ -136,7 +146,7 @@
     if (!runs.length) return '';
     const summary = t(runs.length === 1 ? 'table.variants.moreOne' : 'table.variants.more', { count: runs.length });
     return `<details class="table-variant-reruns"><summary>${esc(summary)}<b aria-hidden="true">⌄</b></summary>
-      <div>${runs.map(run => `<div class="table-variant-rerun">
+      <div>${runs.map(run => `<div class="table-variant-rerun" data-tier="${workTier(run)}">
         <a href="${link(run)}" aria-label="${esc(t('card.openAria', { name: run.model }))}"><span>${esc(tableModelName(run))}</span><i aria-hidden="true">↗</i></a>
         <span>${scoreCell(run)}</span>
         <small class="table-variant-rerun-date">${esc(t('table.testDate', { date: testDateFor(run) }))}</small>
@@ -158,7 +168,7 @@
         <header><div><span>${t(effortGroup ? 'table.efforts.title' : 'table.variants.title')}</span><strong>${esc(base)}</strong></div>
           <button type="button" class="table-variants-close" popovertarget="${esc(id)}" popovertargetaction="hide"
             aria-label="${esc(t(effortGroup ? 'table.efforts.closeAria' : 'table.variants.closeAria'))}">×</button></header>
-        <div class="table-variants-list">${alternates.map(variant => `<article class="table-variant-item">
+        <div class="table-variants-list">${alternates.map(variant => `<article class="table-variant-item" data-tier="${workTier(variant)}">
           <a href="${link(variant)}" aria-label="${esc(t('card.openAria', { name: variant.model }))}"><span>${esc(tableModelName(variant))}</span><i aria-hidden="true">↗</i></a>
           <div class="table-variant-score">${scoreCell(variant)}</div>
           <div class="table-variant-meta"><span>${esc(t('table.testDate', { date: testDateFor(variant) }))}</span><span>${esc(compactTierLabel(variant))}</span><span>${esc(variant.environment)}</span>
@@ -207,7 +217,7 @@
   }
   const enrichTableRows = works => works.map(work => {
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
-      return Object.assign({}, work, { environment: environmentName(work), testDate: testDateFor(work), personal,
+      return Object.assign({}, work, { tier: workTier(work), environment: environmentName(work), testDate: testDateFor(work), personal,
         recommendation: personal ? personal.sortValue : 0,
         score: score ? score.total : -1,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
@@ -577,7 +587,6 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   const ORBIT_RUNTIME_WEIGHTS = { pathFit: 4, stability: 3 };
   const INTERACTION_KEYS = ['drag', 'zoom', 'focus', 'follow', 'pauseReset'];
   const INTERACTION_WEIGHTS = { drag: 2.5, zoom: 2.5, focus: 3, follow: 3, pauseReset: 2 };
-  const FATAL_CAPS = { L1: 25, L2: 60 };
   const scoreNum = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1);
   const weighted = (values, weights) => Object.keys(weights)
     .reduce((sum, key) => sum + values[key] * weights[key], 0);
@@ -586,7 +595,9 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreFor(w) {
     const r = (window.SCORES || {})[w.id];
     if (!r) return null;
-    const effectiveMoons = r.moons * (r.moonQuality ?? 1);
+    const effectiveMoons = Array.isArray(r.moonEvidence)
+      ? r.moonEvidence.reduce((sum, moon) => sum + moon.quality, 0)
+      : r.moons * (r.moonQuality ?? 1);
     const earthMoonValid = r.earthMoonValid ?? r.hasEarthMoon;
     const moonCore = Math.max(0, Math.min(12, effectiveMoons * 1.5) - (earthMoonValid ? 0 : 2));
     const moonBonus = Math.min(3, Math.max(0, effectiveMoons - 8) * .75);
@@ -604,11 +615,12 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       interaction: weighted(r.interaction, INTERACTION_WEIGHTS),
     };
     const evidenceBase = Object.values(parts).reduce((sum, value) => sum + value, 0);
-    const manualAdjustment = r.reference ? 0 : w.tier === 0 ? 3 : w.tier === 2 ? -3 : w.tier === 3 ? -6 : 0;
-    const scoreCeiling = w.tier === 0 ? 109 : 106;
+    const tier = workTier(w);
+    const manualAdjustment = r.reference ? 0 : tier === 0 ? 3 : tier === 2 ? -3 : tier === 3 ? -6 : 0;
+    const scoreCeiling = tier === 0 ? 109 : 106;
     const preCap = Math.max(0, Math.min(scoreCeiling, evidenceBase + manualAdjustment));
-    const fatalCap = r.fatal ? FATAL_CAPS[r.fatal] : null;
-    const exact = fatalCap == null ? preCap : Math.min(preCap, fatalCap);
+    const fatalCap = null;
+    const exact = preCap;
     const total = Math.round(exact);
     return Object.assign({}, r, { parts, effectiveMoons, earthMoonValid, independenceMode, evidenceBase, manualAdjustment, scoreCeiling, preCap, fatalCap, exact, adjusted: exact, total });
   }
@@ -626,19 +638,17 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
-    const tier = tierLabel(w.tier);
-    const capped = s.exact < s.preCap;
+    const tier = tierLabel(workTier(w));
     const high = !s.reference && s.total >= 95;
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
-    return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}">
+    return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
         <b>${scoreNum(s.total)}<i>/${s.scoreCeiling}</i></b>
       </div>
-      <p class="score-tip-meta">${capped
-        ? t('score.cappedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap), cap: scoreNum(s.fatalCap) })
-        : s.manualAdjustment
+      <p class="score-tip-meta">${s.manualAdjustment
           ? t('score.adjustedMeta', { base: scoreNum(s.evidenceBase), adjusted: scoreNum(s.preCap) })
           : t('score.baseMeta', { base: scoreNum(s.evidenceBase) })}</p>
+      ${s.reviewedAt ? `<p class="score-tip-review">${esc(t('score.reviewedAt', { date: s.reviewedAt }))}</p>` : ''}
       <div class="score-tip-grid">
         ${part(t('score.features'), 'features', 12)}
         ${part(t('score.orbit'), 'orbit', 30)}
@@ -654,9 +664,9 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <div class="score-tip-detail"><span>${t('score.independenceMode')}</span><b>${t(`score.independence.${s.independenceMode}`)}</b></div>
       <div class="score-tip-subtitle">${t('score.correctnessEvidence')}</div><div class="score-tip-subgrid">${['runtime', 'data', 'integrity'].map(key => `<div><span>${t(`score.correctness.${key}`)}</span><b>${scoreNum(s.correctness[key])}</b></div>`).join('')}</div>
       <div class="score-tip-subtitle">${t('score.interactionEvidence')}</div><div class="score-tip-subgrid">${interaction}</div>
-      <div class="score-tip-adjustment"><span>${w.tier === 0 ? t('score.tier0Bonus') : t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${s.manualAdjustment > 0 ? '+' : ''}${scoreNum(s.manualAdjustment)}</b></div>
-      ${s.fatal ? `<div class="score-tip-fatal"><span>${t('score.fatalLevel', { level: s.fatal })}</span><b>${t('score.fatalCapValue', { cap: scoreNum(s.fatalCap) })}</b></div>
-        ${I18N.en ? '' : `<p class="score-tip-fatal-reason"><b>${t('score.fatalReason')}</b>${esc(s.fatalReason || '')}</p>`}` : ''}
+      <div class="score-tip-adjustment"><span>${workTier(w) === 0 ? t('score.tier0Bonus') : t('score.manualAdjustment', { tier: esc(tier) })}</span><b>${s.manualAdjustment > 0 ? '+' : ''}${scoreNum(s.manualAdjustment)}</b></div>
+      ${s.fatal ? `<div class="score-tip-fatal"><span>${t('score.fatalLevel', { level: s.fatal })}</span><b>${t('score.fatalUncapped')}</b></div>
+        <p class="score-tip-fatal-reason"><b>${t('score.fatalReason')}</b>${esc(I18N.en ? (s.fatalReasonEn || t('score.fatalReasonFallback')) : (s.fatalReason || ''))}</p>` : ''}
       ${s.note ? `<p class="score-tip-note">${esc(scoreNote(w, s.note))}</p>` : ''}`;
   }
 
@@ -668,9 +678,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <span aria-hidden="true">⚑</span><b>${t('benchmark.badge')}</b>
     </button>`;
     const label = t('score.evidenceAria', { name: w.model, score: s.total });
-    const capped = s.exact < s.preCap;
     const high = s.total >= 95;
-    return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}${capped ? ' is-capped' : ''}"
+    return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
       <b>${scoreNum(s.total)}</b>
     </button>`;
@@ -794,7 +803,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
         <span>${t('gap.open')}</span>
       </a>
       <div class="model-gap-meta">
-        <span class="tier-cell-${work.tier}">${esc(tierLabel(work.tier))}</span>
+        <span class="tier-cell-${workTier(work)}">${esc(tierLabel(workTier(work)))}</span>
         <span>${esc(environmentTag(work))}</span>
         <span>${esc(renderer)}</span>
         <span>${t('gap.featureCount', { count: work.feats.length })}</span>
@@ -825,7 +834,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const recommendation = personalRecommendationFor(work);
     return `<div class="lh-side" data-lh-model="${role}">
       <header><div><a href="${link(work)}"><span class="table-model-logo"><img src="${modelLogoFor(work)}" alt="" width="20" height="20"></span><h5>${esc(tableModelName(work))}</h5></a>
-        <p>${esc(t('table.testDate', { date: testDateFor(work) }))} · <span class="tier-cell-${work.tier}">${esc(compactTierLabel(work))}</span> · ${esc(environmentName(work))} · ${esc(renderer)}</p></div>${scoreCell(work)}</header>
+        <p>${esc(t('table.testDate', { date: testDateFor(work) }))} · <span class="tier-cell-${workTier(work)}">${esc(compactTierLabel(work))}</span> · ${esc(environmentName(work))} · ${esc(renderer)}</p></div>${scoreCell(work)}</header>
       <a class="lh-shot" href="${link(work)}" aria-label="${esc(t('card.openAria', { name: work.model }))}">
         <img loading="lazy" src="${work.shot}" width="1440" height="900" alt="${esc(t('card.screenshotAlt', { name: work.model }))}"><span>${t('gap.open')}</span></a>
       <div class="lh-score-meta">${t('lh.baseScore', { base: score.evidenceBase.toFixed(2), adjustment: (score.manualAdjustment > 0 ? '+' : '') + score.manualAdjustment })}</div>
@@ -875,7 +884,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       </a>
       <div class="effort-run-score">${scoreCell(work)}</div>
       <div class="effort-run-meta">
-        <span class="tier-cell-${work.tier}">${esc(tierLabel(work.tier))}</span>
+        <span class="tier-cell-${workTier(work)}">${esc(tierLabel(workTier(work)))}</span>
         <span>${esc(environment)}</span>
         ${extraTags.map(tag => `<span class="is-note">${esc(tag)}</span>`).join('')}
         <span>${esc(renderer)}</span>
@@ -1010,8 +1019,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     };
     const population = predicate => works.filter(predicate);
     const sensitivity = (excludeReferences, excludeTier4) => ({
-      a: summarize(population(row => row.work.group === 'A' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
-      b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || row.work.tier !== 4))),
+      a: summarize(population(row => row.work.group === 'A' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || workTier(row.work) !== 4))),
+      b: summarize(population(row => row.work.group === 'B' && (!excludeReferences || !row.score.reference) && (!excludeTier4 || workTier(row.work) !== 4))),
     });
     return {
       maxima: { coverage: 70, execution: 36, total: 106, final: 109 },
@@ -1029,7 +1038,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   // 按梯队分组渲染画廊
   function tieredGallery(works, expandRest = false) {
     const byTier = {};
-    works.forEach(w => (byTier[w.tier] = byTier[w.tier] || []).push(w));
+    works.forEach(w => (byTier[workTier(w)] = byTier[workTier(w)] || []).push(w));
     const tierBlock = tier => {
       const list = byTier[tier].sort((a, b) => scoreOrder(a, b));
       const benchmarkTier = tier === '1' && list[0] && list[0].group === 'A';
@@ -1054,7 +1063,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, workTier, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     lunaHaikuComparisons, lunaHaikuMatches, lunaHaikuBlock, lunaHaikuPriceBlock, contextPriceFor,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,

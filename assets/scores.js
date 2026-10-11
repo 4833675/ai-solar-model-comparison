@@ -4,263 +4,654 @@
 
   window.SCORES = {
     'Haiku5.5(Ultracode·Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 0.5, stability: 1 }, moons: 21, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 一句话版包含 JPL 世纪率/开普勒行星轨道、Meeus 月球、22 颗已绘制卫星、哈雷、双向土星环影、多类动态小天体带和 HDR/Bloom/ACES。土卫八把 Laplace 面倾角套在土星赤道参考面，剔除此颗后计 21 颗有效卫星，超额卫星奖励仍满；不重复扣数据项。月球轨道线也缓存 1200 天，基准日期后 500 天月球到旧线最近约 16991 km、占月距 4.19%，路径拟合给部分分。1440×900 高档为浮点 HDR/4× MSAA，可回退 RGBA8，控制台与 WebGL 无错误；加速约 1445 天后所有天体位置/自转矩阵有限，哈雷持续跟随误差为零，暂停同时停止日期、公转和自转，缩放按天体半径限制。大气主要为边缘辉光；海卫一轨道逆行正确，但同步自转方向和表面朝向不正确，土卫七被设为同步自转而实际为混沌自转，这两项仅扣数据正确性。重置视角与回到现在分离，没有恢复速度、暂停和显示状态的完整复位。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 22,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、Meeus 月球、22 颗已绘制卫星、哈雷、双向土星环影、动态小天体带和 HDR/Bloom/ACES。土卫八错误使用 Laplace 面倾角；五颗天王星卫星采用正平均角速度绕 IAU 北极，却未匹配天王星负 Wrate，剔除这六颗后计 16 颗有效，超额卫星奖励仍满；卡戎与 Pluto 的正 IAU Wrate 匹配，仍计有效，不重复扣数据项。月球轨道线缓存 1200 天，500 天后路径偏差约 16991 km，路径拟合部分计分。大气是边缘辉光；海卫一轨道逆行正确，但同步自转方向/朝向错误，土卫七被错误同步自转，数据项扣分。支持安全缩放与持续跟随，暂停停止公转和自转，重置视角和回到现在分离，无完整复位。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "phobos",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "deimos",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "mimas",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "enceladus",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "tethys",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "dione",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "rhea",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "titan",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "hyperion",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "triton",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本轨道方向成立；自转问题另在data"
+        },
+        {
+          "id": "iapetus",
+          "quality": 0,
+          "reason": "Laplace面7.57°被当作土星赤道倾角"
+        },
+        {
+          "id": "miranda",
+          "quality": 0,
+          "reason": "正meanrate绕IAU north但母星signedWrate负，方向错误"
+        },
+        {
+          "id": "ariel",
+          "quality": 0,
+          "reason": "正meanrate绕IAU north但母星signedWrate负，方向错误"
+        },
+        {
+          "id": "umbriel",
+          "quality": 0,
+          "reason": "正meanrate绕IAU north但母星signedWrate负，方向错误"
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "正meanrate绕IAU north但母星signedWrate负，方向错误"
+        },
+        {
+          "id": "oberon",
+          "quality": 0,
+          "reason": "正meanrate绕IAU north但母星signedWrate负，方向错误"
+        },
+        {
+          "id": "charon",
+          "quality": 1,
+          "reason": "Pluto DATA Wrate=+56.3625225，Charon正meanrate绕IAU north正确"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "Haiku5.5(Ultracode)V1": {
-      reference: false,
-      featureMap: {
-        rings: 0.4,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 0.4
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 0.5,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
       },
-      moons: 6,
-      hasEarthMoon: true,
-      halley: true,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 5,
-        integrity: 5
+      "moons": 6,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "在线 Three.js r160/WebGL2 在 1440×900 实跑正常，六颗卫星、哈雷、双粒子带、浮点 HDR、Bloom/ACES 与持续聚焦跟随均可运行，控制台无错误。行星使用 JPL 世纪率根数与开普勒求解，月球采用 Meeus 级数，木卫与土卫位于母星赤道面；地球运动正常，但轨道绘制将 earth 改传为未定义的 emb，导致该轨道退化到太阳位置，其余路径仍有效。土星与天王星环缺少双向物理环影，大气主要为边缘辉光；近距缩放能穿入天体，复位只恢复镜头。"
+      "fatal": null,
+      "note": "联网 Three.js r160 使用 JPL 世纪率/开普勒行星轨道、Meeus 月球、四颗木卫和土卫六，六颗卫星的基本参考面与方向成立。哈雷、两类动态小天体带、HDR/Bloom/ACES 和持续聚焦跟随均有实现。地球运动正常，但轨道绘制把 earth 改传成 BODIES 中不存在的 emb，轨道线退化到太阳，其余路径有效，路径拟合给部分分，不重复扣运行正确性。环无双向物理阴影，大气是边缘辉光；近距缩放可穿入天体，复位仅恢复镜头。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4,
-        integrity: 5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1199: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 1,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、运动小天体带、HDR/Bloom/ACES、大气及安全缩放和持续聚焦跟随。1440×900 运行截图已保存，HDR与4× MSAA可用，浮点扩展缺失时可回退RGBA8。高倍时间推进、1800–2050年多个日期及更长跨度坐标均有限，暂停日期不漂移，拖拽、缩放和土星聚焦有效，无脚本或WebGL错误。月球黄道面与海卫一逆行处理正确；卫星使用圆轨道和预设J2000相位，与界面真实相位说明不符，数据项作部分扣分，不重复扣卫星或轨道分。“此刻”只恢复日期，取消聚焦只恢复部分镜头，没有一次恢复速度、镜头和显示参数的完整重置。"
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。行星、带、环影、视线大气、HDR/Bloom/ACES与交互成立；月球和海卫一实际法线正确。Pluto几何pole已是112.8度，moonFrame再按负rotH翻转使Charon黄道倾角67.2737度，剔除该颗。预设相位与真实相位宣传不符；此刻只改日期。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "GPT6Astra(Light)V1": {
-      reference: false,
-      featureMap: {
-        rings: 0.4,
-        belt: 0.4,
-        bloom: 0,
-        aces: 0,
-        atmo: 0.4
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 0.4,
+        "bloom": 0,
+        "aces": 0,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 0,
-      hasEarthMoon: false,
-      halley: false,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 5,
-        integrity: 5
+      "moons": 0,
+      "hasEarthMoon": false,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 1,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线原生 WebGL1 使用 JPL 世纪率/开普勒轨道根数，八大行星的相位、轨道线与日期一致，聚焦后可持续跟随并按天体半径限制缩放。原有 1440×900 截图复用；暂停与推进约六百天后位置均有限，无脚本或 WebGL 错误。小行星带为静止点阵；土星只把行星阴影投到环上，缺少环投影到行星，大气主要是边缘辉光，均只给部分功能分。太阳光晕为加法 billboard，没有实际 Bloom/ACES 后期；没有卫星或彗星，“此刻”和“全景”只分别恢复日期或镜头，缺少完整复位。"
+      "fatal": null,
+      "note": "离线原生 WebGL1 使用 JPL 世纪率/开普勒轨道，行星与轨道线同源，支持持续聚焦跟随和按半径限制缩放。小行星带为静止点阵；土星只有行星投向环的单向阴影，大气是表面边缘辉光，均给部分功能分。太阳光晕是加法 billboard，没有实际 Bloom/ACES，没有卫星或彗星。暂停只停止模拟时间，“此刻”和全景分别恢复日期或镜头，缺少完整状态复位。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "GPT6Astra(Medium)V1-TasksAssignedByOpus5": {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 5,
-        integrity: 5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L44: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L30/L44: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 1,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线原生 WebGL2 文档版完整覆盖 JPL 世纪率/开普勒行星轨道、八颗卫星、哈雷、双向环影、多类小天体、Bloom/ACES、大气及持续聚焦跟随。原有 1440×900 截图复用；跳到 2030 年后 HDR、4× MSAA 正常且无脚本或 WebGL 错误。海卫一轨道使用正的角速度与 156.9° 倾角，未重复翻转逆行；缩放下限按目标半径设置。主要缺项仍为没有一次恢复时间、镜头和显示参数的完整状态复位。"
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计8颗有效；视觉不计分。实际负Z局部轨道、右手基与海卫一绝对周期加大倾角的组合正确，8颗均有效。JPL元素、GPU带、双向环影、大气和后期有效，跟随和目标半径缩放有效；唯一明确交互缺项为此刻单独改日期。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "GPT6Luna(Max)V1": {
-      reference: false,
-      featureMap: {
-        rings: 0.4,
-        belt: 1,
-        bloom: 0,
-        aces: 0,
-        atmo: 0.4
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 0,
+        "aces": 0,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 1,
-      hasEarthMoon: true,
-      halley: false,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 5,
-        integrity: 5
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 1,
-        focus: 0.5,
-        follow: 0,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 0.5,
+        "follow": 0,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线 Canvas2D 一句话版使用 JPL 世纪率/开普勒轨道根数和同一投影绘制行星与轨道线，小行星带随时间运动。1440×900 页面稳定，暂停日期不漂移，高倍时间推进与镜头复位可用。月球在地球旁按周期作屏幕空间椭圆运动，不能随三维视角旋转，按半颗有效卫星计；土星环和大气为部分示意，没有彗星及实际 Bloom/ACES 后期。点击行星只更新参数和选中标记，没有镜头聚焦或持续跟随；复位只恢复视角。Canvas2D 本身不另扣分。",
-      moonQuality: 0.5
+      "fatal": null,
+      "note": "离线 Canvas2D 使用 JPL 世纪率/开普勒轨道，行星与轨道线经过同一投影，小行星带随模拟时间运动。月球按 27.32 天周期在地球旁做屏幕空间椭圆，不随三维镜头旋转，维持半颗有效卫星。土星环和大气只为示意，没有彗星及实际 Bloom/ACES。拖拽与缩放可用，点击行星只更新参数和选中标记，没有镜头聚焦或持续跟随；暂停可用，复位只恢复视角。Canvas2D 本身不另扣分。",
+      "moonQuality": 0.5,
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     "GPT6Luna(Max)V1-TasksAssignedByOpus5": {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true,
-      otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4,
-        integrity: 5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L232最终updateSim覆盖L193：Moon先构造黄道[costheta,sintheta*cosI,sintheta*sinI]，再直接eclWorld映射；无二次AU压缩。有向黄道倾角5.145°，有效。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 1,
-        focus: 1,
-        follow: 0.5,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 0.5,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、小天体带、HDR/Bloom/ACES 与行星聚焦跟随。1440×900 保存运行截图，推进约八百天后各天体位置有限，暂停锁住日期且无脚本或 WebGL 错误。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷固定周期推算下一次近日点在 2061 年 6 月，却写成 7 月底。选择哈雷时 camera.follow 被清空，彗星聚焦不能持续跟随；缩放全局下限保持在最大天体表面之外，但“此刻”只恢复时间，没有完整状态重置。"
+      "fatal": null,
+      "note": "源码与纯函数复核：以文件尾部最终生效覆盖为准，实现8颗卫星、7颗方向有效。L232的updateSim已修正旧L193月球分支，月球参考面与距离正确；左手赤道基下海卫一负周期配156.9度仍给出顺行法线，剔除该颗。行星、哈雷、环影、大气与后期有效。L231最终selectedRawPosition和L233最终updateLiveInfo已修正旧的哈雷/卫星实时坐标路径；只对固定周期与7月底回归文案不符保留data扣分。L230选择哈雷仍清空camera.follow，L232中的哈雷跟随分支不能由该UI到达，follow部分分；此刻不是完整重置。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Sonnet5.5(Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 67, hasEarthMoon: true, halley: true, otherComets: 3,
-      correctness: { runtime: 5, data: 4.5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 使用 DE441 锚点与 IAS15/1PN N 体积分、卫星星历插值、真实小天体根数，包含 67 颗卫星、哈雷及超过三颗额外彗星、环与双向环影、随时间运动的小天体带、Bloom/ACES、大气与持续聚焦跟随。1440×900 默认约 60 fps，跳转至 2061 年土星近景后全部天体坐标有限；暂停日期不漂移，拖拽、缩放与安全距离有效，无脚本或 WebGL 错误。哈雷仍用固定二体根数，推算下一次近日点为 2062-01-08，与界面列出的 2061-07-28 不符；“现在”和“恢复默认设置”分别只恢复时间或显示参数，没有完整状态复位。两类额外奖励均按三分上限计，T0 另加三分。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 67,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 3,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用 DE441 初值与 IAS15/1PN N 体积分，主要行星和月球由同一动力学引擎推进，其他卫星从星历锚点传播并插值，轨道面与逆行方向随实际状态向量建立。67 颗卫星、哈雷及超过三颗独立额外彗星、双向环影、动态小天体带、HDR/Bloom/ACES、真实光程大气散射与持续跟随均有实现。哈雷固定二体根数预测下一近日点约 2062-01-08，与页面 2061-07-28 的说明不一致，数据项保留扣分。“现在”和恢复默认设置分离，后者仅恢复显示参数，没有完整状态复位；两类额外奖励各按三分上限，T0 另加三分。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Opus5(Max)V1': {
       reference: false,
@@ -281,95 +672,1049 @@
       note: '原生离线 WebGL2 实现真实比例、18 颗卫星、4 颗彗星、大陆轮廓、Bloom/ACES、环影与大气，提供天象跳转和渲染性能设置。第0梯队额外补证 +3。'
     },
     'Qwen3.8Flash(xhigh)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: .5 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: false, otherComets: 1,
-      correctness: { runtime: 5, data: 3.5, integrity: 4.5 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '联网 Three.js 版具备真实行星根数、开普勒求解、九颗卫星、环影、程序化表面、Bloom/ACES、大气与持续跟随；但彗星只是自拟的 25 年周期模型，并非哈雷，起始历元也仅用近似天数硬编码，复位只恢复视角。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 0.5,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 0.5
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 9,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": false,
+      "otherComets": 1,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 的行星椭圆、运动带、Bloom/ACES、九颗卫星示意与独立周期彗星可运行。开普勒迭代混用归一化初值与未归一化平均近点角，当前彗星残差约1.75弧度；起始日期还偏移3.5天，分别只扣求解和历元。卫星采用统一零相位、简化距离与黄道参考面，其中月球黄道参考面成立，其余八颗把母星赤道面错误替换为黄道面，计为无效。环只有行星投向环的阴影，大气为表面边缘光；行星照明混用局部法线与世界光向，缩放可穿入大天体，复位仅镜头。实际后期需要半浮点，场景无MSAA。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 1,
+          "reason": "150/569/814–815:5.1° applied to unrotated ecliptic XZ plane; idealized circular orbit with actual period accepted."
+        },
+        {
+          "id": "Phobos",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Deimos",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Io",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Europa",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Callisto",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Titan",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        },
+        {
+          "id": "Triton",
+          "quality": 0,
+          "reason": "558–570/812–815:moon group attaches to unrotated planet translation; inclination is applied to global ecliptic instead of its parent equator (Triton157° also relative wrongplane)."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 2.5, integrity: 4.5 }, visualBase: 6.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2 版覆盖 JPL 世纪率、开普勒求解、八颗卫星、哈雷、环影、Bloom/ACES、大气和完整交互；但升交点计算把基准角度直接当弧度使用，同时遗漏变化率的世纪因子，导致全部行星的绝对轨道方向错误。哈雷仍按密切周期外推，却标注 2061-07-28。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 0,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1215: 实际world轨道r×v有向黄道倾角84.855°，期望5.145°。",
+          "actualInclinationDeg": 84.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。升交点基准角未转弧度且变化率遗漏世纪因子；只在轨道方向项扣分。月球近竖直参考面、海卫一方向错误按逐颗卫星处理。哈雷计算周期与7月底文案不符，缩放可穿入；此刻仅恢复日期。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Hy4Preview(high)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 18, hasEarthMoon: true, halley: true, otherComets: 2,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '联网 Three.js 版具备 JPL/开普勒轨道、十八颗卫星、哈雷、三套环、小天体带、Bloom/ACES、大气和持续跟随，实跑约 88–144 FPS；但木星大红斑不清晰，土星近景被卫星轨道和标签明显干扰，密度面板还把 kg/m³ 数值误标成 g/cm³，且没有完整视图复位。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 18,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": true,
+      "otherComets": 2,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 使用完整 JPL 世纪率与归一化开普勒求解，提供18颗卫星示意、哈雷/恩克/67P、运动双小天体带及Bloom/ACES。环仅解析行星投影，未向行星投影；大气为方向性边缘辉光。卫星随机初相并统一置于母星简化赤道面，月球的黄道倾角因此套错参考面，地球月球计为无效，其余17颗理想化圆轨道仍计有效；卫星轨道线又遗漏各自倾角，路径匹配部分分。密度把kg/m³标为g/cm³，金星/天王星自转符号与大于90°倾角重复反转，数据部分分。近距缩放可穿入天体，没有完整复位。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "457/1437/2230–2235:ecliptic5.145° wrongly applied insideEarth23.44°tiltGroup."
+        },
+        {
+          "id": "Phobos",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Deimos",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Mimas",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Enceladus",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Tethys",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Dione",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Rhea",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Iapetus",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Titania",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Oberon",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Triton",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        },
+        {
+          "id": "Charon",
+          "quality": 1,
+          "reason": "450–487/1437/2230–2235:actualparent-relativeorbit radii/periods and declaredinclination applied to modelparent-equator; idealizedcircles/randomphase alone notdeducted. Triton usesnegativeperiod with23°inclination once."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Hy4Preview(high)V2': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '联网 Three.js 版具备 JPL/开普勒轨道、十三颗卫星、哈雷、环影、多重小天体带、Bloom/ACES、大气以及完整聚焦跟随与复位。地球夜面和土星环影清楚；主要问题是默认星空与轨道线偏密、亮星略显方块化，木星仍缺少醒目的大红斑。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 13,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 提供完整JPL世纪率、稳健开普勒、真实哈雷、运动小天体带、双向环影及Bloom/ACES。13颗卫星中，月球在黄道面作近似运动可计有效，其余12颗把相对母星赤道的倾角套到黄道面，海卫一还同时用负周期与156.8°倾角，均计无效而不重复扣data。大气仅方向性边缘光；金星、天王星和冥王星把负自转周期与翻转轴重复使用，数据部分分。目标半径限制缩放、聚焦和跟随成立，宽景与此刻按钮分别只恢复镜头或时间，缺完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "469/1404/2051–2063:Moon5.145° applied to global ecliptic; acceptableidealizedelliptical/circular model."
+        },
+        {
+          "id": "phobos",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "deimos",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "rhea",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "oberon",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "515/2051/2058–2063:negativeperiod plus156.8°inclination reversesretrograde twice, alsoeclipticinsteadNeptuneequator."
+        },
+        {
+          "id": "charon",
+          "quality": 0,
+          "reason": "1402–1404/2058–2063:moon translation group is childofplanetgroup, nottilt; declaredparent-equatorial inclination thereforeappliesinecliptic."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Hy4Preview(high)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 5.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、多重小天体带、Bloom/ACES、大气和持续跟随，实跑约 90–144 FPS；但 Jupiter 的暗环被渲染得过强，Saturn 环出现大块黑白分带和亮锥伪影，木星大红斑也不清晰，且没有完整视图复位。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1863: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。环双向投影与视线大气均有实际实现，撤销纯视觉造成的rings和integrity扣分。右手赤道基配正Z轨道使普通卫星反向；月球和海卫一方向反而正确。卫星rotH误填公转天数再除24，自转快24倍；滚轮下限0.16可穿入。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Hy4Preview(high)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 5.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2 版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、多重小天体带、Bloom/ACES、大气以及完整聚焦跟随与复位；但默认总览辉光偏强，Earth 与 Saturn 近景被过大的 Moon/Titan 遮挡，木星没有清楚的大红斑，环系仍存在黑白硬分带。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1573: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。双向环影完整，旧环明暗/辉光观感不计分。卫星正Z相位与右手基使普通赤道卫星方向颠倒，月球也逆行；仅海卫一有向法线符合要求。此刻仅改日期，缩放安全边界不足。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3Flash(Max)V2': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 9, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '联网 Three.js #2 版的 JPL/开普勒轨道、九颗卫星、哈雷、Bloom/ACES、大气、聚焦跟随和复位均稳定，默认总览也明显优于 #1；但近景小行星会严重遮挡 Jupiter，木星仍无清楚大红斑，Saturn 环虽有层次却缺少可信的双向物理阴影。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 9,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网Three.js采用真实固定J2000根数、稳健开普勒和同源轨道采样，九颗卫星、真实哈雷、运动双带、Bloom/ACES及聚焦跟随成立。月球以toEcliptic:true放在黄道参考面，其余卫星在母星赤道面作理想化圆轨道，均有效。环为透明几何而无物理投影，大气只是壳层边缘光；天王星和冥王星负自转符号与翻转轴重复使用，数据部分分。全局缩放下限1.4可进入大天体，宽景和此刻分别只复位镜头或时间，缺完整重置；使用FXAA而非场景MSAA，半浮点后期无回退。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 1,
+          "reason": "249toEcliptic:true/985–986/1138–1141:5.14°inclinationoutsideEarthtiltgroup,correcteclipticreference."
+        },
+        {
+          "id": "Phobos",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Deimos",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        },
+        {
+          "id": "Charon",
+          "quality": 1,
+          "reason": "255–289/985–986/1138–1141:actualperiod/inclinationinparent-equatorialframe;idealizedcirclesaccepted."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3Flash(Max)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 4.5,
-      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 #2 文档版完整覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环系、小天体带、Bloom/ACES 与大气，实跑稳定在约 140 FPS；但默认辉光仍明显过曝，Earth 近景背景被粒子和轨道线淹没，Jupiter 过小且没有大红斑，Saturn 环在近景几乎只剩细线，聚焦距离与复位也不完整。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1654: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "actualInclinationDeg": 95.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。球面环影使用世界长度而未除显示半径，环影尺度错误故rings部分分；月球有向倾角95.145度。赤道卫星按实际基手性逐颗处理。聚焦和按显示半径限制缩放成立；旧曝光/颗粒观感不扣分。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3Flash(Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: 6,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、六颗卫星、环影、小行星带、Bloom/ACES、大气与持续聚焦跟随；但默认太阳辉光明显吞没内侧画面，完整状态不能重置，哈雷的平均运动又把角度转弧度写成了除法，导致运行速度约快 3283 倍，因此不计哈雷加分。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 6,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线WebGL2使用完整JPL世纪率、开普勒及同源采样，六颗卫星、运动小天体带、实际Bloom/ACES和安全聚焦跟随有效。月球通过eq:false独立黄道参考面，其他五颗在母星赤道面，均有效。标为哈雷的运动把角度转弧度写成除法，速度快约3283倍，不计哈雷且不转其他彗星。环投向行星的交点未限制环内外半径，产生整片半球遮光，只给部分环分；大气仅方向性边缘光。彗尾指向太阳、逆向时间时自转未反向，金星/天王星符号又重复反转，数据部分分。可RGBA8回退且无MSAA，缺完整复位。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 1,
+          "reason": "252eq:false/1280–1283:5.1°eclipticinclinationoutsideEarthtilt,small-angleheightapproxaccepted."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "253–258/1280–1283:actualperiod/inclinationappliedinsideparent-equatorialbasis;circlesaccepted."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "253–258/1280–1283:actualperiod/inclinationappliedinsideparent-equatorialbasis;circlesaccepted."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "253–258/1280–1283:actualperiod/inclinationappliedinsideparent-equatorialbasis;circlesaccepted."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "253–258/1280–1283:actualperiod/inclinationappliedinsideparent-equatorialbasis;circlesaccepted."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "253–258/1280–1283:actualperiod/inclinationappliedinsideparent-equatorialbasis;circlesaccepted."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3Flash(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 4, data: 3, integrity: 2 }, visualBase: 3,
-      interaction: { drag: 1, zoom: 1, focus: .5, follow: 1, pauseReset: .5 }, fatal: 'L2',
-      fatalReason: '页面可运行，但兼容探测会把轨道、环与日冕切换为点状降级路径，随后出现明显棋盘格光晕；木星、土星聚焦后仍小到无法有效近景观察。',
-      note: '源码覆盖 JPL/开普勒轨道、八颗卫星、多重小天体带、Bloom/ACES 与大气；但哈雷坐标写入临时数组后被丢弃，彗星实际长期停在太阳位置。运行数秒后轨道、环和日冕进入点状降级渲染，太阳周边出现棋盘格，聚焦距离也不足，因此按 L2 封顶。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1674: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "actualInclinationDeg": 95.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。Halley计算值写入临时数组后没有更新主体位置，哈雷功能不成立。点状兼容路径使环连续结构仅部分有效；但主行星和控制仍运行，撤销仅视觉降级造成的L2。月球近竖直；其余卫星据实际左手基方向计数。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GPT5.6Sol(Medium)V1': {
       reference: false,
@@ -408,22 +1753,198 @@
       note: '详细文档版完整运行 JPL/开普勒轨道、八颗卫星、哈雷、小行星带与柯伊伯带，地球近景细节清楚；但环系只是七条线，没有物理环影，辉光与大气仅为简化近似，没有 ACES，缩放可进入大型天体，聚焦也不持续跟随且没有完整状态重置。'
     },
     'DoubaoSeedEvolving0827(Max)V1': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: .4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 一句话版稳定实现 J2000 开普勒轨道、八颗卫星、小行星带、Bloom/ACES、拖拽缩放与持续聚焦跟随。行星环只有行星投向环的单向阴影，大气主要是表面着色中的简化边缘光；没有哈雷，也没有一次恢复镜头、时间、速度与显示开关的完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 0.5,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用固定 J2000 根数与开普勒方程，行星及轨道线同源，小行星带、Bloom/ACES 和持续聚焦跟随有效。轨道点采用 x/z 正向映射，却使用标准右手 Ry(node) 与 Ry(peri) 定向，导致节点和近心点角符号相反；倾角有实现，定向只给部分分，不再因同一坐标手性问题重复扣历元或数据项。土星环只有行星投向环的单向阴影，大气为边缘光。八颗名义卫星中，月球错误使用地球赤道面，海卫一缺少真实轨道倾角，剔除两颗后计六颗有效，月球有效性另扣两分。没有彗星；暂停可用，缺少完整状态复位。",
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "错误地使用地球23.44°赤道面，而非黄道附近5.145°"
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "rhea",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "titan",
+          "quality": 1,
+          "reason": "母星赤道面基本成立，周期方向正确"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "只在海王星赤道面逆行，缺少真实23.1°轨道倾角"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 3 }, visualBase: null,
-      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 文档版覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小天体带、Bloom/ACES、大气和持续跟随，1440×900 高倍推进稳定且无报错。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年周期推进却标为 2061 年 7 月底，模型实际约在 6 月初过近日点。彗尾代码还把指向太阳的向量当作背日方向，实测与背日方向点积为 −1，离子尾实际朝向太阳；缩放可进入大型天体，也没有完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L342: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 4
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环双向投影和后期有效。右手基正Z使月球及普通顺行卫星方向错误；海卫一有向法线正确。离子尾向量朝向太阳属于独立渲染完整性问题；7月底日期文案不符。缩放可穿入，仅日期恢复。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GPT5.6Sol(high)V1': {
       reference: false,
@@ -481,50 +2002,517 @@
       note: '五项控制均可用，但轨道是简化非开普勒路径；过强 Bloom 抹去了中心细节。'
     },
     'GLM5.3(Max)V1': {
-      reference: false,
-      moonQuality: .5,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 15, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '联网 Three.js 版的 JPL 世纪率、开普勒求解、十五颗卫星、双向环影、Bloom/ACES、大气和五项交互均稳定；但没有哈雷，卫星轨道均简化为贴合行星赤道的圆轨道，地球高光与木星、土星近景也略显过曝。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 15,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网Three.js实现完整JPL世纪率、开普勒及匹配轨道，运动双小天体带、Bloom/ACES和4×场景MSAA成立。15颗卫星中月球错置地球赤道、海卫一仅反向赤道圆轨道而缺少约23°倾角，计无效，其余13颗理想化母星圆轨道有效，不因圆轨道自扣。双向环影代码存在，但世界环法线始终未随倾斜环更新，故只给部分分；大气为方向性边缘壳光。金星/天王星/冥王星自转符号重复翻转，数据部分分；无哈雷，未聚焦缩放可进入太阳，复位不完整。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "306/1117/1195/1587–1593:MoonorbitinsideEarthtiltGroup;wrongEarth-equatorialplane."
+        },
+        {
+          "id": "Triton",
+          "quality": 0,
+          "reason": "401/1195/1587–1593:negativeperiodcreates180°retrogradeequatorialcircle,not~157°Tritonplane."
+        },
+        {
+          "id": "Phobos",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Deimos",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Enceladus",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Rhea",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Miranda",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Titania",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Oberon",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        },
+        {
+          "id": "Charon",
+          "quality": 1,
+          "reason": "319–417/1191–1208/1587–1593:actualperiodswithidealizedparent-equatorialcircles;nodata-generatedwrongreferenceframe,minor omittedinclinationsnotalonepenalized."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3(Max)V2': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 8,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '联网 Three.js 版的 JPL/开普勒轨道、七颗卫星、哈雷彗星、Bloom/ACES、大气与持续跟随均稳定；地球昼夜面和土星环层次较好，但没有物理环影，卫星显示偏大，木星也缺少清楚的大红斑。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 7,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网Three.js用完整JPL世纪率、归一化开普勒和同源采样绘制匹配轨道，七颗卫星、真实哈雷、运动小天体带、Bloom/ACES与4×场景MSAA成立。月球特意挂在未倾斜地球系统并加5.14°黄道倾角，海卫一用负周期与23°倾角只反转一次，均有效。环只有透明受光几何，没有物理投影，大气仅Fresnel壳光；金星/天王星自转重复反转，地球夜光贴图作为不分昼夜的emissive使用，数据部分分。安全缩放、聚焦跟随成立，此刻只复位时间，缺完整重置。旧画面曝光与外观扣分移除。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 1,
+          "reason": "310/1023–1024:pivot5.14°attachedtosysinsteadEarthtiltG,correcteclipticreference."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "323–338/1024/1413–1414:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "323–338/1024/1413–1414:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "323–338/1024/1413–1414:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "323–338/1024/1413–1414:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "323–338/1024/1413–1414:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "Triton",
+          "quality": 1,
+          "reason": "350/1023–1024/1413–1414:negativeperiodplus23°inclinationgivescorrect157°retrograde,attachedNeptunetiltG."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3(Max)V3': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 10, hasEarthMoon: true, halley: true, otherComets: 1,
-      correctness: { runtime: 4, data: 4, integrity: 3 }, visualBase: 3.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、十颗卫星、哈雷与恩克彗星、双向环影、Bloom/ACES、大气和五项交互；但总览被极强灰白光晕与色散覆盖，近景卫星和轨道显示过大，木星、土星主体反而难以观察。彗尾绘制还漏绑点阵 VAO，活跃时每帧产生 GL_INVALID_OPERATION，实际尾迹无法正常绘制。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 10,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": true,
+      "otherComets": 1,
+      "correctness": {
+        "runtime": 4,
+        "data": 4,
+        "integrity": 4
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线WebGL2的JPL世纪率、开普勒、匹配轨道、运动双带、哈雷/恩克、Bloom/ACES与跟随成立。十颗卫星中月球错误挂在地球赤道面，计无效，其余九颗母星圆轨道含只反转一次的海卫一有效。环投向行星的射线计算混用归一化光向与未归一参数，只给部分环分；大气为方向性边缘光。活动彗尾漏绑VAO产生GL_INVALID_OPERATION，runtime部分分；场景FBO无深度附件导致遮挡依绘制顺序，单独计完整性部分分。金星/天王星/冥王星自转重复翻转，哈雷推算2061-06-05却标7月，仅扣data。安全缩放成立，无完整重置，视觉不扣分。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "302/1277–1283:tiltX0insideEarthparenttilt23.44°;Moonwrongreferenceplane."
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "enceladus",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "rhea",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "titan",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "titania",
+          "quality": 1,
+          "reason": "306–340/1277–1283:actualperiodsidealparent-equatorialcirclesaccepted."
+        },
+        {
+          "id": "triton",
+          "quality": 1,
+          "reason": "337/1279–1283:negativeperiodwith23°tiltinsideNeptuneequatorcorrectsingleinversion."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 3,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2 版完整实现 JPL/开普勒、八颗卫星、哈雷、双向环影、Bloom/ACES、大气与五项交互；但轨道线由间距明显的点构成，总览辉光拥挤，地球和月球近景偏黑且有噪点，木星表面偏平，土星环高光与阴影也明显过重。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1518: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实元素与Kepler、运动带、视线大气和后期成立。月球及多数赤道卫星有向法线颠倒，仅海卫一方向正确。旧点状轨道与光晕外观不计分；此刻只恢复日期，7月近日点文案与周期推算不符。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM5.3(Max)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 4,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '离线原生 WebGL2 版完整实现 JPL/开普勒、八颗卫星、哈雷、双向环影、Bloom/ACES、大气与五项交互，长程加速运行无报错；但轨道线呈点状且不连续，靠近太阳时会出现明显的 X 形光晕伪影，木星表面偏平，卫星显示也过大。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L633: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。程序具有离屏MSAA、环影和后期。源码LINEAR解析需结合实际FBO判定，主任务已确认本机GL0与持续渲染，不能据此判fatal。月球及赤道卫星实际方向均不符合给定轨道方向；滚轮0.05可穿入，缺完整复位。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GLM_5_1_high-1': {
       reference: false,
@@ -645,23 +2633,169 @@
       note: '表面、红斑和程序化土星环较丰富；选定后不会主动拉近，但会持续跟随天体位移，暂停和重置可用。'
     },
     'KimiK3Max': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 4 }, visualBase: 7,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '求解器、哈雷、七颗卫星和五项控制均成立；主要扣分来自联网依赖与缺少物理环影。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 7,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网Three.js以真实固定J2000根数和稳健开普勒绘制同源轨道，运动双带、真实哈雷、Bloom/ACES与聚焦跟随成立。七颗卫星中月球错置地球赤道、海卫一缺少约23°轨道倾角，计无效，其余五颗母星圆轨道有效。环没有物理阴影，大气为Fresnel边缘光；金星/天王星自转重复反转，哈雷模型下次近日点为2061-05-29却写成7月，数据部分分。全局缩放下限1.5可进入太阳和木星，复位只恢复镜头；旧视觉扣分移除。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "249/700–708/1118–1121:MoonflatcircleinsideEarthtilt23.44° instead5.145°eclipticplane."
+        },
+        {
+          "id": "Triton",
+          "quality": 0,
+          "reason": "255/706/1118–1121:negativeperiodwithflatNeptuneequatorialcircle, missing~23°tiltfromretrogradeequator."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "250–254/706/1118–1121:actualperiodswithidealparent-equatorialcircles;randomphase/circlealoneaccepted."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "250–254/706/1118–1121:actualperiodswithidealparent-equatorialcircles;randomphase/circlealoneaccepted."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "250–254/706/1118–1121:actualperiodswithidealparent-equatorialcircles;randomphase/circlealoneaccepted."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "250–254/706/1118–1121:actualperiodswithidealparent-equatorialcircles;randomphase/circlealoneaccepted."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "250–254/706/1118–1121:actualperiodswithidealparent-equatorialcircles;randomphase/circlealoneaccepted."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'KimiK3(Max)V2': {
-      reference: false,
-      moonQuality: .5, earthMoonValid: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 2.5, integrity: 4 }, visualBase: 6.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版具备 JPL 世纪率、开普勒求解、八颗卫星、行星投向土星环的阴影、Bloom/ACES、大气与稳定跟随；但卫星只有半径与周期采用真实值，轨道方向并不真实：月球把相对黄道的 5.14° 错套到地球赤道面，其余卫星的倾角与升交点也由随机数生成。另有无哈雷、完整状态重置不足，以及太阳、地球昼面和土星近景曝光偏强等问题。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线WebGL2使用JPL世纪率、开普勒和同一轨道采样，运动带、实际Bloom/ACES及持续聚焦跟随成立；支持浮点HDR、RGBA8回退和多采样。八颗卫星只有半径/周期采用真实值，除月球外倾角和节点随机，月球又把黄道5.14°套入地球赤道，均不计有效卫星；这些硬错误只在卫星项扣分。环仅行星投影，大气是表面与壳层边缘光，没有哈雷；未选择天体时缩放可进入太阳，没有完整复位。旧曝光/视觉及重复数据扣分移除。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "1061/1391–1402:5.14°eclipticinclinationappliedtoEarth-equatorialbasis."
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        },
+        {
+          "id": "charon",
+          "quality": 0,
+          "reason": "1061/1391–1402:orbitalinclination±3°andnoderandomratherthanactualparent-orbitgeometry;Tritonalsorandomprogradeplanewithnegativeperiodinsteadknown~157°."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'KimiK3(Max)V3': {
       reference: false,
@@ -755,31 +2889,154 @@
       note: 'Canvas2D 有近似开普勒路径和基础行星数据，但拖拽只是平移，仅有悬停信息，视觉也缺色调映射与大气。'
     },
     'Qwen3.8Max(Max)V1': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 0, aces: 0, atmo: .4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 0, epoch: 0 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 5 }, visualBase: 6.5,
-      interaction: { drag: .5, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: 'Canvas2D 总览稳定且聚焦跟随可用；拖拽只是平移，哈雷轨道根数高度简化，没有 Bloom、ACES 或完整重置；Canvas2D 技术路线本身不再额外扣分。'
+      "reference": false,
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "halley": false,
+      "otherComets": 0,
+      "visualBase": null,
+      "fatal": null,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 0,
+        "aces": 0,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 0.5,
+        "orientation": 0,
+        "epoch": 0
+      },
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "note": "离线Canvas2D以真实偏心率和周期求解椭圆，运动小行星带与平移、缩放、聚焦、跟随可用；显示半长轴、方向和初相为自定义，未绑定真实历元，分别仅在轨道项扣分。月球为屏幕空间周期椭圆，计半质量示意。标为哈雷的彗星使用e0.86、平面自定义方向和初相，不是真实哈雷，不转算其他彗星。环与大气为2D示意，没有Bloom/ACES，暂停成立但缺完整复位。视觉与Canvas路线本身不扣分。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0.5,
+          "reason": "429–436:period27.3-day screen-spaceellipseindependentof3Dreferenceplane,partial2Dillustration."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Qwen3.8Max(Max)V2': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 0 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 0 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: 5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: 'Three.js 总览、开普勒、哈雷与持续跟随均可运行；但依赖联网，太阳和星点明显过曝，土星环无物理环影，仅月球且没有完整重置。'
+      "reference": false,
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "halley": false,
+      "otherComets": 0,
+      "visualBase": null,
+      "fatal": null,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 0,
+        "atmo": 0
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 0.5,
+        "orientation": 0.5,
+        "epoch": 0
+      },
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "note": "联网Three.js保留真实偏心率、周期和轨道倾角，但半长轴、近日点方向与初相是显示自定义值，没有真实历元；轨道线与实体一致。月球固定在黄道平面，缺少月球倾角和节点，计无效；标为哈雷的e0.86/i9°彗星并非真实哈雷。实际Bloom成立，但仅设置renderer.ACES而后期未加OutputPass，ACES未应用。无大气，环无物理投影；自转速率约慢十倍且金星轴角有误，数据部分分。全局缩放下限12小于太阳30与木星19，复位不完整。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "407–411/558–560:coplanarXZorbitwithno5.145°inclinationorMoonnode; cannotvalidaterealMoonplane."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Qwen3.8Max(Max)V3': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: .4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: .5, epoch: 0 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 3.5 }, visualBase: 6.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '原生 WebGL2、离线后期和完整聚焦跟随稳定；但哈雷根数与轨道定向被大幅简化，土星环近景几乎不可见，行星表面细节偏粗且无完整重置。'
+      "reference": false,
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "halley": false,
+      "otherComets": 0,
+      "visualBase": null,
+      "fatal": null,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 0.5,
+        "orientation": 0.5,
+        "epoch": 0
+      },
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "note": "离线WebGL2以真实偏心率/周期与简化倾角绘制一致的椭圆，运动带、实际图像Bloom和ACES成立；半长轴、方向与相位为显示自定义值，没有真实历元。月球固定在黄道平面，计无效；e0.86/i9°的哈雷标签对象也非真实哈雷，不转其他彗星。环无物理投影，大气仅表面边缘光；行星自转约慢十倍、金星轴角有误，仅扣data。聚焦、持续跟随和安全距离40的缩放成立，缺完整复位。RGBA8后期无需浮点扩展，但没有场景MSAA。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "644–645:fixedglobalXZcirclewithnoMooninclination/node."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Sonnet5Ultra': {
       reference: false,
@@ -832,40 +3089,372 @@
       note: 'JPL/开普勒、八颗卫星、环影、多重小行星带与后期均可运行；但日冕明显过曝，哈雷实体不贴合轨道线，卫星距离数据失真，高 DPI 点选及聚焦后缩放仍有缺陷。'
     },
     'DeepSeek-V4-Pro-0813-V1': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 0, stability: 1 }, moons: 7, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 3, integrity: 4 }, visualBase: 5.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '联网 Three.js 版具备 J2000/开普勒运动、七颗卫星、程序化表面、Bloom/ACES、大气和稳定的聚焦跟随；但轨道线额外加入近日点方向，天体传播未加入同一角度，水星、火星、木星和天王星会系统性偏离显示轨道。没有哈雷，土星环无物理环影，默认太阳辉光明显过曝，地球近景偏棕且细节被吞，重置也只恢复视角。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 0.5,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0,
+        "stability": 1
+      },
+      "moons": 7,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 的真实偏心率、J2000相位、开普勒运动、双运动带和Bloom/ACES成立。轨道方向只使用错误次序的节点与倾角旋转；轨道线另加近日点辐角而实体未加，2026-10-11水星与火星距各自轨道线约为半长轴的6.1%，分别在方向和路径项处理，不再扣data。七颗卫星中月球错误置于地球赤道、海卫一缺少约23°倾角，五颗其余圆轨道仍有效。无哈雷，环没有投影，大气仅边缘光；金星和天王星自转重复反转，宽景缩放能进入太阳，复位只恢复镜头。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 0,
+          "reason": "635/919/1145–1147:orbit lies in EarthtiltG equatorialplane,no5.145°ecliptic inclination."
+        },
+        {
+          "id": "Triton",
+          "quality": 0,
+          "reason": "641/919/1146–1147:negativeperiod gives180°retrograde butrequired~157°inclination omitted; equatorialcircle hashardplaneerror."
+        },
+        {
+          "id": "Io",
+          "quality": 1,
+          "reason": "636–640/919/1146–1147:actualperiodsinidealizedparent-equatorialcircles; noautomaticcirclepenalty."
+        },
+        {
+          "id": "Europa",
+          "quality": 1,
+          "reason": "636–640/919/1146–1147:actualperiodsinidealizedparent-equatorialcircles; noautomaticcirclepenalty."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 1,
+          "reason": "636–640/919/1146–1147:actualperiodsinidealizedparent-equatorialcircles; noautomaticcirclepenalty."
+        },
+        {
+          "id": "Callisto",
+          "quality": 1,
+          "reason": "636–640/919/1146–1147:actualperiodsinidealizedparent-equatorialcircles; noautomaticcirclepenalty."
+        },
+        {
+          "id": "Titan",
+          "quality": 1,
+          "reason": "636–640/919/1146–1147:actualperiodsinidealizedparent-equatorialcircles; noautomaticcirclepenalty."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 7.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: '完整离线 WebGL2：JPL/开普勒、八颗卫星、哈雷、三套行星环与双向环影、ACES/Bloom 及五项交互均稳定；但密切周期外推未校正 2061 回归，卫星显示距离的相对压缩失效，色散/辉光和程序化表面略显粗重。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1608: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。行星解析元素与轨道同源，双向环影的球面测试遗漏正向射线条件，ring部分分。普通赤道卫星的方向因右手基正Z反转，月球和海卫一正确。暂停使用Date.now加offset仍随真实时间漂移；7月近日点文案错误。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekV4Pro0813(Max)V2': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 5, hasEarthMoon: true, halley: true, otherComets: 1,
-      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: 6.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '联网 Three.js 版具备 J2000/开普勒轨道、月球与四颗伽利略卫星、哈雷、主带/柯伊伯带、Bloom/ACES、大气与完整聚焦跟随；但土星环纹理生成时把函数本身误传给噪声采样，透明度变为 NaN，实际运行中行星环完全不可见。近景的方块星点与过大前景小行星较抢眼，木星细节偏软，重置也只恢复视角。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 5,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "halley": true,
+      "otherComets": 1,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 使用真实固定J2000根数、归一化开普勒及同源轨道采样，提供运动双带、哈雷和独立C/2025模型彗星、Bloom/ACES。五颗卫星中月球采用独立黄道开普勒轨道有效，四颗伽利略卫星却在母星自转轴垂直的另一平面运行，计无效。环没有物理投影，大气仅双层Fresnel辉光。彗尾方向指向太阳，金星/天王星符号和轴翻转重复处理，太阳聚变说明也有数量错误，数据部分分。聚焦跟随可用，全局最小距离6大于所有实体半径，复位只还原镜头。",
+      "moonEvidence": [
+        {
+          "id": "Moon",
+          "quality": 1,
+          "reason": "487/822–840/1243–1246:independentworldeclipticKeplerellipsewithi5.145,node125.08,realperiod."
+        },
+        {
+          "id": "Io",
+          "quality": 0,
+          "reason": "739–742 parentSpherepolar/spinaxisY but848–850/1251 moonsorbitlocalXY(normalZ); sametilttransformpreserves90°equatorerror."
+        },
+        {
+          "id": "Europa",
+          "quality": 0,
+          "reason": "739–742 parentSpherepolar/spinaxisY but848–850/1251 moonsorbitlocalXY(normalZ); sametilttransformpreserves90°equatorerror."
+        },
+        {
+          "id": "Ganymede",
+          "quality": 0,
+          "reason": "739–742 parentSpherepolar/spinaxisY but848–850/1251 moonsorbitlocalXY(normalZ); sametilttransformpreserves90°equatorerror."
+        },
+        {
+          "id": "Callisto",
+          "quality": 0,
+          "reason": "739–742 parentSpherepolar/spinaxisY but848–850/1251 moonsorbitlocalXY(normalZ); sametilttransformpreserves90°equatorerror."
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4 }, visualBase: 4.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版的 JPL/开普勒、八颗卫星、哈雷、三套环系与双向环影、多重小天体带和五项基本交互长时运行稳定；但默认地球近景被太阳过曝与巨大月球前景明显干扰，木星泛白且表面质感偏蜂窝，土星环明暗分区也过重。页面只有“此刻”日期恢复，没有完整的视角/状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1635: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。球投环使用1减smoothstep，背阳环遮挡锥内外亮暗反转，rings部分分。月球正确，右手基正Z令普通赤道卫星反向，海卫一方向正确。移除旧默认曝光/材质带来的完整性扣分；滚轮0.4可穿入。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekProMax-TasksAssignedByOpus5': {
       reference: false,
@@ -1039,22 +3628,222 @@
       note: '求解与定向管线完整，但金星半长轴误用地球值；聚焦不持续，“此刻”恢复加载时间而非真正当前时间。'
     },
     'KimiK3Max-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: 9,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '真实元素、哈雷、八颗卫星、双向环影与持续相机目标均稳定；但 1440×900 下说明面板会挡住暂停按钮，仍可用空格键控制。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L498: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L367/L498: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计8颗有效；视觉不计分。实际负Z轨道和右手基保持正确顺行；海卫一用23.1度几何面配负周期，8颗方向均有效。真实元素、双环影、后期与持续跟随成立。滚轮全局0.25可穿入；此刻仅恢复时间。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'KimiK3(Max)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4.5, integrity: 4 }, visualBase: 8.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版的 JPL/开普勒轨道、八颗卫星、哈雷、三套行星环与环影、木星大红斑、Bloom/ACES 和持续跟随均稳定；但彗尾缓冲按四浮点布局却逐顶点写入五个值，卫星轨道缓冲也只绘制了已生成顶点的一半，且没有完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1783: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 4
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。行星和路径同源；卫星轨道缓冲只绘制生成顶点一半，pathFit部分分。右手基正Z使普通卫星反向，仅海卫一方向有效。彗尾4浮点布局写5值是独立完整性错误；信息距离近似与7月底文案有误，滚轮可穿入。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'LongCat2.0-TasksAssignedByOpus5': {
       reference: false,
@@ -1115,13 +3904,113 @@
       note: '环、大气与完整轨道源码成立，但粒子场与辉光压倒默认总览；拖拽释放可误选，且没有完整状态与视角重置。'
     },
     'Qwen3.8Max(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: 8.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: 'J2000 轨道、八颗卫星、双向环影、Bloom/ACES 与持续跟随都很强；但哈雷仍按 75.31 年密切周期推进，却把下次近日点标成 2061-07-28，模型实际约早 50 天，且没有完整视角重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1471: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。J2000元素、运动小天体和双向环影完整；但右手基正Z令月球及普通赤道卫星方向反转，仅海卫一方向符合给定值。7月底哈雷文案与固定周期冲突；滚轮没有目标半径下限，此刻只改时间。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Sonnet5Ultra-TasksAssignedByOpus5': {
       reference: false,
@@ -1133,320 +4022,753 @@
       note: '完整的源码、运行覆盖与稳定控制；仅木星略发白且大红斑对比偏低。'
     },
     'MuseSpark1.3Contributor(xhigh)V1': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 12,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4,
-        integrity: 5
+      "moons": 12,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "联网 Three.js 实现 JPL/开普勒轨道、十二颗名义卫星、哈雷与完整后期。月球以外的卫星采用随意倾角及非闭合起伏，卫星系统按部分有效计；金星自转周期误用 2802 小时。支持选取与跟随，但缩放可进入大型天体，且没有完整重置。",
-      moonQuality: 0.5
+      "fatal": null,
+      "note": "联网 Three.js 使用 JPL 世纪率/开普勒轨道。月球有独立黄道根数，另十一颗卫星绕世界 Y 轴，而此作品行星黄道北实际为 Z 轴，参考面明显错误且有非闭合起伏；仅月球计有效，不重复扣数据项。土星环只有行星柱影，大气是随太阳调制的边缘光，两项只给部分分。哈雷、动态小天体带和 Bloom/ACES 存在。金星自转周期误用 2802 小时；支持聚焦和持续跟随，缩放可进入大型天体，缺完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "月球独立黄道5.145°开普勒近似"
+        },
+        {
+          "id": "phobos",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "deimos",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "rhea",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "oberon",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "行星黄道北为worldZ，其余卫星绕worldY，参考面错误且非闭合起伏"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 3.5,
-        integrity: 4.5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1231: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L234/L1231: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 0.5,
-        focus: 1,
-        follow: 0,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 0,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线 WebGL2 覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环影及后期。实跑确认聚焦过渡结束后镜头目标冻结，地球继续移动；暂停冻结日期却未停止自转。信息卡仅在选取时刷新，首次地球偏心率显示 0.00000；缩放安全边界与完整重置也不足。"
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。后期和环影成立。相机只在camTransition存在时更新目标，过渡后停止跟随；暂停仍以现实时间驱动自转。月球有向法线反转，其余赤道卫星通过左手基与额外符号处理方向有效；信息卡仅选择时刷新，近日点文案错误。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Gemini3.8Flash(high)V1': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 0,
-        elements: 0.5,
-        orientation: 0,
-        epoch: 0
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 0,
+        "elements": 0.5,
+        "orientation": 0,
+        "epoch": 0
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 1,
-      hasEarthMoon: true,
-      halley: false, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4,
-        integrity: 4
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 4
       },
-      visualBase: null,
-      interaction: {
-        drag: 0.5,
-        zoom: 0.5,
-        focus: 0.5,
-        follow: 0.5,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 0.5,
+        "follow": 0.5,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "联网 Three.js 的环、小行星带、后期和月球可运行；公转用匀速角代入极坐标椭圆，没有开普勒求解、完整轨道定向或历元，也没有哈雷。选取木星后只转动视线，不移动镜头拉近；跟随也只更新目标，不锁定相对距离。按下即拾取，月球按帧推进，巡航按钮还会被选取逻辑关闭。"
+      "fatal": null,
+      "note": "联网 Three.js 的小行星带和 Bloom/ACES 可用，土星环没有双向环影，大气只是边缘辉光。行星以匀速角代入极坐标椭圆，没有开普勒求解、完整节点/近日点定向或历元相位。仅一颗月球，轨道平面为简化黄道面且按帧增加固定角度，按半颗有效卫星计，没有哈雷。按下即拾取，聚焦和跟随只更新视线目标而不移动镜头保持距离；巡航被选取逻辑立即关闭，无完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0.5,
+          "reason": "黄道附近简化圆面可辨识，但固定帧增量而非模拟27.3天周期"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Gemini3.8Flash(high)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4.5,
-        integrity: 5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L3114: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "actualInclinationDeg": 95.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 0.5,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线 WebGL2 的行星 JPL/开普勒轨道、环影、后期和聚焦可运行。但月球局部轨道先按世界坐标构造后又做黄道映射，实际倾角约 84.855° 而非 5.145°，按无效地球月球扣分；海卫一同时使用负周期与大于 90° 的倾角，方向被重复翻转。拖拽误选、缩放穿入和不完整重置仍存在。",
-      earthMoonValid: false
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。行星元素和路径一致，环影、大气、Bloom/ACES有效。月球映射后有向倾角95.145度；右手赤道基正Z使普通卫星反向，海卫一方向正确。该故障只扣卫星，不重复扣data；拖动释放误选、安全缩放及完整复位不足。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Gemini3.8Flash(high)V2': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 0.5
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 0.5
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4.5,
-        integrity: 4.5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 4.5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 0.5,
-        focus: 0.5,
-        follow: 0.5,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 0.5,
+        "follow": 0.5,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "联网 Three.js 具备完整定向的开普勒轨道、八颗名义卫星和哈雷；但地球 M0 错用平均黄经，历元相位约偏移 103°。月球距离仅约 0.046 场景单位，远小于地球半径 3，埋在地球内部，按无效月球扣分。只能通过目录聚焦，持续跟随未锁定镜头距离，卫星开关漏掉月球，重置也只恢复时间。",
-      earthMoonValid: false
+      "fatal": null,
+      "note": "联网 Three.js 实现定向开普勒轨道、动态小天体带、哈雷与 Bloom/ACES。行星环只有行星投向环的阴影，大气为边缘光。地球 M0 错用平均黄经，历元相位偏移约 103°；月球埋在地球内部，按无效月球扣分。七颗其他卫星的 Z 坐标符号与行星映射相反，木卫与土卫变成逆行，海卫一反成顺行；全部不计有效卫星，不再因同一卫星问题重复扣数据项。金星自转方向与大倾角叠加重复翻转。聚焦仅有目录入口，跟随只更新目标不平移镜头，卫星开关遗漏月球，重置仅恢复日期。",
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "轨道半径.04626小于地球半径3，埋在地球内部"
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "enceladus",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "planet映射(x,z,-y)，卫星(xcos,0,+zsin)，公转方向与预期相反"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Gemini3.8Flash(high)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 0.4,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 0.4,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 3.5,
-        integrity: 4.5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L3894: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L1269/L3894: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 0.5,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线 WebGL2 覆盖 JPL/开普勒轨道、八颗卫星、哈雷、环系、大气及 ACES。HDR Bloom 已移除，只有眩光近似；月球到地球的距离却显示为母行星日心距约 1 AU，海卫一也重复翻转逆行方向。聚焦可跟随，但缺少拖拽误点抑制、安全缩放和完整状态重置。"
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。实际后处理未调用HDR Bloom金字塔，只有眩光近似，bloom部分分。月球世界相位反转，海卫一在左手基中方向错误；其他卫星有效。月球面板显示母星日心距，哈雷日期文案与周期不符；缺拖拽抑制和安全缩放。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MuseSpark1.3Contributor(xhigh)V2': {
-      reference: false,
-      featureMap: {
-        rings: 0.4,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 0.4,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 6,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 3.5,
-        integrity: 5
+      "moons": 6,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 4.5
       },
-      visualBase: null,
-      interaction: {
-        drag: 1,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "联网 Three.js 版具备完整定向的 J2000/开普勒行星轨道、六颗名义卫星、哈雷、双小天体带、Bloom/ACES、大气和持续跟随。行星环没有物理环影；六颗卫星均使用手调显示距离和非闭合的竖直起伏，按部分有效计。哈雷初始相位也由任意 L=0 推得，而非 1986 近日点；缩放可进入大型天体，且没有完整重置。",
-      moonQuality: 0.5
+      "fatal": null,
+      "note": "联网 Three.js 具备完整定向的 J2000/开普勒行星轨道、六颗名义卫星、哈雷、Bloom/ACES 和持续跟随。环没有双向物理阴影，大气为边缘光，小天体带是静止点阵，均给部分功能分。六颗卫星的 Z 符号与行星黄道映射相反，方向全部错误且轨迹竖直起伏不闭合，均不计有效，月球执行无效锚点扣分，不重复扣数据项。哈雷相位来自任意 L=0；行星自转按墙钟推进，暂停仍转。缩放可进入大型天体，缺完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        },
+        {
+          "id": "phobos",
+          "quality": 0,
+          "reason": "planet映射z=-zh，但卫星z=+sin(angle)，方向相反且竖直轨迹不闭合"
+        }
+      ],
+      "earthMoonValid": false,
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: {
-        rings: 1,
-        belt: 1,
-        bloom: 1,
-        aces: 1,
-        atmo: 1
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
       },
-      orbitModel: {
-        geometry: 1,
-        kepler: 1,
-        elements: 1,
-        orientation: 1,
-        epoch: 1
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
       },
-      orbitRuntime: {
-        pathFit: 1,
-        stability: 1
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
       },
-      moons: 8,
-      hasEarthMoon: true,
-      halley: true, otherComets: 0,
-      correctness: {
-        runtime: 5,
-        data: 4,
-        integrity: 5
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L1140: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
       },
-      visualBase: null,
-      interaction: {
-        drag: 0.5,
-        zoom: 0.5,
-        focus: 1,
-        follow: 1,
-        pauseReset: 0.5
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
       },
-      fatal: null,
-      note: "离线 WebGL2 版完整覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多重小天体带、Bloom/ACES、大气与持续跟随。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年密切周期推进，却把下一次近日点标成 2061-07-28，模型实际约早 50 天。拖拽释放仍会误选，缩放可进入大型天体，也没有完整状态重置。"
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环影、运动带、真实元素与后期有效；右手基正Z导致多数卫星方向反转，仅海卫一方向有效。7月底文案错误；拖拽释放误点、固定缩放下限及日期单独复位为实际交互缺项，不以视觉观感扣分。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'OmenAlpha(Max)V1': {
       reference: false,
@@ -1528,13 +4850,113 @@
       note: "离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、多重小天体群、Bloom/ACES、大气与持续跟随；1440×900 实跑稳定且无控制台错误。拖拽误点抑制与按目标半径限制的安全缩放均成立，暂停和“此刻”可用；主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。"
     },
     'GPT6Astra(Light)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小行星带、Bloom/ACES、大气与持续跟随。1440×900 实跑为 HDR、4× MSAA、约 144 FPS，高倍时间推进无控制台或 WebGL 错误，开普勒残差约 4.44×10⁻¹⁶；拖拽误点抑制与按目标半径限制的安全缩放均成立，主要缺项是没有完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L29: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。元素、GPU运动带、后期与双向环影完整。卫星实际右手基正Z使普通卫星反向，海卫一把156.9改23.1后负周期也成为顺行；月球亦逆行，8颗均不能按有效方向计。说明示意相位与6月回归自洽，不扣数据；安全缩放有效。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Opus5(Low)V1-TasksAssignedByOpus5': {
       reference: false,
@@ -1546,141 +4968,1285 @@
       note: '离线原生 WebGL2 文档版完整覆盖 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套双向环影、小天体带、Bloom/ACES、大气和持续跟随，1440×900 高倍推进约 144 FPS且无报错。海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转；哈雷按 75.32 年周期推进，却把下一次近日点写成 2061 年 7 月。缩放下限可进入大型天体，也没有完整状态重置。'
     },
     'GPT6Astra(Ultra)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 7, hasEarthMoon: true, halley: true, otherComets: 3,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 版完整实现 JPL 世纪率/开普勒轨道、七颗卫星、四颗周期彗星、双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 实跑为 4× MSAA、约 144 FPS，控制台无错误，轨道诊断残差为零；拖拽误点抑制、安全缩放、聚焦、真实比例与暂停均有效，主要缺项是没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 7,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 3,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、带真实黄道参考面的七颗卫星，以及哈雷、恩克、67P、斯威夫特四颗独立周期彗星。双向土星环影、动态小行星带、HDR/Bloom/ACES、聚焦跟随及按半径限制缩放均有实际实现。大气着色只用视角边缘幂次和昼夜调制，属于边缘辉光，只给部分功能分。暂停停止模拟时间，缺少一次恢复镜头、时间、速度与全部显示状态的完整重置。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GPT6Astra(Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线自包含 Three.js 一句话版完整实现 JPL 世纪率/开普勒轨道、地球月球、土星环双向阴影、小行星带、Bloom/ACES、大气、持续跟随和真实比例。1440×900 实跑为 HDR、4× MSAA、约 60 FPS；以 1 年/秒推进到 2047 年仍保持有限坐标，暂停可锁住日期，土星聚焦与安全缩放有效。它没有哈雷或其他彗星，也没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线打包 Three.js 完整实现 JPL 世纪率/开普勒行星轨道、黄道月球、土星环双向阴影、动态小行星带、HDR/Bloom/ACES、真实比例与持续跟随。大气仅是幂次边缘辉光，改按部分有效计；没有哈雷或其他彗星。按天体半径限制缩放，暂停可锁住模拟日期；“现在”和总览分别恢复日期或镜头，没有完整状态复位。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GPT6Astra(xhigh)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线自包含 Three.js 一句话版完整实现 JPL 世纪率/开普勒轨道、地球月球、土星环双向阴影、独立运行的小行星带、Bloom/ACES、大气、持续跟随及三种空间比例。1440×900 以 365 天/秒推进约 803 天后坐标仍全部有限且无控制台错误；暂停锁住日期，土星聚焦与安全缩放有效。它没有哈雷或其他彗星，也没有一次恢复镜头、时间、速度和显示开关的完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线打包 Three.js 使用完整定向的 JPL 世纪率/开普勒轨道、黄道月球、土星环双向阴影、独立运动的小行星带、HDR/Bloom/ACES、三种比例和持续跟随。大气仅是随日照调制的边缘辉光，按部分有效计。没有哈雷或其他彗星；聚焦与半径安全缩放有实现，日期与相机分别复位，缺少恢复全部状态的完整重置。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekV4.1Flash0910(Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 15, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 4.5, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 一句话版完整实现 JPL 世纪率/开普勒轨道、15 颗卫星、土星和天王星环及双向环影、小行星带与柯伊伯带、Bloom/ACES、大气和持续跟随。1440×900 高倍推进稳定且无控制台错误；海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转，其他母星赤道卫星的倾角又绕世界 X 轴施加，只能近似对应真实参考面。它没有哈雷彗星；缩放可进入大型天体，R 键只恢复速度和镜头，不恢复时间、曝光与显示状态。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 15,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 包含 JPL 世纪率/开普勒行星轨道、15 颗已绘制卫星、双向环影、动态小行星带与柯伊伯带、Bloom/ACES 和持续跟随。大气以 Fresnel 边缘光和简化前向项组成，没有实际大气光程积分，按部分有效计。海卫一叠加负周期与 156.9° 倾角造成方向重复翻转；土卫八把 Laplace 面倾角当成土星赤道倾角，天卫三、天卫四又未匹配天王星负自转方向；剔除这四颗后计 11 颗有效卫星，超额奖励为 2.25 分；卡戎正周期与 Pluto 的 IAU 正 Wrate 匹配，仍计有效，不重复扣数据项。卫星同步自转朝向只是近似。无哈雷；缩放可进入大型天体，R 只恢复速度与镜头，无完整状态复位。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "phobos",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "deimos",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "enceladus",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "rhea",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "titan",
+          "quality": 1,
+          "reason": "基本黄道/母星赤道面及方向成立"
+        },
+        {
+          "id": "iapetus",
+          "quality": 0,
+          "reason": "Laplace面15.47°被当成母星赤道倾角"
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "正周期绕IAU北极，未随母星负自转方向"
+        },
+        {
+          "id": "oberon",
+          "quality": 0,
+          "reason": "正周期绕IAU北极，未随母星负自转方向"
+        },
+        {
+          "id": "charon",
+          "quality": 1,
+          "reason": "Pluto IAU北极(132.993,-6.163)的真实Wrate正，Charon正周期绕该北极有效"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "负周期与156.9°倾角重复翻转方向"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
-      interaction: { drag: 1, zoom: .5, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '离线原生 WebGL2 文档版完整实现 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系与双向环影、小行星带和柯伊伯带、Bloom/ACES、大气及持续跟随。1440×900 高倍推进保持有限坐标且无控制台错误；海卫一同时使用负周期和 156.9° 倾角，逆行方向被重复翻转。哈雷按 75.32 年密切周期从 1986 年近日点推进，下一次模型近日点约落在 2061-06-08，比文案所述 2061 年 7 月提前约 50 天。缩放可进入大型天体，“此刻”只恢复日期，不提供完整状态重置。'
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L2056: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "actualInclinationDeg": 95.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实行星元素和渲染路径成立；月球局部轴误映射为近竖直，右手赤道基正Z导致普通卫星反向，仅海卫一方向正确。卫星posEcl把显示坐标直接加到AU用于面板且7月回归文案错误；缩放及完整复位不足。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMoXProPreview(Unknown)V1': {
-      reference: false,
-      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 3.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 0.5, pauseReset: 0.5 }, fatal: null,
-      note: "联网 Three.js 一句话版具备 J2000 开普勒轨道、月球、小行星带和 Bloom/ACES，1440×900 实跑无控制台错误。土星环没有双向环影，大气仅为不考虑太阳方向的边缘光；“真实尺寸”只是更改非线性放大系数，且没有同步云层、大气和月球尺寸。聚焦只把相机一次插值到目标的 55%，后续仅移动观察目标，近景与持续跟随不完整。金星和天王星的负自转周期与大倾角叠加产生重复逆行；没有彗星，空格可暂停，但没有完整状态重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 3.5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 0.5,
+        "follow": 0.5,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 使用定向 J2000/开普勒行星轨道、动态小行星带与 Bloom/ACES。环没有双向环影，大气是边缘光；唯一月球的 Z 坐标符号与行星黄道映射相反，公转方向错误，按无效月球计并执行月球锚点扣分，该问题不再扣数据项。“真实尺寸”没有同步云层、大气与月球尺寸；聚焦只一次插值 55%，之后只移动观察目标，近景和持续跟随仅部分有效。金星/天王星的负周期与大倾角叠加重复逆行。没有彗星，空格可暂停，缺少完整重置。",
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "行星(x,zh,-yh)与Moon(+cos,.12sin,+sin)方向相反"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 0.5, epoch: 1 },
-      orbitRuntime: { pathFit: 0, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 2.5, integrity: 3.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系及双向环影、小行星带、Bloom/ACES 和大气，1440×900 为 HDR/4× MSAA，加速推进约 24 年后坐标仍有限且无控制台错误。行星位置直接采用黄道坐标，轨道线却转换为 Y 轴向上，导致行星明显脱离轨道线；卫星参考面也与母星公转平面错配。海卫一负周期与大倾角重复翻转方向，哈雷下一次模型近日点约为 2061-06-08。滚轮缩放会被未结束的聚焦目标距离拉回；天体列表漏掉月球，“此刻”只恢复日期与速度，没有完整状态重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1397: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "actualInclinationDeg": 0.05000000000036243,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "actualInclinationDeg": 0.4700000000001629,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "actualInclinationDeg": 0.19999999999981224,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "actualInclinationDeg": 0.34999999999958503,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "actualInclinationDeg": 23.099999999999994,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L1459/L1397: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "actualInclinationDeg": 0.07999999999851001,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。行星位置采用未映射黄道坐标，轨道线却按Y朝上映射，pathFit为0，数学轨道旋转本身不重复扣orientation。球面uHasRing固定0，只有单向环影。左手赤道基下海卫一方向错误；滚轮被聚焦距离拉回，真实距离显示失真。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Step5Preview(high)V1': {
-      reference: false,
-      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 0.5, stability: 0.5 }, moons: 12, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 3, data: 2, integrity: 2 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 0.5, pauseReset: 0.5 }, fatal: 'L2',
-      fatalReason: "选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。",
-      note: "联网 Three.js 一句话版包含 JPL 世纪率/开普勒行星轨道、12 颗卫星、哈雷参数、小行星带与柯伊伯带、Bloom/ACES。默认 1440×900 可运行，但选择月球后 updateClock 读取不存在的轨道根数，每帧抛出异常并跳过最终绘制，按 L2 封顶。轨道线把近日点黄经直接作为近心点幅角，与行星位置错位；哈雷同样混淆近日点角度与历元。土星环额外旋转 90°且阴影判定反向，大气只是边缘光；地球云层半径为 6453.823 显示单位，而地球仅 1.05。卫星统一使用黄道参考面，海卫一重复翻转逆行，行星聚焦为了容纳全部卫星而过远；真实比例未同步卫星尺寸，缺少完整重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 12,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 3,
+        "data": 2,
+        "integrity": 2
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 0.5,
+        "follow": 0.5,
+        "pauseReset": 0.5
+      },
+      "fatal": "L2",
+      "fatalReason": "选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。",
+      "note": "联网 Three.js 一句话版有 JPL 世纪率/开普勒行星轨道、12 颗名义卫星、哈雷、小行星带与柯伊伯带、Bloom/ACES。选择卫星后 updateClock 访问不存在的 el，逐帧异常阻断最终绘制，保留 L2 致命错误标记；分数按各分项正常计算，梯队标为未完成。轨道线混淆近日点黄经与幅角而错位，哈雷相位也近似；环额外旋转 90°且影子判定反向，大气为边缘光，地球云层半径异常。月球与四颗木卫基本有效，其他七颗卫星参考面或逆行方向硬错，计五颗有效，不重复扣数据项。聚焦过远，真实比例不同步卫星，缺完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "黄道5.145°及正周期方向基本成立"
+        },
+        {
+          "id": "phobos",
+          "quality": 0,
+          "reason": "把母星赤道小倾角套在世界黄道面，Mars约25°倾斜遗漏"
+        },
+        {
+          "id": "deimos",
+          "quality": 0,
+          "reason": "把母星赤道小倾角套在世界黄道面，Mars约25°倾斜遗漏"
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "世界黄道面近似与Jupiter约3°赤道倾斜接近，方向/周期成立"
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "世界黄道面近似与Jupiter约3°赤道倾斜接近，方向/周期成立"
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "世界黄道面近似与Jupiter约3°赤道倾斜接近，方向/周期成立"
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "世界黄道面近似与Jupiter约3°赤道倾斜接近，方向/周期成立"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "母星赤道参考面被世界黄道面替代"
+        },
+        {
+          "id": "enceladus",
+          "quality": 0,
+          "reason": "母星赤道参考面被世界黄道面替代"
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "母星赤道参考面被世界黄道面替代"
+        },
+        {
+          "id": "charon",
+          "quality": 0,
+          "reason": "母星赤道参考面被世界黄道面替代"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "dir-1与156.9°轨道倾角重复翻转逆行"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Step5Preview(high)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 0.4, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 0, hasEarthMoon: false, halley: true, otherComets: 0,
-      correctness: { runtime: 4, data: 2, integrity: 1 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 0.5, follow: 0, pauseReset: 0.5 }, fatal: 'L2',
-      fatalReason: "八颗卫星绘制矩阵为 NaN，且全屏合成布局错误导致画面与标签错位。",
-      note: "离线原生 WebGL2 文档版具备 JPL 世纪率/开普勒行星轨道、哈雷、环影、小行星带、ACES 与大气。八颗卫星都缺少 tilt、poleLon、rotH，导致自转轴和绘制矩阵出现 NaN，实体无法正常绘制，卫星不计有效数量；全屏三角形数据又被按错误的交错步长读取，使合成画面与标签、拾取位置错位，按 L2 封顶。加速推进约 664 天后行星位置有限且轨道残差为零，但聚焦目标仍停在旧位置；暂停只停止公转，行星仍自转。距离读数把压缩显示单位当 AU，光行时单位错误，哈雷模型近日点约 2061-06-08，缩放可进入天体，“此刻”只恢复日期。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L511: 卫星缺自转参数使axis/model非有限，实体无效；不再在data重复扣本故障。",
+          "actualInclinationDeg": null,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 2,
+        "data": 2,
+        "integrity": 2
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 0.5,
+        "follow": 0,
+        "pauseReset": 0.5
+      },
+      "fatal": "L2",
+      "fatalReason": "卫星模型矩阵NaN与合成顶点布局错误造成核心实体和画面/拾取映射失败；新规则标记未完成，不设分数封顶。",
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。8颗卫星缺tilt/poleLon/rotH，模型矩阵NaN而实体无效；合成顶点步长错误使主画面与投影/标签不一致，属核心失败L2，按新规则建议灰色未完成而非分数封顶。行星Kepler路径仍有效；聚焦不跟随，暂停仍自转，距离/光行时和近日点文案错误。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMo2.6Flash(Unknown)V1': {
-      reference: false,
-      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 0.4, atmo: 0.4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线打包 Three.js 一句话版具备 J2000 开普勒轨道、月球、小行星带和自制 Bloom；1440×900 加速推进约 927 天后位置有限且暂停锁住日期，聚焦跟随可用。土星环无双向环影，大气只是边缘光；默认 Bloom 路径的离屏材质没有启用色调映射，最终合成也未调用 ACES，只有关闭 Bloom 后直接渲染才使用 ACES。小行星带按墙钟整体旋转，暂停仍运动；金星和天王星的负自转周期与大倾角叠加造成重复逆行。“10y/s”实际为 912.5 天/秒；没有彗星，系统视图仅复位镜头。"
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 0.4,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 1,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 4.5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线打包 Three.js 使用 J2000 开普勒轨道、一颗简化黄道月球、动态小行星带和自制 Bloom。环没有双向阴影，大气是边缘辉光。默认 Bloom 离屏路径与最终合成未调用 ACES，仅关闭 Bloom 后直接渲染才启用，保留部分色调映射分。小行星带按墙钟整体旋转，暂停仍运动；金星和天王星的负自转周期与大倾角叠加重复翻转，“10y/s”仅 912.5 天/秒。支持聚焦跟随及安全缩放，没有彗星，系统视图仅复位镜头。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 3, data: 3.5, integrity: 3 }, visualBase: null,
-      interaction: { drag: 0.5, zoom: 0.5, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系与双向环影、小行星带、Bloom/ACES 和大气。1440×900 为 HDR/4× MSAA，加速约 860 天后位置有限，暂停同时停止公转和自转。但选择非地球行星时 updateInfoPanel 再赋值 const lightMin，反复抛出异常，信息面板保留旧内容且阻断自动拉近镜头；渲染循环仍继续，故不作致命封顶。拖拽后仍可误选天体，缩放可进入天体。卫星使用统一的 30 小时自转周期，海卫一重复翻转逆行；哈雷模型近日点为 2061-06-08，与界面 7 月 28 日不符，重置视角并非完整状态重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L454: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 3,
+        "data": 3.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 0.5,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。后期、双向环影和行星路径有效。L2890最终selectBody覆盖旧定义，先选中并设cam.focusId，随后非地球updateInfoPanel重赋const lightMin，已由主任务复跑重现异常；选择与自动拉近部分失败但绘制继续，不判fatal。右手基正Z使多数卫星反向，仅海卫一方向正确；统一30小时自转和近日点文案错误。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMo2.6Pro(Unknown)V1': {
-      reference: false,
-      featureMap: { rings: 0.4, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 6, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: null,
-      interaction: { drag: 0.5, zoom: 0.5, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "联网 Three.js 一句话版具备 J2000 开普勒轨道、六颗卫星、小行星带、Bloom/ACES 和持续跟随；1440×900 默认及聚焦运行无脚本错误。土星环没有双向环影，大气仅为边缘光；卫星轨道都相对于世界平面，未使用母星赤道参考面。行星自转和小行星带按墙钟推进，暂停 0.3 秒后地球仍转约 0.105 弧度；负自转周期与大倾角叠加也使金星和天王星方向重复翻转。按下鼠标就选中，拖拽易误选；点选任意卫星都会跳到月球，镜头插值未完成即结束且缩放可进入大型天体。没有彗星，总览只恢复镜头。"
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 6,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 4
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 0.5,
+        "zoom": 0.5,
+        "focus": 0.5,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 具备 J2000/开普勒行星轨道、小行星带、Bloom/ACES 与持续跟随。六颗名义卫星使用的 Z 符号与行星黄道映射相反，公转方向全部错误，土卫六又未变换到母星赤道面，均不计有效卫星，月球按无效锚点扣分，不重复扣数据项。环无双向环影，大气为边缘光；行星自转与小行星带按墙钟推进，暂停仍运动，金星/天王星重复逆行。按下即选取、任意卫星均跳到月球，聚焦插值过早结束且缩放可进入天体，没有彗星与完整复位。",
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "planet out(x,z,-y)但moon out.z+=ry，方向相反"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 3.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、双向环影、多类小天体带、Bloom/ACES 和大气。1440×900 为 HDR/4× MSAA，加速约 876 天后所有天体位置有限，暂停同时停止公转和自转，聚焦持续跟随。真实距离比例关闭后 compressTarget 虽回到 0.62，动画仍固定插值到 1，不能恢复压缩视图。海卫一重复翻转逆行；哈雷的离子尾方向指向太阳，模型近日点为 2061-06-08，与文案 7 月底不符。卫星实时距离混合真实 AU 与压缩坐标，存在数值失真；缩放可进入天体，“此刻”只恢复日期，缺少完整重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L2412: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 4
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实元素、后期与环影成立。右手基正Z使多数卫星方向反转，仅海卫一正确；不再对同一轨道方向重复扣data。真实比例关闭仍插值到1、离子尾朝太阳为独立完整性问题；面板AU/压缩单位混用与7月底文案错误。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Grok4.7(xhigh)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true, otherComets: 1,
-      correctness: { runtime: 5, data: 4.5, integrity: 4 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线打包 Three.js、13 颗卫星及哈雷与恩克两颗彗星；采用 JPL 世纪率/开普勒轨道、双向环影、随时间运动的小天体带、Bloom/ACES、大气和聚焦跟随。1440×900 纹理全部加载，跳转至 2061 年哈雷场景后坐标保持有限，暂停锁住日期且无 WebGL/脚本错误。缩放下限仅 0.0004，可进入天体；“回到此刻”与场景预设只恢复日期或镜头，不一次恢复全部状态。海卫一的近似轨道与真实参考面仍有偏差。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 13,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 1,
+      "correctness": {
+        "runtime": 5,
+        "data": 4.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、13 颗名义卫星、哈雷与恩克、双向环影、动态小天体带、Bloom/ACES 和聚焦跟随；大气为 Fresnel 边缘光。通用卫星基底的 Z=X×Y 配合正角推进，使火卫两颗、土卫三颗方向逆转，海卫一反成顺行；卡戎也与 Pluto 的 IAU 正 Wrate 方向不符。四颗伽利略卫星的 L1 输出变换符号错误，轨道法线与木星北极相差约 51°。仅月球和天卫三计有效，不重复扣数据项。哈雷固定二体周期与回归说明有偏差；缩放可进入天体，缺完整重置。",
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "quality": 1,
+          "reason": "独立黄道Moon模型及Galilean L1模型，参考面/方向成立"
+        },
+        {
+          "id": "io",
+          "quality": 0,
+          "reason": "L1输出变换JUP_EQJ第三列Y符号反；纯源码VM测得轨道法线与Jupiter IAU pole夹角51.18°"
+        },
+        {
+          "id": "europa",
+          "quality": 0,
+          "reason": "L1输出变换JUP_EQJ第三列Y符号反；纯源码VM测得轨道法线与Jupiter IAU pole夹角51.18°"
+        },
+        {
+          "id": "ganymede",
+          "quality": 0,
+          "reason": "L1输出变换JUP_EQJ第三列Y符号反；纯源码VM测得轨道法线与Jupiter IAU pole夹角51.18°"
+        },
+        {
+          "id": "callisto",
+          "quality": 0,
+          "reason": "L1输出变换JUP_EQJ第三列Y符号反；纯源码VM测得轨道法线与Jupiter IAU pole夹角51.18°"
+        },
+        {
+          "id": "phobos",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "deimos",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "enceladus",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "titan",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "iapetus",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "triton",
+          "quality": 0,
+          "reason": "basisZ=X×Y再用正cos/sin导致正周期反向，Triton大倾角反成顺行"
+        },
+        {
+          "id": "titania",
+          "quality": 1,
+          "reason": "该分支负pole方向与Uranus/Pluto负自转匹配"
+        },
+        {
+          "id": "charon",
+          "quality": 0,
+          "reason": "basisFrom的Xcos+Zsin产生−pole方向，但Pluto IAU真实Wrate为正，方向错误"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Grok4.7(xhigh)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 文档版实现 JPL 世纪率/开普勒行星轨道、八颗卫星、哈雷、土星和天王星环及双向环影、小行星带、Bloom/ACES、大气和持续跟随。1440×900 加速到 2029 年仍约 60 fps，所有天体位置有限，暂停锁住日期，土星聚焦工作且无 WebGL/脚本错误。海卫一同时采用负周期和 156.9° 倾角，逆行方向被重复翻转；滚轮下限 0.45 可进入大型天体，“此刻”仅恢复日期而非完整状态。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L1743: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。真实元素、后期和双向环影成立；月球参考面与方向正确，但右手赤道基正Z使普通卫星反向，仅海卫一方向正确。7月预设与模型周期不符；滚轮0.45可穿入、缺完整重置；撤销旧纯观感完整性扣分。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'Opus5.5(Max)V1': {
       reference: false,
@@ -1692,31 +6258,299 @@
       note: "按站点作者明确要求，沿用 Fable 5.1 的满分方式，各评分项及两类额外奖励均设为满分，基础 106 分加 T0 3 分，总分 109。本次仅保存 1440×900 运行截图，未进行功能或轨道复测。"
     },
     'MiniMaxM3.1FlashPreview(Max)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 0.5 }, moons: 20, hasEarthMoon: true, halley: false, otherComets: 0,
-      correctness: { runtime: 4, data: 3, integrity: 3.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 0.5, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 一句话版包含 JPL 世纪率/开普勒行星轨道、20 颗卫星、Meeus 截断月球模型、环影、小行星带与柯伊伯带、Bloom/ACES、大气和安全缩放。默认实跑约 27 fps，控制台无脚本错误。setInterval 每 120 毫秒调用会再次注册 rAF 的 loop，导致动画帧链持续累积；虽然 frame 用 8 毫秒门限避免重复绘制，实跑 1.2 秒仍登记约 42662 次帧请求，稳定性只给部分分。地球位置错误地把完整月球地心位移加到地月质心，造成日心位置偏差。聚焦按钮只切换观察目标，双击才拉近；回到当前时间只恢复日期。没有彗星。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 20,
+      "hasEarthMoon": true,
+      "halley": false,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 4,
+        "data": 3,
+        "integrity": 3.5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 0.5,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 包含 JPL 世纪率/开普勒行星轨道、Meeus 月球、20 颗名义卫星、双向环影、小行星带/柯伊伯带、Bloom/ACES 与安全缩放。大气仅是边缘辉光，按部分有效计。土卫八把 Laplace 面倾角套在土星赤道面，五颗天王星卫星又未匹配母星负自转方向，剔除六颗后计 14 颗有效卫星，超额奖励仍满。地球错误地给地月质心加上完整月球地心位移，日心位置偏差只扣数据项。setInterval(loop,120) 不断新增自注册的 rAF 链，运行正确性扣分，轨道稳定性不再重复扣同一问题。聚焦按钮仅切观察目标，双击才拉近，回到现在只恢复日期；没有彗星或完整重置。",
+      "moonEvidence": [
+        {
+          "id": "luna",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "phobos",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "deimos",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "io",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "europa",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "ganymede",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "callisto",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "mimas",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "enceladus",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "tethys",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "dione",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "rhea",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "titan",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "triton",
+          "quality": 1,
+          "reason": "黄道Moon/母星赤道Kepler模型，基本方向成立"
+        },
+        {
+          "id": "iapetus",
+          "quality": 0,
+          "reason": "Laplace面15.47°当作土星赤道倾角"
+        },
+        {
+          "id": "miranda",
+          "quality": 0,
+          "reason": "Uranus负自转而各卫星以正period绕IAU北极，方向不匹配"
+        },
+        {
+          "id": "ariel",
+          "quality": 0,
+          "reason": "Uranus负自转而各卫星以正period绕IAU北极，方向不匹配"
+        },
+        {
+          "id": "umbriel",
+          "quality": 0,
+          "reason": "Uranus负自转而各卫星以正period绕IAU北极，方向不匹配"
+        },
+        {
+          "id": "titania",
+          "quality": 0,
+          "reason": "Uranus负自转而各卫星以正period绕IAU北极，方向不匹配"
+        },
+        {
+          "id": "oberon",
+          "quality": 0,
+          "reason": "Uranus负自转而各卫星以正period绕IAU北极，方向不匹配"
+        }
+      ],
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 8, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 3.5, integrity: 4 }, visualBase: null,
-      interaction: { drag: 1, zoom: 0.5, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 文档版包含 JPL 世纪率/开普勒轨道、八颗卫星、哈雷、三套环系及双向环影、多类小天体带、Bloom/ACES、大气和持续跟随。1440×900 为 4× MSAA/RGBA16F，加速推进到约 2028 年后天体位置有限且无 WebGL/脚本错误；暂停锁住日期，土星聚焦距离设为 16。海卫一负周期与 156.9° 倾角重复翻转方向；谷神星、妊神星等矮行星的小时自转数又被乘以 24，冥王星自转也存在单位错误，多处说明文案混淆共振和物理参数。滚轮下限 0.35 可进入大型天体，“此刻”只恢复日期，没有完整状态重置。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "reason": "L2062: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "actualInclinationDeg": 174.855,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "actualInclinationDeg": 179.94999999999965,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "actualInclinationDeg": 179.52999999999986,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "actualInclinationDeg": 179.80000000000018,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "actualInclinationDeg": 179.80999999999923,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "actualInclinationDeg": 179.65000000000043,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 0,
+          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "actualInclinationDeg": 179.9200000000015,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环影、GPU运动带、HDR/Bloom/ACES与行星路径成立。右手赤道基正Z使普通卫星方向反转，仅海卫一方向正确，月球也逆行。部分矮行星自转小时又乘24、描述物理参数和回归日期有误；滚轮0.35可穿入，无完整复位。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     },
     'GPT6.1Sol(Ultra)V1': {
-      reference: false,
-      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 13, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4, integrity: 4.5 }, visualBase: null,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
-      note: "离线原生 WebGL2 一句话版内嵌 14 张纹理，包含 JPL 世纪率/开普勒轨道、13 颗卫星、哈雷、土星和天王星环及双向环影、按开普勒周期运动的小天体带、Bloom/ACES、大气和持续聚焦跟随。1440×900 HDR 实跑约 60 fps，以 1000 天/秒加速到 2034 年后检查的行星、月球、海卫一和哈雷位置均有限，暂停日期增量为零，土星聚焦工作且无 WebGL/脚本错误。安全缩放会随天体半径调整；主要缺项是没有恢复全部时间、镜头和显示状态的完整重置。卫星和哈雷仍用近似固定根数，部分公转参考面和回归日期存在偏差。"
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 13,
+      "hasEarthMoon": true,
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 4.5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 内嵌纹理，使用 JPL 世纪率/开普勒行星轨道、13 颗卫星和哈雷，双向环影、动态小天体带、HDR/Bloom/ACES 及持续聚焦跟随均有实现。大气沿视线做八步密度与光学深度积分，并计算日照遮挡和散射相函数，维持完整功能分。卫星使用固定近似根数、手调 J2000 相位，哈雷以固定二体周期推进，数据项保留扣分；没有重复扣有效卫星项。按半径限制缩放，“现在”与总览分别恢复日期或镜头，没有完整状态重置。",
+      "reviewedAt": "2026-10-11",
+      "reviewVersion": "V3-20261011"
     }
   };
 })();
