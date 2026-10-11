@@ -3,6 +3,15 @@
   'use strict';
 
   window.SCORES = {
+    'Haiku5.5(Ultracode·Max)V1': {
+      reference: false,
+      featureMap: { rings: 1, belt: 1, bloom: 1, aces: 1, atmo: 0.4 },
+      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
+      orbitRuntime: { pathFit: 0.5, stability: 1 }, moons: 21, hasEarthMoon: true, halley: true, otherComets: 0,
+      correctness: { runtime: 5, data: 4, integrity: 5 }, visualBase: null,
+      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 0.5 }, fatal: null,
+      note: "离线原生 WebGL2 一句话版包含 JPL 世纪率/开普勒行星轨道、Meeus 月球、22 颗已绘制卫星、哈雷、双向土星环影、多类动态小天体带和 HDR/Bloom/ACES。土卫八把 Laplace 面倾角套在土星赤道参考面，剔除此颗后计 21 颗有效卫星，超额卫星奖励仍满；不重复扣数据项。月球轨道线也缓存 1200 天，基准日期后 500 天月球到旧线最近约 16991 km、占月距 4.19%，路径拟合给部分分。1440×900 高档为浮点 HDR/4× MSAA，可回退 RGBA8，控制台与 WebGL 无错误；加速约 1445 天后所有天体位置/自转矩阵有限，哈雷持续跟随误差为零，暂停同时停止日期、公转和自转，缩放按天体半径限制。大气主要为边缘辉光；海卫一轨道逆行正确，但同步自转方向和表面朝向不正确，土卫七被设为同步自转而实际为混沌自转，这两项仅扣数据正确性。重置视角与回到现在分离，没有恢复速度、暂停和显示状态的完整复位。"
+    },
     "Haiku5.5(Ultracode)V1": {
       reference: false,
       featureMap: {

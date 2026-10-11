@@ -27,6 +27,7 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+    'Claude Haiku 5.5 (Ultracode·Max)': { direction: 'up', count: 5, zh: '……', en: '……' },
     'Claude Haiku 5.5 (Ultracode·xhigh)': { direction: 'up', count: 5, zh: '这价格，有问题都是我的问题', en: 'At this price, any problems are on me' },
     'Claude Sonnet 5.5 (Max)': { direction: 'up', count: 5, zh: '马甲脱了！你到底是谁？', en: 'The disguise is off! Who are you really?' },
     'Claude Opus 5.5 (Max)': { direction: 'mixed', count: 5, symbols: '△△△△▽', sortValue: 3, zh: '5h12m·2.1亿·$75.50', en: '5h12m·210M·$75.50' },
