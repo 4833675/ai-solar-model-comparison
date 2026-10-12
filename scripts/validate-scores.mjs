@@ -246,7 +246,7 @@ const EXPECTED_EXACT = {
   "KimiK3Max": 81.83666666666666,
   "KimiK3(Max)V2-TasksAssignedByOpus5": 79.91666666666667,
   "KimiK3(Max)V2": 76.87,
-  "KimiK3(Max)V3": 80.52666666666667,
+  "KimiK3(Max)V3": 73.57,
   "LongCat2.0-TasksAssignedByOpus5": 83.32666666666667,
   "LongCat2.0": 48.27666666666667,
   "Mimo_2_5_Pro_high-1": 46.12,
@@ -388,7 +388,7 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   "KimiK3Max": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d438c933e25663e784cfc71385a5726c0ee0cee6262fcbf3bd1ae849dd076cee",
   "KimiK3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dd1376f65b20c511c391e295ed8f42e809a6776114a9f8f7f328ba9ae6244ac5",
   "KimiK3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c7a498fb13d7569ceca1e378f438ec8e14c0211b3c647ff5b0f28f07f59f20f9",
-  "KimiK3(Max)V3": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|5|4.5|4.5|5.5|1|1|1|1|0.5|-|-",
+  "KimiK3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|1|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:40182ab3f8c60e1df51d182c07332000028221a04ea733e3b824763417644977",
   "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|1|2|4.5|1|1|0.5|0|1|L2|环与大红斑核心结构失效，并出现 NaN 实时数据。",
   "LongCat2.0": "0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|3|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-",
   "Mimo_2_5_Pro_high-1": "0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|2|5|4.2|1|1|0|0|1|-|-",
@@ -583,20 +583,19 @@ const protectedScoreDigests = {
 };
 for (const [id, expected] of Object.entries(protectedScoreDigests))
   check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');
-const restoredScoreDigests = { 'KimiK3(Max)V3': '70c698131e04c680376622e462c917432f9631a8f42b63b697e52b5af2c485c5' };
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
-  check(digest(SCORES[id]) === restoredScoreDigests[id], id + ': restoration must preserve the entire original score, note, and review provenance');
 }
 const originalAssets = WORKS.filter(work => work.id !== HAIKU_MAX_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
   .map(path => [path, createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')]);
 check(digest(originalAssets) === '4d39e2cfa1620a9da6d90cd02a26237c42db2ca80d91c9ba04c131cca8822dab', 'All original programs and saved screenshots must be reused unchanged');
-// Keep the original 67-entry evidence snapshot, including restored entries.
-const archivedEvidence = archiveBaselineIds.map(id => [id,
+// Commit 12bbcca preserves these 66 scores; only restored Kimi #3 is now explicitly re-audited.
+const archiveEvidenceIds = archiveBaselineIds.filter(id => id !== 'KimiK3(Max)V3');
+const archivedEvidence = archiveEvidenceIds.map(id => [id,
   Object.fromEntries(Object.entries(SCORES[id]).filter(([key]) => key !== 'note'))])
   .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
-check(digest(archivedEvidence) === 'c64839256c1d74907b4437adfb44f16fad7cd1a67c207ad41ade015eda9bbab1', 'Archived scoring evidence must not be re-audited in this review');
-check(archiveBaselineIds.length === 67 && archivedWorks.length === 66 && archivedWorks.filter(w => w.group === 'A').length === 36 && archivedWorks.filter(w => w.group === 'B').length === 30, 'The original 67-entry snapshot must remain intact while the archive now contains 66 works after restoring Kimi #3');
+check(digest(archivedEvidence) === '73bb045d511ca486da64db9540a2567a0e4c0b17b18022657119376242578e8a', 'The 66 archived scores must retain their independent 12bbcca baseline after the authorized Kimi #3 review');
+check(archiveBaselineIds.length === 67 && archiveEvidenceIds.length === 66 && archivedWorks.length === 66 && archivedWorks.filter(w => w.group === 'A').length === 36 && archivedWorks.filter(w => w.group === 'B').length === 30, 'Only the re-audited Kimi #3 may leave the original archive evidence snapshot');
 check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols === '-' && SITE.isArchivedWork(work)), 'Every offline model must use a dash recommendation');
 check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 23 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 21, 'Offline tabs must remove the misplaced Kimi row while preserving all other folding rules');
 for (const group of ['A','B']) {
@@ -883,7 +882,7 @@ for (const [group, expectedCount] of [['A', 26], ['B', 21]]) {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Ultra)V1' && stripCreationDate(astra.model) === 'GPT-6 Astra (Ultra·Max)' && JSON.stringify(astra.tableAlternates.map(work => work.id)) === JSON.stringify(['GPT6Astra(Max)V1', 'GPT6Astra(xhigh)V1', 'GPT6Astra(Light)V1']), 'A: GPT-6 Astra must default to Ultra·Max and collapse Max, xHigh, and Light');
     const kimi = displayRows.find(work => work.tableVariantBase === 'Kimi K3 (Max)');
-    check(kimi?.id === 'KimiK3Max' && JSON.stringify(kimi.tableAlternates.map(work => work.id).sort()) === JSON.stringify(['KimiK3(Max)V2', 'KimiK3(Max)V3']), 'A: the current Kimi row must fold all three runs, with restored #3 behind the highest-scoring #1');
+    check(kimi?.id === 'KimiK3Max' && JSON.stringify(kimi.tableAlternates.map(work => work.id)) === JSON.stringify(['KimiK3(Max)V2', 'KimiK3(Max)V3']), 'A: current Kimi scores must retain #1 as primary, with #2 then the re-audited #3 as alternates');
   } else {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Medium)V1-TasksAssignedByOpus5' && astra.tableAlternates.length === 1 && astra.tableAlternates[0].id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5', 'B: Astra must display its highest available effort, Medium, and fold Light behind it');
@@ -975,6 +974,9 @@ const expectedMoonAdjustments = {
     "earthMoonValid": false
   },
   "KimiK3(Max)V2": {
+    "earthMoonValid": false
+  },
+  "KimiK3(Max)V3": {
     "earthMoonValid": false
   },
   "Qwen3.8Max-TasksAssignedByOpus5": {
@@ -1096,13 +1098,13 @@ for (const work of WORKS) {
   const required = [...recordKeys, ...presentOptional];
   exactKeys(score, required, `${id} record`);
   check(typeof score.reference === 'boolean', `${id}: reference must be boolean`);
-  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id) && !restoredIds.has(id);
+  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id);
   if (inCurrentReview) {
-    const reviewDate = id === HAIKU_MAX_SPEC_ID ? '2026-10-12' : '2026-10-11';
+    const reviewDate = id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every current non-protected work must retain its own completed V3 review provenance`);
     check(score.visualBase === null, `${id}: the current review must not retain legacy visual scoring inputs`);
     if (Array.isArray(score.moonEvidence)) check(!Object.hasOwn(score, 'moonQuality'), `${id}: per-moon evidence must replace the old global quality multiplier`);
-  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected, archived, and restored historical records must retain their original review provenance`);
+  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected and archived records must retain their original review provenance`);
   exactKeys(score.featureMap, nested.featureMap, `${id}.featureMap`);
   exactKeys(score.orbitModel, nested.orbitModel, `${id}.orbitModel`);
   exactKeys(score.orbitRuntime, nested.orbitRuntime, `${id}.orbitRuntime`);
@@ -1445,7 +1447,7 @@ check(kimi2OneLine?.group === 'A' && kimi2Detailed?.group === 'B' && kimi2OneLin
 check(kimi2OneLine?.pair === 'kimik3v2' && kimi2Detailed?.pair === 'kimik3v2', 'Kimi K3 #2 must form its own comparison pair');
 check(kimi2OneLine?.bytes === 71207 && kimi2OneLine?.lines === 1667 && kimi2OneLine?.tech === 'WebGL2' && kimi2OneLine?.needsFloat === false && kimi2OneLine?.msaa === true && kimi2OneLine?.net.length === 0, 'Kimi K3 #2 one-line source metadata must match the audited file');
 check(kimi2Detailed?.bytes === 118997 && kimi2Detailed?.lines === 2635 && kimi2Detailed?.tech === 'WebGL2' && kimi2Detailed?.needsFloat === false && kimi2Detailed?.msaa === true && kimi2Detailed?.net.length === 0, 'Kimi K3 #2 detailed source metadata must match the audited file');
-check(kimi3OneLine?.bytes === 53289 && kimi3OneLine?.lines === 1247 && kimi3OneLine?.tech === 'Three.js' && kimi3OneLine?.needsFloat === false && kimi3OneLine?.msaa === true, 'Kimi K3 #3 one-line source metadata must match the audited file');
+check(kimi3OneLine?.bytes === 53289 && kimi3OneLine?.lines === 1247 && kimi3OneLine?.tech === 'Three.js' && kimi3OneLine?.needsFloat === true && kimi3OneLine?.msaa === false, 'Kimi K3 #3 metadata must reflect required half-float composer targets and no scene MSAA');
 check(JSON.stringify(kimi3OneLine?.net) === JSON.stringify(['cdn.jsdelivr.net']), 'Kimi K3 #3 must disclose the jsDelivr dependency');
 for (const work of [kimi2OneLine, kimi2Detailed]) {
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Claude Cli']), `${work?.id || 'Kimi K3 #2'} must show the exact in Claude Cli tag`);
@@ -1663,6 +1665,7 @@ for (const lang of ['zh', 'en']) {
   check((firstDefaultRow.match(/recommend-symbol-up/g) || []).length === 5 && !firstDefaultRow.includes('recommend-symbol-down') && firstDefaultRow.includes(lang === 'zh' ? '109是因为满分只有109' : '109 only because the maximum is 109'), lang + ': Opus 5.5 must show five green up-triangles and its requested localized reason');
   const kimiDefaultRow = [...body().matchAll(/<tr\b[\s\S]*?<\/tr>/g)].find(match => match[0].includes('KimiK3Max'))?.[0] || '';
   check(['KimiK3Max', 'KimiK3(Max)V2', 'KimiK3(Max)V3'].every(id => kimiDefaultRow.includes(id)) && kimiDefaultRow.includes('recommend-symbol-up'), lang + ': the default Kimi row must contain all three runs and its family recommendation');
+  check(kimiDefaultRow.match(/<a class="table-model" href="([^"]+)"/)?.[1] === 'view' + (lang === 'en' ? '.en' : '') + '.html?w=KimiK3Max', lang + ': the Kimi primary link must keep the highest reviewed score, #1, ahead of #2 and #3');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -2108,9 +2111,9 @@ const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
       40,
-      51.764499999999984,
-      32.38375,
-      81.52325
+      51.640999999999984,
+      32.33333333333333,
+      81.34933333333335
     ],
     "b": [
       29,
@@ -2122,9 +2125,9 @@ const EXPECTED_WHOLE_GROUP = {
   "withoutReferences": {
     "a": [
       39,
-      51.45076923076921,
-      32.29102564102564,
-      81.04948717948719
+      51.324102564102546,
+      32.23931623931624,
+      80.8711111111111
     ],
     "b": [
       29,
@@ -2136,9 +2139,9 @@ const EXPECTED_WHOLE_GROUP = {
   "withoutTier4": {
     "a": [
       39,
-      51.74256410256409,
-      32.708119658119664,
-      81.75837606837607
+      51.615897435897416,
+      32.656410256410254,
+      81.58000000000001
     ],
     "b": [
       28,
@@ -2150,9 +2153,9 @@ const EXPECTED_WHOLE_GROUP = {
   "withoutReferencesOrTier4": {
     "a": [
       38,
-      51.41999999999998,
-      32.62149122807018,
-      81.27833333333334
+      51.289999999999985,
+      32.56842105263158,
+      81.09526315789473
     ],
     "b": [
       28,

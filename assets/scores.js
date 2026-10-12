@@ -2907,13 +2907,57 @@
       "reviewVersion": "V3-20261011"
     },
     'KimiK3(Max)V3': {
-      reference: false,
-      featureMap: { rings: .4, belt: 1, bloom: 1, aces: 1, atmo: 1 },
-      orbitModel: { geometry: 1, kepler: 1, elements: 1, orientation: 1, epoch: 1 },
-      orbitRuntime: { pathFit: 1, stability: 1 }, moons: 1, hasEarthMoon: true, halley: true, otherComets: 0,
-      correctness: { runtime: 5, data: 4.5, integrity: 4.5 }, visualBase: 5.5,
-      interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: .5 }, fatal: null,
-      note: '联网 Three.js 版具备 J2000 开普勒轨道、哈雷、月球、小行星带与柯伊伯带、Bloom/ACES、大气和稳定跟随；但只实现一颗卫星，土星环没有物理阴影，彗尾是沿轨道累积的历史尾迹而非背太阳方向。地球近景明显偏棕，木星纹理模糊且没有清楚的大红斑，重置也只恢复视角。'
+      "reference": false,
+      "featureMap": {
+        "rings": 0.4,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 0.4
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 1,
+      "hasEarthMoon": true,
+      "earthMoonValid": false,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 0,
+          "actualInclinationDeg": 0,
+          "expectedInclinationDeg": 5.145,
+          "reason": "L853–862/L1100–1103：同一默认XYZ Euler组同时设z=5.14°、y=−theta，实际R=Ry(−theta)Rz(alpha)。相对地心位置为[2.7cos(alpha)cos(theta),2.7sin(alpha),2.7cos(alpha)sin(theta)]，y恒0.241892、轨迹平面倾角0°并偏离地心，不是过地心的5.145°月球轨道。按全局reflection的axial变换计算r×v仍有5.14°瞬时倾角，但其法线每一月绕北极旋转，不能把这个值误判为固定有效轨道；因此quality0。"
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 3.5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "联网 Three.js 一句话版以 J2000 六根数和开普勒方程推进九颗行星与实际哈雷，主轨道与轨道线使用统一坐标映射；动态小行星带、Bloom/ACES 有效。土星环有径向结构与缝隙但无环影，大气仅菲涅尔边缘辉光，均部分计分。唯一月球把倾角与公转写在同一 XYZ Euler 组中，实际路径的 y 恒为 0.241892、绕地心上方的黄道平行圆圈运行，并非过地心的 5.145° 倾斜轨道，判无效地球月球。哈雷轨道线用 360 个等平均近点角样本，近日点附近最大偏离 4.317 场景单位，路径拟合部分计分。自转与同基下轨道方向不一致（地球实际轴轨夹角 156.56°），哈雷相位对应 1986-01-09 近日点，尾部仅为历史位置串，数据项合并扣分，不重复扣轨道或卫星。支持拖拽、主天体聚焦和持续跟随，固定缩放下限 0.6 可进入地球等天体；暂停冻结主公转/自转而云层仍漂移，返回全景仅复位相机，无完整日期、速度和显示状态复位。",
+      "reviewedAt": "2026-10-12",
+      "reviewVersion": "V3-20261012"
     },
     'LongCat2.0': {
       reference: false,

@@ -2579,8 +2579,8 @@ window.WORKS=[
   "bytes": 53289,
   "lines": 1247,
   "title": "太阳系运动模型 · Solar System",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
    "kepler",
    "rings",
@@ -2594,7 +2594,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/KimiK3(Max)V3.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "新标准源码与实跑复核：联网 Three.js 使用开普勒行星轨道、哈雷、运动小行星带和 Bloom/ACES；唯一月球沿偏离地心的圆运行，判无效。环无物理阴影、大气仅边缘辉光；哈雷轨道线采样不足、自转与彗星数据有误，近景缩放可穿入天体。后处理使用无回退的半浮点目标，场景目标 samples=0。",
   "issue": null,
   "net": [
    "cdn.jsdelivr.net"
