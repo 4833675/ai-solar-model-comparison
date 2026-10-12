@@ -360,7 +360,7 @@
     const byId = new Map(visibleWorks().map(work => [work.id, work]));
     return ['A', 'B'].map(group => {
       const suffix = group === 'B' ? '-TasksAssignedByOpus5' : '';
-      return { group, luna: byId.get('GPT6Luna(Max)V1' + suffix), haiku: byId.get('Haiku5.5(Ultracode)V1' + suffix) };
+      return { group, luna: byId.get('GPT6Luna(Max)V1' + suffix), haiku: byId.get('Haiku5.5(Ultracode·Max)V1' + suffix) };
     }).filter(row => row.luna && row.haiku);
   }
   const lunaHaikuMatches = (row, query) => modelMatches(row.luna, query) || modelMatches(row.haiku, query);

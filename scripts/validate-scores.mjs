@@ -760,9 +760,9 @@ for (const [model, expected] of Object.entries(expectedContextPrices)) {
 check(SITE.contextPriceFor('unknown-model', 100000) === null, 'Unknown models must not acquire Luna/Haiku context pricing');
 const lunaHaikuRows = SITE.lunaHaikuComparisons();
 check(JSON.stringify(lunaHaikuRows.map(row => row.group)) === JSON.stringify(['A', 'B']), 'Luna/Haiku comparison must contain exactly the one-line and detailed-spec rows in order');
-for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [21.30000000000001,15.300000000000011,6] : [4.5,1.5,3]])) {
+for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [30.456666666666678,24.456666666666678,6] : [2.75,-.25,3]])) {
   const suffix = row.group === 'B' ? '-TasksAssignedByOpus5' : '';
-  check(row.luna.id === 'GPT6Luna(Max)V1' + suffix && row.haiku.id === 'Haiku5.5(Ultracode)V1' + suffix && row.luna.group === row.group && row.haiku.group === row.group, row.group + ': comparison must pair the existing Luna and Haiku works for the same brief');
+  check(row.luna.id === 'GPT6Luna(Max)V1' + suffix && row.haiku.id === 'Haiku5.5(Ultracode·Max)V1' + suffix && row.luna.group === row.group && row.haiku.group === row.group, row.group + ': comparison must pair Luna Max and Haiku Ultracode·Max for the same brief');
   const luna = SITE.scoreFor(row.luna), haiku = SITE.scoreFor(row.haiku);
   close(haiku.exact - luna.exact, expected[0], row.group + ': Luna/Haiku exact-score gap');
   close(haiku.evidenceBase - luna.evidenceBase, expected[1], row.group + ': Luna/Haiku base-score gap');
@@ -832,7 +832,7 @@ const haikuMaxPair = SITE.pairs().find(pair => pair.a.pair === 'haiku55max');
 check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-1) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must append one complete pair without replacing the existing xhigh pair');
 close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -2.81, 'Haiku Max detailed-minus-one-line exact score difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'haiku55max'), 'The Haiku Max pair must enter the full pair population without replacing a larger positive featured gain');
-check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode)V1')), 'The independent Luna/Haiku comparison must stay fixed to the existing xhigh works');
+check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode·Max)V1')), 'The independent Luna/Haiku comparison must use only the Max works while preserving the xhigh ordinary pair');
 check(SITE.priceFor(haikuMax).date === '2026-10-08' && SITE.priceCell(haikuMax).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(haikuMax).includes('100K'), 'Haiku 5.5 Ultracode·Max must reuse the existing verified Haiku pricing without a new price snapshot');
 check(SITE.priceFor(haikuMaxSpec).date === '2026-10-08' && SITE.priceCell(haikuMaxSpec).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(haikuMaxSpec).includes('100K'), 'Haiku Max detailed spec must reuse the existing Haiku price family and context threshold');
 const sonnet55 = SITE.byId('Sonnet5.5(Max)V1');
@@ -1551,6 +1551,8 @@ for (const home of [zhHome, enHome]) {
   check(!/#data|id="data"|id="stats"|statpair|const PAIRS/.test(home), 'The removed quantitative section must have no markup, navigation, or rendering code');
   check(!home.includes('量化对比') && !home.includes('Turning the Differences into Numbers'), 'The quantitative comparison heading must be removed in both languages');
   check(home.includes('class="lh-shortcut" href="#luna-haiku"') && home.includes('id="lunaHaikuRows"') && home.includes('id="lunaHaikuPricing"'), 'Both homes must provide the Luna/Haiku shortcut, comparison rows, and pricing container');
+  const comparisonHeading = home.match(/<h3 id="lunaHaikuTitle">([^<]*)<\/h3>/)?.[1] || '';
+  check(comparisonHeading.includes('Claude Haiku 5.5 (Ultracode·Max)') && !comparisonHeading.includes('Ultracode·xhigh'), 'Both home comparison headings must explicitly name Haiku Ultracode·Max');
   check(home.indexOf('id="luna-haiku"') > home.indexOf('id="tbl"') && home.indexOf('id="luna-haiku"') < home.indexOf('id="solEffortComparison"'), 'The independent Luna/Haiku comparison must follow the main table');
 }
 const expectedLunaHaikuKeys = ['A.title', 'B.title', 'A.luna', 'A.haiku', 'B.luna', 'B.haiku', 'baseScore', 'delta', 'deltaParts', 'run', 'priceTitle', 'priceUnit', 'context', 'context.short', 'context.middle', 'context.long', 'priceGap', 'priceGap.short', 'priceGap.middle', 'priceGap.long', 'priceChecked', 'priceNote'].map(key => 'lh.' + key).sort();
@@ -1568,10 +1570,11 @@ function validateLunaHaikuMarkup(site, lang, html, pricing) {
     const href = `view${lang === 'en' ? '.en' : ''}.html?w=${encodeURIComponent(work.id)}`;
     check(shots[index][1] === href && shots[index][2] === work.shot && fs.existsSync(asset(work.shot)), lang + ': screenshot must link the matching existing work in the same language: ' + work.id);
   });
+  check(!html.includes('Haiku5.5(Ultracode)V1') && !html.includes('Ultracode·xhigh'), lang + ': dedicated comparison markup must not retain xhigh labels or assets');
   for (const row of comparisonRows) {
     const block = site.lunaHaikuBlock(row);
     const footer = block.match(/<footer class="lh-delta">([\s\S]*?)<\/footer>/)?.[1] || '';
-    const values = row.group === 'A' ? ["+21.30","+15.30","+6.00"] : ["+4.50","+1.50","+3.00"];
+    const values = row.group === 'A' ? ["+30.46","+24.46","+6.00"] : ["+2.75","−0.25","+3.00"];
     check(values.every(value => footer.includes(value)), lang + ': comparison must publish the exact, base, and tier gaps for ' + row.group);
     check(block.includes(`href="compare${lang === 'en' ? '.en' : ''}.html?c=luna-haiku&amp;g=${row.group}"`), lang + ': side-by-side link must select the same brief');
   }
@@ -1778,7 +1781,7 @@ for (const lang of ['zh', 'en']) {
     const actual = simulateCompare(lang, '?c=luna-haiku&g=' + row.group);
     check(!actual.notFound && actual.split.dataset.crossGroup === row.group, lang + ': new comparison route must select group ' + row.group);
     check(JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([row.luna.file, row.haiku.file]), lang + ': cross-model route must load the matching Luna and Haiku originals');
-    check(actual.nodes.get('.back').href === home + '#luna-haiku' && actual.nodes.get('.lbl.a').textContent === 'GPT-6 Luna (Max)' && actual.nodes.get('.lbl.b').textContent === 'Claude Haiku 5.5 (Ultracode·xhigh)', lang + ': cross-model route must expose model labels and its own return anchor');
+    check(actual.nodes.get('.back').href === home + '#luna-haiku' && actual.nodes.get('.lbl.a').textContent === 'GPT-6 Luna (Max)' && actual.nodes.get('.lbl.b').textContent === 'Claude Haiku 5.5 (Ultracode·Max)', lang + ': cross-model route must expose Max model labels and its own return anchor');
     const brief = lang === 'zh' ? (row.group === 'A' ? '同一句话任务' : '同一份详细文档') : (row.group === 'A' ? 'Same one-line prompt' : 'Same detailed specification');
     check(actual.nodes.get('#compareContext').textContent === brief && actual.frames.every(frame => frame.attributes.title.includes(lang === 'zh' ? (row.group === 'A' ? '一句话' : '详细文档') : (row.group === 'A' ? 'one-line prompt' : 'detailed specification'))), lang + ': both cross-model iframe titles must identify the selected brief');
   }
