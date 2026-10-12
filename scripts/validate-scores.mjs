@@ -12,6 +12,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
 }
 
 const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
+const HAIKU_MAX_SPEC_ID = 'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5';
 const fail = message => { throw new Error(message); };
 const check = (condition, message) => { if (!condition) fail(message); };
 const close = (actual, expected, label) => check(Math.abs(actual - expected) < 1e-9, `${label}: expected ${expected}, got ${actual}`);
@@ -29,6 +30,7 @@ const digest = value => createHash('sha256').update(JSON.stringify(canonical(val
 
 const CANONICAL_NAMES = {
   "Haiku5.5(Ultracode·Max)V1": "Claude Haiku 5.5 (Ultracode·Max)",
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode·Max)",
   "Haiku5.5(Ultracode)V1": "Claude Haiku 5.5 (Ultracode·xhigh)",
   "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode·xhigh)",
   "GPT6Astra(Light)V1": "GPT-6 Astra (Light)",
@@ -304,7 +306,8 @@ const EXPECTED_EXACT = {
   "GPT6Luna(Max)V1-TasksAssignedByOpus5": 91.46666666666667,
   "Haiku5.5(Ultracode)V1": 87.87,
   "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": 95.96666666666667,
-  "Haiku5.5(Ultracode·Max)V1": 97.02666666666667
+  "Haiku5.5(Ultracode·Max)V1": 97.02666666666667,
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": 94.21666666666667
 };
 
 // Current scoring-input field oracle. Order:
@@ -445,7 +448,8 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   "GPT6Luna(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0.5|0.5|-|-|moonEvidence:07d3dfb0a5caaccc0c0684ee24f724840022cabc824e6feab3c9aee675b750f6",
   "Haiku5.5(Ultracode)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|6|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-",
   "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:6c7b325fd1a99014fc87a2c0b78d72025a5f50df51cb24d087fdc623d663b082",
-  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5"
+  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5",
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:68b9beeadd6a6a14222155fb9d083c5e0ac7284f4186d01d40c0bfedf61a8919"
 };
 
 const auditFingerprint = score => [
@@ -460,10 +464,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 134, `WORKS count must be 134, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 134, `SCORES count must be 134, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 134, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 134, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 135, `WORKS count must be 135, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 135, `SCORES count must be 135, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 135, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 135, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -495,7 +499,7 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 76, 'Group A count must be 76 after adding Haiku 5.5 Ultracode·Max');
-check(WORKS.filter(w => w.group === 'B').length === 58, 'Group B count must be 58 after adding Haiku 5.5');
+check(WORKS.filter(w => w.group === 'B').length === 59, 'Group B count must be 59 after adding Haiku 5.5 Ultracode·Max detailed spec');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
 const expectedHiddenIds = [
@@ -577,7 +581,7 @@ const protectedScoreDigests = {
 };
 for (const [id, expected] of Object.entries(protectedScoreDigests))
   check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');
-const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
+const originalAssets = WORKS.filter(work => work.id !== HAIKU_MAX_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
   .map(path => [path, createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')]);
 check(digest(originalAssets) === '4d39e2cfa1620a9da6d90cd02a26237c42db2ca80d91c9ba04c131cca8822dab', 'All original programs and saved screenshots must be reused unchanged');
 const archivedEvidence = archivedWorks.map(work => [work.id,
@@ -591,9 +595,9 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 67, 'Active WORKS count must be 67');
+check(visibleWorks.length === 68, 'Active WORKS count must be 68');
 check(visibleWorks.filter(w => w.group === 'A').length === 39, 'Active Group A count must be 39');
-check(visibleWorks.filter(w => w.group === 'B').length === 28, 'Active Group B count must be 28');
+check(visibleWorks.filter(w => w.group === 'B').length === 29, 'Active Group B count must be 29');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
   const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
@@ -604,10 +608,10 @@ for (const id of ['Opus5Ultra-WebGL2', 'MiniMaxM3.1FlashPreview(Max)V1', 'MiniMa
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) { const work=SITE.byId(id); check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': archive lookup must open the retained original and screenshot without entering active lists'); }
-check(PAIR_ORDER.length === 42 && new Set(PAIR_ORDER).size === 42, 'PAIR_ORDER must contain 42 configured pair keys, including Astra Light and Luna');
+check(PAIR_ORDER.length === 43 && new Set(PAIR_ORDER).size === 43, 'PAIR_ORDER must contain 43 configured pair keys, including Haiku Ultracode·Max');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 26, 'Expected 26 complete active pairs after archiving the Opus 5 detailed-spec side');
+check(SITE.pairs().length === 27, 'Expected 27 complete active pairs after adding Haiku Ultracode·Max detailed spec');
 check(!SITE.pairs().some(pair => pair.a.pair === 'minimax'), 'The retired MiniMax M3 pair must not appear in current comparisons');
 check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must leave current comparisons when only its detailed-spec side is archived');
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
@@ -815,11 +819,22 @@ for (const [id,group,bytes,lines,tech,needsFloat,msaa] of [
   check(SITE.priceFor(work).date==='2026-10-08' && SITE.priceCell(work).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(work).includes('100K'), id+': official highest-context rates and threshold must be disclosed');
 }
 const haikuMax = SITE.byId('Haiku5.5(Ultracode·Max)V1');
-check(haikuMax?.group === 'A' && haikuMax.tier === 1 && haikuMax.pair === null && SITE.environmentTag(haikuMax) === 'in Claude cli' && WORK_CREATION_DATES[haikuMax.id] === '261011', 'Haiku 5.5 Ultracode·Max must retain the supplied unpaired Tier 1, Claude cli environment, and creation date');
+check(haikuMax?.group === 'A' && haikuMax.tier === 1 && haikuMax.pair === 'haiku55max' && SITE.environmentTag(haikuMax) === 'in Claude cli' && WORK_CREATION_DATES[haikuMax.id] === '261011', 'Haiku 5.5 Ultracode·Max must retain Tier 1, Claude cli, creation date, and its new Max-only pair');
 check(haikuMax.file === 'models/Haiku5.5(Ultracode·Max)V1.html' && haikuMax.shot === 'assets/shots/Haiku5.5(Ultracode·Max)V1.jpg' && haikuMax.bytes === 243482 && haikuMax.lines === 4897 && haikuMax.tech === 'WebGL2' && !haikuMax.needsFloat && haikuMax.msaa && haikuMax.net.length === 0 && haikuMax.jsErrors === 0, 'Haiku 5.5 Ultracode·Max source metadata and renderer capabilities must match the audited original');
 check(fs.existsSync(asset(haikuMax.file)) && fs.existsSync(asset(haikuMax.shot)) && SITE.isVisibleWork(haikuMax) && !SITE.isArchivedWork(haikuMax), 'Haiku 5.5 Ultracode·Max original and saved screenshot must be available as a current work');
-check(SITE.pairs().every(pair => pair.a.id !== haikuMax.id && pair.b.id !== haikuMax.id), 'The unpaired Haiku 5.5 Ultracode·Max work must not change any existing A/B comparison');
+const haikuMaxSpec = SITE.byId(HAIKU_MAX_SPEC_ID);
+check(haikuMaxSpec?.group === 'B' && haikuMaxSpec.tier === 1 && haikuMaxSpec.pair === 'haiku55max' && SITE.environmentTag(haikuMaxSpec) === 'in Claude cli' && WORK_CREATION_DATES[haikuMaxSpec.id] === '261011', 'Haiku 5.5 Ultracode·Max detailed spec must reuse the supplied tier, environment, creation date, and Max-only pair');
+check(haikuMaxSpec.file === `models/${HAIKU_MAX_SPEC_ID}.html` && haikuMaxSpec.shot === `assets/shots/${HAIKU_MAX_SPEC_ID}.jpg` && haikuMaxSpec.bytes === 191845 && haikuMaxSpec.lines === 4506 && haikuMaxSpec.tech === 'WebGL2' && !haikuMaxSpec.needsFloat && haikuMaxSpec.msaa && haikuMaxSpec.net.length === 0 && haikuMaxSpec.jsErrors === 0, 'Haiku Ultracode·Max detailed metadata must distinguish 4x offscreen scene MSAA from context antialias:false and preserve the HDR fallback');
+const haikuMaxSpecSource = fs.readFileSync(asset(haikuMaxSpec.file));
+check(haikuMaxSpecSource.length === 191845 && [...haikuMaxSpecSource].filter(byte => byte === 10).length === 4506 && createHash('sha256').update(haikuMaxSpecSource).digest('hex') === '76c9edf174191632523af63d251cdfbcdb4e81d90cdb57904860b5114de56ebc', 'The new Haiku Ultracode·Max detailed original must remain byte-for-byte unchanged');
+check(fs.existsSync(asset(haikuMaxSpec.shot)) && SITE.isVisibleWork(haikuMaxSpec) && !SITE.isArchivedWork(haikuMaxSpec), 'Haiku Ultracode·Max detailed spec must expose its saved runtime screenshot as a current work');
+const haikuMaxPair = SITE.pairs().find(pair => pair.a.pair === 'haiku55max');
+check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-1) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must append one complete pair without replacing the existing xhigh pair');
+close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -2.81, 'Haiku Max detailed-minus-one-line exact score difference');
+check(!SITE.displayPairs().some(pair => pair.a.pair === 'haiku55max'), 'The Haiku Max pair must enter the full pair population without replacing a larger positive featured gain');
+check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode)V1')), 'The independent Luna/Haiku comparison must stay fixed to the existing xhigh works');
 check(SITE.priceFor(haikuMax).date === '2026-10-08' && SITE.priceCell(haikuMax).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(haikuMax).includes('100K'), 'Haiku 5.5 Ultracode·Max must reuse the existing verified Haiku pricing without a new price snapshot');
+check(SITE.priceFor(haikuMaxSpec).date === '2026-10-08' && SITE.priceCell(haikuMaxSpec).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(haikuMaxSpec).includes('100K'), 'Haiku Max detailed spec must reuse the existing Haiku price family and context threshold');
 const sonnet55 = SITE.byId('Sonnet5.5(Max)V1');
 check(sonnet55?.group === 'A' && sonnet55.tier === 0 && sonnet55.pair === null && SITE.environmentTag(sonnet55) === 'in Claude Code' && WORK_CREATION_DATES[sonnet55.id] === '260930', 'Sonnet 5.5 must be the supplied unpaired Tier 0 one-line work');
 check(sonnet55.bytes === 4957094 && sonnet55.lines === 11211 && sonnet55.tech === 'WebGL2' && sonnet55.needsFloat && !sonnet55.msaa && sonnet55.net.length === 0 && fs.existsSync(asset(sonnet55.shot)), 'Sonnet 5.5 metadata and saved screenshot must match the original');
@@ -838,7 +853,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 26], ['B', 20]]) {
+for (const [group, expectedCount] of [['A', 26], ['B', 21]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -1029,6 +1044,9 @@ const expectedMoonAdjustments = {
   },
   "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
     "earthMoonValid": true
+  },
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
   }
 };
 const expectedOtherComets = {
@@ -1070,7 +1088,8 @@ for (const work of WORKS) {
   check(typeof score.reference === 'boolean', `${id}: reference must be boolean`);
   const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id);
   if (inCurrentReview) {
-    check(score.reviewedAt === '2026-10-11' && score.reviewVersion === 'V3-20261011', `${id}: every current non-protected work must record the completed V3 review provenance`);
+    const reviewDate = id === HAIKU_MAX_SPEC_ID ? '2026-10-12' : '2026-10-11';
+    check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every current non-protected work must retain its own completed V3 review provenance`);
     check(score.visualBase === null, `${id}: the current review must not retain legacy visual scoring inputs`);
     if (Array.isArray(score.moonEvidence)) check(!Object.hasOwn(score, 'moonQuality'), `${id}: per-moon evidence must replace the old global quality multiplier`);
   } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected and archived records must retain their original review provenance`);
@@ -1661,7 +1680,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
-  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 20', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 21', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
@@ -1686,7 +1705,7 @@ for (const lang of ['zh', 'en']) {
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   checkLunaHaikuHome(true);
-  check(countRows() === 20, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 21, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
   check(countRows() === 26, lang + ': one-line tab must restore its 26 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
@@ -1696,7 +1715,7 @@ for (const lang of ['zh', 'en']) {
     for (const tab of tabs.slice(0, 2)) {
       tab.listeners.click();
       checkLunaHaikuHome(true);
-      if (query === 'Haiku') check(countRows() === (tab.dataset.tableGroup === 'A' ? 2 : 1), lang + ': Haiku search must show the new unpaired Max work only in the one-line table while preserving the original comparison');
+      if (query === 'Haiku') check(countRows() === 2, lang + ': Haiku search must show both Max and xhigh in each active table while retaining the fixed cross-model comparison');
     }
   }
   one('#modelSearchInput').value = 'MiniMax M3 (high)';
@@ -1763,7 +1782,7 @@ for (const lang of ['zh', 'en']) {
     const brief = lang === 'zh' ? (row.group === 'A' ? '同一句话任务' : '同一份详细文档') : (row.group === 'A' ? 'Same one-line prompt' : 'Same detailed specification');
     check(actual.nodes.get('#compareContext').textContent === brief && actual.frames.every(frame => frame.attributes.title.includes(lang === 'zh' ? (row.group === 'A' ? '一句话' : '详细文档') : (row.group === 'A' ? 'one-line prompt' : 'detailed specification'))), lang + ': both cross-model iframe titles must identify the selected brief');
   }
-  for (const pairName of ['gpt6luna', 'haiku55']) {
+  for (const pairName of ['gpt6luna', 'haiku55', 'haiku55max']) {
     const actual = simulateCompare(lang, '?p=' + pairName), pair = SITE.pairs().find(pair => pair.a.pair === pairName);
     check(!actual.notFound && !actual.split.dataset.crossGroup && JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([pair.a.file, pair.b.file]), lang + ': legacy pair route must retain one-line versus detailed-spec originals');
     check(actual.nodes.get('.back').href === home + '#pairs' && actual.nodes.get('.lbl.a').textContent === (lang === 'zh' ? '一句话提示' : 'One-line prompt') && actual.nodes.get('.lbl.b').textContent === (lang === 'zh' ? '详细文档' : 'Detailed specification'), lang + ': legacy pair route must preserve its original labels and return anchor');
@@ -1987,9 +2006,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">28') && enHome.includes('id="bAll">28') && zhHome.includes('id="tAll">134') && enHome.includes('id="tAll">134'), 'Both home pages must publish 39/28 active counts and 134 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 39 件和文档组 28 件') && enHome.includes('prefer the 26 paired results over treating all 39 one-line and 28 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('26 组同模型') && enHome.includes('26 same-model') && zhHome.includes('48.84 / 70') && enHome.includes('48.84 / 70') && zhHome.includes('31.26 / 36') && enHome.includes('31.26 / 36'), 'Both home pages must publish the current V3 26-pair statistics');
+check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">29') && enHome.includes('id="bAll">29') && zhHome.includes('id="tAll">135') && enHome.includes('id="tAll">135'), 'Both home pages must publish 39/29 active counts and 135 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 39 件和文档组 29 件') && enHome.includes('prefer the 27 paired results over treating all 39 one-line and 29 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('27 组同模型') && enHome.includes('27 same-model') && zhHome.includes('49.39 / 70') && enHome.includes('49.39 / 70') && zhHome.includes('31.30 / 36') && enHome.includes('31.30 / 36'), 'Both home pages must publish the current V3 27-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -2038,16 +2057,16 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
-check(stats.pairedSummary.n === 26, 'Paired statistics must use 26 active pairs');
-close(stats.pairedSummary.coverage.a, 48.842692307692296, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 54.33846153846154, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":7}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 31.438461538461542, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.260256410256417, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":11}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 76.58884615384613, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 82.48333333333335, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":10}), 'exact paired outcomes must match the evidence');
+check(stats.pairedSummary.n === 27, 'Paired statistics must use 27 active pairs');
+close(stats.pairedSummary.coverage.a, 49.387777777777764, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 54.62222222222222, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":8}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.a, 31.513580246913584, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 31.295679012345687, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":12}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 77.34580246913578, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 82.91790123456792, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":11}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
@@ -2058,10 +2077,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.54880341880342
     ],
     "b": [
-      28,
-      54.69142857142857,
-      31.472619047619055,
-      83.05690476190478
+      29,
+      54.94344827586207,
+      31.498275862068976,
+      83.44172413793105
     ]
   },
   "withoutReferences": {
@@ -2072,10 +2091,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.06324561403507
     ],
     "b": [
-      28,
-      54.69142857142857,
-      31.472619047619055,
-      83.05690476190478
+      29,
+      54.94344827586207,
+      31.498275862068976,
+      83.44172413793105
     ]
   },
   "withoutTier4": {
@@ -2086,10 +2105,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.7907894736842
     ],
     "b": [
-      27,
-      54.79111111111111,
-      32.06604938271606,
-      83.63493827160494
+      28,
+      55.04857142857143,
+      32.07142857142858,
+      84.01285714285714
     ]
   },
   "withoutReferencesOrTier4": {
@@ -2100,10 +2119,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.29864864864862
     ],
     "b": [
-      27,
-      54.79111111111111,
-      32.06604938271606,
-      83.63493827160494
+      28,
+      55.04857142857143,
+      32.07142857142858,
+      84.01285714285714
     ]
   }
 };

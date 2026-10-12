@@ -3,6 +3,115 @@
   'use strict';
 
   window.SCORES = {
+    'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5': {
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 0.5,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 5.145,
+          "expectedInclinationDeg": 5.145
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 0.05,
+          "expectedInclinationDeg": 0.05
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 0.47,
+          "expectedInclinationDeg": 0.47
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 0.2,
+          "expectedInclinationDeg": 0.2
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 0.19,
+          "expectedInclinationDeg": 0.19
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L671–693 以实际黄道或母星赤道为参考，r×v有向倾角匹配基础轨道数据。",
+          "actualInclinationDeg": 0.35,
+          "expectedInclinationDeg": 0.35
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L671–693 倾角156.9°直接产生逆行，周期取绝对值推进，无重复翻转。",
+          "actualInclinationDeg": 156.9,
+          "expectedInclinationDeg": 156.9
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L671–693 实际有向法线与冥王星几何极相差0.08°，黄道倾角112.768913°；不采用母星错误自转符号。",
+          "actualInclinationDeg": 0.08,
+          "expectedInclinationDeg": 0.08
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线积分大气和 HDR/Bloom/ACES。逐颗核对实际有向法线，月球、海卫一及卡戎方向均正确；只实现8颗，无超额卫星或其他彗星奖励。哈雷轨道线用512个等平均近点角样本，近日点附近折线距真实位置最大约6.465显示单位，路径拟合部分计分，不重复扣开普勒或哈雷。金星、天王星和冥王星的逆行几何轴再配负自转周期，实际自转方向双反，数据项扣分，不扣卫星。地球聚焦后相机能缩到0.3，小于显示半径0.72；支持持续聚焦跟随、暂停与日期跳转，总览和此刻只分别恢复镜头或日期，无完整复位。",
+      "reviewedAt": "2026-10-12",
+      "reviewVersion": "V3-20261012"
+    },
     'Haiku5.5(Ultracode·Max)V1': {
       "reference": false,
       "featureMap": {
