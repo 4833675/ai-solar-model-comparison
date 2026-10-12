@@ -4266,7 +4266,7 @@ window.WORKS=[
     "in Claude Code"
   ],
   "tier": 0,
-  "rank": 0
+  "rank": -1
 },
 {
   "id": "MiniMaxM3.1FlashPreview(Max)V1",

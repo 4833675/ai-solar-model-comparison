@@ -1645,6 +1645,9 @@ for (const lang of ['zh', 'en']) {
   };
   checkLunaHaikuHome(true);
   check(countRows() === 26 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 26 active one-line model rows including Haiku Ultracode·Max without Claude Fable 5');
+  const firstDefaultRow = body().match(/^<tr\b[\s\S]*?<\/tr>/)?.[0] || '';
+  check(firstDefaultRow.includes('Opus5.5(Max)V1') && body().includes('Fable5.1(Max)V1') && body().indexOf('Opus5.5(Max)V1') < body().indexOf('Fable5.1(Max)V1'), lang + ': the default one-line table must place Opus 5.5 first, ahead of the equal-scoring Fable 5.1');
+  check((firstDefaultRow.match(/recommend-symbol-up/g) || []).length === 5 && !firstDefaultRow.includes('recommend-symbol-down') && firstDefaultRow.includes(lang === 'zh' ? '109是因为满分只有109' : '109 only because the maximum is 109'), lang + ': Opus 5.5 must show five green up-triangles and its requested localized reason');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -1839,7 +1842,7 @@ const expectedRecommendations = {
   'GPT-6 Luna (Max)': ['up', 3, '便宜是真便宜，仅能完成任务'],
   'Claude Sonnet 5.5 (Max)': ['up', 5, '马甲脱了！你到底是谁？'],
   'Claude Opus 5 (Max)': ['up', 5, '天下第一(天↑)'],
-  'Claude Opus 5.5 (Max)': ['mixed', 5, '5h12m·2.1亿·$75.50', '△△△△▽', 3],
+  'Claude Opus 5.5 (Max)': ['up', 5, '109是因为满分只有109'],
   'Claude Fable 5.1 (Max)': ['down', 3, '在座的各位都是垃圾'],
   'Claude Opus 5 (Ultracode·xhigh)': ['up', 5, '又快、又稳、又贵'],
   'Hy 4 Preview (high)': ['down', 5, '绝版测试。已经降智。'],
