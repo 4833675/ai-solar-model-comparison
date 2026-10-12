@@ -1536,7 +1536,7 @@ check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effect
 check(siteSource.includes("Math.min(3, r.otherComets)") && siteSource.includes("score.parts.cometBonus"), 'V3 other-comet bonus must award one point per non-Halley comet up to three');
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
 check(!siteSource.includes("w.tech === 'Canvas2D' ? 10") && !siteSource.includes("parts.visual"), 'Canvas2D and legacy visual evidence must not receive score deductions or points');
-check((siteSource.match(/s\.total >= 95/g) || []).length === 2, 'Both score badge and tooltip must use the inclusive 95-point green threshold for every non-benchmark entry');
+check((siteSource.match(/s\.total >= \(w\.group === 'B' \? 91 : 95\)/g) || []).length === 2, 'Both score badge and tooltip must use inclusive group thresholds: A 95, B 91');
 check((siteSource.match(/card\.openAria/g) || []).length >= 6, 'Table model links, rerun popovers, pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
@@ -2018,13 +2018,20 @@ check(zhHome.includes('27 组同模型') && enHome.includes('27 same-model') && 
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
-check(zhHome.includes('两组非标杆作品的最终分均需大于等于 95') && enHome.includes('entries in both groups turn green only at 95 or higher'), 'Both home pages must publish the shared inclusive 95-point green threshold');
-for (const id of referenceIds) {
-  const work = WORKS.find(item => item.id === id);
+check(zhHome.includes('一句话组最终分大于等于 95、详细文档组大于等于 91') && enHome.includes('One-line entries turn green at 95 or higher; detailed-spec entries at 91 or higher.'), 'Both home pages must publish the inclusive A 95 / B 91 green thresholds');
+for (const work of WORKS) {
+  const id = work.id;
   const score = SITE.scoreFor(work);
   const cell = SITE.scoreCell(work);
   const visibleText = cell.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   const tip = SITE.scoreTipHtml(work, score);
+  const badgeClasses = cell.match(/class="([^"]*)"/)?.[1] || '';
+  const tipHeadClasses = tip.match(/class="score-tip-head([^"]*)"/)?.[1] || '';
+  const expectedHigh = !score.reference && score.total >= (work.group === 'B' ? 91 : 95);
+  const hasHigh = classes => /(?:^|\s)is-high(?:\s|$)/.test(classes);
+  check(hasHigh(badgeClasses) === expectedHigh && hasHigh(tipHeadClasses) === expectedHigh, `${id}: badge and tooltip must use the ${work.group === 'B' ? 91 : 95}-point threshold in current and offline tabs`);
+  check(badgeClasses.includes('score-benchmark') === score.reference && tipHeadClasses.includes('is-reference') === score.reference, `${id}: only benchmark scores must retain the gold badge and tooltip classes`);
+  if (!score.reference) continue;
   check(work.group === 'A' && SITE.isVisibleWork(work) && !SITE.isArchivedWork(work) && score.reference, `${id}: the one-line benchmark must remain current and retain reference status`);
   check(createHash('sha256').update(fs.readFileSync(asset(work.file))).digest('hex') === 'acaf9c08619c82288e53206bec6ec539c09a57cdfff7d3f10627938e1d82ba7c', `${id}: the original benchmark source must remain unchanged`);
   check(cell.includes('⚑') && cell.includes('<button') && cell.includes('score-trigger') && cell.includes('data-score-id'), `${id}: benchmark score cell must remain a gold flag button with a tooltip trigger`);
