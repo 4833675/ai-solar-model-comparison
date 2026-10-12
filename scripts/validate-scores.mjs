@@ -502,7 +502,8 @@ check(WORKS.filter(w => w.group === 'A').length === 76, 'Group A count must be 7
 check(WORKS.filter(w => w.group === 'B').length === 59, 'Group B count must be 59 after adding Haiku 5.5 Ultracode·Max detailed spec');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
-const expectedHiddenIds = [
+const restoredIds = new Set(['KimiK3(Max)V3']);
+const archiveBaselineIds = [
   ...newlyArchivedIds,
   ...newlyArchivedDocIds,
   "GPT5.6Sol(high)V1",
@@ -569,7 +570,8 @@ const expectedHiddenIds = [
   'Gemini_3_5_flash_high',
   'Gemini3.5Flash-TasksAssignedByOpus5',
 ].sort();
-check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must include historical entries plus Hy 3, GLM 5.2, Qwen 3.7 Max, and Gemini 3.5 Flash');
+const expectedHiddenIds = archiveBaselineIds.filter(id => !restoredIds.has(id));
+check(JSON.stringify([...HIDDEN_WORK_IDS].sort()) === JSON.stringify(expectedHiddenIds), 'The hidden-work set must restore Kimi K3 #3 and otherwise preserve the existing archive');
 const visibleWorks = SITE.visibleWorks();
 const archivedWorks = SITE.archivedWorks();
 // Re-auditing changes evidence only for current, non-protected works. The supplied
@@ -581,22 +583,28 @@ const protectedScoreDigests = {
 };
 for (const [id, expected] of Object.entries(protectedScoreDigests))
   check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');
+const restoredScoreDigests = { 'KimiK3(Max)V3': '70c698131e04c680376622e462c917432f9631a8f42b63b697e52b5af2c485c5' };
+for (const id of restoredIds) {
+  check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
+  check(digest(SCORES[id]) === restoredScoreDigests[id], id + ': restoration must preserve the entire original score, note, and review provenance');
+}
 const originalAssets = WORKS.filter(work => work.id !== HAIKU_MAX_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
   .map(path => [path, createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')]);
 check(digest(originalAssets) === '4d39e2cfa1620a9da6d90cd02a26237c42db2ca80d91c9ba04c131cca8822dab', 'All original programs and saved screenshots must be reused unchanged');
-const archivedEvidence = archivedWorks.map(work => [work.id,
-  Object.fromEntries(Object.entries(SCORES[work.id]).filter(([key]) => key !== 'note'))])
+// Keep the original 67-entry evidence snapshot, including restored entries.
+const archivedEvidence = archiveBaselineIds.map(id => [id,
+  Object.fromEntries(Object.entries(SCORES[id]).filter(([key]) => key !== 'note'))])
   .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
 check(digest(archivedEvidence) === 'c64839256c1d74907b4437adfb44f16fad7cd1a67c207ad41ade015eda9bbab1', 'Archived scoring evidence must not be re-audited in this review');
-check(archivedWorks.length === 67 && archivedWorks.filter(w => w.group === 'A').length === 37 && archivedWorks.filter(w => w.group === 'B').length === 30, 'Offline tabs must retain the previous 64 works plus the two Opus 5 and Gemini 3.1 Pro detailed-spec works');
+check(archiveBaselineIds.length === 67 && archivedWorks.length === 66 && archivedWorks.filter(w => w.group === 'A').length === 36 && archivedWorks.filter(w => w.group === 'B').length === 30, 'The original 67-entry snapshot must remain intact while the archive now contains 66 works after restoring Kimi #3');
 check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols === '-' && SITE.isArchivedWork(work)), 'Every offline model must use a dash recommendation');
-check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 24 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 21, 'Offline tabs must add three detailed-spec rows while preserving all previous folding rules');
+check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 23 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 21, 'Offline tabs must remove the misplaced Kimi row while preserving all other folding rules');
 for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 68, 'Active WORKS count must be 68');
-check(visibleWorks.filter(w => w.group === 'A').length === 39, 'Active Group A count must be 39');
+check(visibleWorks.length === 69, 'Active WORKS count must be 69');
+check(visibleWorks.filter(w => w.group === 'A').length === 40, 'Active Group A count must be 40');
 check(visibleWorks.filter(w => w.group === 'B').length === 29, 'Active Group B count must be 29');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
@@ -874,6 +882,8 @@ for (const [group, expectedCount] of [['A', 26], ['B', 21]]) {
   if (group === 'A') {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Ultra)V1' && stripCreationDate(astra.model) === 'GPT-6 Astra (Ultra·Max)' && JSON.stringify(astra.tableAlternates.map(work => work.id)) === JSON.stringify(['GPT6Astra(Max)V1', 'GPT6Astra(xhigh)V1', 'GPT6Astra(Light)V1']), 'A: GPT-6 Astra must default to Ultra·Max and collapse Max, xHigh, and Light');
+    const kimi = displayRows.find(work => work.tableVariantBase === 'Kimi K3 (Max)');
+    check(kimi?.id === 'KimiK3Max' && JSON.stringify(kimi.tableAlternates.map(work => work.id).sort()) === JSON.stringify(['KimiK3(Max)V2', 'KimiK3(Max)V3']), 'A: the current Kimi row must fold all three runs, with restored #3 behind the highest-scoring #1');
   } else {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Medium)V1-TasksAssignedByOpus5' && astra.tableAlternates.length === 1 && astra.tableAlternates[0].id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5', 'B: Astra must display its highest available effort, Medium, and fold Light behind it');
@@ -1086,13 +1096,13 @@ for (const work of WORKS) {
   const required = [...recordKeys, ...presentOptional];
   exactKeys(score, required, `${id} record`);
   check(typeof score.reference === 'boolean', `${id}: reference must be boolean`);
-  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id);
+  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id) && !restoredIds.has(id);
   if (inCurrentReview) {
     const reviewDate = id === HAIKU_MAX_SPEC_ID ? '2026-10-12' : '2026-10-11';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every current non-protected work must retain its own completed V3 review provenance`);
     check(score.visualBase === null, `${id}: the current review must not retain legacy visual scoring inputs`);
     if (Array.isArray(score.moonEvidence)) check(!Object.hasOwn(score, 'moonQuality'), `${id}: per-moon evidence must replace the old global quality multiplier`);
-  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected and archived records must retain their original review provenance`);
+  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected, archived, and restored historical records must retain their original review provenance`);
   exactKeys(score.featureMap, nested.featureMap, `${id}.featureMap`);
   exactKeys(score.orbitModel, nested.orbitModel, `${id}.orbitModel`);
   exactKeys(score.orbitRuntime, nested.orbitRuntime, `${id}.orbitRuntime`);
@@ -1428,6 +1438,9 @@ const kimi3OneLine = WORKS.find(w => w.id === 'KimiK3(Max)V3');
 check(stripCreationDate(kimi1OneLine?.model) === 'Kimi K3 (Max) #1' && stripCreationDate(kimi1Detailed?.model) === 'Kimi K3 (Max) #1', 'Original Kimi K3 runs must be numbered #1');
 check(stripCreationDate(kimi2OneLine?.model) === 'Kimi K3 (Max) #2' && stripCreationDate(kimi2Detailed?.model) === 'Kimi K3 (Max) #2', 'New Kimi K3 runs must be numbered #2');
 check(stripCreationDate(kimi3OneLine?.model) === 'Kimi K3 (Max) #3' && kimi3OneLine?.group === 'A' && kimi3OneLine?.tier === 2 && kimi3OneLine?.pair === null, 'Kimi K3 V3 must be the unpaired Tier 2 one-line #3 run');
+check(SITE.isVisibleWork(kimi3OneLine) && !SITE.isArchivedWork(kimi3OneLine) && !archivedWorks.some(work => work.id === kimi3OneLine.id), 'Kimi K3 #3 must be current and absent from the archive');
+const restoredKimiRecommendation = SITE.personalRecommendationFor(kimi3OneLine);
+check(restoredKimiRecommendation?.direction === 'up' && restoredKimiRecommendation.count === 1 && restoredKimiRecommendation.reason === '性价比不够', 'Restored Kimi #3 must regain the existing family recommendation instead of the archive dash');
 check(kimi2OneLine?.group === 'A' && kimi2Detailed?.group === 'B' && kimi2OneLine?.tier === 2 && kimi2Detailed?.tier === 1, 'Kimi K3 #2 one-line must be Tier 2 while its detailed run remains Tier 1');
 check(kimi2OneLine?.pair === 'kimik3v2' && kimi2Detailed?.pair === 'kimik3v2', 'Kimi K3 #2 must form its own comparison pair');
 check(kimi2OneLine?.bytes === 71207 && kimi2OneLine?.lines === 1667 && kimi2OneLine?.tech === 'WebGL2' && kimi2OneLine?.needsFloat === false && kimi2OneLine?.msaa === true && kimi2OneLine?.net.length === 0, 'Kimi K3 #2 one-line source metadata must match the audited file');
@@ -1648,6 +1661,8 @@ for (const lang of ['zh', 'en']) {
   const firstDefaultRow = body().match(/^<tr\b[\s\S]*?<\/tr>/)?.[0] || '';
   check(firstDefaultRow.includes('Opus5.5(Max)V1') && body().includes('Fable5.1(Max)V1') && body().indexOf('Opus5.5(Max)V1') < body().indexOf('Fable5.1(Max)V1'), lang + ': the default one-line table must place Opus 5.5 first, ahead of the equal-scoring Fable 5.1');
   check((firstDefaultRow.match(/recommend-symbol-up/g) || []).length === 5 && !firstDefaultRow.includes('recommend-symbol-down') && firstDefaultRow.includes(lang === 'zh' ? '109是因为满分只有109' : '109 only because the maximum is 109'), lang + ': Opus 5.5 must show five green up-triangles and its requested localized reason');
+  const kimiDefaultRow = [...body().matchAll(/<tr\b[\s\S]*?<\/tr>/g)].find(match => match[0].includes('KimiK3Max'))?.[0] || '';
+  check(['KimiK3Max', 'KimiK3(Max)V2', 'KimiK3(Max)V3'].every(id => kimiDefaultRow.includes(id)) && kimiDefaultRow.includes('recommend-symbol-up'), lang + ': the default Kimi row must contain all three runs and its family recommendation');
   check(body().includes('table-variants-trigger') && body().includes('table-variants-popover'), lang + ': numbered reruns must collapse behind an accessible model-row popover');
   check(body().includes('GPT6Astra(Max)V1') && body().includes('GPT6Astra(xhigh)V1') && body().includes(lang === 'zh' ? '查看 GPT-6 Astra 的另外 3 个推理强度' : 'Show 3 other effort levels for GPT-6 Astra'), lang + ': GPT-6 Astra must expose Max and xHigh behind the Ultra row');
   if (lang === 'zh') check(body().includes('<td class="tier-cell-1">T1'), 'Chinese rendered table must abbreviate Tier 1');
@@ -1666,6 +1681,7 @@ for (const lang of ['zh', 'en']) {
     check(tabs.every((tab,i)=>tab.attributes['aria-selected'] === String(i===index) && tab.tabIndex === (i===index?0:-1)), lang + ': exactly one of four tabs must expose selected state');
     check(one('#tablePanel').attributes['aria-labelledby'] === 'tableTab'+(offline?'Offline':'')+group, lang + ': panel must be named by the selected tab');
     if (offline) check(!body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': offline rows must show dash recommendations even for formerly recommended models');
+    if (offline) check([...restoredIds].every(id => !body().includes(id)), lang + ': restored works must not appear in either offline table');
     for (const button of buttons) {
       for (const direction of [1,-1]) {
         button.onclick();
@@ -1702,7 +1718,7 @@ for (const lang of ['zh', 'en']) {
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('view'+(lang==='en'?'.en':'')+'.html?w=OmenAlpha(Max)V1'), lang + ': offline one-line tab must open the retained Omen original');
   tabs[3].listeners.click();
-  check(countRows() === 1 && body().includes('OmenAlpha(Max)V1-TasksAssignedByOpus5') && one('#tableCountOfflineA').textContent === '1 / 24' && one('#tableCountOfflineB').textContent === '1 / 21', lang + ': offline detailed-spec tab must preserve search and update both archive counts');
+  check(countRows() === 1 && body().includes('OmenAlpha(Max)V1-TasksAssignedByOpus5') && one('#tableCountOfflineA').textContent === '1 / 23' && one('#tableCountOfflineB').textContent === '1 / 21', lang + ': offline detailed-spec tab must preserve search and update both archive counts');
   check(!one('#gridA').innerHTML.includes('OmenAlpha') && !one('#gridB').innerHTML.includes('OmenAlpha'), lang + ': archived search matches must stay out of active galleries');
   tabs[1].listeners.click();
   one('#modelSearchInput').value = 'no-such-model';
@@ -1724,6 +1740,13 @@ for (const lang of ['zh', 'en']) {
       if (query === 'Haiku') check(countRows() === 2, lang + ': Haiku search must show both Max and xhigh in each active table while retaining the fixed cross-model comparison');
     }
   }
+  tabs[0].listeners.click();
+  one('#modelSearchInput').value = 'Kimi K3';
+  one('#modelSearchInput').listeners.input();
+  checkLunaHaikuHome(false);
+  check(countRows() === 1 && ['KimiK3Max', 'KimiK3(Max)V2', 'KimiK3(Max)V3'].every(id => body().includes(id)) && body().includes('recommend-symbol-up') && one('#gridA').innerHTML.includes('KimiK3(Max)V3'), lang + ': Kimi search must restore #3 in the current folded row and gallery with the family recommendation');
+  tabs[2].listeners.click();
+  check(countRows() === 0 && !body().includes('KimiK3(Max)V3') && one('#tableCountOfflineA').textContent === '0 / 23', lang + ': Kimi search must not return the restored #3 from the offline tab');
   one('#modelSearchInput').value = 'MiniMax M3 (high)';
   one('#modelSearchInput').listeners.input();
   for (const tab of tabs.slice(0, 2)) {
@@ -2012,8 +2035,8 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">39') && enHome.includes('id="aAll">39') && zhHome.includes('id="bAll">29') && enHome.includes('id="bAll">29') && zhHome.includes('id="tAll">135') && enHome.includes('id="tAll">135'), 'Both home pages must publish 39/29 active counts and 135 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 39 件和文档组 29 件') && enHome.includes('prefer the 27 paired results over treating all 39 one-line and 29 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">29') && enHome.includes('id="bAll">29') && zhHome.includes('id="tAll">135') && enHome.includes('id="tAll">135'), 'Both home pages must publish 40/29 active counts and 135 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 40 件和文档组 29 件') && enHome.includes('prefer the 27 paired results over treating all 40 one-line and 29 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('27 组同模型') && enHome.includes('27 same-model') && zhHome.includes('49.39 / 70') && enHome.includes('49.39 / 70') && zhHome.includes('31.30 / 36') && enHome.includes('31.30 / 36'), 'Both home pages must publish the current V3 27-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
@@ -2084,10 +2107,10 @@ check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"im
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      39,
-      51.80820512820511,
-      32.355982905982906,
-      81.54880341880342
+      40,
+      51.764499999999984,
+      32.38375,
+      81.52325
     ],
     "b": [
       29,
@@ -2098,10 +2121,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferences": {
     "a": [
-      38,
-      51.487368421052615,
-      32.26008771929825,
-      81.06324561403507
+      39,
+      51.45076923076921,
+      32.29102564102564,
+      81.04948717948719
     ],
     "b": [
       29,
@@ -2112,10 +2135,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutTier4": {
     "a": [
-      38,
-      51.78684210526314,
-      32.68815789473685,
-      81.7907894736842
+      39,
+      51.74256410256409,
+      32.708119658119664,
+      81.75837606837607
     ],
     "b": [
       28,
@@ -2126,10 +2149,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferencesOrTier4": {
     "a": [
-      37,
-      51.45675675675674,
-      32.59864864864865,
-      81.29864864864862
+      38,
+      51.41999999999998,
+      32.62149122807018,
+      81.27833333333334
     ],
     "b": [
       28,
