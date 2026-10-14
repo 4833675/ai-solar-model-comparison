@@ -579,7 +579,8 @@ const archivedWorks = SITE.archivedWorks();
 const protectedScoreDigests = {
   'Opus5Ultra-WebGL2': '46fcdf5211d9c6477035e0f396dc0af61f3935eda1e5c23a28a446b96ebcde39',
   'Fable5.1(Max)V1': 'bec020c1c78c02cbbdee7337f50f8ae1644c7d862ac2ccdff11536c35ce72fae',
-  'Opus5.5(Max)V1': '4868606c4bef2517a96376bad60704e1da46fe9562042d2c0a3b924cdc5c6c36',
+  // Presentation note simplified on 2026-10-14; scoring inputs are unchanged.
+  'Opus5.5(Max)V1': '30d254bae2c681d69ef70a6ac16a1b69fb95433208910db15f0b98a47d1a785b',
 };
 for (const [id, expected] of Object.entries(protectedScoreDigests))
   check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');

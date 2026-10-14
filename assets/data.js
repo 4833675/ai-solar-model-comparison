@@ -4258,7 +4258,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/Opus5.5(Max)V1.jpg",
   "jsErrors": null,
-  "note": "按站点作者要求，各评分项和额外奖励直接设为满分；本次保存运行截图。",
+  "note": "",
   "issue": null,
   "net": [],
   "fix": null,

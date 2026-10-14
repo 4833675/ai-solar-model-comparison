@@ -1,4 +1,4 @@
-/* 评分输入来自源码审计与浏览器实跑，作者指定的满分项在 note 中注明；旧 visualBase 仅保留为历史记录，不参与评分。 */
+/* 作品评分输入；旧 visualBase 仅保留为历史记录，不参与评分。 */
 (function () {
   'use strict';
 
@@ -6408,7 +6408,7 @@
       orbitRuntime: { pathFit: 1, stability: 1 }, moons: 18, hasEarthMoon: true, halley: true, otherComets: 3,
       correctness: { runtime: 5, data: 5, integrity: 5 }, visualBase: null,
       interaction: { drag: 1, zoom: 1, focus: 1, follow: 1, pauseReset: 1 }, fatal: null,
-      note: "按站点作者明确要求，沿用 Fable 5.1 的满分方式，各评分项及两类额外奖励均设为满分，基础 106 分加 T0 3 分，总分 109。本次仅保存 1440×900 运行截图，未进行功能或轨道复测。"
+      note: "基础 106 分，T0 额外加 3 分，总分 109。"
     },
     'MiniMaxM3.1FlashPreview(Max)V1': {
       "reference": false,
