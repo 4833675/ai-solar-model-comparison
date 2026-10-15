@@ -3,6 +3,123 @@
   'use strict';
 
   window.SCORES = {
+    'GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5': {
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对黄道北worldY有向倾角5.145000000°，期望5.145°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 5.1450000000067515,
+          "expectedInclinationDeg": 5.145,
+          "periodDays": 27.32166
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对jupiter惯性pole有向倾角0.050000000°，期望0.05°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 0.05000000000765173,
+          "expectedInclinationDeg": 0.05,
+          "periodDays": 1.769138
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对jupiter惯性pole有向倾角0.470000000°，期望0.47°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 0.4699999999993874,
+          "expectedInclinationDeg": 0.47,
+          "periodDays": 3.551181
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对jupiter惯性pole有向倾角0.200000000°，期望0.2°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 0.20000000000345688,
+          "expectedInclinationDeg": 0.2,
+          "periodDays": 7.154553
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对jupiter惯性pole有向倾角0.190000000°，期望0.19°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 0.1900000000007852,
+          "expectedInclinationDeg": 0.19,
+          "periodDays": 16.689
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对saturn惯性pole有向倾角0.350000000°，期望0.35°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。",
+          "actualInclinationDeg": 0.35000000000375037,
+          "expectedInclinationDeg": 0.35,
+          "periodDays": 15.945
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对neptune惯性pole有向倾角156.900000000°，期望156.9°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。 负周期保留，内部把156.9°换为23.1°后配负Z局部相位，有向法线实测156.9°，没有双翻。",
+          "actualInclinationDeg": 156.89999999998096,
+          "expectedInclinationDeg": 156.9,
+          "periodDays": -5.876854
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "reason": "L46/L85–107：原始最终moonOffset的真实周期差分r×v相对pluto惯性pole有向倾角0.080000000°，期望0.08°；AU轨道半径与orbitKm/AU相等，显示路径与实体同源。 依据Pluto惯性pole及真实轨道有向法线，不以任务负rotH产生的母星自转效果反推卫星方向。",
+          "actualInclinationDeg": 0.07999999999851003,
+          "expectedInclinationDeg": 0.08,
+          "periodDays": 6.3872
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 5,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 1,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 1
+      },
+      "fatal": null,
+      "note": "对照实际任务复核：自包含原生 WebGL2 实现 JPL 世纪率/J2000 开普勒轨道、8颗有效卫星和哈雷。逐颗有向轨道法线、周期与参考面有效，包括海卫一156.9°与冥卫一0.08°；卫星初相明确为展示设定，不额外要求任务未提供的历表。哈雷768段均偏近点角路径最大压缩弦距0.00850，低于0.22核半径；反日离子尾与后弯尘尾均有效。双向解析环影、17900颗运动带粒子、视线指数密度大气、六级 HDR/Bloom 后最终 ACES 均有实际实现。全景缩放下限8在4.6太阳半径外，聚焦下限1.8倍半径（土星2.75倍）；实测拖拽、平滑聚焦、持续跟随、正倒放、暂停、日期及回此刻均可用，哈雷保留彗尾构图偏移仍持续跟随。暂停时天体坐标和模拟日期冻结；自转增量按deltaDays为零同步冻结。任务给定自转参数/公式及哈雷二体日期矛盾不另归责，也不要求额外全状态重置。实跑确认HDR与实际4×MSAA，RGBA8回退存在，GL0、无JavaScript错误或外部请求，移动端重建帧缓冲正常。没有确证致命故障，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
+    },
     'GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5': {
       "reference": false,
       "featureMap": {

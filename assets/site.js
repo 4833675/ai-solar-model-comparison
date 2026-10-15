@@ -66,6 +66,7 @@
     'LongCat 2.0 (high)': { direction: 'down', count: 3, zh: '我外卖到哪了？', en: 'Where is my food delivery?' },
     'MiniMax M3.1 Flash Preview (Max)': { direction: 'up', count: 2, zh: '凑什么"Flash"的热闹', en: 'Why join the "Flash" hype?' },
     'GPT-6.1 Sol (Ultra·Max)': { direction: 'up', count: 5, zh: '这水平难道不是应该有的吗？', en: 'Isn’t this the level we should expect?' },
+    'GPT-6.1 Sol (xHigh)': { direction: 'up', count: 5, zh: '这水平难道不是应该有的吗？', en: 'Isn’t this the level we should expect?' },
     'GPT-6 Luna (Max)': { direction: 'up', count: 3, zh: '便宜是真便宜，仅能完成任务', en: 'It really is cheap; it only gets the task done' },
     'MiniMax M3 (high)': { direction: 'down', count: 3, zh: '你还是老实的做视频吧', en: 'You should probably stick to making videos' },
     'Grok 4.7 (xHigh)': { direction: 'up', count: 1, zh: '平庸的中等生', en: 'An ordinary middle-of-the-pack student' },
@@ -260,7 +261,7 @@
     });
   }
   const EFFORT_ORDER = { 'Ultra·Max': 0, Max: 1, xHigh: 2, high: 3, Medium: 4, Light: 5 };
-  const EFFORT_FAMILIES = ['GPT-5.6 Sol', 'GPT-6 Astra'];
+  const EFFORT_FAMILIES = ['GPT-5.6 Sol', 'GPT-6 Astra', 'GPT-6.1 Sol'];
   const effortInfo = work => {
     const model = String(work && work.model || '').replace(/ \(\d{6}\)$/, '');
     for (const family of EFFORT_FAMILIES) {
@@ -281,12 +282,14 @@
     });
     efforts.forEach(items => {
       if (items.length < 2) return regular.push(...items.map(item => item.row));
-      const ordered = items.slice().sort((a, b) => EFFORT_ORDER[a.level] - EFFORT_ORDER[b.level]);
-      const ultra = ordered.find(item => item.level === 'Ultra·Max') || ordered[0];
-      regular.push(Object.assign({}, ultra.row, {
-        tableVariantBase: ultra.family,
+      const rankedByScore = items[0].family === 'GPT-6.1 Sol';
+      const ordered = items.slice().sort((a, b) => rankedByScore
+        ? scoreOrder(a.row, b.row) : EFFORT_ORDER[a.level] - EFFORT_ORDER[b.level]);
+      const primary = rankedByScore ? ordered[0] : ordered.find(item => item.level === 'Ultra·Max') || ordered[0];
+      regular.push(Object.assign({}, primary.row, {
+        tableVariantBase: primary.family,
         tableVariantType: 'effort',
-        tableAlternates: ordered.filter(item => item !== ultra).map(item => item.row),
+        tableAlternates: ordered.filter(item => item !== primary).map(item => item.row),
       }));
     });
     return regular;
@@ -639,7 +642,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   function scoreTipHtml(w, s) {
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
     const tier = tierLabel(workTier(w));
-    const high = !s.reference && s.total >= (w.group === 'B' ? 91 : 95);
+    const high = !s.reference && s.total >= 96;
     const interaction = INTERACTION_KEYS.map(key => `<div><span>${t(`score.interaction.${key}`)}</span><b>${scoreNum(s.interaction[key])}</b></div>`).join('');
     return `<div class="score-tip-head${s.reference ? ' is-reference' : ''}${high ? ' is-high' : ''}">
         <div><span>${t('score.breakdownHead')}</span><strong>${esc(w.model)}</strong></div>
@@ -678,7 +681,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
       <span aria-hidden="true">⚑</span><b>${t('benchmark.badge')}</b>
     </button>`;
     const label = t('score.evidenceAria', { name: w.model, score: s.total });
-    const high = s.total >= (w.group === 'B' ? 91 : 95);
+    const high = s.total >= 96;
     return `<button type="button" class="score-trigger score-pill${high ? ' is-high' : ''}"
       data-score-id="${esc(w.id)}" aria-label="${esc(label)}" aria-expanded="false">
       <b>${scoreNum(s.total)}</b>

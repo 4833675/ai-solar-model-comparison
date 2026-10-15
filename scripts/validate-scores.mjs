@@ -14,6 +14,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
 const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
 const HAIKU_MAX_SPEC_ID = 'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5';
 const SOL61_SPEC_ID = 'GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5';
+const SOL61_XHIGH_SPEC_ID = 'GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5';
 const fail = message => { throw new Error(message); };
 const check = (condition, message) => { if (!condition) fail(message); };
 const close = (actual, expected, label) => check(Math.abs(actual - expected) < 1e-9, `${label}: expected ${expected}, got ${actual}`);
@@ -30,6 +31,7 @@ const canonical = value => Array.isArray(value) ? value.map(canonical)
 const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
+  [SOL61_XHIGH_SPEC_ID]: 'GPT-6.1 Sol (xHigh)',
   [SOL61_SPEC_ID]: "GPT-6.1 Sol (Ultra·Max)",
   "Haiku5.5(Ultracode·Max)V1": "Claude Haiku 5.5 (Ultracode·Max)",
   "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode·Max)",
@@ -175,6 +177,7 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  [SOL61_XHIGH_SPEC_ID]: 100,
   "Opus5(Max)V1": 105,
   "Fable5.1(Max)V1": 109,
   "Qwen3.8Flash(xhigh)V1": 67.83666666666667,
@@ -318,6 +321,7 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  [SOL61_XHIGH_SPEC_ID]: "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:880c4e958207e74cfb44e4c616e6b387596a53d673e95c21b926b605d939ac2c",
   "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
   "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:68b9beeadd6a6a14222155fb9d083c5e0ac7284f4186d01d40c0bfedf61a8919",
   "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5",
@@ -468,10 +472,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 136, `WORKS count must be 136, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 136, `SCORES count must be 136, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 136, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 136, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 137, `WORKS count must be 137, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 137, `SCORES count must be 137, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 137, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 137, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -503,7 +507,7 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 76, 'Group A count must be 76 after adding Haiku 5.5 Ultracode·Max');
-check(WORKS.filter(w => w.group === 'B').length === 60, 'Group B count must be 60 after adding GPT-6.1 Sol detailed spec');
+check(WORKS.filter(w => w.group === 'B').length === 61, 'Group B count must be 61 after adding GPT-6.1 Sol xHigh detailed spec');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
 const restoredIds = new Set(['KimiK3(Max)V3']);
@@ -591,7 +595,7 @@ for (const [id, expected] of Object.entries(protectedScoreDigests))
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
 }
-// Fixed2716352 baseline: only the30active detailed-spec records may change evidence/notes.
+// Completed task-attribution review provenance. The e4b6700 records are now frozen.
 const currentSpecReviewIds = new Set([
   "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5",
   "Hy4Preview(high)V1-TasksAssignedByOpus5",
@@ -624,12 +628,12 @@ const currentSpecReviewIds = new Set([
   "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5",
   "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5"
 ]);
-const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
+const originalWorks = WORKS.filter(work => work.id !== SOL61_XHIGH_SPEC_ID);
+const originalAssets = originalWorks.flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
-check(originalAssets.length === 272 && digest(originalAssets) === 'ff720ec53430c4c4661082164424f6ed47bd417a916b51535b1eec9ae3dffef7', 'All272original programs and saved screenshots must remain byte-for-byte unchanged');
-const outOfScopeEvidence = WORKS.filter(work => !currentSpecReviewIds.has(work.id)).map(work => [work, SCORES[work.id]]);
-check(currentSpecReviewIds.size === 30 && outOfScopeEvidence.length === 106 && digest(outOfScopeEvidence) === '34d53cc7be34c7fe46fe3ce8aac622afe0646b54032eb125784eb9b384baa08c', 'The fixed40one-line plus66archive records, including notes and all scoring inputs, must remain unchanged');
-check(digest(WORKS.map(work => ({ ...work, note: null }))) === '09eff725e9e447a89d94e679ff3d24f428e14f0941d39b6790bf55fc7243fe9a', 'Task attribution recheck may update activeB notes, but must preserve every model metadata field, tier, rank, pairing, and saved date');
+check(originalAssets.length === 272 && digest(originalAssets) === 'ff720ec53430c4c4661082164424f6ed47bd417a916b51535b1eec9ae3dffef7', 'All 272 original programs and saved screenshots must remain byte-for-byte unchanged');
+const originalRecords = originalWorks.map(work => [work, SCORES[work.id]]);
+check(currentSpecReviewIds.size === 30 && originalRecords.length === 136 && digest(originalRecords) === '4341624792cf283c4863879ac51d4e0a0dc9483915c75781028685ea5b950429', 'All 136 e4b6700 records, including metadata, notes, and scoring inputs, must remain unchanged');
 for (const id of currentSpecReviewIds) check(SITE.isVisibleWork(SITE.byId(id)) && SITE.byId(id).group === 'B', id + ': task-attribution review scope must contain only current detailed-spec works');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
 const archiveEvidenceIds = archiveBaselineIds.filter(id => id !== 'KimiK3(Max)V3');
@@ -644,9 +648,9 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 70, 'Active WORKS count must be 70');
+check(visibleWorks.length === 71, 'Active WORKS count must be 71');
 check(visibleWorks.filter(w => w.group === 'A').length === 40, 'Active Group A count must be 40');
-check(visibleWorks.filter(w => w.group === 'B').length === 30, 'Active Group B count must be 30');
+check(visibleWorks.filter(w => w.group === 'B').length === 31, 'Active Group B count must be 31');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
   const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
@@ -873,6 +877,18 @@ close(SITE.scoreFor(sol61Spec).exact - SITE.scoreFor(sol61).exact, -0.9500000000
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'gpt61sol'), 'Sol must join the full pair population without displacing a larger positive featured gain');
 check(SCORES[SOL61_SPEC_ID].visualBase === null && SCORES[SOL61_SPEC_ID].moons === 8 && SCORES[SOL61_SPEC_ID].earthMoonValid === true && Array.isArray(SCORES[SOL61_SPEC_ID].moonEvidence) && SCORES[SOL61_SPEC_ID].moonEvidence.length === 8 && SCORES[SOL61_SPEC_ID].moonEvidence.every(moon => moon.quality === 1), 'The new Sol review must retain its eight independently verified moons and no legacy visual input');
 
+const sol61XhighSpec = SITE.byId(SOL61_XHIGH_SPEC_ID);
+check(sol61XhighSpec?.group === 'B' && sol61XhighSpec.tier === 1 && sol61XhighSpec.pair === null && SITE.environmentTag(sol61XhighSpec) === 'in Codex' && WORK_CREATION_DATES[SOL61_XHIGH_SPEC_ID] === '261015', 'Sol xHigh must be a current Tier 1 Codex detailed-spec work with its actual creation date and no invented one-line pair');
+check(sol61XhighSpec.file === `models/${SOL61_XHIGH_SPEC_ID}.html` && sol61XhighSpec.shot === `assets/shots/${SOL61_XHIGH_SPEC_ID}.jpg` && sol61XhighSpec.bytes === 90718 && sol61XhighSpec.lines === 268 && sol61XhighSpec.tech === 'WebGL2' && !sol61XhighSpec.needsFloat && sol61XhighSpec.msaa && sol61XhighSpec.net.length === 0 && sol61XhighSpec.jsErrors === 0, 'Sol xHigh metadata must describe the supplied self-contained native WebGL2 original and optional HDR fallback with actual offscreen MSAA');
+const sol61XhighSource = fs.readFileSync(asset(sol61XhighSpec.file));
+check(sol61XhighSource.length === 90718 && [...sol61XhighSource].filter(byte => byte === 10).length === 268 && createHash('sha256').update(sol61XhighSource).digest('hex') === 'c955e557e8c9e7788de3389fa36e8c20146d47491607182ca2a26158faac9287', 'The supplied Sol xHigh source must remain byte-for-byte unchanged');
+check(fs.existsSync(asset(sol61XhighSpec.shot)) && SITE.isVisibleWork(sol61XhighSpec) && !SITE.isArchivedWork(sol61XhighSpec), 'Sol xHigh must open its saved runtime screenshot from the current detailed-spec list');
+check(createHash('sha256').update(fs.readFileSync(asset(sol61XhighSpec.shot))).digest('hex') === 'b5b9c2cf781defc13760c18246f00092db7651f7c57319fc81d76fa943a0f629', 'The verified 1440×900 Sol xHigh runtime screenshot must remain unchanged');
+check(SITE.priceFor(sol61XhighSpec).date === '2026-09-30' && SITE.priceCell(sol61XhighSpec).includes('4 / 15 / 0.2'), 'Sol xHigh must reuse the existing verified Sol pricing');
+check(JSON.stringify(SITE.personalRecommendationFor(sol61XhighSpec)) === JSON.stringify(SITE.personalRecommendationFor(sol61Spec)), 'Sol xHigh must inherit the same five green recommendations and both localized reasons as Ultra·Max');
+check(!SITE.pairs().some(pair => pair.a.id === SOL61_XHIGH_SPEC_ID || pair.b.id === SOL61_XHIGH_SPEC_ID), 'Adding xHigh must not replace the existing Ultra·Max Sol pair or enter paired statistics');
+check(SCORES[SOL61_XHIGH_SPEC_ID].visualBase === null && SCORES[SOL61_XHIGH_SPEC_ID].moons === 8 && SCORES[SOL61_XHIGH_SPEC_ID].earthMoonValid === true && SCORES[SOL61_XHIGH_SPEC_ID].moonEvidence.length === 8 && SCORES[SOL61_XHIGH_SPEC_ID].moonEvidence.every(moon => moon.quality === 1 && Number.isFinite(moon.periodDays) && moon.periodDays !== 0), 'Sol xHigh must retain eight individually verified moons, their signed periods, and no visual points');
+
 for (const [id,group,bytes,lines,tech,needsFloat,msaa] of [
   ['Haiku5.5(Ultracode)V1','A',131344,2423,'Three.js',true,false],
   ['Haiku5.5(Ultracode)V1-TasksAssignedByOpus5','B',191908,5160,'WebGL2',false,true],
@@ -943,6 +959,8 @@ for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
   } else {
     const astra = displayRows.find(work => work.tableVariantBase === 'GPT-6 Astra');
     check(astra?.id === 'GPT6Astra(Medium)V1-TasksAssignedByOpus5' && astra.tableAlternates.length === 1 && astra.tableAlternates[0].id === 'GPT6Astra(Light)V1-TasksAssignedByOpus5', 'B: Astra must display its highest available effort, Medium, and fold Light behind it');
+    const sol = displayRows.find(work => work.tableVariantBase === 'GPT-6.1 Sol');
+    check(sol?.id === SOL61_XHIGH_SPEC_ID && sol.tableVariantType === 'effort' && JSON.stringify(sol.tableAlternates.map(work => work.id)) === JSON.stringify([SOL61_SPEC_ID]) && sol.tableAlternates.every(alternate => SITE.scoreOrder(sol, alternate) <= 0), 'B: Sol 6.1 must default to its highest-scoring xHigh result and fold Ultra·Max behind it');
   }
 }
 
@@ -961,6 +979,7 @@ for (const [family, id] of Object.entries(expectedCurrentDocPrimaries)) check(cu
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'moonEvidence', 'reviewedAt', 'reviewVersion'];
 const expectedMoonAdjustments = {
+  [SOL61_XHIGH_SPEC_ID]: { earthMoonValid: true },
   "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5": {
     "earthMoonValid": true
   },
@@ -1371,7 +1390,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = inArchiveReview || currentSpecReviewIds.has(id) ? '2026-10-15' : id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
+    const reviewDate = inArchiveReview || currentSpecReviewIds.has(id) || id === SOL61_XHIGH_SPEC_ID ? '2026-10-15' : id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -1395,11 +1414,12 @@ for (const work of WORKS) {
     check(Array.isArray(score.moonEvidence) && score.moonEvidence.length === score.moons, `${id}: per-moon evidence must cover every rendered moon`);
     check(new Set(score.moonEvidence.map(moon => moon.id)).size === score.moons, `${id}: per-moon evidence IDs must be unique`);
     for (const moon of score.moonEvidence) {
-      const details = ['parent', 'actualInclinationDeg', 'expectedInclinationDeg'].filter(key => Object.hasOwn(moon, key));
+      const details = ['parent', 'actualInclinationDeg', 'expectedInclinationDeg', 'periodDays'].filter(key => Object.hasOwn(moon, key));
       exactKeys(moon, ['id', 'quality', 'reason', ...details], `${id}.moonEvidence`);
       check(typeof moon.id === 'string' && moon.id.length > 0 && typeof moon.reason === 'string' && moon.reason.length > 0, `${id}: each moon must have an identifier and evidence`);
       allowed(moon.quality, [0, .5, 1], `${id}.moonEvidence.${moon.id}.quality`);
       if (Object.hasOwn(moon, 'parent')) check(typeof moon.parent === 'string' && moon.parent.length > 0, `${id}.moonEvidence.${moon.id}.parent`);
+      if (Object.hasOwn(moon, 'periodDays')) check(Number.isFinite(moon.periodDays) && moon.periodDays !== 0, `${id}.moonEvidence.${moon.id}.periodDays must be a finite nonzero signed period`);
       for (const key of ['actualInclinationDeg', 'expectedInclinationDeg'].filter(key => Object.hasOwn(moon, key))) {
         if (key === 'actualInclinationDeg' && moon[key] === null)
           check(moon.quality === 0 && Boolean(score.fatal), `${id}: an undefined orbital plane must belong to an invalid moon in a documented fatal failure`);
@@ -1824,7 +1844,7 @@ check(siteSource.includes("effectiveMoons * 1.5") && siteSource.includes("effect
 check(siteSource.includes("Math.min(3, r.otherComets)") && siteSource.includes("score.parts.cometBonus"), 'V3 other-comet bonus must award one point per non-Halley comet up to three');
 check(siteSource.includes("independenceMode === 'native' ? 7 : independenceMode === 'bundled' ? 6 : 5"), 'Runtime independence must use native 7 / bundled Three.js 6 / online 5');
 check(!siteSource.includes("w.tech === 'Canvas2D' ? 10") && !siteSource.includes("parts.visual"), 'Canvas2D and legacy visual evidence must not receive score deductions or points');
-check((siteSource.match(/s\.total >= \(w\.group === 'B' \? 91 : 95\)/g) || []).length === 2, 'Both score badge and tooltip must use inclusive group thresholds: A 95, B 91');
+check((siteSource.match(/s\.total >= 96/g) || []).length === 2 && !siteSource.includes("w.group === 'B' ? 91 : 95"), 'Both score badge and tooltip must use the same inclusive 96-point threshold');
 check((siteSource.match(/card\.openAria/g) || []).length >= 6, 'Table model links, rerun popovers, pair, model-gap, and reasoning-effort screenshot links must render accessible full-work labels');
 check((siteSource.match(/card\.screenshotAlt/g) || []).length >= 4, 'Cards, pair screenshots, and model-gap screenshots must render localized alt text');
 check(cssSource.includes('.model-gap-model>div:first-child{min-width:0;flex:1}') && cssSource.includes('grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr) 44px minmax(0,1fr)'), 'Model-gap layout must reserve three equal model columns');
@@ -2034,11 +2054,12 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').value = 'GPT-6.1 Sol';
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
-  for (const [index, id] of [[0, 'GPT6.1Sol(Ultra)V1'], [1, SOL61_SPEC_ID]]) {
+  for (const [index, id] of [[0, 'GPT6.1Sol(Ultra)V1'], [1, SOL61_XHIGH_SPEC_ID]]) {
     tabs[index].listeners.click();
-    check(countRows() === 1 && body().includes('view'+(lang==='en'?'.en':'')+'.html?w='+encodeURIComponent(id)) && (body().match(/recommend-symbol-up/g) || []).length === 5 && !body().includes('recommend-symbol-down'), lang + ': Sol search must show its matching current original with five green recommendation triangles in each brief');
+    check(countRows() === 1 && body().match(/<a class="table-model" href="([^"]+)"/)?.[1] === 'view'+(lang==='en'?'.en':'')+'.html?w='+encodeURIComponent(id) && (body().match(/recommend-symbol-up/g) || []).length === 5 && !body().includes('recommend-symbol-down'), lang + ': Sol search must keep the highest-scoring primary with five green recommendation triangles');
   }
-  check(one('#gridA').innerHTML.includes('GPT6.1Sol(Ultra)V1') && one('#gridB').innerHTML.includes(SOL61_SPEC_ID), lang + ': Sol search must retain both current galleries');
+  check(body().includes(SOL61_SPEC_ID) && body().includes(SOL61_XHIGH_SPEC_ID) && body().includes(lang === 'zh' ? '查看 GPT-6.1 Sol 的另外 1 个推理强度' : 'Show 1 other effort levels for GPT-6.1 Sol'), lang + ': Sol search must expose Ultra·Max inside the xHigh effort popover');
+  check(one('#gridA').innerHTML.includes('GPT6.1Sol(Ultra)V1') && [SOL61_SPEC_ID, SOL61_XHIGH_SPEC_ID].every(id => one('#gridB').innerHTML.includes(id)) && sandbox.window.WORKS.filter(work => localSite.modelMatches(work, 'GPT-6.1 Sol')).length === 3, lang + ': Sol search must retain all three current candidates across both galleries');
   for (const tab of tabs.slice(2)) { tab.listeners.click(); check(countRows() === 0, lang + ': the new Sol pair must not enter either offline tab'); }
   tabs[0].listeners.click();
   one('#modelSearchInput').value = 'Kimi K3';
@@ -2191,6 +2212,7 @@ const expectedRecommendations = {
   'MiniMax M3 (high)': ['down', 3, '你还是老实的做视频吧'],
   'MiniMax M3.1 Flash Preview (Max)': ['up', 2, '凑什么"Flash"的热闹'],
   'GPT-6.1 Sol (Ultra·Max)': ['up', 5, '这水平难道不是应该有的吗？'],
+  'GPT-6.1 Sol (xHigh)': ['up', 5, '这水平难道不是应该有的吗？'],
   'Grok 4.6 (xHigh)': ['up', 1, '平庸的中等生'],
   'Grok 4.7 (xHigh)': ['up', 1, '平庸的中等生'],
   'Claude Sonnet 5 (Ultracode·xhigh)': ['up', 1, '感觉不值得'],
@@ -2335,15 +2357,15 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">30') && enHome.includes('id="bAll">30') && zhHome.includes('id="tAll">136') && enHome.includes('id="tAll">136'), 'Both home pages must publish 40/30 active counts and 136 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 40 件和文档组 30 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 30 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">31') && enHome.includes('id="bAll">31') && zhHome.includes('id="tAll">137') && enHome.includes('id="tAll">137'), 'Both home pages must publish 40/31 active counts and 137 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 40 件和文档组 31 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 31 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ["50.02 / 70","62.01 / 70","31.56 / 36","33.19 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
 check(zhHome.includes('详细文档版以实际任务原文为验收依据') && zhHome.includes('任务依从与物理正确性的区别') && enHome.includes('Detailed-spec entries are assessed against the actual task.') && enHome.includes('distinguishes task compliance from physical correctness'), 'Both home pages must preserve the task-attribution rule and distinguish credited task compliance from physical correctness');
 check(!zhHome.includes('没有显示稳定提升') && !zhHome.includes('没有显示出稳定提升') && !enHome.includes('no stable lift'), 'The revised sample summaries must not retain a stale claim that execution failed to improve after the corrected task-attribution review');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
-check(zhHome.includes('一句话组最终分大于等于 95、详细文档组大于等于 91') && enHome.includes('One-line entries turn green at 95 or higher; detailed-spec entries at 91 or higher.'), 'Both home pages must publish the inclusive A 95 / B 91 green thresholds');
+check(zhHome.includes('非标杆作品最终分大于等于 96，显示为绿色') && enHome.includes('Non-benchmark entries turn green at 96 or higher.'), 'Both home pages must publish the uniform inclusive 96-point green threshold');
 for (const work of WORKS) {
   const id = work.id;
   const score = SITE.scoreFor(work);
@@ -2352,9 +2374,9 @@ for (const work of WORKS) {
   const tip = SITE.scoreTipHtml(work, score);
   const badgeClasses = cell.match(/class="([^"]*)"/)?.[1] || '';
   const tipHeadClasses = tip.match(/class="score-tip-head([^"]*)"/)?.[1] || '';
-  const expectedHigh = !score.reference && score.total >= (work.group === 'B' ? 91 : 95);
+  const expectedHigh = !score.reference && score.total >= 96;
   const hasHigh = classes => /(?:^|\s)is-high(?:\s|$)/.test(classes);
-  check(hasHigh(badgeClasses) === expectedHigh && hasHigh(tipHeadClasses) === expectedHigh, `${id}: badge and tooltip must use the ${work.group === 'B' ? 91 : 95}-point threshold in current and offline tabs`);
+  check(hasHigh(badgeClasses) === expectedHigh && hasHigh(tipHeadClasses) === expectedHigh, `${id}: badge and tooltip must use the 96-point threshold in current and offline tabs`);
   check(badgeClasses.includes('score-benchmark') === score.reference && tipHeadClasses.includes('is-reference') === score.reference, `${id}: only benchmark scores must retain the gold badge and tooltip classes`);
   if (!score.reference) continue;
   check(work.group === 'A' && SITE.isVisibleWork(work) && !SITE.isArchivedWork(work) && score.reference, `${id}: the one-line benchmark must remain current and retain reference status`);
@@ -2362,6 +2384,15 @@ for (const work of WORKS) {
   check(cell.includes('⚑') && cell.includes('<button') && cell.includes('score-trigger') && cell.includes('data-score-id'), `${id}: benchmark score cell must remain a gold flag button with a tooltip trigger`);
   check(!/\d/.test(visibleText), `${id}: benchmark score cell must not render the numeric score directly`);
   check(tip.includes(`${score.total}<i>/106</i>`) && tip.includes('score-tip-grid') && tip.includes('is-reference'), `${id}: benchmark tooltip must expose its score and breakdown`);
+}
+for (const group of ['A', 'B']) for (const [data, total, green] of [[2, 95, false], [2.5, 96, true]]) {
+  SCORES.testGreenThreshold = { ...SCORES[SOL61_XHIGH_SPEC_ID], correctness: { runtime: 5, data, integrity: 5 } };
+  const work = { ...sol61XhighSpec, id: 'testGreenThreshold', group }, score = SITE.scoreFor(work);
+  const cell = SITE.scoreCell(work), tip = SITE.scoreTipHtml(work, score);
+  const hasHigh = html => /class="[^"]*\bis-high\b/.test(html);
+  check(score.total === total && hasHigh(cell) === green && hasHigh(tip) === green,
+    `${group}: rounded 95 must remain ordinary and rounded 96 must turn green in both the score badge and tooltip`);
+  delete SCORES.testGreenThreshold;
 }
 for (const id of ['GPT5.6SolUltra-WebGL2']) {
   const work = SITE.byId(id);
@@ -2415,10 +2446,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.34933333333335
     ],
     "b": [
-      30,
-      61.82866666666666,
-      33.32666666666667,
-      92.25533333333333
+      31,
+      61.898709677419355,
+      33.41290322580646,
+      92.50516129032258
     ]
   },
   "withoutReferences": {
@@ -2429,10 +2460,10 @@ const EXPECTED_WHOLE_GROUP = {
       80.8711111111111
     ],
     "b": [
-      30,
-      61.82866666666666,
-      33.32666666666667,
-      92.25533333333333
+      31,
+      61.898709677419355,
+      33.41290322580646,
+      92.50516129032258
     ]
   },
   "withoutTier4": {
@@ -2443,10 +2474,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.58000000000001
     ],
     "b": [
-      29,
-      62.16758620689655,
-      33.89022988505747,
-      93.05781609195402
+      30,
+      62.22866666666666,
+      33.96055555555556,
+      93.28922222222222
     ]
   },
   "withoutReferencesOrTier4": {
@@ -2457,10 +2488,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.09526315789473
     ],
     "b": [
-      29,
-      62.16758620689655,
-      33.89022988505747,
-      93.05781609195402
+      30,
+      62.22866666666666,
+      33.96055555555556,
+      93.28922222222222
     ]
   }
 };
