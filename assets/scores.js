@@ -205,7 +205,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -214,12 +214,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线积分大气和 HDR/Bloom/ACES。逐颗核对实际有向法线，月球、海卫一及卡戎方向均正确；只实现8颗，无超额卫星或其他彗星奖励。哈雷轨道线用512个等平均近点角样本，近日点附近折线距真实位置最大约6.465显示单位，路径拟合部分计分，不重复扣开普勒或哈雷。金星、天王星和冥王星的逆行几何轴再配负自转周期，实际自转方向双反，数据项扣分，不扣卫星。地球聚焦后相机能缩到0.3，小于显示半径0.72；支持持续聚焦跟随、暂停与日期跳转，总览和此刻只分别恢复镜头或日期，无完整复位。",
-      "reviewedAt": "2026-10-12",
-      "reviewVersion": "V3-20261012"
+      "note": "按详细任务原文复核：8颗卫星的参考面、周期及实际有向法线均有效，保持不变。金星、天王星和冥王星的大倾角几何轴、负rotH及有符号限速自转正是任务2.2/3.6/7.11给定组合，其物理双反矛盾不归责模型，data恢复5，不声称自转效果已修好。L4240/4410提供此刻、暂停、正倒放与改期，任务6/8.1无全状态复位要求，pause计1。哈雷512个等平均近点角轨道样本在近日点最大弦偏差约6.465显示单位不是任务规定采样法，pathFit仍部分分；地球聚焦可缩到0.3小于半径0.72，zoom部分分保持。其余渲染、数据、跟随证据不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Haiku5.5(Ultracode·Max)V1': {
       "reference": false,
@@ -501,7 +501,7 @@
           "id": "charon",
           "parent": "pluto",
           "quality": 0,
-          "reason": "L1158/L1199: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "reason": "L1150–1154/L1163/L1199–1209：spinSenseEcl额外按Pluto负rotH翻转几何pole，再用于moonFrame；任务3.7未要求此翻极步骤，实际r×v对Pluto几何pole179.92°，quality0保留。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -510,7 +510,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -519,12 +519,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。行星、带、环影、视线大气、HDR/Bloom/ACES与交互成立；月球和海卫一实际法线正确。Pluto几何pole已是112.8度，moonFrame再按负rotH翻转使Charon黄道倾角67.2737度，剔除该颗。预设相位与真实相位宣传不符；此刻只改日期。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：月球及另外6颗卫星的实际有向法线保持有效；Charon在L1154/1163额外因Pluto负rotH翻转moonFrame参考极，继续不计，仍为7颗。任务3.7只给初始相位变量、没有卫星历表，界面“角位置、相位等真实”的措辞沿任务0；撤回要求模型额外取得真实卫星历表的归责，不宣称实际物理初相已经验证。暂停stepDays为0并冻结自转，正倒放与此刻有效；任务未要求全状态复位，pause计1。既有行星、带、环影、大气、HDR/Bloom/ACES、跟随及安全缩放评分不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     "GPT6Astra(Light)V1": {
       "reference": false,
@@ -670,12 +670,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计8颗有效；视觉不计分。实际负Z局部轨道、右手基与海卫一绝对周期加大倾角的组合正确，8颗均有效。JPL元素、GPU带、双向环影、大气和后期有效，跟随和目标半径缩放有效；唯一明确交互缺项为此刻单独改日期。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：8颗卫星的参考面、周期及实际有向法线原本均有效，保持不变；未因模型自行修正负周期/大倾角组合增加额外奖励。行星根数、运动带、环影、视线大气及后期证据保持。L133的暂停、正倒放、改期与此刻绑定，L142用暂停门控的dd同时驱动JD和物理自转；任务6/8.1没有全状态重置要求，撤销仅因“此刻单独改日期”造成的半分扣减，pause计1。有效跟随与按目标半径限制滚轮的原有评分保持，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     "GPT6Luna(Max)V1": {
       "reference": false,
@@ -796,7 +796,7 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 0,
-          "reason": "L74/L193: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "reason": "L74/L232最终覆盖：母基Z=cross(axis,X)为额外左手基(det−1)，实际r×v对Neptune几何pole23.1°；不属于proper母基下忠实执行任务正Z/Rx的内生矛盾，quality0保留，非物理已修正。",
           "actualInclinationDeg": 23.099999999999994,
           "expectedInclinationDeg": 156.9
         },
@@ -813,7 +813,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -822,12 +822,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 0.5,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：以文件尾部最终生效覆盖为准，实现8颗卫星、7颗方向有效。L232的updateSim已修正旧L193月球分支，月球参考面与距离正确；左手赤道基下海卫一负周期配156.9度仍给出顺行法线，剔除该颗。行星、哈雷、环影、大气与后期有效。L231最终selectedRawPosition和L233最终updateLiveInfo已修正旧的哈雷/卫星实时坐标路径；只对固定周期与7月底回归文案不符保留data扣分。L230选择哈雷仍清空camera.follow，L232中的哈雷跟随分支不能由该UI到达，follow部分分；此刻不是完整重置。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按文件尾部最终覆盖与任务原文复核：L232修正后的月球及另外6颗卫星保持有效；海卫一在L74额外左手母基下实际有向倾角23.1°，该基手性不是任务要求，继续不计，仍为7颗。哈雷固定Tp/P与任务8.2七月底文本的矛盾不归责，撤销原数据扣分。最终L231/L233实时坐标修正继续有效；L230选哈雷仍清空camera.follow，持续跟随部分分保持。L186/187/232已提供暂停、正倒放、改期和此刻且冻结物理自转，任务不要求全状态复位，pause计1。渲染、轨道、缩放及其它项不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Sonnet5.5(Max)V1': {
       "reference": false,
@@ -1007,7 +1007,7 @@
           "id": "moon",
           "parent": "earth",
           "quality": 0,
-          "reason": "L1215: 实际world轨道r×v有向黄道倾角84.855°，期望5.145°。",
+          "reason": "L1215: 实际world轨道r×v有向黄道倾角84.855°，期望5.145°。 本次按任务核对仍保留：月球分支将local再次交换到ox=lx,oy=lz,oz=-ly，实际84.855°；不是直接世界偏移。",
           "actualInclinationDeg": 84.855,
           "expectedInclinationDeg": 5.145
         },
@@ -1015,7 +1015,7 @@
           "id": "io",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.05000000000036243,
           "expectedInclinationDeg": 0.05
         },
@@ -1023,7 +1023,7 @@
           "id": "europa",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.4700000000001629,
           "expectedInclinationDeg": 0.47
         },
@@ -1031,7 +1031,7 @@
           "id": "ganymede",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.19999999999981224,
           "expectedInclinationDeg": 0.2
         },
@@ -1039,7 +1039,7 @@
           "id": "callisto",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.1900000000007852,
           "expectedInclinationDeg": 0.19
         },
@@ -1047,7 +1047,7 @@
           "id": "titan",
           "parent": "saturn",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.34999999999958503,
           "expectedInclinationDeg": 0.35
         },
@@ -1055,7 +1055,7 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 0,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。 本次按任务核对仍保留：Z=axis×X给左手母轴基；负P与156.9°结果为23.1°。不能以普通卫星正确倒推Triton正确。",
           "actualInclinationDeg": 23.099999999999994,
           "expectedInclinationDeg": 156.9
         },
@@ -1063,7 +1063,7 @@
           "id": "charon",
           "parent": "pluto",
           "quality": 1,
-          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "reason": "L897/L1215: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.07999999999851001,
           "expectedInclinationDeg": 0.08
         }
@@ -1072,7 +1072,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -1081,12 +1081,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。升交点基准角未转弧度且变化率遗漏世纪因子；只在轨道方向项扣分。月球近竖直参考面、海卫一方向错误按逐颗卫星处理。哈雷计算周期与7月底文案不符，缩放可穿入；此刻仅恢复日期。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务重新核对：8颗卫星计6颗任务有效。升交点基准未转弧度且变化率遗漏世纪因子，保留轨道定向扣分。月球多做坐标交换后有向倾角84.855°，海卫一因左手母轴基为23.1°，均非任务§3.7所要求的直接世界偏移/正交模型基，保留逐颗扣分。7月底文案直接来自任务验收，与给定Tp/P的6月日期冲突不归责模型；暂停和此刻成立，无须完整状态重置。滚轮下限仍可穿入，保留缩放部分分。视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Hy4Preview(high)V1': {
       "reference": false,
@@ -1361,47 +1361,47 @@
           "id": "moon",
           "parent": "earth",
           "quality": 1,
-          "reason": "L1863: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "reason": "L1863: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 5.145,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -1409,15 +1409,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L1689/L1863: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -1435,12 +1435,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。环双向投影与视线大气均有实际实现，撤销纯视觉造成的rings和integrity扣分。右手赤道基配正Z轨道使普通卫星反向；月球和海卫一方向反而正确。卫星rotH误填公转天数再除24，自转快24倍；滚轮下限0.16可穿入。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：月球/海卫一物理方向成立，其余6颗按§3.7正Z局部圆轨道与右手母轴基逐式实现，撤回提示诱发的方向扣分；实际普通卫星有向倾角仍约179.5–179.95°，未宣称物理修正。环双向投影、大气与后期保持满分。独立错误仍在：卫星将公转天数填入rotH再除24，自转快24倍，且信息卡称潮汐锁定，data保留3.5；不重复扣卫星轨道。暂停/此刻有效恢复满分，滚轮0.16可穿入仍部分分。视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Hy4Preview(high)V2-TasksAssignedByOpus5': {
       "reference": false,
@@ -1464,53 +1464,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1573: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角174.855000°仍与物理期望5.145°不同。模型源文件未改。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -1518,15 +1518,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L1462/L1573: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -1544,12 +1544,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。双向环影完整，旧环明暗/辉光观感不计分。卫星正Z相位与右手基使普通赤道卫星方向颠倒，月球也逆行；仅海卫一有向法线符合要求。此刻仅改日期，缩放安全边界不足。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：月球直接将正Z局部圆轨道经Rx后的偏移加到母星世界位置，6颗普通赤道卫星采用右手母轴基，均忠实§3.7，撤回提示诱发的方向扣分；实际月球174.855°、普通卫星约179.5–179.95°仍保留证据，并不声称物理正确。海卫一实际156.9°原分保持。环影、真实元素/路径、运动带、大气/后期保持满分。暂停/此刻有效，不要求完整重置；聚焦半径下限成立，但overview下限1.2可进入半径4.6的太阳，缩放保留部分分。视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GLM5.3Flash(Max)V2': {
       "reference": false,
@@ -1669,47 +1669,47 @@
           "id": "moon",
           "parent": "earth",
           "quality": 0,
-          "reason": "L1654: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "reason": "L1654: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。 本次按任务核对仍保留：Moon输出[c,s*cosI,s*sinI]到world，有向95.145°；不是XZ局部Rx后直接相加。",
           "actualInclinationDeg": 95.145,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -1717,15 +1717,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L251/L1654: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -1743,12 +1743,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。球面环影使用世界长度而未除显示半径，环影尺度错误故rings部分分；月球有向倾角95.145度。赤道卫星按实际基手性逐颗处理。聚焦和按显示半径限制缩放成立；旧曝光/颗粒观感不扣分。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核：8颗卫星中7颗按任务要求计分；6颗普通赤道卫星的右手母轴基+正Z圆轨道照§3.7，撤回提示诱发的反向扣分，实际约179.5–179.95°仍注明。月球分支却把黄道偏移换成[c,s*cosI,s*sinI]直接当world，使有向倾角95.145°，不是提示要求，保留无效及地月扣分；海卫一实际156.9°保持有效。球面环影世界长度未除显示半径，rings仍部分分。暂停/此刻成立恢复满分；按显示半径限制缩放与聚焦/跟随保持满分。视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GLM5.3Flash(Max)V1': {
       "reference": false,
@@ -1853,7 +1853,7 @@
           "id": "moon",
           "parent": "earth",
           "quality": 0,
-          "reason": "L1674: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。",
+          "reason": "L1674: 实际world轨道r×v有向黄道倾角95.145°，期望5.145°。 本次按任务核对仍保留：黄道分支额外将sin*cosI放worldY，实际95.145°。",
           "actualInclinationDeg": 95.145,
           "expectedInclinationDeg": 5.145
         },
@@ -1861,7 +1861,7 @@
           "id": "io",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.050000°，期望0.05°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.05000000000036243,
           "expectedInclinationDeg": 0.05
         },
@@ -1869,7 +1869,7 @@
           "id": "europa",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.470000°，期望0.47°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.4700000000001629,
           "expectedInclinationDeg": 0.47
         },
@@ -1877,7 +1877,7 @@
           "id": "ganymede",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.200000°，期望0.2°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.19999999999981224,
           "expectedInclinationDeg": 0.2
         },
@@ -1885,7 +1885,7 @@
           "id": "callisto",
           "parent": "jupiter",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角0.190000°，期望0.19°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.1900000000007852,
           "expectedInclinationDeg": 0.19
         },
@@ -1893,7 +1893,7 @@
           "id": "titan",
           "parent": "saturn",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角0.350000°，期望0.35°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.34999999999958503,
           "expectedInclinationDeg": 0.35
         },
@@ -1901,7 +1901,7 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 0,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。 本次按任务核对仍保留：Z=Y×X的左手基使Triton实际23.1°，区别于题给proper母轴基路径。",
           "actualInclinationDeg": 23.099999999999994,
           "expectedInclinationDeg": 156.9
         },
@@ -1909,7 +1909,7 @@
           "id": "charon",
           "parent": "pluto",
           "quality": 1,
-          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。",
+          "reason": "L201/L1674: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角0.080000°，期望0.08°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 0.07999999999851001,
           "expectedInclinationDeg": 0.08
         }
@@ -1927,12 +1927,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。Halley计算值写入临时数组后没有更新主体位置，哈雷功能不成立。点状兼容路径使环连续结构仅部分有效；但主行星和控制仍运行，撤销仅视觉降级造成的L2。月球近竖直；其余卫星据实际左手基方向计数。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核：8颗卫星仍计6颗有效，月球95.145°来自额外坐标交换，海卫一23.1°来自左手母轴基，均不由§3.7的右手母轴基公式免责。哈雷状态写入临时Array.from后丢弃，实体位置保持零，Halley分保持0；环兼容点路径缺连续结构，rings部分分保留。独立信息错误为Moon沿用母星地心距离，地月显示0 AU，data保留4，不与卫星参考面或哈雷重复扣分。暂停与此刻有效恢复满分；其余交互保持。主行星运行有效，无fatal，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GPT5.6Sol(Medium)V1': {
       "reference": false,
@@ -2321,53 +2321,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L342: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角174.855000°仍与物理期望5.145°不同。模型源文件未改。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -2375,15 +2375,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L226/L342: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -2392,7 +2392,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 4
       },
       "visualBase": null,
@@ -2404,9 +2404,9 @@
         "pauseReset": 0.5
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环双向投影和后期有效。右手基正Z使月球及普通顺行卫星方向错误；海卫一有向法线正确。离子尾向量朝向太阳属于独立渲染完整性问题；7月底日期文案不符。缩放可穿入，仅日期恢复。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：月球直接世界偏移、普通赤道卫星右手母轴基配正Z圆轨道忠实§3.7，撤回提示诱发方向扣分；物理月球174.855°及普通卫星约179.5–179.95°仍存在并注明，海卫一156.9°保持有效。7月底文案与给定Tp/P冲突来自任务，撤data扣分。独立缺陷保留：离子尾朝太阳，integrity4；暂停只停JD却仍更新自转，实跑800ms地球spin5.40025→.703303，pauseReset仍.5；此刻可用。缩放可穿入仍部分分。环影、运动带与后期保持满分，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GPT5.6Sol(high)V1': {
       "reference": false,
@@ -3059,53 +3059,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1518: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角174.855000°仍与物理期望5.145°不同。模型源文件未改。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -3113,15 +3113,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L330/L1518: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -3130,7 +3130,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -3139,12 +3139,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实元素与Kepler、运动带、视线大气和后期成立。月球及多数赤道卫星有向法线颠倒，仅海卫一方向正确。旧点状轨道与光晕外观不计分；此刻只恢复日期，7月近日点文案与周期推算不符。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：Moon所用黄道基再经eclVecToWorld后实际为世界恒等基，其正Z局部Rx偏移直接加母星世界坐标；6颗普通卫星右手母轴基均忠实§3.7，撤回提示诱发扣分。实际月球174.855°、普通卫星约179.5–179.95°仍注明，海卫一156.9°保持有效，并非模型物理已修正。7月文案沿用任务验收冲突，data恢复5；暂停/此刻有效，不要求全状态重置，pauseReset恢复1。真实元素/路径、环影、运动带、大气/后期及其余交互保持满分，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GLM5.3(Max)V2-TasksAssignedByOpus5': {
       "reference": false,
@@ -3168,53 +3168,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L633: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角174.855000°仍与物理期望5.145°不同。模型源文件未改。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -3222,15 +3222,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。",
+          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角23.100000°，期望156.9°。 本次按任务核对仍保留：给定P为−5.876854，模型改为+5.876854；proper基正Z与inc156.9°实际得23.1°，独立于提示负P矛盾。",
           "actualInclinationDeg": 23.099999999999994,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L386/L633: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -3239,7 +3239,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -3248,12 +3248,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。程序具有离屏MSAA、环影和后期。源码LINEAR解析需结合实际FBO判定，主任务已确认本机GL0与持续渲染，不能据此判fatal。月球及赤道卫星实际方向均不符合给定轨道方向；滚轮0.05可穿入，缺完整复位。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核：8颗卫星中7颗按任务要求计分。月球直接世界偏移、普通卫星右手母轴基配正Z轨道忠实§3.7，撤回提示诱发扣分；实际月球174.855°、普通卫星约179.5–179.95°仍存在。海卫一擅将给定−5.876854改为正值，实际有向23.1°，独立偏离题给数据，仍计0。7月文案冲突来自任务，data恢复5；暂停/此刻有效，无完整reset要求，恢复满分。滚轮0.05可穿入保留部分分；其余功能/轨道/交互保持，实跑GL0不能仅据LINEAR字样判fatal。视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GLM_5_1_high-1': {
       "reference": false,
@@ -5871,47 +5871,47 @@
           "id": "moon",
           "parent": "earth",
           "quality": 1,
-          "reason": "L1608: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "reason": "L1608: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 5.145,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -5919,15 +5919,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L148/L1608: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -5948,9 +5948,9 @@
         "pauseReset": 0.5
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。行星解析元素与轨道同源，双向环影的球面测试遗漏正向射线条件，ring部分分。普通赤道卫星的方向因右手基正Z反转，月球和海卫一正确。暂停使用Date.now加offset仍随真实时间漂移；7月近日点文案错误。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：月球和海卫一物理方向成立，其余6颗按§3.7 右手母轴基配正Z轨道实现，撤回提示诱发的反向扣分，实际普通卫星约179.5–179.95°仍注明。环面射线未拒绝负t的独立环影错误保留rings部分分。自转以天增量直接除小时周期，较题给小时转天慢24倍，data4保留；7月文案冲突不再作为扣分理由。暂停以Date.now+offset生成JD，实跑1秒仍漂移1.00398秒，pauseReset.5保留；此刻有效。其它轨道/功能/交互保持，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'DeepSeekV4Pro0813(Max)V2': {
       "reference": false,
@@ -6050,47 +6050,47 @@
           "id": "moon",
           "parent": "earth",
           "quality": 1,
-          "reason": "L1635: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。",
+          "reason": "L1635: 实际world轨道r×v有向黄道倾角5.145°，期望5.145°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 5.145,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.950000°仍与物理期望0.05°不同。模型源文件未改。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.530000°仍与物理期望0.47°不同。模型源文件未改。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.800000°仍与物理期望0.2°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.810000°仍与物理期望0.19°不同。模型源文件未改。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.650000°仍与物理期望0.35°不同。模型源文件未改。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -6098,15 +6098,15 @@
           "id": "triton",
           "parent": "neptune",
           "quality": 1,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。",
+          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对neptune几何pole有向倾角156.900000°，期望156.9°。 本次重核最终有效实现/参考面/周期，原有物理有效结论保持。",
           "actualInclinationDeg": 156.9,
           "expectedInclinationDeg": 156.9
         },
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L314/L1635: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务信用恢复：spec.html §3.7 L138–143明给正Z局部圆轨道、Rx倾角及直接世界偏移/proper母轴基；最终代码忠实逐式实现，方向矛盾归属提示，不再归责模型。实际有向倾角179.920000°仍与物理期望0.08°不同。模型源文件未改。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -6127,9 +6127,9 @@
         "pauseReset": 0.5
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。球投环使用1减smoothstep，背阳环遮挡锥内外亮暗反转，rings部分分。月球正确，右手基正Z令普通赤道卫星反向，海卫一方向正确。移除旧默认曝光/材质带来的完整性扣分；滚轮0.4可穿入。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按任务复核8颗卫星：月球/海卫一物理方向成立，6颗普通赤道卫星的右手母轴基+正Z圆轨道忠实§3.7，撤回提示诱发的方向扣分，实际约179.5–179.95°仍注明。球投环把正确smoothstep阴影再取1减，背阳遮挡锥内外明暗反转，rings部分分保留。clampSpin限的是绝对目标与当前相位之差，高倍速产生欠账后暂停仍逐帧追赶，实跑JD固定而800ms地球spin增加10.56rad，保留真实暂停部分分，不以缺完整reset扣分；此刻有效。滚轮0.4可穿入仍部分分；其余轨道、数据、功能与交互保持，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'DeepSeekProMax-TasksAssignedByOpus5': {
       "reference": false,
@@ -7814,12 +7814,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计8颗有效；视觉不计分。实际负Z轨道和右手基保持正确顺行；海卫一用23.1度几何面配负周期，8颗方向均有效。真实元素、双环影、后期与持续跟随成立。滚轮全局0.25可穿入；此刻仅恢复时间。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：8颗卫星实际参考面、周期和有向法线均有效，负Z局部轨道与海卫一23.1°/负周期组合正确；JPL轨道、双向环影、大气及后期分项保持。暂停dtDays为0，此刻确实恢复当前时间，满足任务要求，撤销额外全状态复位要求。滚轮全局下限0.25可穿入天体，zoom仍部分计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'KimiK3(Max)V2-TasksAssignedByOpus5': {
       "reference": false,
@@ -7843,53 +7843,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1783: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L439–445; L1783–1798照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -7904,8 +7904,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L439/L1783: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L439–445; L1783–1798直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -7914,8 +7914,8 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
-        "integrity": 4
+        "data": 4.5,
+        "integrity": 5
       },
       "visualBase": null,
       "interaction": {
@@ -7923,12 +7923,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。行星和路径同源；卫星轨道缓冲只绘制生成顶点一半，pathFit部分分。右手基正Z使普通卫星反向，仅海卫一方向有效。彗尾4浮点布局写5值是独立完整性错误；信息距离近似与7月底文案有误，滚轮可穿入。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：Moon及六颗普通赤道卫星照§3.7正Z/Rx与右手母轴算法执行，实际有向角仍174.855°/179.x°，按任务归责撤销这些方向扣分，不宣称物理正确；海卫一实际方向原已成立。暂停、倒放和此刻符合任务，无全状态复位扣分。哈雷June/July矛盾来自任务，不扣模型。纯函数确认双尾为xyz+alpha四浮点布局，640浮点/160顶点与16字节stride吻合，撤销旧完整性误扣。保留卫星轨道圈未倾斜、面板显示坐标混AU及缩放可穿入。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'LongCat2.0-TasksAssignedByOpus5': {
       "reference": false,
@@ -8569,53 +8569,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1471: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L383–389; L1471–1482照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -8630,8 +8630,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L383/L1471: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L383–389; L1471–1482直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -8640,7 +8640,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -8649,12 +8649,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。J2000元素、运动小天体和双向环影完整；但右手基正Z令月球及普通赤道卫星方向反转，仅海卫一方向符合给定值。7月底哈雷文案与固定周期冲突；滚轮没有目标半径下限，此刻只改时间。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：Moon和六颗普通卫星直接采用§3.7正Z/Rx及右手母轴，实际反向角度保留，但这些提示算法内生方向问题撤销扣分；海卫一原方向有效，8颗按任务口径计入。哈雷按给定Tp/P计算，July文案来自任务验收，不扣数据。暂停冻结模拟与自转，此刻回当前时间，任务没有全状态复位要求。唯一保留的数值扣项为滚轮没有目标半径保护而可穿入。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Sonnet5Ultra-TasksAssignedByOpus5': {
       "reference": false,
@@ -8891,13 +8891,13 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1231: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L234–240; L1231–1241照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
@@ -8962,7 +8962,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
+        "data": 4,
         "integrity": 5
       },
       "visualBase": null,
@@ -8971,12 +8971,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 0,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。后期和环影成立。相机只在camTransition存在时更新目标，过渡后停止跟随；暂停仍以现实时间驱动自转。月球有向法线反转，其余赤道卫星通过左手基与额外符号处理方向有效；信息卡仅选择时刷新，近日点文案错误。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：月球直接照§3.7正Z/Rx世界偏移，实际174.855°方向仍记录，撤销提示内生逆行扣分；其余七颗已有物理有效方向。暂停togglePlay调用updateSpeed将djd归0，实跑800ms日期和earth.phase均完全不变，撤销旧暂停误判及全状态复位要求。保留过渡结束即停止跟随、信息卡仅选择时刷新和缩放可穿入；哈雷任务自身June/July冲突不扣。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Gemini3.8Flash(high)V1': {
       "reference": false,
@@ -9062,40 +9062,40 @@
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -9110,8 +9110,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L811/L3114: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L812–831; L3112–3132直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -9129,12 +9129,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。行星元素和路径一致，环影、大气、Bloom/ACES有效。月球映射后有向倾角95.145度；右手赤道基正Z使普通卫星反向，海卫一方向正确。该故障只扣卫星，不重复扣data；拖动释放误选、安全缩放及完整复位不足。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：六颗普通赤道卫星照§3.7右手母轴与正Z/Rx执行，实际179.x°记录不改，撤销任务算法内生反向扣分；海卫一原有效。Moon另做Y/Z映射导致95.145°近竖直，非提示要求，仍无效并保留月球锚点扣分。暂停、正倒放与此刻有效，撤销额外完整复位要求。保留拖动释放误选与可穿入缩放；视觉不重新评分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Gemini3.8Flash(high)V2': {
       "reference": false,
@@ -9243,13 +9243,13 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L3894: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L1264–1290; L3899–3928照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
@@ -9314,7 +9314,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
+        "data": 4,
         "integrity": 5
       },
       "visualBase": null,
@@ -9323,12 +9323,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计6颗有效；视觉不计分。实际后处理未调用HDR Bloom金字塔，只有眩光近似，bloom部分分。月球世界相位反转，海卫一在左手基中方向错误；其他卫星有效。月球面板显示母星日心距，哈雷日期文案与周期不符；缺拖拽抑制和安全缩放。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：Moon直接world平面偏移的正Z相位产生174.855°有向角，示意节点未给定，方向反转源于提示算法，撤销该颗扣分且保留实际角度。六颗普通卫星原已有效；海卫一因left-handed母基成为23.1°顺行，属于额外基错误，仍不计。哈雷June/July任务冲突不扣，暂停与此刻满足要求。保留未实际执行HDR Bloom金字塔、月球把1AU日心距当与地球距离的面板错误、拖拽误选及可穿入缩放。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'MuseSpark1.3Contributor(xhigh)V2': {
       "reference": false,
@@ -9427,53 +9427,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L1140: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L1139–1160照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -9488,8 +9488,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L1150/L1140: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L1139–1160直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -9498,7 +9498,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -9510,9 +9510,9 @@
         "pauseReset": 0.5
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环影、运动带、真实元素与后期有效；右手基正Z导致多数卫星方向反转，仅海卫一方向有效。7月底文案错误；拖拽释放误点、固定缩放下限及日期单独复位为实际交互缺项，不以视觉观感扣分。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：Moon及六颗普通赤道卫星使用§3.7正Z/Rx与右手母轴，实际反向角度照旧记录，撤销提示内生方向扣分；海卫一原有效。哈雷July验收文案与给定Tp/P相矛盾，不扣数据。保留拖动误选、固定缩放下限可穿入；暂停虽冻结JD及行星spin，卫星球面phase仍叠加真实时间simT.t*.1而继续转动，pauseReset维持部分分，原因改为真实暂停不完全，不要求全状态复位。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'OmenAlpha(Max)V1': {
       "reference": false,
@@ -9735,53 +9735,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L29: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z局部相位并直接加世界偏移；L18; L21; L29照该算法，实际有向倾角仍174.855000°（物理方向反转，原实测角不改），此为提示公式内生问题，按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -9796,8 +9796,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L18/L29: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L18; L21; L29直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -9815,12 +9815,12 @@
         "zoom": 1,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。元素、GPU运动带、后期与双向环影完整。卫星实际右手基正Z使普通卫星反向，海卫一把156.9改23.1后负周期也成为顺行；月球亦逆行，8颗均不能按有效方向计。说明示意相位与6月回归自洽，不扣数据；安全缩放有效。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：Moon及六颗普通卫星正Z相位的反向来自提示，保留实际174.855°/179.x°角度并按任务计入7颗。海卫一自行将156.9°改23.1°后仍用负周期，proper母基下实际变顺行，非直接照任务实现，仍无效。其余轨道、渲染、数据和安全缩放分项保持；暂停及此刻符合任务，不要求全状态复位。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Opus5(Low)V1-TasksAssignedByOpus5': {
       "reference": false,
@@ -10211,40 +10211,40 @@
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对jupiter轴有向倾角仍179.950000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对jupiter轴有向倾角仍179.530000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对jupiter轴有向倾角仍179.800000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对jupiter轴有向倾角仍179.810000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对saturn轴有向倾角仍179.650000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -10259,8 +10259,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L306/L2056: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "任务§3.7指定正Z/Rx再proper母轴；L306–315; L2062–2080直接照做，实际对pluto轴有向倾角仍179.920000°，提示公式内生反向按任务依从免责计1，不宣称物理正确。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -10269,7 +10269,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
+        "data": 4,
         "integrity": 5
       },
       "visualBase": null,
@@ -10278,12 +10278,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实行星元素和渲染路径成立；月球局部轴误映射为近竖直，右手赤道基正Z导致普通卫星反向，仅海卫一方向正确。卫星posEcl把显示坐标直接加到AU用于面板且7月回归文案错误；缩放及完整复位不足。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：六颗普通赤道卫星右手母轴+正Z/Rx照提示实现，实际179.x°保留并撤销算法内生方向扣分；海卫一原方向有效。Moon却额外映射Y/Z，实际95.145°近竖直，保持无效。哈雷July文案不再扣给模型，data恢复4，但卫星把显示坐标当AU混入实时距离的独立错误保留。暂停、倒放与此刻有效，撤销全状态复位要求；缩放可穿入仍部分计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'MiMoXProPreview(Unknown)V1': {
       "reference": false,
@@ -10437,12 +10437,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计7颗有效；视觉不计分。行星位置采用未映射黄道坐标，轨道线却按Y朝上映射，pathFit为0，数学轨道旋转本身不重复扣orientation。球面uHasRing固定0，只有单向环影。左手赤道基下海卫一方向错误；滚轮被聚焦距离拉回，真实距离显示失真。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按完整任务复核：7颗卫星原有物理有效方向保持，海卫一23.1°来自额外left-handed母轴，仍无效。行星主体与轨道线使用不同world映射、球面环影未启用、月球日心距离误显示绕地轨道半径及缩放回弹均为独立实现缺陷，继续保留。暂停冻结JD/物理自转，此刻恢复当前时刻；撤销额外全状态复位要求，其余分项不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Step5Preview(high)V1': {
       "reference": false,
@@ -10642,7 +10642,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 2,
-        "data": 2,
+        "data": 3,
         "integrity": 2
       },
       "visualBase": null,
@@ -10655,9 +10655,9 @@
       },
       "fatal": "L2",
       "fatalReason": "卫星模型矩阵NaN与合成顶点布局错误造成核心实体和画面/拾取映射失败；新规则标记未完成，不设分数封顶。",
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计0颗有效；视觉不计分。8颗卫星缺tilt/poleLon/rotH，模型矩阵NaN而实体无效；合成顶点步长错误使主画面与投影/标签不一致，属核心失败L2，按新规则建议灰色未完成而非分数封顶。行星Kepler路径仍有效；聚焦不跟随，暂停仍自转，距离/光行时和近日点文案错误。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：不把任务2.2/3.6给定的转轴、自转符号或2.5/8.2哈雷日期矛盾归责给模型；撤去回归日期扣分。仍保留两类独立数据错误：压缩显示距离直接标AU，以及光行时漏AU到km并混用天/秒换算。8颗卫星缺tilt/poleLon/rotH使轴和模型矩阵NaN，实体无效；全屏顶点数据布局与16字节步长不符，主画面与拾取投影失配，核心L2及灰色未完成保持。暂停JD固定但自转相位继续增加已实跑确认，pause部分分；聚焦不持续跟随及缩放边界问题保留。行星Kepler、环影、带、后期和大气既有证据不变，视觉不计分。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'MiMo2.6Flash(Unknown)V1': {
       "reference": false,
@@ -10723,53 +10723,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L454: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角174.855000°保留，并非物理已修正。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.950000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.530000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.800000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.810000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.650000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -10784,8 +10784,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L204/L454: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "L204–216/L469–483：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.920000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -10794,7 +10794,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 3,
-        "data": 3.5,
+        "data": 4.5,
         "integrity": 5
       },
       "visualBase": null,
@@ -10803,12 +10803,12 @@
         "zoom": 0.5,
         "focus": 0.5,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。后期、双向环影和行星路径有效。L2890最终selectBody覆盖旧定义，先选中并设cam.focusId，随后非地球updateInfoPanel重赋const lightMin，已由主任务复跑重现异常；选择与自动拉近部分失败但绘制继续，不判fatal。右手基正Z使多数卫星反向，仅海卫一方向正确；统一30小时自转和近日点文案错误。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：8颗卫星的周期、倾角、参考面及正Z圆轨道绕X倾斜后加母星世界坐标/正交基，均沿任务2.4/3.7实现，按任务依从计8颗。原实测月球174.855°、普通赤道卫星约179.x°仍保留；撤回提示内生方向矛盾的归责不表示物理运动被修好。哈雷固定Tp/P与7月底文字的冲突来自任务2.5/8.2，不再扣分；独立的统一30小时卫星自转近似仍保留数据部分扣分。暂停、正倒放与此刻功能成立，任务未要求全状态复位，pause计1。末尾L2890选择覆盖触发const lightMin重赋异常，拖拽后误点及缩放穿入等实际缺陷保持原分；既有渲染与轨道项不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'MiMo2.6Pro(Unknown)V1': {
       "reference": false,
@@ -10907,53 +10907,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L2412: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角174.855000°保留，并非物理已修正。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.950000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.530000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.800000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.810000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.650000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -10968,8 +10968,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L467/L2412: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "L467–472/L2412–2441：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.920000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -10978,7 +10978,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
+        "data": 5,
         "integrity": 4
       },
       "visualBase": null,
@@ -10987,12 +10987,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。真实元素、后期与环影成立。右手基正Z使多数卫星方向反转，仅海卫一正确；不再对同一轨道方向重复扣data。真实比例关闭仍插值到1、离子尾朝太阳为独立完整性问题；面板AU/压缩单位混用与7月底文案错误。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：8颗卫星的正Z局部轨道、X倾斜、带符号周期及黄道/赤道分支忠实遵循2.4/3.7，撤回提示内生的月球与普通卫星方向扣分；实际174.855°/179.x°有向角不改，也不声称物理已修好。哈雷7月底文案与给定Tp/P的冲突不归责模型。原审查把L403–414/L424–441的原始AU坐标映射world误读为压缩显示坐标，行星与彗星面板距离/光行时实际正确；月球混合坐标的dE仅死变量，未显示，不因此扣数据。真实比例关闭后仍向1插值、离子尾朝太阳的独立完整性问题继续保留。暂停门控覆盖日期和物理自转，正倒放与此刻可用；无全状态复位不是任务缺项，pause计1。缩放下限及其余原有评分保持。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Grok4.7(xhigh)V1': {
       "reference": false,
@@ -11138,40 +11138,40 @@
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.950000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.530000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.800000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.810000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.650000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -11186,8 +11186,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L277/L1743: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "L277–286/L1746–1763：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.920000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -11196,7 +11196,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 4,
+        "data": 5,
         "integrity": 5
       },
       "visualBase": null,
@@ -11205,12 +11205,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计2颗有效；视觉不计分。真实元素、后期和双向环影成立；月球参考面与方向正确，但右手赤道基正Z使普通卫星反向，仅海卫一方向正确。7月预设与模型周期不符；滚轮0.45可穿入、缺完整重置；撤销旧纯观感完整性扣分。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：月球和海卫一原有向法线有效；另6颗赤道卫星严格采用3.7的正Z局部圆轨道、X倾斜和母星正交基，提示内生方向矛盾不再归责，按任务依从共计8颗。原约179.x°角度记录不变，不把免责说成物理修正。2.5给定哈雷Tp/P与8.2七月底预设相冲突，撤销这项数据扣分。暂停以JD增量驱动并冻结物理自转，正倒放、改期、此刻均有绑定，任务未要求全状态重置，pause计1。固定0.45缩放下限可穿入天体仍保留部分分；其它渲染、轨道与交互证据不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'Opus5.5(Max)V1': {
       reference: false,
@@ -11387,53 +11387,53 @@
       },
       "moons": 8,
       "hasEarthMoon": true,
-      "earthMoonValid": false,
+      "earthMoonValid": true,
       "moonEvidence": [
         {
           "id": "moon",
           "parent": "earth",
-          "quality": 0,
-          "reason": "L2062: 实际world轨道r×v有向黄道倾角174.855°，期望5.145°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角174.855000°保留，并非物理已修正。",
           "actualInclinationDeg": 174.855,
           "expectedInclinationDeg": 5.145
         },
         {
           "id": "io",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.950000°，期望0.05°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.950000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.94999999999965,
           "expectedInclinationDeg": 0.05
         },
         {
           "id": "europa",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.530000°，期望0.47°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.530000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.52999999999986,
           "expectedInclinationDeg": 0.47
         },
         {
           "id": "ganymede",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.800000°，期望0.2°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.800000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80000000000018,
           "expectedInclinationDeg": 0.2
         },
         {
           "id": "callisto",
           "parent": "jupiter",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对jupiter几何pole有向倾角179.810000°，期望0.19°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.810000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.80999999999923,
           "expectedInclinationDeg": 0.19
         },
         {
           "id": "titan",
           "parent": "saturn",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对saturn几何pole有向倾角179.650000°，期望0.35°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.650000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.65000000000043,
           "expectedInclinationDeg": 0.35
         },
@@ -11448,8 +11448,8 @@
         {
           "id": "charon",
           "parent": "pluto",
-          "quality": 0,
-          "reason": "L2015/L2062: 根据实际基手性和正负相位，r×v对pluto几何pole有向倾角179.920000°，期望0.08°。",
+          "quality": 1,
+          "reason": "L2015–2028/L2062–2077：周期/倾角/参考面与正Z局部圆轨道绕X后直接加到世界/母星proper基，忠实执行任务2.4/3.7；该提示组合内生的反向有向法线不归责，按任务依从quality1。实际有向倾角179.920000°保留，并非物理已修正。",
           "actualInclinationDeg": 179.9200000000015,
           "expectedInclinationDeg": 0.08
         }
@@ -11458,7 +11458,7 @@
       "otherComets": 0,
       "correctness": {
         "runtime": 5,
-        "data": 3.5,
+        "data": 4.5,
         "integrity": 5
       },
       "visualBase": null,
@@ -11467,12 +11467,12 @@
         "zoom": 0.5,
         "focus": 1,
         "follow": 1,
-        "pauseReset": 0.5
+        "pauseReset": 1
       },
       "fatal": null,
-      "note": "源码与纯函数复核：实现8颗卫星，按实际有向法线及实体有效性计1颗有效；视觉不计分。环影、GPU运动带、HDR/Bloom/ACES与行星路径成立。右手赤道基正Z使普通卫星方向反转，仅海卫一方向正确，月球也逆行。部分矮行星自转小时又乘24、描述物理参数和回归日期有误；滚轮0.35可穿入，无完整复位。",
-      "reviewedAt": "2026-10-11",
-      "reviewVersion": "V3-20261011"
+      "note": "按详细任务原文复核：8颗卫星的带符号周期、倾角、黄道/赤道参考及正Z再绕X的构造遵循2.4/3.7，撤回提示内生方向扣分。原月球174.855°、普通卫星179.x°角度保留，按任务依从计分不表示物理轨道已修好。给定哈雷周期与7月28日文字冲突不再扣分；仍保留冥王星及若干额外矮行星rotH小时又乘24、科普中共振圈数/质心等自行添加的错误。暂停按ST.djd门控自转、正倒放和此刻成立，任务无全状态复位要求，pause计1。固定0.35缩放下限可穿入保持原扣分，其余证据不变。",
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015"
     },
     'GPT6.1Sol(Ultra)V1': {
       "reference": false,

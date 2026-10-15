@@ -175,31 +175,30 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
-  [SOL61_SPEC_ID]: 98.75,
   "Opus5(Max)V1": 105,
   "Fable5.1(Max)V1": 109,
-  "Qwen3.8Flash(xhigh)V1": 67.83666666666666,
-  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 81.21666666666667,
-  "Hy4Preview(high)V1": 89.33666666666666,
+  "Qwen3.8Flash(xhigh)V1": 67.83666666666667,
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": 83.75,
+  "Hy4Preview(high)V1": 89.33666666666667,
   "Hy4Preview(high)V2": 80.52666666666667,
-  "Hy4Preview(high)V1-TasksAssignedByOpus5": 86.45,
-  "Hy4Preview(high)V2-TasksAssignedByOpus5": 85.75,
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": 96.45,
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": 98.75,
   "GLM5.3Flash(Max)V2": 89.85333333333332,
-  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 82.56,
-  "GLM5.3Flash(Max)V1": 82.58666666666666,
-  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 82.02666666666667,
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": 92.06,
+  "GLM5.3Flash(Max)V1": 82.58666666666667,
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 83.02666666666667,
   "DoubaoSeedEvolving0827(Max)V1": 83.12,
-  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 79.68333333333334,
-  "GPT5.6Sol(high)V1": 74.08666666666666,
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 93.21666666666667,
+  "GPT5.6Sol(high)V1": 74.08666666666667,
   "Opus5Ultra-TasksAssignedByOpus5": 84.21666666666667,
   "DeepSeek-V4-Flash-0731": 64.28,
   "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 79.7,
   "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 69.41,
   "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 73.18333333333334,
   "DeepSeek-V4-Pro-0813-V1": 73.60333333333332,
-  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 84.02666666666667,
-  "DeepSeekV4Pro0813(Max)V2": 80.08666666666666,
-  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 84.31,
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 93.02666666666667,
+  "DeepSeekV4Pro0813(Max)V2": 80.08666666666667,
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 93.31,
   "DeepSeekProMax-TasksAssignedByOpus5": 69.76,
   "DeepSeek_V4_Pro_high-1": 40.42,
   "DeepSeek_V4_Pro_high-2": 46.92,
@@ -209,14 +208,14 @@ const EXPECTED_EXACT = {
   "GLM5.3(Max)V1": 87.10333333333332,
   "GLM5.3(Max)V2": 88.85333333333332,
   "GLM5.3(Max)V3": 88.27,
-  "GLM5.3(Max)V1-TasksAssignedByOpus5": 79.46666666666667,
-  "GLM5.3(Max)V2-TasksAssignedByOpus5": 78.21666666666667,
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": 94,
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": 91.25,
   "GLM_5_1_high-1": 50.480000000000004,
   "GPT5.5xHigh-TasksAssignedByOpus5": 79.21666666666667,
   "GPT5.6Luna(Max)V1": 64.24666666666667,
   "GPT5.6Luna(Max)V2": 55.64666666666666,
   "GPT5.6LunaMax-TasksAssignedByOpus5": 76.58666666666666,
-  "GPT5.6Sol(Max)V1": 77.83666666666666,
+  "GPT5.6Sol(Max)V1": 77.83666666666667,
   "GPT5.6SolUltra-TasksAssignedByOpus5": 96.21666666666667,
   "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 84.21666666666667,
   "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 83.45,
@@ -228,8 +227,8 @@ const EXPECTED_EXACT = {
   "GPT5.6SolUltra-WebGL2": 94.62,
   "GPT5.6SolUltra": 74.22,
   "GPT5.6Sol(xhigh)V1": 74.07,
-  "GPT5.6Sol(xhigh)V2": 75.14666666666666,
-  "GPT5.6Sol(xhigh)V3": 75.39666666666666,
+  "GPT5.6Sol(xhigh)V2": 75.14666666666668,
+  "GPT5.6Sol(xhigh)V3": 75.39666666666668,
   "GPT5.6TerraUltra-Three": 68.58666666666666,
   "GPT5.6TerraUltra-TasksAssignedByOpus5": 82.77666666666667,
   "GPT_5_5_xhigh": 70.12666666666667,
@@ -245,9 +244,9 @@ const EXPECTED_EXACT = {
   "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 78.45,
   "Hy3-TasksAssignedByOpus5": 71.72666666666667,
   "Hy3": 45.42,
-  "KimiK3Max-TasksAssignedByOpus5": 94.75,
-  "KimiK3Max": 81.83666666666666,
-  "KimiK3(Max)V2-TasksAssignedByOpus5": 79.91666666666667,
+  "KimiK3Max-TasksAssignedByOpus5": 95.75,
+  "KimiK3Max": 81.83666666666667,
+  "KimiK3(Max)V2-TasksAssignedByOpus5": 95.98333333333333,
   "KimiK3(Max)V2": 76.87,
   "KimiK3(Max)V3": 73.57,
   "LongCat2.0-TasksAssignedByOpus5": 65.34666666666666,
@@ -268,49 +267,50 @@ const EXPECTED_EXACT = {
   "Qwen3.8Max(Max)V1": 59.31999999999999,
   "Qwen3.8Max(Max)V2": 62.24333333333334,
   "Qwen3.8Max(Max)V3": 68.85333333333332,
-  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 81.21666666666667,
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 95.75,
   "Sonnet5Ultra": 76.67,
   "Sonnet5Ultra-TasksAssignedByOpus5": 84.21666666666667,
-  "MuseSpark1.3Contributor(xhigh)V1": 74.83666666666666,
-  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": 82.95,
+  "MuseSpark1.3Contributor(xhigh)V1": 74.83666666666667,
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": 88.21666666666667,
   "Gemini3.8Flash(high)V1": 48.80333333333333,
-  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": 78.5,
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": 88,
   "Gemini3.8Flash(high)V2": 68.33666666666666,
-  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 81.76,
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 87.02666666666667,
   "MuseSpark1.3Contributor(xhigh)V2": 73.36333333333333,
-  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 79.96666666666667,
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 93.5,
   "OmenAlpha(Max)V1": 84.47666666666667,
   "OmenAlpha(Max)V1-TasksAssignedByOpus5": 94.46666666666667,
-  "GPT6Astra(Light)V1-TasksAssignedByOpus5": 87,
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": 98.5,
   "Opus5(Low)V1-TasksAssignedByOpus5": 82.21666666666667,
   "GPT6Astra(Ultra)V1": 99.06,
   "GPT6Astra(Max)V1": 83.06,
   "GPT6Astra(xhigh)V1": 83.06,
   "DeepSeekV4.1Flash0910(Max)V1": 88.79333333333334,
-  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": 77.45,
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": 87.71666666666667,
   "MiMoXProPreview(Unknown)V1": 66.28666666666666,
-  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": 83.27666666666667,
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": 84.27666666666667,
   "Step5Preview(high)V1": 72.35333333333332,
-  "Step5Preview(high)V1-TasksAssignedByOpus5": 67.45,
+  "Step5Preview(high)V1-TasksAssignedByOpus5": 68.98333333333333,
   "MiMo2.6Flash(Unknown)V1": 74.88,
-  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": 74.63333333333333,
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": 89.16666666666667,
   "MiMo2.6Pro(Unknown)V1": 68.28666666666666,
-  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": 78.91666666666667,
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": 94.21666666666667,
   "Grok4.7(xhigh)V1": 84.54333333333334,
-  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": 84.21666666666667,
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": 95.75,
   "Opus5.5(Max)V1": 109,
   "MiniMaxM3.1FlashPreview(Max)V1": 86.16,
-  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": 83.45,
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": 97.98333333333333,
   "GPT6.1Sol(Ultra)V1": 99.7,
   "Sonnet5.5(Max)V1": 107.23333333333333,
   "GPT6Astra(Light)V1": 71.88,
-  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": 99,
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": 100,
   "GPT6Luna(Max)V1": 66.57,
-  "GPT6Luna(Max)V1-TasksAssignedByOpus5": 91.46666666666667,
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": 94,
   "Haiku5.5(Ultracode)V1": 87.87,
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": 95.96666666666667,
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": 98.5,
   "Haiku5.5(Ultracode·Max)V1": 97.02666666666667,
-  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": 94.21666666666667
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": 96.75,
+  "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5": 98.75
 };
 
 // Current scoring-input field oracle. Order:
@@ -318,142 +318,142 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
-  [SOL61_SPEC_ID]: "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
+  "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:68b9beeadd6a6a14222155fb9d083c5e0ac7284f4186d01d40c0bfedf61a8919",
+  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5",
+  "Haiku5.5(Ultracode)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|6|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-",
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:c8da8ba8b2267848d15364abe6c5dfc213126f11800ae3c00e17fdc857424a16",
+  "GPT6Astra(Light)V1": "0|0.4|0.4|0|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:f7d09c3ce82c254a538e12cfccd7fb547d276e6de6f4a995ae587e2f735a9540",
+  "GPT6Luna(Max)V1": "0|0.4|1|0|0|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|0.5|0|0.5|-|-",
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|0.5|1|-|-|moonEvidence:8f0f92df3862ce88fb00a44bc802ab9bfb05917d4d20bb02a15786d2ed2f36e3",
+  "Sonnet5.5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|67|1|1|3|5|4.5|5|-|1|1|1|1|0.5|-|-",
   "Opus5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|2|5|5|5|-|1|1|1|1|1|-|-",
   "Fable5.1(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
   "Qwen3.8Flash(xhigh)V1": "0|0.4|1|1|1|0.4|1|0.5|1|1|0.5|1|1|9|1|0|1|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:60f621e508320326c193cc088d9b40ae0f641952c8364da60aa794071d0fea67",
-  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|0|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:77074df255d94c4937a1ded85a99403707d8af8541cec402cf0837f65bc0e1d1",
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|0|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:8082f4c606239074ae90aa539290562acdd3275f2d996d81feef3eb97f58a0a9",
   "Hy4Preview(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|18|1|1|2|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:ad393bc08509e74efa72511d3b5c3797247f48d331567aa813beaf8cd4769a86",
   "Hy4Preview(high)V2": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|13|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7e68169acd15c50c8f9cf59c0cc90d65f47553bff0613c048da692b7ac91fa38",
-  "Hy4Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:8e373e75cbe3dadb41a12aeffdb0e68f627515da538940ddc0a1090f4f64f1e8",
-  "Hy4Preview(high)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:07bc46f36f52d743e566911def7ada767da7f1537c8a0a054715fcb693f26b29",
+  "Hy4Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|1|-|-|moonEvidence:c01db0abe2bec2cf357eb16f9c779e76e5ea011ea010146231415b3749805b65",
+  "Hy4Preview(high)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:931e37562c0e25376f04ab8c74e6f3cba7086f0b95c5f95bca852d04ec3e2777",
   "GLM5.3Flash(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|9|1|1|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:33b13f642caa29e3aa6befaec8eb19bfb23599dc467c20bac4993409abfa0426",
-  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:b261cbe51915bd284d578856f438e35982484a1727c0b2419c89c94c60f3abf7",
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:1ab874e3a34b9cbc6d505f350fc85b882da5e052e1cb393a0a31e4283eb6c21b",
   "GLM5.3Flash(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|6|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:5f03f4ee4356654bdde781ca1ad3ca6748ea2263652d89153fab2cff1ffad109",
-  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2dbd6c3df7e93a39ffb1d1ff608d6917a7a48d6c12ecf466374c74745ee26667",
-  "DoubaoSeedEvolving0827(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:389408b5f23c6fa900bb2ba2e4bcec37fbe4ac8bba8ef32b841038d84998c1bf",
-  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:323c7175a230b13ca37616172fd16a37fedea6bb6b6801a6f1fc7e8e7703c680",
-  "GPT5.6Sol(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|0|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7c0492628c591f54edc5517aa64a5d3be02802683dcfbfc27782a02b3e56abde",
-  "Opus5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:475ff0846fca5075073c5fbac2f73547095051f559d1e1cf3e1295c6ff5c6c06",
-  "DeepSeek-V4-Flash-0731": "0|0.4|0.4|1|1|0.4|1|1|1|1|0.5|1|1|1|1|0|3|4|3.5|3|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:ec827ebd7b1a0e7e2ee0acc9b9eddbc5bf752d06a9f63393b7ac3a2d1efb62cc",
-  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:8e8fcbc76c51d2a9d8494902bbbc0cf770c1abddfc4a024d5f00f6f3f7b33883",
-  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|0|8|1|1|0|2|3.5|5|-|1|0.5|1|0|0.5|L2|frame2428与drive2495各自申请下一帧；drive2497又启动frame，每次drive新增永久RAF链，待执行队列持续增长，核心模拟长程负载无界。|moonEvidence:6d36c1c9f53f553e98100d9cbeaf706416455e4a1386a4af150dfaa78ada02c8",
-  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3|5|-|1|0.5|0.5|1|0.5|-|-|moonEvidence:a61dd78b145eaed95dfdae2a2acc9360c4a792bc20816ee41c766b9455f539e0",
-  "DeepSeek-V4-Pro-0813-V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|0|1|7|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:0f13698fdd95188f6b604c46929839b77dc50a11a333e7095cd2ab16ea8927b6",
-  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7b3c70f01db13a5686114ab1ce2353d2f6d09f3e9b50e8dfc04c21cc4e061a16",
-  "DeepSeekV4Pro0813(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|5|1|1|1|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:9d938ad554ecfe31ae8f4c38f780d55b397a753d3f0a79738a7ceafcf30b29d4",
-  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:7b14f2191433eaa36d6675856e6bc01c6b8f528e366ee56e7aac4a8226488d05",
-  "DeepSeekProMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:0ce2a5a52c0fdbe987f0b1a502075567f9dec07378ebb754a37b5f4f41dd6568",
-  "DeepSeek_V4_Pro_high-1": "0|0.4|1|1|0.4|0|0.5|0|0|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0|-|-|moonEvidence:22ea1c5b457c993b68759b9b3633ff2ad8951fb8261d7730497d3e23e99fe2d2",
-  "DeepSeek_V4_Pro_high-2": "0|0|1|1|0.4|0.4|0.5|0|0.5|0.5|0|0.5|1|0|0|0|0|5|3.5|5|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-  "DeepSeek_V4_Pro_high-3": "0|0.4|0.4|0|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|0|0.5|-|-|moonEvidence:4ce97cce43c14e2a33ef930e9d4e976b330d07ba61f991efcecb21e0453e0a5c",
-  "GLM5.2Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:960ae8a8ff4d221e294690c31a2070c6e39317e27e0756348e48e211f029623d",
-  "GLM5.2Max": "0|0.4|1|1|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|2.5|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:5f9ccd48b4fd282b6c60b9cb49dfc3793d6568b75bea1ba83d3b35df379dbf25",
-  "GLM5.3(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:85776da3d708a26601e31f046eeda0a7989e82675e34a9d569866024a16fc437",
-  "GLM5.3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:95ed016413c6d956942f1b0ed74cec886758c6793d643479b42065ff183d1486",
-  "GLM5.3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|10|1|1|1|4|4|4|-|1|1|1|1|0.5|-|-|moonEvidence:ce4ca3bfed83e9adb586c7edd2bb6fe320022053471ba5e17f685f8a4a866bb8",
-  "GLM5.3(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:b819f8bb320900c0604e8e8248f0854e951c590ee5e9122ab385c5fb14b0eb24",
-  "GLM5.3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:51ce7c8934c046abc66d50f6e14349a3a5bd6fd61dc48cbbff092f554abc8ede",
-  "GLM_5_1_high-1": "0|0.4|0.4|1|0.4|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:59a6de841f7b65941d9eecac2406708cfa2d8b686ab97231ffb87fa08bd987ee",
-  "GPT5.5xHigh-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d7f22781bc1686c8f126e956040b1e3b07db6e1be3786b3b50e2f6f55bb9332c",
-  "GPT5.6Luna(Max)V1": "0|0.4|1|0.4|0|0.4|1|1|0.5|1|0|1|1|1|1|0|0|5|4|5|-|1|1|0.5|1|1|-|-|moonEvidence:09e391c37d370664fb9ae83847c75ab3ae045ad6f6f99de0e76c067f801792eb",
-  "GPT5.6Luna(Max)V2": "0|0.4|1|0.4|1|0.4|1|1|0.5|0|0|0.5|1|1|1|0|1|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:80822a316c8af7fd770cd3b581398e7fe2179cdce8760121d37a9e53a0d3c2e3",
-  "GPT5.6LunaMax-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:3324a568c0fa14623e9bb7fa1812dfe7c575766666e199378df8a09f6d5232c6",
-  "GPT5.6Sol(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|10|1|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d6e9ae05af793e1b317069923bc18a698d91c0e84fceb918e72d0524fa4311b4",
-  "GPT5.6SolUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:cad94785573c7e8f2357b85a3976e0e6159ced2336f99506bfd0534165996ff1",
-  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:edd7677aa0d00eda75f8d38a1fae29b054c633c46bd09c6c23af35acaa2a2f50",
-  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6fb77dce2fe6f8f0218fd287672b3f7d646c1eb5eb803c8250fe1208bde16746",
-  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|3|4|5|-|0.5|0.5|1|1|0.5|L2|选择月球后 updateInfo 读取不存在的 orbit.a 抛出 TypeError，随后的周期信息更新使 requestAnimationFrame 主循环停止。|moonEvidence:63187f1ee876c32c9302407b55ac7e6123443b96e7197586162e398b448edcf9",
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|4|5|-|1|1|1|1|1|-|-|moonEvidence:7c0dd7fa9447b246a228151f1148296751ca38454ab66c63c2abb26718190cb5",
   "GPT5.6Sol(Medium)V1": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
   "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:67280f006fca705739cace957e8e28eb4d3f6b6d1b8e3ad56abf885a5c49585f",
   "GPT5.6Sol(Light)V1": "0|0.4|0|0.4|0|0.4|1|1|0.5|1|0|1|1|1|1|0|0|5|4|5|-|0.5|1|1|0|0.5|-|-|moonEvidence:bf23e77ba64f0d4cbc0a7139a8e69da7068417435497d52a479a58dbe560a5a6",
   "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": "0|0.4|1|0|0|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|0|0.5|-|-|moonEvidence:f9c93bb41f0796b89dc3cc5f49642aca2c82d32e066c7a309e29146b0db96b34",
+  "DoubaoSeedEvolving0827(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:389408b5f23c6fa900bb2ba2e4bcec37fbe4ac8bba8ef32b841038d84998c1bf",
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:df7cc9a768adaa6ebe29755cb8b0c3e861806654266cee66f70687cfba08c63e",
+  "GPT5.6Sol(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|0|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7c0492628c591f54edc5517aa64a5d3be02802683dcfbfc27782a02b3e56abde",
+  "DeepSeek-V4-Flash-0731": "0|0.4|0.4|1|1|0.4|1|1|1|1|0.5|1|1|1|1|0|3|4|3.5|3|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:ec827ebd7b1a0e7e2ee0acc9b9eddbc5bf752d06a9f63393b7ac3a2d1efb62cc",
+  "DeepSeek_V4_Pro_high-1": "0|0.4|1|1|0.4|0|0.5|0|0|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0|-|-|moonEvidence:22ea1c5b457c993b68759b9b3633ff2ad8951fb8261d7730497d3e23e99fe2d2",
+  "DeepSeek_V4_Pro_high-2": "0|0|1|1|0.4|0.4|0.5|0|0.5|0.5|0|0.5|1|0|0|0|0|5|3.5|5|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "DeepSeek_V4_Pro_high-3": "0|0.4|0.4|0|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|0|0.5|-|-|moonEvidence:4ce97cce43c14e2a33ef930e9d4e976b330d07ba61f991efcecb21e0453e0a5c",
+  "GLM5.2Max": "0|0.4|1|1|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|2.5|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:5f9ccd48b4fd282b6c60b9cb49dfc3793d6568b75bea1ba83d3b35df379dbf25",
+  "GLM5.3(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:85776da3d708a26601e31f046eeda0a7989e82675e34a9d569866024a16fc437",
+  "GLM5.3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:95ed016413c6d956942f1b0ed74cec886758c6793d643479b42065ff183d1486",
+  "GLM5.3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|10|1|1|1|4|4|4|-|1|1|1|1|0.5|-|-|moonEvidence:ce4ca3bfed83e9adb586c7edd2bb6fe320022053471ba5e17f685f8a4a866bb8",
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:2e43dbfddcb3070a30d76efd318487ca666ace1fbec5b7fcb11d303987c2f9d2",
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:081f0dd5606fffe73b8927ff65f2e4e5c875d065a225080f508a696152e27b05",
+  "GLM_5_1_high-1": "0|0.4|0.4|1|0.4|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:59a6de841f7b65941d9eecac2406708cfa2d8b686ab97231ffb87fa08bd987ee",
+  "GPT5.6Sol(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|10|1|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d6e9ae05af793e1b317069923bc18a698d91c0e84fceb918e72d0524fa4311b4",
   "GPT5.6SolUltra-WebGL2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|14|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:8d7a94978e4340e0a9cc3706326febb73fe679eff7539c34922493e9e17492cd",
   "GPT5.6SolUltra": "0|0.4|1|0|1|0.4|1|1|1|1|1|0.5|1|14|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:a4bd0442d05b51812b6f8643de0e93d92c89c4241354b40bbe80248e72f7b19b",
   "GPT5.6Sol(xhigh)V1": "0|0.4|1|0|0|0.4|1|1|1|1|0|0.5|1|13|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:ea86fc07815ce04ba8d0a83455ab8a9b94b8bc811e7e5a07502d737a92dab4e9",
   "GPT5.6Sol(xhigh)V2": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|11|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:6168103f540f0470f66493479d8d6a767916ccafb9dd8f15e971a476c9a084bf",
   "GPT5.6Sol(xhigh)V3": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|7|1|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:7de9c3540d756caf0389533b03edd2d87621ac86112630195cf20521b4a3d553",
   "GPT5.6TerraUltra-Three": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:928b7165f757cfa350b22272fb4f3a440dc9690d48dcda834f5a56b9a6eb8cac",
-  "GPT5.6TerraUltra-TasksAssignedByOpus5": "0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:98776cccf088065a074fa44284e7ecd48c286c5a0f650df713805a0e5b1693a9",
   "GPT_5_5_xhigh": "0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|0|5|4|5|-|0.5|0.5|0.5|0.5|1|-|-|moonEvidence:41860b99d586e8d5aa19c8d1c4f3d96a1d3cb2c11b1bc2a909ad601364c56f44",
-  "Gemini3.1Pro-TasksAssignedByOpus5": "0|1|0|1|1|0|1|1|1|1|1|0|0.5|0|0|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-  "Gemini3.5Flash-TasksAssignedByOpus5": "0|1|1|0.4|1|0|1|1|1|1|1|0.5|1|8|1|1|0|5|3|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:f279337564fca6251dc8877683dc34aa0d22a099fe8dc25158fec7df7bb26295",
-  "Gemini3.6Flash(high)V0": "0|0.4|0|1|1|0|0.5|0|0|0|0|1|1|1|1|0|0|5|0|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:7e57e3bd90ca0688f15485dd331dc301421a93726ce1efb9bfffd04fcc4cc5e4",
-  "Gemini3.6Flash-TasksAssignedByOpus5": "0|0.4|1|0|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:71449b70f5e7d0a9be15d19429eee94c5d8f7f62a2cfffd4cb6558a27ff3e947",
-  "Gemini3.7Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0.5|0|0.5|1|1|1|0|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dfc8ad5921e2a649417a565d528ffed9650bd6bab395297c39181630f1799d2c",
-  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3a9586a0d5540ae0998a078aad25d39c44d9d6cc5dadf0f046f8c43725355934",
   "Gemini_3_5_flash_high": "0|1|0|0|1|0|1|1|1|0.5|0|0.5|1|10|1|0|0|5|3.5|5|-|1|0.5|0.5|1|0.5|-|-|moonEvidence:75cf1d0a7dceede35fc07999b237de2602ba76f2a14d5272111f58d04728e73e",
   "Grok4.5": "0|0.4|1|1|1|0.4|1|1|0.5|0.5|0|1|1|5|1|0|1|5|3.5|5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:9bafb400a1a4e57fb91d9f03861ba6a6eb432d05d9f49146cf19330205ff4cf5",
   "Grok4.6(xhigh)V1": "0|0.4|1|1|1|0.4|1|1|1|1|0|1|1|12|1|1|0|5|3.5|5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:ad5ab71ce68daf6440c0a78148cebe2428b2e93f897425e13c94439176599537",
-  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3cd0f0ccd6131012055880606ac9bded522833b7b2712c8d1f64fc37ef813b1e",
-  "Hy3-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|3.5|4|-|0.5|0.5|0.5|0|0.5|-|-|moonEvidence:92f54b9cc0576d189639509e6cfcee57272a9a1b31ff6d0764a418bda9bef287",
   "Hy3": "0|0.4|0|1|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0.5|0.5|-|-|moonEvidence:1eecb0c5f8c0eac889bdfa32011d4abf73d880e8d0e3d93334be895e389523a7",
-  "KimiK3Max-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:a25071e7116a8e0dccfd54c1bf03cdda48d8048b43a7333d013669eec02e8981",
   "KimiK3Max": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d438c933e25663e784cfc71385a5726c0ee0cee6262fcbf3bd1ae849dd076cee",
-  "KimiK3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dd1376f65b20c511c391e295ed8f42e809a6776114a9f8f7f328ba9ae6244ac5",
   "KimiK3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c7a498fb13d7569ceca1e378f438ec8e14c0211b3c647ff5b0f28f07f59f20f9",
   "KimiK3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|1|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:40182ab3f8c60e1df51d182c07332000028221a04ea733e3b824763417644977",
-  "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:fe61f19323d6c2113a27ec6c22f4570d6747565c67f636bf6b3b2f40440654a5",
   "LongCat2.0": "0|0.4|0.4|0|0|0.4|0.5|0|0.5|0|0|0.5|1|1|1|0|3|5|3|5|-|1|1|0|0|0.5|-|-|moonEvidence:c4564a3f0cbafff1c90687132ad36b326f99a804840d207ad1e6f7e864490740",
   "Mimo_2_5_Pro_high-1": "0|0.4|1|0|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:f3e99ca27eeeb90a60565dad3422c85e6f3ce5a9a148c4f5c4d588eb0450db52",
-  "MiniMaxM3-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|0|1|8|1|1|0|0|4|5|-|0.5|0.5|0.5|1|0.5|L1|所有非太阳主实体uSunDir从{x,y,z}对象以[0..2]读取，实际上传全NaN；主行星位置为原AU且太阳半径4.6，Earth等内行星位于太阳内部，核心画布物理/照明不可用。|moonEvidence:eff57319fc111ea6dce91cef922fbb843bb8f36031b246d5fa7c59d7a99d2b69",
-  "MiniMaxM3(high)V2-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|0.5|1|1|0|1|0.5|0|8|1|1|0|0|3.5|4|-|1|0.5|0.5|0|0.5|L1|postQuad把packed vec3位置按size2读取，final主画布三角形布局错误；逐轴dispR钳掉所有负坐标、阳光方向固定零，核心主视图失败。|moonEvidence:b4f9a8dcb2c1b82292f5d38c1acf44bd75e7eacffba6d795c379117328c65b11",
   "MiniMax_M3_thinking-1": "0|0.4|0|1|1|0.4|1|1|0.5|0|0|0|1|1|1|0|0|3|4|5|-|1|1|0.5|0.5|0.5|L2|正常将速度滑杆设为0.5会永久污染速度/时间/实体为NaN；复位不修复速度。|moonEvidence:a9ce079def55e837e4030d3f6f3addffc50643cbf617ed8bdf480a4c2913ca81",
   "Opus5Ultra-WebGL2": "1|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
   "Opus_4_8_Max": "0|0.4|1|1|1|0.4|1|1|0.5|1|1|1|1|8|1|0|0|5|3.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:74a7ec90ca7a7e6aa78b7b3c475116abd754000c988e3f0d094ce24d8dd6a9a8",
-  "Opus4.8Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:03d6c3575f15a4726d837928e555dcffc96618f626551c6993fd157036461166",
   "Qwen3.7Max": "0|0.4|1|1|0.4|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:7b94c781d306831da2331d85f0fb06499f6c2202b2d028d692b1b9dc92d7e2d8",
-  "Qwen3.8Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|0|0|1|8|1|1|0|5|3.5|4.5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:fda8ff1f9bd2a0cc67357184db276c4298c6e6fd1a8effefdae44f99c0a0882e",
-  "Qwen3.8MaxV2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|3|3.5|5|-|1|0.5|1|1|0.5|L2|空白画布点击1389–1404保留best=-1却调用focusOn(-1)，1304把planetRadii[-1]算入camDistGoal得到NaN，随后相机/VP矩阵失效；实测650ms后dist/goalNaN且VP非finite，RAF仍运行。|moonEvidence:e6e74d2963cc3d92dabad606755e267766c815d333c1686850a5945827041000",
   "Qwen3.8MaxV2": "0|0.4|1|0|0|0.4|0.5|0|0.5|0.5|0|1|1|1|1|0|0|5|5|5|-|0.5|1|0|0|0.5|-|-|moonEvidence:8ca7934e4f315e72fed0065dd1c7ba6764bfcecead8b64003b151dbe61bd60e2",
   "Qwen3.8Max-inQoder": "0|0.4|1|1|0.4|0.4|1|1|1|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:012386f0a91df63ac953a863934c0f393c341f234bbaa88354499da1519bf3f2",
   "Qwen3.8MaxV1-inQoder": "0|0.4|1|0|0|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|4|5|-|1|1|0|0|0.5|-|-|moonEvidence:8bb1601908a72384d0925b5bf2c27b7fb3b375fdc8cae0429d824e80aac78d3a",
   "Qwen3.8Max(Max)V1": "0|0.4|1|0|0|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|5|5|-|0.5|1|1|1|0.5|-|-|moonEvidence:e81effa29305df586c4482e1328b8fbde7fa4371fea1611f0ab105021e6ad065",
   "Qwen3.8Max(Max)V2": "0|0.4|1|1|0|0|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:41c2005b28482a1f6c15201c086d8cdf6aa332a2ee7a7629d4dcfab5cc3f7b99",
   "Qwen3.8Max(Max)V3": "0|0.4|1|1|1|0.4|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:a8048bc5748ef0170849e86504d80c45fbc87a41f6dcb8281108bc8114e1190b",
-  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6cb177e96ea756970afd4fee3ebf4eb2541608414e50bb8a8bb172896f779a3e",
   "Sonnet5Ultra": "0|0.4|1|1|0|0.4|1|1|1|1|1|0.5|1|6|1|0|0|5|3.5|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:386710558e5b6d3affdf1a2ac3c184d166bb14f14073937ec95ffc10d9797a23",
+  "Opus5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:475ff0846fca5075073c5fbac2f73547095051f559d1e1cf3e1295c6ff5c6c06",
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:8e8fcbc76c51d2a9d8494902bbbc0cf770c1abddfc4a024d5f00f6f3f7b33883",
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|0|8|1|1|0|2|3.5|5|-|1|0.5|1|0|0.5|L2|frame2428与drive2495各自申请下一帧；drive2497又启动frame，每次drive新增永久RAF链，待执行队列持续增长，核心模拟长程负载无界。|moonEvidence:6d36c1c9f53f553e98100d9cbeaf706416455e4a1386a4af150dfaa78ada02c8",
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3|5|-|1|0.5|0.5|1|0.5|-|-|moonEvidence:a61dd78b145eaed95dfdae2a2acc9360c4a792bc20816ee41c766b9455f539e0",
+  "DeepSeek-V4-Pro-0813-V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|0|1|7|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:0f13698fdd95188f6b604c46929839b77dc50a11a333e7095cd2ab16ea8927b6",
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:bb9e11ac15a140e00ffb580f9ef91d555abed51e07471512257cffca57a33ed3",
+  "DeepSeekV4Pro0813(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|5|1|1|1|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:9d938ad554ecfe31ae8f4c38f780d55b397a753d3f0a79738a7ceafcf30b29d4",
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6df911edb7fb827b420eb3351bef5ca1fb32d2267cd968933954f7b470585006",
+  "DeepSeekProMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:0ce2a5a52c0fdbe987f0b1a502075567f9dec07378ebb754a37b5f4f41dd6568",
+  "GLM5.2Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:960ae8a8ff4d221e294690c31a2070c6e39317e27e0756348e48e211f029623d",
+  "GPT5.5xHigh-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d7f22781bc1686c8f126e956040b1e3b07db6e1be3786b3b50e2f6f55bb9332c",
+  "GPT5.6Luna(Max)V1": "0|0.4|1|0.4|0|0.4|1|1|0.5|1|0|1|1|1|1|0|0|5|4|5|-|1|1|0.5|1|1|-|-|moonEvidence:09e391c37d370664fb9ae83847c75ab3ae045ad6f6f99de0e76c067f801792eb",
+  "GPT5.6Luna(Max)V2": "0|0.4|1|0.4|1|0.4|1|1|0.5|0|0|0.5|1|1|1|0|1|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:80822a316c8af7fd770cd3b581398e7fe2179cdce8760121d37a9e53a0d3c2e3",
+  "GPT5.6LunaMax-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:3324a568c0fa14623e9bb7fa1812dfe7c575766666e199378df8a09f6d5232c6",
+  "GPT5.6SolUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:cad94785573c7e8f2357b85a3976e0e6159ced2336f99506bfd0534165996ff1",
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": "0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:98776cccf088065a074fa44284e7ecd48c286c5a0f650df713805a0e5b1693a9",
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:edd7677aa0d00eda75f8d38a1fae29b054c633c46bd09c6c23af35acaa2a2f50",
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6fb77dce2fe6f8f0218fd287672b3f7d646c1eb5eb803c8250fe1208bde16746",
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|3|4|5|-|0.5|0.5|1|1|0.5|L2|选择月球后 updateInfo 读取不存在的 orbit.a 抛出 TypeError，随后的周期信息更新使 requestAnimationFrame 主循环停止。|moonEvidence:63187f1ee876c32c9302407b55ac7e6123443b96e7197586162e398b448edcf9",
+  "Gemini3.1Pro-TasksAssignedByOpus5": "0|1|0|1|1|0|1|1|1|1|1|0|0.5|0|0|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "Gemini3.5Flash-TasksAssignedByOpus5": "0|1|1|0.4|1|0|1|1|1|1|1|0.5|1|8|1|1|0|5|3|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:f279337564fca6251dc8877683dc34aa0d22a099fe8dc25158fec7df7bb26295",
+  "Gemini3.6Flash(high)V0": "0|0.4|0|1|1|0|0.5|0|0|0|0|1|1|1|1|0|0|5|0|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:7e57e3bd90ca0688f15485dd331dc301421a93726ce1efb9bfffd04fcc4cc5e4",
+  "Gemini3.6Flash-TasksAssignedByOpus5": "0|0.4|1|0|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:71449b70f5e7d0a9be15d19429eee94c5d8f7f62a2cfffd4cb6558a27ff3e947",
+  "Gemini3.7Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0.5|0|0.5|1|1|1|0|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dfc8ad5921e2a649417a565d528ffed9650bd6bab395297c39181630f1799d2c",
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3a9586a0d5540ae0998a078aad25d39c44d9d6cc5dadf0f046f8c43725355934",
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3cd0f0ccd6131012055880606ac9bded522833b7b2712c8d1f64fc37ef813b1e",
+  "Hy3-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|3.5|4|-|0.5|0.5|0.5|0|0.5|-|-|moonEvidence:92f54b9cc0576d189639509e6cfcee57272a9a1b31ff6d0764a418bda9bef287",
+  "KimiK3Max-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:a25071e7116a8e0dccfd54c1bf03cdda48d8048b43a7333d013669eec02e8981",
+  "KimiK3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4.5|5|-|1|0.5|1|1|1|-|-|moonEvidence:fc4a4cad984cffaf7d089304b07e7bf2013d4b3a5141ca20e5ca3ab2f21f0206",
+  "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:fe61f19323d6c2113a27ec6c22f4570d6747565c67f636bf6b3b2f40440654a5",
+  "MiniMaxM3-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|0|1|8|1|1|0|0|4|5|-|0.5|0.5|0.5|1|0.5|L1|所有非太阳主实体uSunDir从{x,y,z}对象以[0..2]读取，实际上传全NaN；主行星位置为原AU且太阳半径4.6，Earth等内行星位于太阳内部，核心画布物理/照明不可用。|moonEvidence:eff57319fc111ea6dce91cef922fbb843bb8f36031b246d5fa7c59d7a99d2b69",
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|0.5|1|1|0|1|0.5|0|8|1|1|0|0|3.5|4|-|1|0.5|0.5|0|0.5|L1|postQuad把packed vec3位置按size2读取，final主画布三角形布局错误；逐轴dispR钳掉所有负坐标、阳光方向固定零，核心主视图失败。|moonEvidence:b4f9a8dcb2c1b82292f5d38c1acf44bd75e7eacffba6d795c379117328c65b11",
+  "Opus4.8Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:03d6c3575f15a4726d837928e555dcffc96618f626551c6993fd157036461166",
+  "Qwen3.8Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|0|0|1|8|1|1|0|5|3.5|4.5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:fda8ff1f9bd2a0cc67357184db276c4298c6e6fd1a8effefdae44f99c0a0882e",
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|3|3.5|5|-|1|0.5|1|1|0.5|L2|空白画布点击1389–1404保留best=-1却调用focusOn(-1)，1304把planetRadii[-1]算入camDistGoal得到NaN，随后相机/VP矩阵失效；实测650ms后dist/goalNaN且VP非finite，RAF仍运行。|moonEvidence:e6e74d2963cc3d92dabad606755e267766c815d333c1686850a5945827041000",
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:e16d1011cfc83f37827c550644aa453a88614ed6a8fa516a66a28d8bc88a83a1",
   "Sonnet5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:742190aea181b7d835654a3aaa173fc82a0db000278ecf199ae004d06a6f1dc6",
   "MuseSpark1.3Contributor(xhigh)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|12|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:dafe55d7d69d00a58aab0fddd31ada43f62a98e0c32c29912ad880f4c5458d68",
-  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|0|0.5|-|-|moonEvidence:64c1000fcfe2ca33732f0545607745c279496139815985185f3601e82e77d4a8",
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|0|1|-|-|moonEvidence:50ceb1aadca630922a59a173d2c1f7f7bcf4c6065639111eb8d2f1981c7c5141",
   "Gemini3.8Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|4|4|-|0.5|0.5|0.5|0.5|0.5|-|-|moonEvidence:24ddc90280d661007a9469be2b3e1dadcb68a3650d89797b50b3d243b88dc13a",
-  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:576b9262f5af7c136d33be0c4aa426ef15242b11e6fcaeec75f60574d714c04d",
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|0.5|0.5|1|1|1|-|-|moonEvidence:12d53f1a7f59801e869bebb22ee927c6cf70be9339f34c6a0ebf8e1777ac93ff",
   "Gemini3.8Flash(high)V2": "0|0.4|1|1|1|0.4|1|1|1|1|0.5|1|1|8|1|1|0|5|4.5|4.5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:2c91cb113c6c3c60aaae5517ebb922ec657d20197a95825160eff4cc84d2596f",
-  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": "0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:cf9ebc172c64851949ca854c60cad05546a254f38056dc4d5013e2114382f213",
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": "0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|0.5|0.5|1|1|1|-|-|moonEvidence:e53d1d4d3fadbb6b3f82d1112282dd5628c39d41a71b4362a809de86774763af",
   "MuseSpark1.3Contributor(xhigh)V2": "0|0.4|0.4|1|1|0.4|1|1|1|1|1|1|1|6|1|1|0|5|3.5|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:307c302da3a25052ffec8d6f93cb55e1789913a7633de4d2d41cc795662390fe",
-  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:2b9c5430e4147a173bd3b66bedc5fe765ea005be41329fa768e812e1cbe1ed00",
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:4134c2287d2f9f5e50aec10146284e622154e25b2159971907f870c290f6da52",
   "OmenAlpha(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|3|4.5|5|-|1|0.5|1|0.5|0.5|L2|正常前台1350ms短主线程停顿后，看门狗直调自调度frame累积4条持久rAF链；同timestamp的dt=0又回退0.016，使模拟时钟持续过速，实测1.2043秒内推进应有值的3.72050倍。|moonEvidence:36b0a30af0f6abe8e96099ac908e43b9870842ee25affc90249583ba23e75b09",
   "OmenAlpha(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:e3763c07a2cdb96a974e72416cdf41eff22c778bc7b9660e49fff4e1db1fc534",
-  "GPT6Astra(Light)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:1bbab407b3259b32078b88eb3957f8b89739c0ddf9858e7f7b49afff091d2eec",
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|1|-|-|moonEvidence:8498693755fdc8fcffef060208f8d12087cf6254263ed085166c7d04f5ed0da5",
   "Opus5(Low)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:b8532c7209cbeed433d383806afcf9d632b7879fa5e656a241227fa64a7f3897",
   "GPT6Astra(Ultra)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|3|5|5|5|-|1|1|1|1|0.5|-|-",
   "GPT6Astra(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
   "GPT6Astra(xhigh)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
   "DeepSeekV4.1Flash0910(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:942fed0769cc8e126bb8e0461731889dd1f0c6619e08e06e2aab89965944d5d1",
-  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d7e39b7866dcd41931e5174f1588bd5de37433638e69cf8f2aad5c9abce9fc69",
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|1|-|-|moonEvidence:147f0f3492fbb96cf47e7c7a7a1535e952822f1ae5c80dfaf5f4e8b6518283da",
   "MiMoXProPreview(Unknown)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|3.5|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:098003335e20e8dc5ede37219f7ef0c2cb8829ce34d6364314d1b05dcbd0ac7f",
-  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:21b69f35b2b1a6c1ebe6ba810c011170ada5272b5e5f13c989c4c216efabc901",
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|5|-|1|0.5|1|1|1|-|-|moonEvidence:21b69f35b2b1a6c1ebe6ba810c011170ada5272b5e5f13c989c4c216efabc901",
   "Step5Preview(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|12|1|1|0|3|2|2|-|1|1|0.5|0.5|0.5|L2|选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。|moonEvidence:c2ec6224118cc55239e7ac7a01fecd436a5670f29ae07655febce9c7d1e045ec",
-  "Step5Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|2|2|2|-|1|0.5|0.5|0|0.5|L2|卫星模型矩阵NaN与合成顶点布局错误造成核心实体和画面/拾取映射失败；新规则标记未完成，不设分数封顶。|moonEvidence:2390290be82919514b028345e93ab659f1d806accfbedcad6122f6e994c28e6d",
+  "Step5Preview(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|2|3|2|-|1|0.5|0.5|0|0.5|L2|卫星模型矩阵NaN与合成顶点布局错误造成核心实体和画面/拾取映射失败；新规则标记未完成，不设分数封顶。|moonEvidence:2390290be82919514b028345e93ab659f1d806accfbedcad6122f6e994c28e6d",
   "MiMo2.6Flash(Unknown)V1": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|4.5|-|1|1|1|1|0.5|-|-",
-  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|3|3.5|5|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:989d49162c356b81488a80fb1f52daf8b110e81e09dd4353ce2784c4c88b2a85",
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|3|4.5|5|-|0.5|0.5|0.5|1|1|-|-|moonEvidence:7dbf9cec7dcae623c9e624d75da7a1de434bf99ac505f9f30d009783ed3a4fa8",
   "MiMo2.6Pro(Unknown)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|6|1|0|0|5|3.5|4|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:a80cc13dcb01708ec40e5404b0c25ecfe930842fae7e415f40699853a4efc9e9",
-  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:958adc8d8e93777db71c98028cf60905a14e4878cb7ea62d4538ec6671350572",
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|-|1|0.5|1|1|1|-|-|moonEvidence:a19a4f22f2d2aabc485e5b3afe1550e4006f0aadecc5126c439eacfd9405f9b5",
   "Grok4.7(xhigh)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|13|1|1|1|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c54db812c50006101ef808dad400281ef049296bf3e3e42b671a73bc33c1fd98",
-  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:2de6622d50c9b779d2e0a024be80f8cdebcbc765249a8d5a76c53a5f1b8ea92e",
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:0aa231e6bdc1773287c829ed9ea077ea591c871ed6773fbdf34cafbd6e263c98",
   "Opus5.5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
   "MiniMaxM3.1FlashPreview(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|20|1|0|0|4|3|3.5|-|1|1|0.5|1|0.5|-|-|moonEvidence:f01382151cb77d1b4126fe393f89446bc606917c8c964973be14a19f72824c67",
-  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c6b08345bec50f99a74c455ad5c5e18dafab0d99d68a80ed40c3b17e223c2a1b",
-  "GPT6.1Sol(Ultra)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|0|5|4|4.5|-|1|1|1|1|0.5|-|-",
-  "Sonnet5.5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|67|1|1|3|5|4.5|5|-|1|1|1|1|0.5|-|-",
-  "GPT6Astra(Light)V1": "0|0.4|0.4|0|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
-  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:f7d09c3ce82c254a538e12cfccd7fb547d276e6de6f4a995ae587e2f735a9540",
-  "GPT6Luna(Max)V1": "0|0.4|1|0|0|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|0.5|0|0.5|-|-",
-  "GPT6Luna(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0.5|0.5|-|-|moonEvidence:07d3dfb0a5caaccc0c0684ee24f724840022cabc824e6feab3c9aee675b750f6",
-  "Haiku5.5(Ultracode)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|6|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-",
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:6c7b325fd1a99014fc87a2c0b78d72025a5f50df51cb24d087fdc623d663b082",
-  "Haiku5.5(Ultracode·Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|0.5|1|22|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2295e1361d9956fd10e3a7cbf9c033ba8917f7eb4ad5f266c3721f491f164ee5",
-  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:68b9beeadd6a6a14222155fb9d083c5e0ac7284f4186d01d40c0bfedf61a8919"
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|-|1|0.5|1|1|1|-|-|moonEvidence:1b3ebc6ef9180e0d33492d2b5d146bc7121ec75d04f1c432914634631e10796d",
+  "GPT6.1Sol(Ultra)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|13|1|1|0|5|4|4.5|-|1|1|1|1|0.5|-|-"
 };
 
 const auditFingerprint = score => [
@@ -591,13 +591,46 @@ for (const [id, expected] of Object.entries(protectedScoreDigests))
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
 }
-const originalAssets = WORKS.filter(work => work.id !== SOL61_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
+// Fixed2716352 baseline: only the30active detailed-spec records may change evidence/notes.
+const currentSpecReviewIds = new Set([
+  "Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5",
+  "Hy4Preview(high)V1-TasksAssignedByOpus5",
+  "Hy4Preview(high)V2-TasksAssignedByOpus5",
+  "GLM5.3Flash(Max)V2-TasksAssignedByOpus5",
+  "GLM5.3Flash(Max)V1-TasksAssignedByOpus5",
+  "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5",
+  "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5",
+  "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5",
+  "GLM5.3(Max)V1-TasksAssignedByOpus5",
+  "GLM5.3(Max)V2-TasksAssignedByOpus5",
+  "KimiK3Max-TasksAssignedByOpus5",
+  "KimiK3(Max)V2-TasksAssignedByOpus5",
+  "Qwen3.8Max(Max)V1-TasksAssignedByOpus5",
+  "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5",
+  "Gemini3.8Flash(high)V1-TasksAssignedByOpus5",
+  "Gemini3.8Flash(high)V2-TasksAssignedByOpus5",
+  "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5",
+  "GPT6Astra(Light)V1-TasksAssignedByOpus5",
+  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5",
+  "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5",
+  "Step5Preview(high)V1-TasksAssignedByOpus5",
+  "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5",
+  "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5",
+  "Grok4.7(xhigh)V1-TasksAssignedByOpus5",
+  "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5",
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5",
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5",
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5",
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5",
+  "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5"
+]);
+const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
-check(digest(originalAssets) === 'ba1e3e09a5971ea83f1d6dfee4f3f4c8e4cd8708622e1a36f1768df72d011836', 'All 270 original programs and saved screenshots must be reused unchanged');
-const baselineActive = visibleWorks.filter(work => work.id !== SOL61_SPEC_ID)
-  .map(work => [work.id === 'GPT6.1Sol(Ultra)V1' ? { ...work, pair: null } : work, SCORES[work.id]]);
-check(originalAssets.length === 270 && baselineActive.length === 69, 'The fixed baseline must retain all old 270 assets and 69 active records');
-check(digest(baselineActive) === '946bbacac025fd0bfda6061642ad47fca4165c3c94ef0f9df9758df986ac513f', 'The new Sol pair must preserve every old active record and score, permitting only Sol A pair:null to become gpt61sol');
+check(originalAssets.length === 272 && digest(originalAssets) === 'ff720ec53430c4c4661082164424f6ed47bd417a916b51535b1eec9ae3dffef7', 'All272original programs and saved screenshots must remain byte-for-byte unchanged');
+const outOfScopeEvidence = WORKS.filter(work => !currentSpecReviewIds.has(work.id)).map(work => [work, SCORES[work.id]]);
+check(currentSpecReviewIds.size === 30 && outOfScopeEvidence.length === 106 && digest(outOfScopeEvidence) === '34d53cc7be34c7fe46fe3ce8aac622afe0646b54032eb125784eb9b384baa08c', 'The fixed40one-line plus66archive records, including notes and all scoring inputs, must remain unchanged');
+check(digest(WORKS.map(work => ({ ...work, note: null }))) === '09eff725e9e447a89d94e679ff3d24f428e14f0941d39b6790bf55fc7243fe9a', 'Task attribution recheck may update activeB notes, but must preserve every model metadata field, tier, rank, pairing, and saved date');
+for (const id of currentSpecReviewIds) check(SITE.isVisibleWork(SITE.byId(id)) && SITE.byId(id).group === 'B', id + ': task-attribution review scope must contain only current detailed-spec works');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
 const archiveEvidenceIds = archiveBaselineIds.filter(id => id !== 'KimiK3(Max)V3');
 const archivedEvidence = archiveEvidenceIds.map(id => [id,
@@ -633,7 +666,7 @@ check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
 check(historicalOpusPair?.a?.id === 'Opus5Ultra-WebGL2' && historicalOpusPair?.b?.id === 'Opus5Ultra-TasksAssignedByOpus5', 'The complete retained work set must preserve the historical Opus 5 pair across current and offline tabs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
-check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","gpt6luna","qwen38max","mimoxpropreview","gpt6astralight","gemini38flashv2"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
+check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","qwen38max","gpt6luna","gpt6astralight","mimo26pro","musespark13v2"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
 check(PAIR_ORDER[7] === 'deepseekv4pro0813' && PAIR_ORDER[8] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 08 and 09');
 check(PAIR_ORDER[9] === 'glm53v1' && PAIR_ORDER[10] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 10 and 11');
@@ -776,7 +809,7 @@ for (const [model, expected] of Object.entries(expectedContextPrices)) {
 check(SITE.contextPriceFor('unknown-model', 100000) === null, 'Unknown models must not acquire Luna/Haiku context pricing');
 const lunaHaikuRows = SITE.lunaHaikuComparisons();
 check(JSON.stringify(lunaHaikuRows.map(row => row.group)) === JSON.stringify(['A', 'B']), 'Luna/Haiku comparison must contain exactly the one-line and detailed-spec rows in order');
-for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [30.456666666666678,24.456666666666678,6] : [2.75,-.25,3]])) {
+for (const [row, expected] of lunaHaikuRows.map(row => [row, row.group === 'A' ? [30.456666666666678,24.456666666666678,6] : [2.75,-0.25,3]])) {
   const suffix = row.group === 'B' ? '-TasksAssignedByOpus5' : '';
   check(row.luna.id === 'GPT6Luna(Max)V1' + suffix && row.haiku.id === 'Haiku5.5(Ultracode·Max)V1' + suffix && row.luna.group === row.group && row.haiku.group === row.group, row.group + ': comparison must pair Luna Max and Haiku Ultracode·Max for the same brief');
   const luna = SITE.scoreFor(row.luna), haiku = SITE.scoreFor(row.haiku);
@@ -861,7 +894,7 @@ check(haikuMaxSpecSource.length === 191845 && [...haikuMaxSpecSource].filter(byt
 check(fs.existsSync(asset(haikuMaxSpec.shot)) && SITE.isVisibleWork(haikuMaxSpec) && !SITE.isArchivedWork(haikuMaxSpec), 'Haiku Ultracode·Max detailed spec must expose its saved runtime screenshot as a current work');
 const haikuMaxPair = SITE.pairs().find(pair => pair.a.pair === 'haiku55max');
 check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-2) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must retain its complete pair immediately before Sol without replacing the existing xhigh pair');
-close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -2.81, 'Haiku Max detailed-minus-one-line exact score difference');
+close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -0.27666666666667084, 'Haiku Max detailed-minus-one-line exact score difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'haiku55max'), 'The Haiku Max pair must enter the full pair population without replacing a larger positive featured gain');
 check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode·Max)V1')), 'The independent Luna/Haiku comparison must use only the Max works while preserving the xhigh ordinary pair');
 check(SITE.priceFor(haikuMax).date === '2026-10-08' && SITE.priceCell(haikuMax).includes('0.5 / 2.5 / 0.05') && SITE.priceCell(haikuMax).includes('100K'), 'Haiku 5.5 Ultracode·Max must reuse the existing verified Haiku pricing without a new price snapshot');
@@ -913,10 +946,45 @@ for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
   }
 }
 
+const expectedCurrentDocPrimaries = {
+  "Hy 4 Preview (high)": "Hy4Preview(high)V2-TasksAssignedByOpus5",
+  "GLM 5.3 Flash (Max)": "GLM5.3Flash(Max)V2-TasksAssignedByOpus5",
+  "DeepSeek V4 Pro 0813 (Max)": "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5",
+  "GLM 5.3 (Max)": "GLM5.3(Max)V1-TasksAssignedByOpus5",
+  "Kimi K3 (Max)": "KimiK3(Max)V2-TasksAssignedByOpus5",
+  "MuseSpark 1.3 Contributor (xHigh)": "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5",
+  "Gemini 3.8 Flash (high)": "Gemini3.8Flash(high)V1-TasksAssignedByOpus5"
+};
+const currentDocRows = SITE.tableDisplayRows(visibleWorks.filter(work => work.group === 'B'), 'tier', 1, 'zh');
+for (const [family, id] of Object.entries(expectedCurrentDocPrimaries)) check(currentDocRows.find(row => row.tableVariantBase === family)?.id === id, family + ': rechecked detailed-spec fold must expose its independently derived highest exact-scoring run');
+
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'moonEvidence', 'reviewedAt', 'reviewVersion'];
 const expectedMoonAdjustments = {
-  [SOL61_SPEC_ID]: { earthMoonValid: true },
+  "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Haiku5.5(Ultracode·Max)V1": {},
+  "Haiku5.5(Ultracode)V1": {},
+  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GPT6Astra(Light)V1": {},
+  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GPT6Luna(Max)V1": {
+    "moonQuality": 0.5
+  },
+  "GPT6Luna(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "Sonnet5.5(Max)V1": {},
+  "Opus5(Max)V1": {},
+  "Fable5.1(Max)V1": {},
   "Qwen3.8Flash(xhigh)V1": {
     "earthMoonValid": true
   },
@@ -933,7 +1001,7 @@ const expectedMoonAdjustments = {
     "earthMoonValid": true
   },
   "Hy4Preview(high)V2-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "GLM5.3Flash(Max)V2": {
     "earthMoonValid": true
@@ -947,20 +1015,144 @@ const expectedMoonAdjustments = {
   "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "GPT5.6Sol(Medium)V1": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Light)V1": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
   "DoubaoSeedEvolving0827(Max)V1": {
     "earthMoonValid": false
   },
   "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "GPT5.6Sol(high)V1": {
     "earthMoonValid": true
   },
-  "Opus5Ultra-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
   "DeepSeek-V4-Flash-0731": {
     "earthMoonValid": true
+  },
+  "DeepSeek_V4_Pro_high-1": {
+    "earthMoonValid": false
+  },
+  "DeepSeek_V4_Pro_high-2": {
+    "earthMoonValid": false
+  },
+  "DeepSeek_V4_Pro_high-3": {
+    "earthMoonValid": false
+  },
+  "GLM5.2Max": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V1": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V2": {
+    "earthMoonValid": true
+  },
+  "GLM5.3(Max)V3": {
+    "earthMoonValid": false
+  },
+  "GLM5.3(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GLM5.3(Max)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GLM_5_1_high-1": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Max)V1": {
+    "earthMoonValid": true
+  },
+  "GPT5.6SolUltra-WebGL2": {
+    "earthMoonValid": true
+  },
+  "GPT5.6SolUltra": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(xhigh)V1": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(xhigh)V2": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(xhigh)V3": {
+    "earthMoonValid": true
+  },
+  "GPT5.6TerraUltra-Three": {
+    "earthMoonValid": false
+  },
+  "GPT_5_5_xhigh": {
+    "earthMoonValid": false
+  },
+  "Gemini_3_5_flash_high": {
+    "earthMoonValid": true
+  },
+  "Grok4.5": {
+    "earthMoonValid": false
+  },
+  "Grok4.6(xhigh)V1": {
+    "earthMoonValid": true
+  },
+  "Hy3": {
+    "earthMoonValid": false
+  },
+  "KimiK3Max": {
+    "earthMoonValid": false
+  },
+  "KimiK3(Max)V2": {
+    "earthMoonValid": false
+  },
+  "KimiK3(Max)V3": {
+    "earthMoonValid": false
+  },
+  "LongCat2.0": {
+    "earthMoonValid": true
+  },
+  "Mimo_2_5_Pro_high-1": {
+    "earthMoonValid": false
+  },
+  "MiniMax_M3_thinking-1": {
+    "earthMoonValid": false
+  },
+  "Opus5Ultra-WebGL2": {},
+  "Opus_4_8_Max": {
+    "earthMoonValid": false
+  },
+  "Qwen3.7Max": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8MaxV2": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Max-inQoder": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8MaxV1-inQoder": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Max(Max)V1": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Max(Max)V2": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8Max(Max)V3": {
+    "earthMoonValid": false
+  },
+  "Sonnet5Ultra": {
+    "earthMoonValid": true
+  },
+  "Opus5Ultra-TasksAssignedByOpus5": {
+    "earthMoonValid": false
   },
   "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": {
     "earthMoonValid": false
@@ -986,37 +1178,7 @@ const expectedMoonAdjustments = {
   "DeepSeekProMax-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "DeepSeek_V4_Pro_high-1": {
-    "earthMoonValid": false
-  },
-  "DeepSeek_V4_Pro_high-2": {
-    "earthMoonValid": false
-  },
-  "DeepSeek_V4_Pro_high-3": {
-    "earthMoonValid": false
-  },
   "GLM5.2Max-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GLM5.2Max": {
-    "earthMoonValid": false
-  },
-  "GLM5.3(Max)V1": {
-    "earthMoonValid": false
-  },
-  "GLM5.3(Max)V2": {
-    "earthMoonValid": true
-  },
-  "GLM5.3(Max)V3": {
-    "earthMoonValid": false
-  },
-  "GLM5.3(Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GLM5.3(Max)V2-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GLM_5_1_high-1": {
     "earthMoonValid": false
   },
   "GPT5.5xHigh-TasksAssignedByOpus5": {
@@ -1031,11 +1193,11 @@ const expectedMoonAdjustments = {
   "GPT5.6LunaMax-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "GPT5.6Sol(Max)V1": {
-    "earthMoonValid": true
-  },
   "GPT5.6SolUltra-TasksAssignedByOpus5": {
     "earthMoonValid": true
+  },
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": {
+    "earthMoonValid": false
   },
   "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
@@ -1044,42 +1206,6 @@ const expectedMoonAdjustments = {
     "earthMoonValid": true
   },
   "GPT5.6Sol(high)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GPT5.6Sol(Medium)V1": {
-    "earthMoonValid": false
-  },
-  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GPT5.6Sol(Light)V1": {
-    "earthMoonValid": false
-  },
-  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GPT5.6SolUltra-WebGL2": {
-    "earthMoonValid": true
-  },
-  "GPT5.6SolUltra": {
-    "earthMoonValid": true
-  },
-  "GPT5.6Sol(xhigh)V1": {
-    "earthMoonValid": true
-  },
-  "GPT5.6Sol(xhigh)V2": {
-    "earthMoonValid": false
-  },
-  "GPT5.6Sol(xhigh)V3": {
-    "earthMoonValid": true
-  },
-  "GPT5.6TerraUltra-Three": {
-    "earthMoonValid": false
-  },
-  "GPT5.6TerraUltra-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GPT_5_5_xhigh": {
     "earthMoonValid": false
   },
   "Gemini3.1Pro-TasksAssignedByOpus5": {
@@ -1100,46 +1226,19 @@ const expectedMoonAdjustments = {
   "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "Gemini_3_5_flash_high": {
-    "earthMoonValid": true
-  },
-  "Grok4.5": {
-    "earthMoonValid": false
-  },
-  "Grok4.6(xhigh)V1": {
-    "earthMoonValid": true
-  },
   "Grok4.6(xhigh)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
   "Hy3-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "Hy3": {
-    "earthMoonValid": false
-  },
   "KimiK3Max-TasksAssignedByOpus5": {
     "earthMoonValid": true
   },
-  "KimiK3Max": {
-    "earthMoonValid": false
-  },
   "KimiK3(Max)V2-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "KimiK3(Max)V2": {
-    "earthMoonValid": false
-  },
-  "KimiK3(Max)V3": {
-    "earthMoonValid": false
-  },
-  "LongCat2.0-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "LongCat2.0": {
     "earthMoonValid": true
   },
-  "Mimo_2_5_Pro_high-1": {
+  "LongCat2.0-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
   "MiniMaxM3-TasksAssignedByOpus5": {
@@ -1148,16 +1247,7 @@ const expectedMoonAdjustments = {
   "MiniMaxM3(high)V2-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "MiniMax_M3_thinking-1": {
-    "earthMoonValid": false
-  },
-  "Opus_4_8_Max": {
-    "earthMoonValid": false
-  },
   "Opus4.8Ultra-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "Qwen3.7Max": {
     "earthMoonValid": false
   },
   "Qwen3.8Max-TasksAssignedByOpus5": {
@@ -1166,36 +1256,17 @@ const expectedMoonAdjustments = {
   "Qwen3.8MaxV2-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
-  "Qwen3.8MaxV2": {
-    "earthMoonValid": true
-  },
-  "Qwen3.8Max-inQoder": {
-    "earthMoonValid": false
-  },
-  "Qwen3.8MaxV1-inQoder": {
-    "earthMoonValid": true
-  },
-  "Qwen3.8Max(Max)V1": {
-    "earthMoonValid": true
-  },
-  "Qwen3.8Max(Max)V2": {
-    "earthMoonValid": false
-  },
-  "Qwen3.8Max(Max)V3": {
-    "earthMoonValid": false
-  },
   "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "Sonnet5Ultra": {
     "earthMoonValid": true
   },
   "Sonnet5Ultra-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "MuseSpark1.3Contributor(xhigh)V1": {},
   "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
+  "Gemini3.8Flash(high)V1": {},
   "Gemini3.8Flash(high)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
@@ -1203,13 +1274,13 @@ const expectedMoonAdjustments = {
     "earthMoonValid": false
   },
   "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "MuseSpark1.3Contributor(xhigh)V2": {
     "earthMoonValid": false
   },
   "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "OmenAlpha(Max)V1": {
     "earthMoonValid": false
@@ -1218,11 +1289,15 @@ const expectedMoonAdjustments = {
     "earthMoonValid": true
   },
   "GPT6Astra(Light)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "Opus5(Low)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "GPT6Astra(Ultra)V1": {},
+  "GPT6Astra(Max)V1": {},
+  "GPT6Astra(xhigh)V1": {},
+  "DeepSeekV4.1Flash0910(Max)V1": {},
   "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
@@ -1232,39 +1307,30 @@ const expectedMoonAdjustments = {
   "MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5": {
     "earthMoonValid": true
   },
+  "Step5Preview(high)V1": {},
   "Step5Preview(high)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "MiMo2.6Flash(Unknown)V1": {},
   "MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
   "MiMo2.6Pro(Unknown)V1": {
     "earthMoonValid": false
   },
   "MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
+    "earthMoonValid": true
   },
+  "Grok4.7(xhigh)V1": {},
   "Grok4.7(xhigh)V1-TasksAssignedByOpus5": {
     "earthMoonValid": true
   },
+  "Opus5.5(Max)V1": {},
+  "MiniMaxM3.1FlashPreview(Max)V1": {},
   "MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": false
-  },
-  "GPT6Astra(Medium)V1-TasksAssignedByOpus5": {
     "earthMoonValid": true
   },
-  "GPT6Luna(Max)V1": {
-    "moonQuality": 0.5
-  },
-  "GPT6Luna(Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": true
-  },
-  "Haiku5.5(Ultracode)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": true
-  },
-  "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": {
-    "earthMoonValid": true
-  }
+  "GPT6.1Sol(Ultra)V1": {}
 };
 const expectedOtherComets = {
   "Opus5(Max)V1": 2,
@@ -1305,7 +1371,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = inArchiveReview || id === SOL61_SPEC_ID ? '2026-10-15' : id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
+    const reviewDate = inArchiveReview || currentSpecReviewIds.has(id) ? '2026-10-15' : id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -2271,7 +2337,9 @@ check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分'
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">30') && enHome.includes('id="bAll">30') && zhHome.includes('id="tAll">136') && enHome.includes('id="tAll">136'), 'Both home pages must publish 40/30 active counts and 136 retained entries before JavaScript runs');
 check(zhHome.includes('一句话组 40 件和文档组 30 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 30 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ['50.02 / 70', '54.96 / 70', '31.56 / 36', '31.42 / 36'].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
+check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ["50.02 / 70","62.01 / 70","31.56 / 36","33.19 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
+check(zhHome.includes('详细文档版以实际任务原文为验收依据') && zhHome.includes('任务依从与物理正确性的区别') && enHome.includes('Detailed-spec entries are assessed against the actual task.') && enHome.includes('distinguishes task compliance from physical correctness'), 'Both home pages must preserve the task-attribution rule and distinguish credited task compliance from physical correctness');
+check(!zhHome.includes('没有显示稳定提升') && !zhHome.includes('没有显示出稳定提升') && !enHome.includes('no stable lift'), 'The revised sample summaries must not retain a stale claim that execution failed to improve after the corrected task-attribution review');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -2329,14 +2397,14 @@ check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.max
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
 check(stats.pairedSummary.n === 28, 'Paired statistics must use 28 active pairs');
 close(stats.pairedSummary.coverage.a, 50.016785714285696, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 54.957142857142856, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":9}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.coverage.b, 62.010714285714286, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":23,"tie":0,"decline":5}), 'coverage paired outcomes must match the evidence');
 close(stats.pairedSummary.execution.a, 31.555952380952387, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.419047619047628, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":14,"tie":2,"decline":12}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.b, 33.19047619047619, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":24,"tie":0,"decline":4}), 'execution paired outcomes must match the evidence');
 close(stats.pairedSummary.exact.a, 78.14416666666664, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 83.48333333333335, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":12}), 'exact paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.b, 92.30833333333332, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":24,"tie":0,"decline":4}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
@@ -2348,9 +2416,9 @@ const EXPECTED_WHOLE_GROUP = {
     ],
     "b": [
       30,
-      55.24533333333333,
-      31.606666666666676,
-      83.95200000000001
+      61.82866666666666,
+      33.32666666666667,
+      92.25533333333333
     ]
   },
   "withoutReferences": {
@@ -2362,9 +2430,9 @@ const EXPECTED_WHOLE_GROUP = {
     ],
     "b": [
       30,
-      55.24533333333333,
-      31.606666666666676,
-      83.95200000000001
+      61.82866666666666,
+      33.32666666666667,
+      92.25533333333333
     ]
   },
   "withoutTier4": {
@@ -2376,9 +2444,9 @@ const EXPECTED_WHOLE_GROUP = {
     ],
     "b": [
       29,
-      55.35724137931034,
-      32.163793103448285,
-      84.52103448275862
+      62.16758620689655,
+      33.89022988505747,
+      93.05781609195402
     ]
   },
   "withoutReferencesOrTier4": {
@@ -2390,9 +2458,9 @@ const EXPECTED_WHOLE_GROUP = {
     ],
     "b": [
       29,
-      55.35724137931034,
-      32.163793103448285,
-      84.52103448275862
+      62.16758620689655,
+      33.89022988505747,
+      93.05781609195402
     ]
   }
 };
