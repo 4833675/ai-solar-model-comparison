@@ -3,6 +3,115 @@
   'use strict';
 
   window.SCORES = {
+    'GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5': {
+      "reference": false,
+      "featureMap": {
+        "rings": 1,
+        "belt": 1,
+        "bloom": 1,
+        "aces": 1,
+        "atmo": 1
+      },
+      "orbitModel": {
+        "geometry": 1,
+        "kepler": 1,
+        "elements": 1,
+        "orientation": 1,
+        "epoch": 1
+      },
+      "orbitRuntime": {
+        "pathFit": 1,
+        "stability": 1
+      },
+      "moons": 8,
+      "hasEarthMoon": true,
+      "earthMoonValid": true,
+      "moonEvidence": [
+        {
+          "id": "moon",
+          "parent": "earth",
+          "quality": 1,
+          "actualInclinationDeg": 5.144999999969512,
+          "expectedInclinationDeg": 5.145,
+          "reason": "源码95–101直接以世界黄道参考构造轨道，实际r×v对黄道北为5.145°，正周期27.32166天；不是倾斜的地球赤道面。界面512说明初始相位示意、非卫星历表。"
+        },
+        {
+          "id": "io",
+          "parent": "jupiter",
+          "quality": 1,
+          "actualInclinationDeg": 0.049999905450823494,
+          "expectedInclinationDeg": 0.05,
+          "reason": "源码93建立proper母星赤道基，100局部(cosθ,+sinθ sinI,−sinθ cosI)在正周期下r×v沿正确pole；参考面、倾角与周期均有效。圆轨道和明确披露的示意初相不扣分。"
+        },
+        {
+          "id": "europa",
+          "parent": "jupiter",
+          "quality": 1,
+          "actualInclinationDeg": 0.46999988555926986,
+          "expectedInclinationDeg": 0.47,
+          "reason": "源码93建立proper母星赤道基，100局部(cosθ,+sinθ sinI,−sinθ cosI)在正周期下r×v沿正确pole；参考面、倾角与周期均有效。圆轨道和明确披露的示意初相不扣分。"
+        },
+        {
+          "id": "ganymede",
+          "parent": "jupiter",
+          "quality": 1,
+          "actualInclinationDeg": 0.19999989833579107,
+          "expectedInclinationDeg": 0.2,
+          "reason": "源码93建立proper母星赤道基，100局部(cosθ,+sinθ sinI,−sinθ cosI)在正周期下r×v沿正确pole；参考面、倾角与周期均有效。圆轨道和明确披露的示意初相不扣分。"
+        },
+        {
+          "id": "callisto",
+          "parent": "jupiter",
+          "quality": 1,
+          "actualInclinationDeg": 0.18999989880982077,
+          "expectedInclinationDeg": 0.19,
+          "reason": "源码93建立proper母星赤道基，100局部(cosθ,+sinθ sinI,−sinθ cosI)在正周期下r×v沿正确pole；参考面、倾角与周期均有效。圆轨道和明确披露的示意初相不扣分。"
+        },
+        {
+          "id": "titan",
+          "parent": "saturn",
+          "quality": 1,
+          "actualInclinationDeg": 0.35000113049625053,
+          "expectedInclinationDeg": 0.35,
+          "reason": "源码93建立proper母星赤道基，100局部(cosθ,+sinθ sinI,−sinθ cosI)在正周期下r×v沿正确pole；参考面、倾角与周期均有效。圆轨道和明确披露的示意初相不扣分。"
+        },
+        {
+          "id": "triton",
+          "parent": "neptune",
+          "quality": 1,
+          "actualInclinationDeg": 156.9000017053521,
+          "expectedInclinationDeg": 156.9,
+          "reason": "源码99将倾角折为23.1°并保留负周期−5.876854天，配合100的proper局部方向，实际有向法线对Neptune pole为156.9°，是真逆行，没有二次反转。"
+        },
+        {
+          "id": "charon",
+          "parent": "pluto",
+          "quality": 1,
+          "actualInclinationDeg": 0.08000120147516103,
+          "expectedInclinationDeg": 0.08,
+          "reason": "源码93/100–101围绕几何Pluto pole构造正周期轨道，实际相对pole有向倾角0.080001°，符合Charon；不以母星负rotH产生的错误自转当轨道基准。"
+        }
+      ],
+      "halley": true,
+      "otherComets": 0,
+      "correctness": {
+        "runtime": 5,
+        "data": 4,
+        "integrity": 5
+      },
+      "visualBase": null,
+      "interaction": {
+        "drag": 1,
+        "zoom": 0.5,
+        "focus": 1,
+        "follow": 1,
+        "pauseReset": 0.5
+      },
+      "fatal": null,
+      "reviewedAt": "2026-10-15",
+      "reviewVersion": "V3-20261015",
+      "note": "原生自包含WebGL2，JPL世纪率/J2000历元、稳健Kepler和proper坐标映射有效；512个等偏近点角样本与实际行星/哈雷曲线同源，哈雷近近日点最大压缩弦偏差0.0191显示单位，小于彗核半径0.22，pathFit满分。8颗卫星逐颗有向法线、母星参考面和周期均有效；Triton用23.1°加负周期得到实际156.9°，Moon为独立黄道5.145°。界面明确初相示意/非历表，不扣虚构精度。双向解析环影、17900个运动带粒子、HDR多级Bloom、实际最终ACES和视线撞击参数密度大气全部有效。几何逆行pole又配负rotH，使Venus/Uranus/Pluto实际自转角动量反为2.6°/82.23°/67.2°，data4；此项不重复扣有效卫星。拖拽抑制误点、列表与画布聚焦及动态目标跟随有效；聚焦时缩放下限1.45R安全，但全景无目标时下限0.5可进入半径4.6的太阳，zoom部分分；暂停冻结物理时间/自转，但此刻只回日期、全景另调镜头，无完整状态复位，pauseReset部分分。HDR有RGBA8回退，实际场景最多4×MSAA并NEAREST解析，无网络依赖，无已证实fatal。"
+    },
     'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5': {
       "reference": false,
       "featureMap": {

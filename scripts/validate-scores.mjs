@@ -13,6 +13,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
 
 const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
 const HAIKU_MAX_SPEC_ID = 'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5';
+const SOL61_SPEC_ID = 'GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5';
 const fail = message => { throw new Error(message); };
 const check = (condition, message) => { if (!condition) fail(message); };
 const close = (actual, expected, label) => check(Math.abs(actual - expected) < 1e-9, `${label}: expected ${expected}, got ${actual}`);
@@ -29,6 +30,7 @@ const canonical = value => Array.isArray(value) ? value.map(canonical)
 const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
+  [SOL61_SPEC_ID]: "GPT-6.1 Sol (Ultra·Max)",
   "Haiku5.5(Ultracode·Max)V1": "Claude Haiku 5.5 (Ultracode·Max)",
   "Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5": "Claude Haiku 5.5 (Ultracode·Max)",
   "Haiku5.5(Ultracode)V1": "Claude Haiku 5.5 (Ultracode·xhigh)",
@@ -173,6 +175,7 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  [SOL61_SPEC_ID]: 96.21666666666667,
   "Opus5(Max)V1": 105,
   "Fable5.1(Max)V1": 109,
   "Qwen3.8Flash(xhigh)V1": 67.83666666666666,
@@ -315,6 +318,7 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  [SOL61_SPEC_ID]: "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
   "Opus5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|2|5|5|5|-|1|1|1|1|1|-|-",
   "Fable5.1(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
   "Qwen3.8Flash(xhigh)V1": "0|0.4|1|1|1|0.4|1|0.5|1|1|0.5|1|1|9|1|0|1|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:60f621e508320326c193cc088d9b40ae0f641952c8364da60aa794071d0fea67",
@@ -464,10 +468,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 135, `WORKS count must be 135, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 135, `SCORES count must be 135, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 135, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 135, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 136, `WORKS count must be 136, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 136, `SCORES count must be 136, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 136, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 136, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -482,7 +486,7 @@ for (const work of WORKS) {
 }
 const renamedUltraIds = {
   Claude: ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5Ultra-WebGL2', 'Opus4.8Ultra-TasksAssignedByOpus5', 'Sonnet5Ultra', 'Sonnet5Ultra-TasksAssignedByOpus5'],
-  GPT: ['GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1'],
+  GPT: ['GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1', SOL61_SPEC_ID],
 };
 const renamedHaikuIds = ['Haiku5.5(Ultracode)V1', 'Haiku5.5(Ultracode)V1-TasksAssignedByOpus5'];
 check(WORKS.every(work => !/^(?:Claude |GPT-).*\(Ultra\)/.test(work.model)), 'WORKS must no longer display the standalone Claude/GPT Ultra name');
@@ -499,7 +503,7 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
 check(WORKS.filter(w => w.group === 'A').length === 76, 'Group A count must be 76 after adding Haiku 5.5 Ultracode·Max');
-check(WORKS.filter(w => w.group === 'B').length === 59, 'Group B count must be 59 after adding Haiku 5.5 Ultracode·Max detailed spec');
+check(WORKS.filter(w => w.group === 'B').length === 60, 'Group B count must be 60 after adding GPT-6.1 Sol detailed spec');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
 const restoredIds = new Set(['KimiK3(Max)V3']);
@@ -587,10 +591,13 @@ for (const [id, expected] of Object.entries(protectedScoreDigests))
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
 }
-const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
+const originalAssets = WORKS.filter(work => work.id !== SOL61_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(digest(originalAssets) === 'ba1e3e09a5971ea83f1d6dfee4f3f4c8e4cd8708622e1a36f1768df72d011836', 'All 270 original programs and saved screenshots must be reused unchanged');
-check(digest(visibleWorks.map(work => [work, SCORES[work.id]])) === '946bbacac025fd0bfda6061642ad47fca4165c3c94ef0f9df9758df986ac513f', 'The archive-only review must preserve all 69 active records and their scores');
+const baselineActive = visibleWorks.filter(work => work.id !== SOL61_SPEC_ID)
+  .map(work => [work.id === 'GPT6.1Sol(Ultra)V1' ? { ...work, pair: null } : work, SCORES[work.id]]);
+check(originalAssets.length === 270 && baselineActive.length === 69, 'The fixed baseline must retain all old 270 assets and 69 active records');
+check(digest(baselineActive) === '946bbacac025fd0bfda6061642ad47fca4165c3c94ef0f9df9758df986ac513f', 'The new Sol pair must preserve every old active record and score, permitting only Sol A pair:null to become gpt61sol');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
 const archiveEvidenceIds = archiveBaselineIds.filter(id => id !== 'KimiK3(Max)V3');
 const archivedEvidence = archiveEvidenceIds.map(id => [id,
@@ -604,9 +611,9 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 69, 'Active WORKS count must be 69');
+check(visibleWorks.length === 70, 'Active WORKS count must be 70');
 check(visibleWorks.filter(w => w.group === 'A').length === 40, 'Active Group A count must be 40');
-check(visibleWorks.filter(w => w.group === 'B').length === 29, 'Active Group B count must be 29');
+check(visibleWorks.filter(w => w.group === 'B').length === 30, 'Active Group B count must be 30');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
   const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
@@ -617,10 +624,10 @@ for (const id of ['Opus5Ultra-WebGL2', 'MiniMaxM3.1FlashPreview(Max)V1', 'MiniMa
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) { const work=SITE.byId(id); check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': archive lookup must open the retained original and screenshot without entering active lists'); }
-check(PAIR_ORDER.length === 43 && new Set(PAIR_ORDER).size === 43, 'PAIR_ORDER must contain 43 configured pair keys, including Haiku Ultracode·Max');
+check(PAIR_ORDER.length === 44 && new Set(PAIR_ORDER).size === 44, 'PAIR_ORDER must contain 44 configured pair keys, including GPT-6.1 Sol');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 27, 'Expected 27 complete active pairs after adding Haiku Ultracode·Max detailed spec');
+check(SITE.pairs().length === 28, 'Expected 28 complete active pairs after adding GPT-6.1 Sol detailed spec');
 check(!SITE.pairs().some(pair => pair.a.pair === 'minimax'), 'The retired MiniMax M3 pair must not appear in current comparisons');
 check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must leave current comparisons when only its detailed-spec side is archived');
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
@@ -816,8 +823,23 @@ for (const [id, tier, birth] of [['MiniMaxM3.1FlashPreview(Max)V1',2,'260928'], 
   check(!SITE.priceFor(work) && SITE.priceCell(work).includes('—'), id + ': unpublished preview API pricing must remain empty');
 }
 const sol61 = SITE.byId('GPT6.1Sol(Ultra)V1');
-check(sol61?.tier === 1 && sol61.pair === null && SITE.environmentTag(sol61) === 'in Codex' && WORK_CREATION_DATES[sol61.id] === '260930', 'GPT-6.1 Sol must be the supplied unpaired Codex Tier 1 work');
+check(sol61?.tier === 1 && sol61.pair === 'gpt61sol' && SITE.environmentTag(sol61) === 'in Codex' && WORK_CREATION_DATES[sol61.id] === '260930', 'GPT-6.1 Sol one-line must preserve its supplied Codex Tier 1 metadata and join only the new Sol pair');
 check(SITE.priceFor(sol61).date === '2026-09-30' && SITE.priceCell(sol61).includes('4 / 15 / 0.2'), 'GPT-6.1 Sol must show verified long-context pricing');
+
+const sol61Spec = SITE.byId(SOL61_SPEC_ID);
+check(sol61Spec?.group === 'B' && sol61Spec.tier === 1 && sol61Spec.pair === 'gpt61sol' && SITE.environmentTag(sol61Spec) === 'in Codex' && WORK_CREATION_DATES[SOL61_SPEC_ID] === '261015', 'GPT-6.1 Sol detailed spec must use its supplied Tier 1, Codex environment, actual creation date, and Sol-only pair');
+check(sol61Spec.file === `models/${SOL61_SPEC_ID}.html` && sol61Spec.shot === `assets/shots/${SOL61_SPEC_ID}.jpg` && sol61Spec.bytes === 89619 && sol61Spec.lines === 550 && sol61Spec.tech === 'WebGL2' && !sol61Spec.needsFloat && sol61Spec.msaa && sol61Spec.net.length === 0 && sol61Spec.jsErrors === 0, 'Sol detailed metadata must preserve native WebGL2, optional HDR fallback, and actual offscreen multisample resolve');
+const sol61SpecSource = fs.readFileSync(asset(sol61Spec.file));
+check(sol61SpecSource.length === 89619 && [...sol61SpecSource].filter(byte => byte === 10).length === 550 && createHash('sha256').update(sol61SpecSource).digest('hex') === '366bf049cfaf07bd4fa3f092ae3d3dddee60546f4697611ef9966c6c571b943a', 'The supplied Sol detailed original must remain byte-for-byte unchanged');
+check(fs.existsSync(asset(sol61Spec.shot)) && SITE.isVisibleWork(sol61Spec) && !SITE.isArchivedWork(sol61Spec), 'Sol detailed spec must expose the saved runtime screenshot as a current work');
+check(createHash('sha256').update(fs.readFileSync(asset(sol61Spec.shot))).digest('hex') === 'adb9f5aaa8d14068cd3c2cb473327ea7f20387a300d9a40d2b0b8e0262a65da1', 'The verified 1440×900 JPEG runtime screenshot must remain unchanged');
+check(SITE.priceFor(sol61Spec).date === '2026-09-30' && SITE.priceCell(sol61Spec).includes('4 / 15 / 0.2'), 'Sol detailed spec must reuse the existing verified Sol pricing');
+const sol61Pair = SITE.pairs().find(pair => pair.a.pair === 'gpt61sol');
+check(sol61Pair?.a.id === sol61.id && sol61Pair?.b.id === SOL61_SPEC_ID && PAIR_ORDER.at(-1) === 'gpt61sol' && context.window.PAIR_TITLES.gpt61sol === 'GPT-6.1 Sol (Ultra·Max)', 'Sol must append exactly its matching one-line and detailed originals');
+close(SITE.scoreFor(sol61Spec).exact - SITE.scoreFor(sol61).exact, -3.4833333333333343, 'Sol detailed-minus-one-line exact difference');
+check(!SITE.displayPairs().some(pair => pair.a.pair === 'gpt61sol'), 'Sol must join the full pair population without displacing a larger positive featured gain');
+check(SCORES[SOL61_SPEC_ID].visualBase === null && SCORES[SOL61_SPEC_ID].moons === 8 && SCORES[SOL61_SPEC_ID].earthMoonValid === true && Array.isArray(SCORES[SOL61_SPEC_ID].moonEvidence) && SCORES[SOL61_SPEC_ID].moonEvidence.length === 8 && SCORES[SOL61_SPEC_ID].moonEvidence.every(moon => moon.quality === 1), 'The new Sol review must retain its eight independently verified moons and no legacy visual input');
+
 for (const [id,group,bytes,lines,tech,needsFloat,msaa] of [
   ['Haiku5.5(Ultracode)V1','A',131344,2423,'Three.js',true,false],
   ['Haiku5.5(Ultracode)V1-TasksAssignedByOpus5','B',191908,5160,'WebGL2',false,true],
@@ -838,7 +860,7 @@ const haikuMaxSpecSource = fs.readFileSync(asset(haikuMaxSpec.file));
 check(haikuMaxSpecSource.length === 191845 && [...haikuMaxSpecSource].filter(byte => byte === 10).length === 4506 && createHash('sha256').update(haikuMaxSpecSource).digest('hex') === '76c9edf174191632523af63d251cdfbcdb4e81d90cdb57904860b5114de56ebc', 'The new Haiku Ultracode·Max detailed original must remain byte-for-byte unchanged');
 check(fs.existsSync(asset(haikuMaxSpec.shot)) && SITE.isVisibleWork(haikuMaxSpec) && !SITE.isArchivedWork(haikuMaxSpec), 'Haiku Ultracode·Max detailed spec must expose its saved runtime screenshot as a current work');
 const haikuMaxPair = SITE.pairs().find(pair => pair.a.pair === 'haiku55max');
-check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-1) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must append one complete pair without replacing the existing xhigh pair');
+check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-2) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must retain its complete pair immediately before Sol without replacing the existing xhigh pair');
 close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -2.81, 'Haiku Max detailed-minus-one-line exact score difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'haiku55max'), 'The Haiku Max pair must enter the full pair population without replacing a larger positive featured gain');
 check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode·Max)V1')), 'The independent Luna/Haiku comparison must use only the Max works while preserving the xhigh ordinary pair');
@@ -862,7 +884,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 26], ['B', 21]]) {
+for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -894,6 +916,7 @@ for (const [group, expectedCount] of [['A', 26], ['B', 21]]) {
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'moonEvidence', 'reviewedAt', 'reviewVersion'];
 const expectedMoonAdjustments = {
+  [SOL61_SPEC_ID]: { earthMoonValid: true },
   "Qwen3.8Flash(xhigh)V1": {
     "earthMoonValid": true
   },
@@ -1282,7 +1305,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = inArchiveReview ? '2026-10-15' : id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
+    const reviewDate = inArchiveReview || id === SOL61_SPEC_ID ? '2026-10-15' : id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -1889,7 +1912,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
-  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 21', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 22', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
@@ -1914,7 +1937,7 @@ for (const lang of ['zh', 'en']) {
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   checkLunaHaikuHome(true);
-  check(countRows() === 21, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 22, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
   check(countRows() === 26, lang + ': one-line tab must restore its 26 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
@@ -1927,6 +1950,16 @@ for (const lang of ['zh', 'en']) {
       if (query === 'Haiku') check(countRows() === 2, lang + ': Haiku search must show both Max and xhigh in each active table while retaining the fixed cross-model comparison');
     }
   }
+  tabs[0].listeners.click();
+  one('#modelSearchInput').value = 'GPT-6.1 Sol';
+  one('#modelSearchInput').listeners.input();
+  checkLunaHaikuHome(false);
+  for (const [index, id] of [[0, 'GPT6.1Sol(Ultra)V1'], [1, SOL61_SPEC_ID]]) {
+    tabs[index].listeners.click();
+    check(countRows() === 1 && body().includes('view'+(lang==='en'?'.en':'')+'.html?w='+encodeURIComponent(id)) && (body().match(/recommend-symbol-up/g) || []).length === 5 && !body().includes('recommend-symbol-down'), lang + ': Sol search must show its matching current original with five green recommendation triangles in each brief');
+  }
+  check(one('#gridA').innerHTML.includes('GPT6.1Sol(Ultra)V1') && one('#gridB').innerHTML.includes(SOL61_SPEC_ID), lang + ': Sol search must retain both current galleries');
+  for (const tab of tabs.slice(2)) { tab.listeners.click(); check(countRows() === 0, lang + ': the new Sol pair must not enter either offline tab'); }
   tabs[0].listeners.click();
   one('#modelSearchInput').value = 'Kimi K3';
   one('#modelSearchInput').listeners.input();
@@ -1998,7 +2031,7 @@ for (const lang of ['zh', 'en']) {
     const brief = lang === 'zh' ? (row.group === 'A' ? '同一句话任务' : '同一份详细文档') : (row.group === 'A' ? 'Same one-line prompt' : 'Same detailed specification');
     check(actual.nodes.get('#compareContext').textContent === brief && actual.frames.every(frame => frame.attributes.title.includes(lang === 'zh' ? (row.group === 'A' ? '一句话' : '详细文档') : (row.group === 'A' ? 'one-line prompt' : 'detailed specification'))), lang + ': both cross-model iframe titles must identify the selected brief');
   }
-  for (const pairName of ['gpt6luna', 'haiku55', 'haiku55max']) {
+  for (const pairName of ['gpt6luna', 'haiku55', 'haiku55max', 'gpt61sol']) {
     const actual = simulateCompare(lang, '?p=' + pairName), pair = SITE.pairs().find(pair => pair.a.pair === pairName);
     check(!actual.notFound && !actual.split.dataset.crossGroup && JSON.stringify(actual.frames.map(frame => frame.src)) === JSON.stringify([pair.a.file, pair.b.file]), lang + ': legacy pair route must retain one-line versus detailed-spec originals');
     check(actual.nodes.get('.back').href === home + '#pairs' && actual.nodes.get('.lbl.a').textContent === (lang === 'zh' ? '一句话提示' : 'One-line prompt') && actual.nodes.get('.lbl.b').textContent === (lang === 'zh' ? '详细文档' : 'Detailed specification'), lang + ': legacy pair route must preserve its original labels and return anchor');
@@ -2222,9 +2255,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">29') && enHome.includes('id="bAll">29') && zhHome.includes('id="tAll">135') && enHome.includes('id="tAll">135'), 'Both home pages must publish 40/29 active counts and 135 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 40 件和文档组 29 件') && enHome.includes('prefer the 27 paired results over treating all 40 one-line and 29 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('27 组同模型') && enHome.includes('27 same-model') && zhHome.includes('49.39 / 70') && enHome.includes('49.39 / 70') && zhHome.includes('31.30 / 36') && enHome.includes('31.30 / 36'), 'Both home pages must publish the current V3 27-pair statistics');
+check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">30') && enHome.includes('id="bAll">30') && zhHome.includes('id="tAll">136') && enHome.includes('id="tAll">136'), 'Both home pages must publish 40/30 active counts and 136 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 40 件和文档组 30 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 30 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ['50.02 / 70', '54.96 / 70', '31.56 / 36', '31.33 / 36'].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -2280,16 +2313,16 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
-check(stats.pairedSummary.n === 27, 'Paired statistics must use 27 active pairs');
-close(stats.pairedSummary.coverage.a, 49.387777777777764, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 54.62222222222222, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":8}), 'coverage paired outcomes must match the evidence');
-close(stats.pairedSummary.execution.a, 31.513580246913584, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.295679012345687, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":12}), 'execution paired outcomes must match the evidence');
-close(stats.pairedSummary.exact.a, 77.34580246913578, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 82.91790123456792, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":11}), 'exact paired outcomes must match the evidence');
+check(stats.pairedSummary.n === 28, 'Paired statistics must use 28 active pairs');
+close(stats.pairedSummary.coverage.a, 50.016785714285696, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 54.957142857142856, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":9}), 'coverage paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.a, 31.555952380952387, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 31.32857142857144, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":13}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.exact.a, 78.14416666666664, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 83.39285714285715, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":12}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
@@ -2300,10 +2333,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.34933333333335
     ],
     "b": [
-      29,
-      54.94344827586207,
-      31.498275862068976,
-      83.44172413793105
+      30,
+      55.24533333333333,
+      31.522222222222233,
+      83.86755555555557
     ]
   },
   "withoutReferences": {
@@ -2314,10 +2347,10 @@ const EXPECTED_WHOLE_GROUP = {
       80.8711111111111
     ],
     "b": [
-      29,
-      54.94344827586207,
-      31.498275862068976,
-      83.44172413793105
+      30,
+      55.24533333333333,
+      31.522222222222233,
+      83.86755555555557
     ]
   },
   "withoutTier4": {
@@ -2328,10 +2361,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.58000000000001
     ],
     "b": [
-      28,
-      55.04857142857143,
-      32.07142857142858,
-      84.01285714285714
+      29,
+      55.35724137931034,
+      32.0764367816092,
+      84.43367816091954
     ]
   },
   "withoutReferencesOrTier4": {
@@ -2342,10 +2375,10 @@ const EXPECTED_WHOLE_GROUP = {
       81.09526315789473
     ],
     "b": [
-      28,
-      55.04857142857143,
-      32.07142857142858,
-      84.01285714285714
+      29,
+      55.35724137931034,
+      32.0764367816092,
+      84.43367816091954
     ]
   }
 };
