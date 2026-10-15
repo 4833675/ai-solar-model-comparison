@@ -175,7 +175,7 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
-  [SOL61_SPEC_ID]: 96.21666666666667,
+  [SOL61_SPEC_ID]: 98.75,
   "Opus5(Max)V1": 105,
   "Fable5.1(Max)V1": 109,
   "Qwen3.8Flash(xhigh)V1": 67.83666666666666,
@@ -318,7 +318,7 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
-  [SOL61_SPEC_ID]: "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
+  [SOL61_SPEC_ID]: "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|1|-|-|moonEvidence:8c10d2dc850f2c8292ebf2358b9c54f2624316f1f59ac764c9cb3c6626cb23de",
   "Opus5(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|21|1|1|2|5|5|5|-|1|1|1|1|1|-|-",
   "Fable5.1(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|18|1|1|3|5|5|5|-|1|1|1|1|1|-|-",
   "Qwen3.8Flash(xhigh)V1": "0|0.4|1|1|1|0.4|1|0.5|1|1|0.5|1|1|9|1|0|1|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:60f621e508320326c193cc088d9b40ae0f641952c8364da60aa794071d0fea67",
@@ -836,7 +836,7 @@ check(createHash('sha256').update(fs.readFileSync(asset(sol61Spec.shot))).digest
 check(SITE.priceFor(sol61Spec).date === '2026-09-30' && SITE.priceCell(sol61Spec).includes('4 / 15 / 0.2'), 'Sol detailed spec must reuse the existing verified Sol pricing');
 const sol61Pair = SITE.pairs().find(pair => pair.a.pair === 'gpt61sol');
 check(sol61Pair?.a.id === sol61.id && sol61Pair?.b.id === SOL61_SPEC_ID && PAIR_ORDER.at(-1) === 'gpt61sol' && context.window.PAIR_TITLES.gpt61sol === 'GPT-6.1 Sol (Ultra·Max)', 'Sol must append exactly its matching one-line and detailed originals');
-close(SITE.scoreFor(sol61Spec).exact - SITE.scoreFor(sol61).exact, -3.4833333333333343, 'Sol detailed-minus-one-line exact difference');
+close(SITE.scoreFor(sol61Spec).exact - SITE.scoreFor(sol61).exact, -0.9500000000000028, 'Sol detailed-minus-one-line exact difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'gpt61sol'), 'Sol must join the full pair population without displacing a larger positive featured gain');
 check(SCORES[SOL61_SPEC_ID].visualBase === null && SCORES[SOL61_SPEC_ID].moons === 8 && SCORES[SOL61_SPEC_ID].earthMoonValid === true && Array.isArray(SCORES[SOL61_SPEC_ID].moonEvidence) && SCORES[SOL61_SPEC_ID].moonEvidence.length === 8 && SCORES[SOL61_SPEC_ID].moonEvidence.every(moon => moon.quality === 1), 'The new Sol review must retain its eight independently verified moons and no legacy visual input');
 
@@ -1826,6 +1826,20 @@ check(enHome.includes("0:'Tier 0'") && i18nSource.includes("'tier.0': 'Tier 0'")
 check(zhHome.includes('<section id="glossary" class="glossary" hidden>') && enHome.includes('<section id="glossary" class="glossary" hidden>'), 'Both glossary sections must stay in source but remain hidden');
 check(zhHome.includes('<h2>关键术语说明</h2>') && enHome.includes('<h2>Key Terms</h2>') && cssSource.includes('.glossary[hidden]{display:none!important}'), 'Hidden glossary content must be preserved and explicitly suppressed');
 const zhSpec = read('spec.html');
+
+// This Sol detailed-spec review is evaluated against the supplied task. Its
+// prescribed pole/rotH combination is not a model-invented data error, and the
+// requested pause/Now controls do not imply an additional full-state reset.
+const sol61SourceText = sol61SpecSource.toString('utf8');
+check(zhSpec.includes('渲染要用下表的值') && zhSpec.includes('直接抄') && [
+  ['<td>177.4</td><td>211.2</td><td>−5832.5</td>', '177.4,211.2,-5832.5,177.4'],
+  ['<td>97.77</td><td>77.7</td><td>−17.24</td>', '97.77,77.7,-17.24,97.77'],
+  ['<td>112.8</td><td>137.4</td><td>−153.29</td>', '112.8,137.4,-153.29,119.6'],
+].every(([taskValues, modelValues]) => zhSpec.includes(taskValues) && sol61SourceText.includes(modelValues)), 'Sol alone must retain the pole and signed rotH data explicitly prescribed by task 2.2');
+check(zhSpec.includes('每帧 Δphase = clamp(2π·Δt_days / 自转周期_天,  −0.22,  +0.22)') && sol61SourceText.includes('Astro.TAU*dtDays/(b.rotH/24),-.22,.22'), 'Sol signed/clamped spin follows task 3.6/7.11; a contradiction inherited from the task must not be charged as a model data fault');
+check(zhSpec.includes('播放/暂停、日期时间（UTC）、速度滑块、「此刻」按钮') && zhSpec.includes('时间可正放/倒放/暂停，可跳回当前时刻') && !/全(?:部)?状态(?:重置|复位)|\breset\b/i.test(zhSpec), 'The supplied Sol task requires pause and Now, without an additional full-state reset requirement');
+check(SCORES[SOL61_SPEC_ID].correctness.data === 5 && SCORES[SOL61_SPEC_ID].interaction.pauseReset === 1 && SCORES[SOL61_SPEC_ID].interaction.zoom === .5, 'Only the new Sol review withdraws the task-inherited data/full-reset deductions while retaining the demonstrated zoom usability limitation');
+
 // Exercise the actual home-page handlers in a small DOM substitute (no browser).
 for (const lang of ['zh', 'en']) {
   const nodes = new Map();
@@ -2257,7 +2271,7 @@ check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分'
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(zhHome.includes('id="aAll">40') && enHome.includes('id="aAll">40') && zhHome.includes('id="bAll">30') && enHome.includes('id="bAll">30') && zhHome.includes('id="tAll">136') && enHome.includes('id="tAll">136'), 'Both home pages must publish 40/30 active counts and 136 retained entries before JavaScript runs');
 check(zhHome.includes('一句话组 40 件和文档组 30 件') && enHome.includes('prefer the 28 paired results over treating all 40 one-line and 30 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ['50.02 / 70', '54.96 / 70', '31.56 / 36', '31.33 / 36'].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
+check(zhHome.includes('28 组同模型') && enHome.includes('28 same-model') && ['50.02 / 70', '54.96 / 70', '31.56 / 36', '31.42 / 36'].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 28-pair statistics');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
 check(zhHome.includes('仅 Claude Opus 5 (Ultracode·xhigh) 经单独确认标为') && enHome.includes('Only Claude Opus 5 (Ultracode·xhigh) has been separately designated') && i18nSource.includes("'benchmark.recommend': '含标杆 · 重点推荐'") && i18nSource.includes("'benchmark.recommend': 'Includes benchmarks · Recommended'"), 'Both languages must present Claude Opus 5 (Ultracode·xhigh) as the only benchmark');
 check(zhHome.includes('悬停可查看证据评分与分项') && enHome.includes('hover to view the Evidence Score and breakdown'), 'Both home pages must explain that benchmark scores are available on hover');
@@ -2318,10 +2332,10 @@ close(stats.pairedSummary.coverage.a, 50.016785714285696, 'Paired a coverage mea
 close(stats.pairedSummary.coverage.b, 54.957142857142856, 'Paired b coverage mean');
 check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":19,"tie":0,"decline":9}), 'coverage paired outcomes must match the evidence');
 close(stats.pairedSummary.execution.a, 31.555952380952387, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.32857142857144, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":13,"tie":2,"decline":13}), 'execution paired outcomes must match the evidence');
+close(stats.pairedSummary.execution.b, 31.419047619047628, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":14,"tie":2,"decline":12}), 'execution paired outcomes must match the evidence');
 close(stats.pairedSummary.exact.a, 78.14416666666664, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 83.39285714285715, 'Paired b exact mean');
+close(stats.pairedSummary.exact.b, 83.48333333333335, 'Paired b exact mean');
 check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":16,"tie":0,"decline":12}), 'exact paired outcomes must match the evidence');
 
 const EXPECTED_WHOLE_GROUP = {
@@ -2335,8 +2349,8 @@ const EXPECTED_WHOLE_GROUP = {
     "b": [
       30,
       55.24533333333333,
-      31.522222222222233,
-      83.86755555555557
+      31.606666666666676,
+      83.95200000000001
     ]
   },
   "withoutReferences": {
@@ -2349,8 +2363,8 @@ const EXPECTED_WHOLE_GROUP = {
     "b": [
       30,
       55.24533333333333,
-      31.522222222222233,
-      83.86755555555557
+      31.606666666666676,
+      83.95200000000001
     ]
   },
   "withoutTier4": {
@@ -2363,8 +2377,8 @@ const EXPECTED_WHOLE_GROUP = {
     "b": [
       29,
       55.35724137931034,
-      32.0764367816092,
-      84.43367816091954
+      32.163793103448285,
+      84.52103448275862
     ]
   },
   "withoutReferencesOrTier4": {
@@ -2377,8 +2391,8 @@ const EXPECTED_WHOLE_GROUP = {
     "b": [
       29,
       55.35724137931034,
-      32.0764367816092,
-      84.43367816091954
+      32.163793103448285,
+      84.52103448275862
     ]
   }
 };

@@ -4847,7 +4847,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "自包含原生 WebGL2 实现 JPL 世纪率/开普勒轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线密度大气和 HDR/Bloom/ACES。轨道线按偏近点角采样有效；部分行星自转方向双反，全景缩放可穿入太阳，此刻与全景分别恢复日期或镜头。",
+  "note": "自包含原生 WebGL2 实现 JPL 世纪率/开普勒轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线密度大气和 HDR/Bloom/ACES。自转按详细任务给定参数及公式执行，规定的时间控制均完成；全景缩放仍可穿入太阳。",
   "issue": null,
   "net": [],
   "fix": null,
