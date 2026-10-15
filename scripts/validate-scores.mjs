@@ -187,87 +187,87 @@ const EXPECTED_EXACT = {
   "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": 82.02666666666667,
   "DoubaoSeedEvolving0827(Max)V1": 83.12,
   "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": 79.68333333333334,
-  "GPT5.6Sol(high)V1": 85.49333333333334,
-  "Opus5Ultra-TasksAssignedByOpus5": 100,
-  "DeepSeek-V4-Flash-0731": 59.04666666666667,
-  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 82.18333333333334,
-  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 75.6,
-  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 79.38333333333333,
+  "GPT5.6Sol(high)V1": 74.08666666666666,
+  "Opus5Ultra-TasksAssignedByOpus5": 84.21666666666667,
+  "DeepSeek-V4-Flash-0731": 64.28,
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": 79.7,
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": 69.41,
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": 73.18333333333334,
   "DeepSeek-V4-Pro-0813-V1": 73.60333333333332,
   "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": 84.02666666666667,
   "DeepSeekV4Pro0813(Max)V2": 80.08666666666666,
   "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": 84.31,
-  "DeepSeekProMax-TasksAssignedByOpus5": 85.24333333333334,
-  "DeepSeek_V4_Pro_high-1": 47.093333333333334,
-  "DeepSeek_V4_Pro_high-2": 58.46000000000001,
-  "DeepSeek_V4_Pro_high-3": 55.093333333333334,
-  "GLM5.2Max-TasksAssignedByOpus5": 88.24333333333334,
-  "GLM5.2Max": 60.49333333333334,
+  "DeepSeekProMax-TasksAssignedByOpus5": 69.76,
+  "DeepSeek_V4_Pro_high-1": 40.42,
+  "DeepSeek_V4_Pro_high-2": 46.92,
+  "DeepSeek_V4_Pro_high-3": 45.480000000000004,
+  "GLM5.2Max-TasksAssignedByOpus5": 80.52666666666667,
+  "GLM5.2Max": 51.03666666666666,
   "GLM5.3(Max)V1": 87.10333333333332,
   "GLM5.3(Max)V2": 88.85333333333332,
   "GLM5.3(Max)V3": 88.27,
   "GLM5.3(Max)V1-TasksAssignedByOpus5": 79.46666666666667,
   "GLM5.3(Max)V2-TasksAssignedByOpus5": 78.21666666666667,
-  "GLM_5_1_high-1": 51.093333333333334,
-  "GPT5.5xHigh-TasksAssignedByOpus5": 97,
-  "GPT5.6Luna(Max)V1": 62.46333333333334,
-  "GPT5.6Luna(Max)V2": 60.519999999999996,
-  "GPT5.6LunaMax-TasksAssignedByOpus5": 91.02666666666667,
-  "GPT5.6Sol(Max)V1": 94.81,
-  "GPT5.6SolUltra-TasksAssignedByOpus5": 100,
-  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 99,
-  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 96,
-  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 88.93333333333334,
-  "GPT5.6Sol(Medium)V1": 68.78666666666666,
-  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": 79.82,
-  "GPT5.6Sol(Light)V1": 55.60333333333334,
-  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": 82.03,
-  "GPT5.6SolUltra-WebGL2": 97.93333333333334,
-  "GPT5.6SolUltra": 88.66,
-  "GPT5.6Sol(xhigh)V1": 80.78666666666666,
-  "GPT5.6Sol(xhigh)V2": 92.37,
-  "GPT5.6Sol(xhigh)V3": 88.62,
-  "GPT5.6TerraUltra-Three": 76.99333333333334,
-  "GPT5.6TerraUltra-TasksAssignedByOpus5": 100,
-  "GPT_5_5_xhigh": 82.62666666666667,
-  "Gemini3.1Pro-TasksAssignedByOpus5": 82.78333333333333,
-  "Gemini3.5Flash-TasksAssignedByOpus5": 81.95333333333333,
-  "Gemini3.6Flash(high)V0": 41.843333333333334,
-  "Gemini3.6Flash-TasksAssignedByOpus5": 87.9,
-  "Gemini3.7Flash(high)V1": 55.71,
-  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 86.93333333333334,
-  "Gemini_3_5_flash_high": 83.15333333333334,
-  "Grok4.5": 74.49333333333334,
-  "Grok4.6(xhigh)V1": 78.69333333333333,
-  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 92.4,
-  "Hy3-TasksAssignedByOpus5": 78.33333333333333,
-  "Hy3": 53.593333333333334,
+  "GLM_5_1_high-1": 50.480000000000004,
+  "GPT5.5xHigh-TasksAssignedByOpus5": 79.21666666666667,
+  "GPT5.6Luna(Max)V1": 64.24666666666667,
+  "GPT5.6Luna(Max)V2": 55.64666666666666,
+  "GPT5.6LunaMax-TasksAssignedByOpus5": 76.58666666666666,
+  "GPT5.6Sol(Max)V1": 77.83666666666666,
+  "GPT5.6SolUltra-TasksAssignedByOpus5": 96.21666666666667,
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": 84.21666666666667,
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": 83.45,
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": 77.02,
+  "GPT5.6Sol(Medium)V1": 69.74666666666667,
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": 72.24666666666667,
+  "GPT5.6Sol(Light)V1": 56.596666666666664,
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": 71.77,
+  "GPT5.6SolUltra-WebGL2": 94.62,
+  "GPT5.6SolUltra": 74.22,
+  "GPT5.6Sol(xhigh)V1": 74.07,
+  "GPT5.6Sol(xhigh)V2": 75.14666666666666,
+  "GPT5.6Sol(xhigh)V3": 75.39666666666666,
+  "GPT5.6TerraUltra-Three": 68.58666666666666,
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": 82.77666666666667,
+  "GPT_5_5_xhigh": 70.12666666666667,
+  "Gemini3.1Pro-TasksAssignedByOpus5": 64.91666666666667,
+  "Gemini3.5Flash-TasksAssignedByOpus5": 72.57666666666667,
+  "Gemini3.6Flash(high)V0": 38.343333333333334,
+  "Gemini3.6Flash-TasksAssignedByOpus5": 70.36,
+  "Gemini3.7Flash(high)V1": 52.30333333333333,
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": 82.45,
+  "Gemini_3_5_flash_high": 58.25,
+  "Grok4.5": 59.06999999999999,
+  "Grok4.6(xhigh)V1": 70.07,
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": 78.45,
+  "Hy3-TasksAssignedByOpus5": 71.72666666666667,
+  "Hy3": 45.42,
   "KimiK3Max-TasksAssignedByOpus5": 94.75,
   "KimiK3Max": 81.83666666666666,
   "KimiK3(Max)V2-TasksAssignedByOpus5": 79.91666666666667,
   "KimiK3(Max)V2": 76.87,
   "KimiK3(Max)V3": 73.57,
-  "LongCat2.0-TasksAssignedByOpus5": 83.32666666666667,
-  "LongCat2.0": 48.27666666666667,
-  "Mimo_2_5_Pro_high-1": 46.12,
-  "MiniMaxM3-TasksAssignedByOpus5": 65.9,
-  "MiniMaxM3(high)V2-TasksAssignedByOpus5": 61.9,
-  "MiniMax_M3_thinking-1": 56.92666666666666,
+  "LongCat2.0-TasksAssignedByOpus5": 65.34666666666666,
+  "LongCat2.0": 43.06333333333333,
+  "Mimo_2_5_Pro_high-1": 43.92,
+  "MiniMaxM3-TasksAssignedByOpus5": 66.92,
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": 54.43,
+  "MiniMax_M3_thinking-1": 54.62,
   "Opus5Ultra-WebGL2": 100,
-  "Opus_4_8_Max": 91.56,
-  "Opus4.8Ultra-TasksAssignedByOpus5": 99.23333333333333,
-  "Qwen3.7Max": 62.52666666666667,
-  "Qwen3.8Max-TasksAssignedByOpus5": 75.86,
-  "Qwen3.8MaxV2-TasksAssignedByOpus5": 83.92666666666668,
-  "Qwen3.8MaxV2": 51.56,
-  "Qwen3.8Max-inQoder": 58.56666666666666,
-  "Qwen3.8MaxV1-inQoder": 53.31,
+  "Opus_4_8_Max": 72.32,
+  "Opus4.8Ultra-TasksAssignedByOpus5": 86.23333333333333,
+  "Qwen3.7Max": 52.879999999999995,
+  "Qwen3.8Max-TasksAssignedByOpus5": 65.99333333333334,
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": 78.38333333333333,
+  "Qwen3.8MaxV2": 47.32,
+  "Qwen3.8Max-inQoder": 55.379999999999995,
+  "Qwen3.8MaxV1-inQoder": 53.03666666666666,
   "Qwen3.8Max(Max)V1": 59.31999999999999,
   "Qwen3.8Max(Max)V2": 62.24333333333334,
   "Qwen3.8Max(Max)V3": 68.85333333333332,
   "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": 81.21666666666667,
-  "Sonnet5Ultra": 87.02666666666667,
-  "Sonnet5Ultra-TasksAssignedByOpus5": 98.46666666666667,
+  "Sonnet5Ultra": 76.67,
+  "Sonnet5Ultra-TasksAssignedByOpus5": 84.21666666666667,
   "MuseSpark1.3Contributor(xhigh)V1": 74.83666666666666,
   "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": 82.95,
   "Gemini3.8Flash(high)V1": 48.80333333333333,
@@ -276,10 +276,10 @@ const EXPECTED_EXACT = {
   "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": 81.76,
   "MuseSpark1.3Contributor(xhigh)V2": 73.36333333333333,
   "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": 79.96666666666667,
-  "OmenAlpha(Max)V1": 88.95,
-  "OmenAlpha(Max)V1-TasksAssignedByOpus5": 96,
+  "OmenAlpha(Max)V1": 84.47666666666667,
+  "OmenAlpha(Max)V1-TasksAssignedByOpus5": 94.46666666666667,
   "GPT6Astra(Light)V1-TasksAssignedByOpus5": 87,
-  "Opus5(Low)V1-TasksAssignedByOpus5": 96.21666666666667,
+  "Opus5(Low)V1-TasksAssignedByOpus5": 82.21666666666667,
   "GPT6Astra(Ultra)V1": 99.06,
   "GPT6Astra(Max)V1": 83.06,
   "GPT6Astra(xhigh)V1": 83.06,
@@ -329,87 +329,87 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   "GLM5.3Flash(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:2dbd6c3df7e93a39ffb1d1ff608d6917a7a48d6c12ecf466374c74745ee26667",
   "DoubaoSeedEvolving0827(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|1|1|8|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:389408b5f23c6fa900bb2ba2e4bcec37fbe4ac8bba8ef32b841038d84998c1bf",
   "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:323c7175a230b13ca37616172fd16a37fedea6bb6b6801a6f1fc7e8e7703c680",
-  "GPT5.6Sol(high)V1": "0|0.4|1|1|1|1|1|1|1|1|0|1|1|8|1|0|0|5|3|5|8|1|1|1|1|1|-|-",
-  "Opus5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
-  "DeepSeek-V4-Flash-0731": "0|0.4|0.4|0.4|1|1|1|1|1|0.5|0.5|0.5|0.5|1|1|0|3|4|4|3|1.5|1|1|0.5|0|1|-|-",
-  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|5|7|0.5|1|0.5|1|1|-|-",
-  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|0|8|1|1|0|0|2|1|4|1|1|1|0|1|L2|双重帧调度让渲染循环持续倍增，长程性能失稳。",
-  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|2.5|4|6|1|0.5|1|1|1|-|-",
+  "GPT5.6Sol(high)V1": "0|0.4|1|1|1|0.4|1|1|1|1|0|1|1|8|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7c0492628c591f54edc5517aa64a5d3be02802683dcfbfc27782a02b3e56abde",
+  "Opus5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:475ff0846fca5075073c5fbac2f73547095051f559d1e1cf3e1295c6ff5c6c06",
+  "DeepSeek-V4-Flash-0731": "0|0.4|0.4|1|1|0.4|1|1|1|1|0.5|1|1|1|1|0|3|4|3.5|3|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:ec827ebd7b1a0e7e2ee0acc9b9eddbc5bf752d06a9f63393b7ac3a2d1efb62cc",
+  "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|0.5|1|0.5|-|-|moonEvidence:8e8fcbc76c51d2a9d8494902bbbc0cf770c1abddfc4a024d5f00f6f3f7b33883",
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|0|8|1|1|0|2|3.5|5|-|1|0.5|1|0|0.5|L2|frame2428与drive2495各自申请下一帧；drive2497又启动frame，每次drive新增永久RAF链，待执行队列持续增长，核心模拟长程负载无界。|moonEvidence:6d36c1c9f53f553e98100d9cbeaf706416455e4a1386a4af150dfaa78ada02c8",
+  "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3|5|-|1|0.5|0.5|1|0.5|-|-|moonEvidence:a61dd78b145eaed95dfdae2a2acc9360c4a792bc20816ee41c766b9455f539e0",
   "DeepSeek-V4-Pro-0813-V1": "0|0.4|1|1|1|0.4|1|1|1|0.5|1|0|1|7|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:0f13698fdd95188f6b604c46929839b77dc50a11a333e7095cd2ab16ea8927b6",
   "DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:7b3c70f01db13a5686114ab1ce2353d2f6d09f3e9b50e8dfc04c21cc4e061a16",
   "DeepSeekV4Pro0813(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|5|1|1|1|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:9d938ad554ecfe31ae8f4c38f780d55b397a753d3f0a79738a7ceafcf30b29d4",
   "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:7b14f2191433eaa36d6675856e6bc01c6b8f528e366ee56e7aac4a8226488d05",
-  "DeepSeekProMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|6|0.5|1|1|0|1|-|-",
-  "DeepSeek_V4_Pro_high-1": "0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|2.5|1|1|0|0|0|-|-",
-  "DeepSeek_V4_Pro_high-2": "0|0.4|1|1|1|1|1|0|1|1|0.5|0.5|1|0|0|0|0|5|3|4|6.1|1|1|1|0.5|0.5|-|-",
-  "DeepSeek_V4_Pro_high-3": "0|0.4|1|0|1|1|1|0|0.5|1|0|1|1|1|1|0|0|5|3|5|5.8|1|1|1|0|0.5|-|-",
-  "GLM5.2Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4|3|0.5|1|1|0|1|-|-",
-  "GLM5.2Max": "0|0.4|1|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|4|1|1|1|1|1|-|-",
+  "DeepSeekProMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:0ce2a5a52c0fdbe987f0b1a502075567f9dec07378ebb754a37b5f4f41dd6568",
+  "DeepSeek_V4_Pro_high-1": "0|0.4|1|1|0.4|0|0.5|0|0|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0|-|-|moonEvidence:22ea1c5b457c993b68759b9b3633ff2ad8951fb8261d7730497d3e23e99fe2d2",
+  "DeepSeek_V4_Pro_high-2": "0|0|1|1|0.4|0.4|0.5|0|0.5|0.5|0|0.5|1|0|0|0|0|5|3.5|5|-|1|1|0.5|0.5|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "DeepSeek_V4_Pro_high-3": "0|0.4|0.4|0|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|0|0.5|-|-|moonEvidence:4ce97cce43c14e2a33ef930e9d4e976b330d07ba61f991efcecb21e0453e0a5c",
+  "GLM5.2Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:960ae8a8ff4d221e294690c31a2070c6e39317e27e0756348e48e211f029623d",
+  "GLM5.2Max": "0|0.4|1|1|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|2.5|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:5f9ccd48b4fd282b6c60b9cb49dfc3793d6568b75bea1ba83d3b35df379dbf25",
   "GLM5.3(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|15|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:85776da3d708a26601e31f046eeda0a7989e82675e34a9d569866024a16fc437",
   "GLM5.3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:95ed016413c6d956942f1b0ed74cec886758c6793d643479b42065ff183d1486",
   "GLM5.3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|10|1|1|1|4|4|4|-|1|1|1|1|0.5|-|-|moonEvidence:ce4ca3bfed83e9adb586c7edd2bb6fe320022053471ba5e17f685f8a4a866bb8",
   "GLM5.3(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:b819f8bb320900c0604e8e8248f0854e951c590ee5e9122ab385c5fb14b0eb24",
   "GLM5.3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:51ce7c8934c046abc66d50f6e14349a3a5bd6fd61dc48cbbff092f554abc8ede",
-  "GLM_5_1_high-1": "0|0.4|1|1|1|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|3|1|1|1|0|0.5|-|-",
-  "GPT5.5xHigh-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8|1|1|1|1|1|-|-",
-  "GPT5.6Luna(Max)V1": "0|0.4|1|0.4|0|0.4|1|1|0.5|1|0.5|1|1|1|1|0|0|5|3|5|5|1|0.5|0.5|1|0.5|-|-",
-  "GPT5.6Luna(Max)V2": "0|0.4|1|0.4|1|1|1|1|0.5|0.5|0|1|1|1|1|0|2|5|2|5|3|1|1|1|0|0.5|-|-",
-  "GPT5.6LunaMax-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|3.5|1|1|1|0|1|-|-",
-  "GPT5.6Sol(Max)V1": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|10|1|0|0|5|5|5|8|1|0.5|1|1|0.5|-|-",
-  "GPT5.6SolUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
-  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|9|1|1|1|1|0.5|-|-",
-  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|5.5|1|1|1|1|0.5|-|-",
-  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|0|1|1|8|1|1|0|5|3|5|7|1|1|1|1|0.5|-|-",
-  "GPT5.6Sol(Medium)V1": "0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|0|0|0|0|5|4|5|7|1|1|1|1|0.5|-|-",
-  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0|1|1|1|1|1|1|1|8|1|1|0|5|5|5|4|0.5|0.5|1|0|0.5|-|-",
-  "GPT5.6Sol(Light)V1": "0|0.4|0|0.4|0|0|1|1|0.5|1|0|1|1|1|1|0|0|5|3|5|6|0.5|1|1|0|0.5|-|-",
-  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|1|1|8|1|1|0|5|5|5|6.5|1|0.5|1|0|0.5|-|-",
-  "GPT5.6SolUltra-WebGL2": "0|1|1|1|1|1|1|1|1|1|1|1|1|14|1|0|1|4|5|4|9.5|1|1|1|1|1|-|-",
-  "GPT5.6SolUltra": "0|0.4|1|0|1|1|1|1|1|1|1|1|1|7|1|0|1|5|5|5|6|1|1|1|1|1|-|-",
-  "GPT5.6Sol(xhigh)V1": "0|0.4|1|0|0|0.4|1|1|1|1|0|1|1|13|1|0|0|5|4|5|7.5|1|1|1|1|1|-|-",
-  "GPT5.6Sol(xhigh)V2": "0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|11|1|0|0|5|5|5|8|1|1|1|1|0.5|-|-",
-  "GPT5.6Sol(xhigh)V3": "0|0.4|1|1|0.4|1|1|1|1|1|1|1|1|7|1|0|0|5|5|5|8.5|1|1|1|1|0.5|-|-",
-  "GPT5.6TerraUltra-Three": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|5|1|0|0|5|5|3|6|1|1|1|0|1|-|-",
-  "GPT5.6TerraUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|8.5|1|1|1|1|1|-|-",
-  "GPT_5_5_xhigh": "0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|0|5|5|4|2|0.5|1|0.5|0|1|-|-",
-  "Gemini3.1Pro-TasksAssignedByOpus5": "0|1|1|1|1|0|1|1|1|1|1|1|1|8|1|1|0|5|4|4|5.5|1|0.5|0.5|0|1|-|-",
-  "Gemini3.5Flash-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|2|3|4|1|1|0.5|1|1|-|-",
-  "Gemini3.6Flash(high)V0": "0|0.4|0|1|1|0|1|0|0|0|0|1|1|1|1|0|0|5|1|4|3.5|0.5|1|0.5|1|0.5|-|-",
-  "Gemini3.6Flash-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|4|5|1|1|0.5|1|1|-|-",
-  "Gemini3.7Flash(high)V1": "0|0.4|1|1|1|1|1|0|0.5|0.5|0|1|1|1|1|0|0|5|3|4|4|0.5|1|1|1|0.5|-|-",
-  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|4|4|7.5|1|1|1|1|1|-|-",
-  "Gemini_3_5_flash_high": "0|0.4|1|0|1|0.4|1|1|1|1|1|1|1|10|1|0|0|5|4|4|7|1|1|1|1|1|-|-",
-  "Grok4.5": "0|0.4|1|1|1|1|1|1|1|0.5|1|1|1|5|1|0|1|5|4|4|7|1|1|0.5|0|1|-|-",
-  "Grok4.6(xhigh)V1": "0|0.4|1|1|1|1|1|1|1|1|0|1|1|12|1|1|0|5|2.5|4|7.5|1|1|0.5|1|0.5|-|-",
-  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|3|5.5|1|1|1|1|1|-|-",
-  "Hy3-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|0.5|1|1|1|1|8|1|1|0|5|2|3|5|1|1|0.5|0|0.5|-|-",
-  "Hy3": "0|0.4|0|1|1|1|1|0|0.5|0|0|1|1|1|1|0|0|5|3|5|6.6|1|1|0.5|1|1|-|-",
+  "GLM_5_1_high-1": "0|0.4|0.4|1|0.4|0|1|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:59a6de841f7b65941d9eecac2406708cfa2d8b686ab97231ffb87fa08bd987ee",
+  "GPT5.5xHigh-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d7f22781bc1686c8f126e956040b1e3b07db6e1be3786b3b50e2f6f55bb9332c",
+  "GPT5.6Luna(Max)V1": "0|0.4|1|0.4|0|0.4|1|1|0.5|1|0|1|1|1|1|0|0|5|4|5|-|1|1|0.5|1|1|-|-|moonEvidence:09e391c37d370664fb9ae83847c75ab3ae045ad6f6f99de0e76c067f801792eb",
+  "GPT5.6Luna(Max)V2": "0|0.4|1|0.4|1|0.4|1|1|0.5|0|0|0.5|1|1|1|0|1|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:80822a316c8af7fd770cd3b581398e7fe2179cdce8760121d37a9e53a0d3c2e3",
+  "GPT5.6LunaMax-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:3324a568c0fa14623e9bb7fa1812dfe7c575766666e199378df8a09f6d5232c6",
+  "GPT5.6Sol(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|10|1|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d6e9ae05af793e1b317069923bc18a698d91c0e84fceb918e72d0524fa4311b4",
+  "GPT5.6SolUltra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:cad94785573c7e8f2357b85a3976e0e6159ced2336f99506bfd0534165996ff1",
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:edd7677aa0d00eda75f8d38a1fae29b054c633c46bd09c6c23af35acaa2a2f50",
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6fb77dce2fe6f8f0218fd287672b3f7d646c1eb5eb803c8250fe1208bde16746",
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|1|0|3|4|5|-|0.5|0.5|1|1|0.5|L2|选择月球后 updateInfo 读取不存在的 orbit.a 抛出 TypeError，随后的周期信息更新使 requestAnimationFrame 主循环停止。|moonEvidence:63187f1ee876c32c9302407b55ac7e6123443b96e7197586162e398b448edcf9",
+  "GPT5.6Sol(Medium)V1": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": "0|0.4|1|0.4|0|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:67280f006fca705739cace957e8e28eb4d3f6b6d1b8e3ad56abf885a5c49585f",
+  "GPT5.6Sol(Light)V1": "0|0.4|0|0.4|0|0.4|1|1|0.5|1|0|1|1|1|1|0|0|5|4|5|-|0.5|1|1|0|0.5|-|-|moonEvidence:bf23e77ba64f0d4cbc0a7139a8e69da7068417435497d52a479a58dbe560a5a6",
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": "0|0.4|1|0|0|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|0|0.5|-|-|moonEvidence:f9c93bb41f0796b89dc3cc5f49642aca2c82d32e066c7a309e29146b0db96b34",
+  "GPT5.6SolUltra-WebGL2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|14|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:8d7a94978e4340e0a9cc3706326febb73fe679eff7539c34922493e9e17492cd",
+  "GPT5.6SolUltra": "0|0.4|1|0|1|0.4|1|1|1|1|1|0.5|1|14|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:a4bd0442d05b51812b6f8643de0e93d92c89c4241354b40bbe80248e72f7b19b",
+  "GPT5.6Sol(xhigh)V1": "0|0.4|1|0|0|0.4|1|1|1|1|0|0.5|1|13|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:ea86fc07815ce04ba8d0a83455ab8a9b94b8bc811e7e5a07502d737a92dab4e9",
+  "GPT5.6Sol(xhigh)V2": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|11|1|0|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:6168103f540f0470f66493479d8d6a767916ccafb9dd8f15e971a476c9a084bf",
+  "GPT5.6Sol(xhigh)V3": "0|0.4|1|1|0.4|0.4|1|1|1|1|1|1|1|7|1|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:7de9c3540d756caf0389533b03edd2d87621ac86112630195cf20521b4a3d553",
+  "GPT5.6TerraUltra-Three": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|4|5|-|1|1|1|0|0.5|-|-|moonEvidence:928b7165f757cfa350b22272fb4f3a440dc9690d48dcda834f5a56b9a6eb8cac",
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": "0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:98776cccf088065a074fa44284e7ecd48c286c5a0f650df713805a0e5b1693a9",
+  "GPT_5_5_xhigh": "0|0.4|1|1|1|0|1|1|1|1|1|1|1|9|1|1|0|5|4|5|-|0.5|0.5|0.5|0.5|1|-|-|moonEvidence:41860b99d586e8d5aa19c8d1c4f3d96a1d3cb2c11b1bc2a909ad601364c56f44",
+  "Gemini3.1Pro-TasksAssignedByOpus5": "0|1|0|1|1|0|1|1|1|1|1|0|0.5|0|0|0|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "Gemini3.5Flash-TasksAssignedByOpus5": "0|1|1|0.4|1|0|1|1|1|1|1|0.5|1|8|1|1|0|5|3|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:f279337564fca6251dc8877683dc34aa0d22a099fe8dc25158fec7df7bb26295",
+  "Gemini3.6Flash(high)V0": "0|0.4|0|1|1|0|0.5|0|0|0|0|1|1|1|1|0|0|5|0|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:7e57e3bd90ca0688f15485dd331dc301421a93726ce1efb9bfffd04fcc4cc5e4",
+  "Gemini3.6Flash-TasksAssignedByOpus5": "0|0.4|1|0|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:71449b70f5e7d0a9be15d19429eee94c5d8f7f62a2cfffd4cb6558a27ff3e947",
+  "Gemini3.7Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0.5|0|0.5|1|1|1|0|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dfc8ad5921e2a649417a565d528ffed9650bd6bab395297c39181630f1799d2c",
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3a9586a0d5540ae0998a078aad25d39c44d9d6cc5dadf0f046f8c43725355934",
+  "Gemini_3_5_flash_high": "0|1|0|0|1|0|1|1|1|0.5|0|0.5|1|10|1|0|0|5|3.5|5|-|1|0.5|0.5|1|0.5|-|-|moonEvidence:75cf1d0a7dceede35fc07999b237de2602ba76f2a14d5272111f58d04728e73e",
+  "Grok4.5": "0|0.4|1|1|1|0.4|1|1|0.5|0.5|0|1|1|5|1|0|1|5|3.5|5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:9bafb400a1a4e57fb91d9f03861ba6a6eb432d05d9f49146cf19330205ff4cf5",
+  "Grok4.6(xhigh)V1": "0|0.4|1|1|1|0.4|1|1|1|1|0|1|1|12|1|1|0|5|3.5|5|-|1|0.5|0.5|0.5|0.5|-|-|moonEvidence:ad5ab71ce68daf6440c0a78148cebe2428b2e93f897425e13c94439176599537",
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:3cd0f0ccd6131012055880606ac9bded522833b7b2712c8d1f64fc37ef813b1e",
+  "Hy3-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0|1|8|1|1|0|5|3.5|4|-|0.5|0.5|0.5|0|0.5|-|-|moonEvidence:92f54b9cc0576d189639509e6cfcee57272a9a1b31ff6d0764a418bda9bef287",
+  "Hy3": "0|0.4|0|1|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0.5|0.5|-|-|moonEvidence:1eecb0c5f8c0eac889bdfa32011d4abf73d880e8d0e3d93334be895e389523a7",
   "KimiK3Max-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:a25071e7116a8e0dccfd54c1bf03cdda48d8048b43a7333d013669eec02e8981",
   "KimiK3Max": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:d438c933e25663e784cfc71385a5726c0ee0cee6262fcbf3bd1ae849dd076cee",
   "KimiK3(Max)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dd1376f65b20c511c391e295ed8f42e809a6776114a9f8f7f328ba9ae6244ac5",
   "KimiK3(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|8|1|0|0|5|5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:c7a498fb13d7569ceca1e378f438ec8e14c0211b3c647ff5b0f28f07f59f20f9",
   "KimiK3(Max)V3": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|1|1|1|0|5|3.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:40182ab3f8c60e1df51d182c07332000028221a04ea733e3b824763417644977",
-  "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|1|2|4.5|1|1|0.5|0|1|L2|环与大红斑核心结构失效，并出现 NaN 实时数据。",
-  "LongCat2.0": "0|0.4|1|0|0|0|1|0|0.5|0.5|0|1|1|1|1|0|3|5|2.5|5|4.6|0.5|1|0|0|0.5|-|-",
-  "Mimo_2_5_Pro_high-1": "0|0.4|1|0|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|2|5|4.2|1|1|0|0|1|-|-",
-  "MiniMaxM3-TasksAssignedByOpus5": "0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|1|1|L1|白场与巨大黑三角遮挡主画面，无法正常审阅。",
-  "MiniMaxM3(high)V2-TasksAssignedByOpus5": "0|0.4|0.4|0.4|0.4|0.4|1|1|1|1|1|0|0|8|1|1|0|1|1|1|0|1|1|0.5|0|0.5|L1|全屏后期四边形以 XYZ 数据生成，却按紧密排列的 XY 读取；同时 4× MSAA 解析使用了非法的 LINEAR 过滤。两处核心合成错误叠加，使主画布持续全黑，仅 UI 可见。",
-  "MiniMax_M3_thinking-1": "0|0.4|0|1|1|1|1|1|1|0.5|1|0|0|1|1|0|0|3|4|1|4.7|1|1|0.5|0.5|0.5|L2|外行星偏离轨道线，低速产生 NaN，重置失效。",
+  "LongCat2.0-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|1|1|1|1|1|0.5|1|8|1|1|0|5|3.5|4|-|0.5|0.5|1|0|0.5|-|-|moonEvidence:fe61f19323d6c2113a27ec6c22f4570d6747565c67f636bf6b3b2f40440654a5",
+  "LongCat2.0": "0|0.4|0.4|0|0|0.4|0.5|0|0.5|0|0|0.5|1|1|1|0|3|5|3|5|-|1|1|0|0|0.5|-|-|moonEvidence:c4564a3f0cbafff1c90687132ad36b326f99a804840d207ad1e6f7e864490740",
+  "Mimo_2_5_Pro_high-1": "0|0.4|1|0|1|0.4|0.5|0|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:f3e99ca27eeeb90a60565dad3422c85e6f3ce5a9a148c4f5c4d588eb0450db52",
+  "MiniMaxM3-TasksAssignedByOpus5": "0|0.4|1|1|1|0.4|1|1|1|1|1|0|1|8|1|1|0|0|4|5|-|0.5|0.5|0.5|1|0.5|L1|所有非太阳主实体uSunDir从{x,y,z}对象以[0..2]读取，实际上传全NaN；主行星位置为原AU且太阳半径4.6，Earth等内行星位于太阳内部，核心画布物理/照明不可用。|moonEvidence:eff57319fc111ea6dce91cef922fbb843bb8f36031b246d5fa7c59d7a99d2b69",
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": "0|0.4|1|0.4|1|0.4|0.5|1|1|0|1|0.5|0|8|1|1|0|0|3.5|4|-|1|0.5|0.5|0|0.5|L1|postQuad把packed vec3位置按size2读取，final主画布三角形布局错误；逐轴dispR钳掉所有负坐标、阳光方向固定零，核心主视图失败。|moonEvidence:b4f9a8dcb2c1b82292f5d38c1acf44bd75e7eacffba6d795c379117328c65b11",
+  "MiniMax_M3_thinking-1": "0|0.4|0|1|1|0.4|1|1|0.5|0|0|0|1|1|1|0|0|3|4|5|-|1|1|0.5|0.5|0.5|L2|正常将速度滑杆设为0.5会永久污染速度/时间/实体为NaN；复位不修复速度。|moonEvidence:a9ce079def55e837e4030d3f6f3addffc50643cbf617ed8bdf480a4c2913ca81",
   "Opus5Ultra-WebGL2": "1|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|10|1|1|1|1|1|-|-",
-  "Opus_4_8_Max": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|0|0|5|5|5|9|1|1|1|1|1|-|-",
-  "Opus4.8Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|9.5|1|1|1|1|1|-|-",
-  "Qwen3.7Max": "0|0.4|1|1|1|1|1|1|1|0.5|0|1|1|1|1|0|0|5|5|4|5.2|1|1|0|0|0.5|-|-",
-  "Qwen3.8Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|2|2|5.5|1|1|0.5|1|1|-|-",
-  "Qwen3.8MaxV2-TasksAssignedByOpus5": "0|1|0.4|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3|3|2.5|1|1|0.5|1|0.5|-|-",
-  "Qwen3.8MaxV2": "0|0.4|1|0|0|0|1|0|1|1|0|1|1|1|1|0|0|5|3.5|5|6.5|1|1|0|0|0|-|-",
-  "Qwen3.8Max-inQoder": "0|0|1|1|1|1|1|1|1|0|0|1|1|1|1|0|0|5|5|4|2.1|1|1|0|0|0|-|-",
-  "Qwen3.8MaxV1-inQoder": "0|0.4|1|0|0|0|1|0.5|1|1|0|1|1|1|1|0|0|5|3.5|5|4.8|0.5|1|0|0|0|-|-",
+  "Opus_4_8_Max": "0|0.4|1|1|1|0.4|1|1|0.5|1|1|1|1|8|1|0|0|5|3.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:74a7ec90ca7a7e6aa78b7b3c475116abd754000c988e3f0d094ce24d8dd6a9a8",
+  "Opus4.8Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:03d6c3575f15a4726d837928e555dcffc96618f626551c6993fd157036461166",
+  "Qwen3.7Max": "0|0.4|1|1|0.4|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:7b94c781d306831da2331d85f0fb06499f6c2202b2d028d692b1b9dc92d7e2d8",
+  "Qwen3.8Max-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|0|0|1|8|1|1|0|5|3.5|4.5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:fda8ff1f9bd2a0cc67357184db276c4298c6e6fd1a8effefdae44f99c0a0882e",
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|3|3.5|5|-|1|0.5|1|1|0.5|L2|空白画布点击1389–1404保留best=-1却调用focusOn(-1)，1304把planetRadii[-1]算入camDistGoal得到NaN，随后相机/VP矩阵失效；实测650ms后dist/goalNaN且VP非finite，RAF仍运行。|moonEvidence:e6e74d2963cc3d92dabad606755e267766c815d333c1686850a5945827041000",
+  "Qwen3.8MaxV2": "0|0.4|1|0|0|0.4|0.5|0|0.5|0.5|0|1|1|1|1|0|0|5|5|5|-|0.5|1|0|0|0.5|-|-|moonEvidence:8ca7934e4f315e72fed0065dd1c7ba6764bfcecead8b64003b151dbe61bd60e2",
+  "Qwen3.8Max-inQoder": "0|0.4|1|1|0.4|0.4|1|1|1|0|0|1|1|1|1|0|0|5|3.5|5|-|1|1|0|0|0.5|-|-|moonEvidence:012386f0a91df63ac953a863934c0f393c341f234bbaa88354499da1519bf3f2",
+  "Qwen3.8MaxV1-inQoder": "0|0.4|1|0|0|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|4|5|-|1|1|0|0|0.5|-|-|moonEvidence:8bb1601908a72384d0925b5bf2c27b7fb3b375fdc8cae0429d824e80aac78d3a",
   "Qwen3.8Max(Max)V1": "0|0.4|1|0|0|0.4|1|1|0.5|0|0|1|1|1|1|0|0|5|5|5|-|0.5|1|1|1|0.5|-|-|moonEvidence:e81effa29305df586c4482e1328b8fbde7fa4371fea1611f0ab105021e6ad065",
   "Qwen3.8Max(Max)V2": "0|0.4|1|1|0|0|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:41c2005b28482a1f6c15201c086d8cdf6aa332a2ee7a7629d4dcfab5cc3f7b99",
   "Qwen3.8Max(Max)V3": "0|0.4|1|1|1|0.4|1|1|0.5|0.5|0|1|1|1|1|0|0|5|4.5|5|-|1|1|1|1|0.5|-|-|moonEvidence:a8048bc5748ef0170849e86504d80c45fbc87a41f6dcb8281108bc8114e1190b",
   "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:6cb177e96ea756970afd4fee3ebf4eb2541608414e50bb8a8bb172896f779a3e",
-  "Sonnet5Ultra": "0|0.4|1|1|1|1|1|1|1|1|1|1|1|6|1|0|0|5|5|4|7.5|1|1|1|1|1|-|-",
-  "Sonnet5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|4|8.5|1|1|1|1|1|-|-",
+  "Sonnet5Ultra": "0|0.4|1|1|0|0.4|1|1|1|1|1|0.5|1|6|1|0|0|5|3.5|5|-|1|0.5|1|0.5|0.5|-|-|moonEvidence:386710558e5b6d3affdf1a2ac3c184d166bb14f14073937ec95ffc10d9797a23",
+  "Sonnet5Ultra-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:742190aea181b7d835654a3aaa173fc82a0db000278ecf199ae004d06a6f1dc6",
   "MuseSpark1.3Contributor(xhigh)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|1|1|12|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:dafe55d7d69d00a58aab0fddd31ada43f62a98e0c32c29912ad880f4c5458d68",
   "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|1|0.5|1|0|0.5|-|-|moonEvidence:64c1000fcfe2ca33732f0545607745c279496139815985185f3601e82e77d4a8",
   "Gemini3.8Flash(high)V1": "0|0.4|1|1|1|0.4|1|0|0.5|0|0|1|1|1|1|0|0|5|4|4|-|0.5|0.5|0.5|0.5|0.5|-|-|moonEvidence:24ddc90280d661007a9469be2b3e1dadcb68a3650d89797b50b3d243b88dc13a",
@@ -418,10 +418,10 @@ const EXPECTED_AUDIT_FINGERPRINT = {
   "Gemini3.8Flash(high)V2-TasksAssignedByOpus5": "0|1|1|0.4|1|1|1|1|1|1|1|1|1|8|1|1|0|5|3.5|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:cf9ebc172c64851949ca854c60cad05546a254f38056dc4d5013e2114382f213",
   "MuseSpark1.3Contributor(xhigh)V2": "0|0.4|0.4|1|1|0.4|1|1|1|1|1|1|1|6|1|1|0|5|3.5|4.5|-|1|0.5|1|1|0.5|-|-|moonEvidence:307c302da3a25052ffec8d6f93cb55e1789913a7633de4d2d41cc795662390fe",
   "MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|0.5|0.5|1|1|0.5|-|-|moonEvidence:2b9c5430e4147a173bd3b66bedc5fe765ea005be41329fa768e812e1cbe1ed00",
-  "OmenAlpha(Max)V1": "0|1|1|1|1|1|1|1|1|1|1|1|1|7|1|1|0|5|4.5|4|-|1|0.5|1|1|0.5|-|-",
-  "OmenAlpha(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-",
+  "OmenAlpha(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|0|3|4.5|5|-|1|0.5|1|0.5|0.5|L2|正常前台1350ms短主线程停顿后，看门狗直调自调度frame累积4条持久rAF链；同timestamp的dt=0又回退0.016，使模拟时钟持续过速，实测1.2043秒内推进应有值的3.72050倍。|moonEvidence:36b0a30af0f6abe8e96099ac908e43b9870842ee25affc90249583ba23e75b09",
+  "OmenAlpha(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|1|1|1|0.5|-|-|moonEvidence:e3763c07a2cdb96a974e72416cdf41eff22c778bc7b9660e49fff4e1db1fc534",
   "GPT6Astra(Light)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:1bbab407b3259b32078b88eb3957f8b89739c0ddf9858e7f7b49afff091d2eec",
-  "Opus5(Low)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-",
+  "Opus5(Low)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|5|4|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:b8532c7209cbeed433d383806afcf9d632b7879fa5e656a241227fa64a7f3897",
   "GPT6Astra(Ultra)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|7|1|1|3|5|5|5|-|1|1|1|1|0.5|-|-",
   "GPT6Astra(Max)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
   "GPT6Astra(xhigh)V1": "0|1|1|1|1|0.4|1|1|1|1|1|1|1|1|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-",
@@ -577,25 +577,26 @@ const archivedWorks = SITE.archivedWorks();
 // Re-auditing changes evidence only for current, non-protected works. The supplied
 // programs and the existing screenshots are immutable inputs to this review.
 const protectedScoreDigests = {
-  'Opus5Ultra-WebGL2': '46fcdf5211d9c6477035e0f396dc0af61f3935eda1e5c23a28a446b96ebcde39',
-  'Fable5.1(Max)V1': 'bec020c1c78c02cbbdee7337f50f8ae1644c7d862ac2ccdff11536c35ce72fae',
-  // Presentation note simplified on 2026-10-14; scoring inputs are unchanged.
-  'Opus5.5(Max)V1': '30d254bae2c681d69ef70a6ac16a1b69fb95433208910db15f0b98a47d1a785b',
+  "Opus5(Max)V1": "f56b13bfcaaed1bfa12ccbd5a1fdc88f7e9cadccdb8a6fa46388a47e62ecb0db",
+  "Fable5.1(Max)V1": "bec020c1c78c02cbbdee7337f50f8ae1644c7d862ac2ccdff11536c35ce72fae",
+  "Opus5Ultra-WebGL2": "46fcdf5211d9c6477035e0f396dc0af61f3935eda1e5c23a28a446b96ebcde39",
+  "Opus5.5(Max)V1": "30d254bae2c681d69ef70a6ac16a1b69fb95433208910db15f0b98a47d1a785b"
 };
 for (const [id, expected] of Object.entries(protectedScoreDigests))
   check(digest(SCORES[id]) === expected, id + ': benchmark/user-specified scoring evidence must remain untouched');
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
 }
-const originalAssets = WORKS.filter(work => work.id !== HAIKU_MAX_SPEC_ID).flatMap(work => [work.file, work.shot]).sort()
-  .map(path => [path, createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')]);
-check(digest(originalAssets) === '4d39e2cfa1620a9da6d90cd02a26237c42db2ca80d91c9ba04c131cca8822dab', 'All original programs and saved screenshots must be reused unchanged');
-// Commit 12bbcca preserves these 66 scores; only restored Kimi #3 is now explicitly re-audited.
+const originalAssets = WORKS.flatMap(work => [work.file, work.shot]).sort()
+  .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(digest(originalAssets) === 'ba1e3e09a5971ea83f1d6dfee4f3f4c8e4cd8708622e1a36f1768df72d011836', 'All 270 original programs and saved screenshots must be reused unchanged');
+check(digest(visibleWorks.map(work => [work, SCORES[work.id]])) === '946bbacac025fd0bfda6061642ad47fca4165c3c94ef0f9df9758df986ac513f', 'The archive-only review must preserve all 69 active records and their scores');
+// The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
 const archiveEvidenceIds = archiveBaselineIds.filter(id => id !== 'KimiK3(Max)V3');
 const archivedEvidence = archiveEvidenceIds.map(id => [id,
   Object.fromEntries(Object.entries(SCORES[id]).filter(([key]) => key !== 'note'))])
   .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
-check(digest(archivedEvidence) === '73bb045d511ca486da64db9540a2567a0e4c0b17b18022657119376242578e8a', 'The 66 archived scores must retain their independent 12bbcca baseline after the authorized Kimi #3 review');
+check(digest(archivedEvidence) === '0811239886d314b3584157563fa827441d9cabe1fc6a28e17af361347492de0b', 'The archive ledger must match the independent 2026-10-15 review and retain the protected manual score');
 check(archiveBaselineIds.length === 67 && archiveEvidenceIds.length === 66 && archivedWorks.length === 66 && archivedWorks.filter(w => w.group === 'A').length === 36 && archivedWorks.filter(w => w.group === 'B').length === 30, 'Only the re-audited Kimi #3 may leave the original archive evidence snapshot');
 check(archivedWorks.every(work => SITE.personalRecommendationFor(work)?.symbols === '-' && SITE.isArchivedWork(work)), 'Every offline model must use a dash recommendation');
 check(SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'A')) === 23 && SITE.tableDisplayRowCount(archivedWorks.filter(w => w.group === 'B')) === 21, 'Offline tabs must remove the misplaced Kimi row while preserving all other folding rules');
@@ -670,7 +671,7 @@ check(SITE.environmentTag(muse2A) === 'in Pi' && SITE.environmentTag(muse2B) ===
 check(stripCreationDate(museA.model).endsWith('#1') && stripCreationDate(museB.model).endsWith('#1') && stripCreationDate(muse2A.model).endsWith('#2') && stripCreationDate(muse2B.model).endsWith('#2'), 'MuseSpark repeated runs must be numbered independently in both requirement groups');
 const omenA = WORKS.find(work => work.id === 'OmenAlpha(Max)V1');
 const omenB = WORKS.find(work => work.id === 'OmenAlpha(Max)V1-TasksAssignedByOpus5');
-check(omenA?.tier === 2 && omenB?.tier === 2 && omenA?.pair === 'omenalpha' && omenB?.pair === 'omenalpha', 'Both Omen Alpha works must form one Tier 2 pair');
+check(omenA?.tier === 4 && omenB?.tier === 2 && omenA?.pair === 'omenalpha' && omenB?.pair === 'omenalpha', 'Both Omen Alpha works must form one Tier 2 pair');
 check(omenA?.bytes === 89376 && omenA?.lines === 1903 && omenA?.tech === 'WebGL2' && !omenA?.needsFloat && !omenA?.msaa && omenA?.net.length === 0, 'Omen Alpha one-line metadata must match the supplied source');
 check(omenB?.bytes === 136419 && omenB?.lines === 3254 && omenB?.tech === 'WebGL2' && !omenB?.needsFloat && omenB?.msaa && omenB?.net.length === 0, 'Omen Alpha detailed metadata must match the supplied source');
 check(SITE.environmentTag(omenA) === 'in Zcode' && SITE.environmentTag(omenB) === 'in Zcode', 'Both Omen Alpha works must use Zcode');
@@ -929,11 +930,23 @@ const expectedMoonAdjustments = {
   "DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "GPT5.6Sol(high)V1": {
+    "earthMoonValid": true
+  },
+  "Opus5Ultra-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "DeepSeek-V4-Flash-0731": {
+    "earthMoonValid": true
+  },
   "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5": {
-    "moonQuality": 0.5
+    "earthMoonValid": false
+  },
+  "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
   },
   "DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5": {
-    "moonQuality": 0.5
+    "earthMoonValid": false
   },
   "DeepSeek-V4-Pro-0813-V1": {
     "earthMoonValid": false
@@ -946,6 +959,24 @@ const expectedMoonAdjustments = {
   },
   "DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5": {
     "earthMoonValid": true
+  },
+  "DeepSeekProMax-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "DeepSeek_V4_Pro_high-1": {
+    "earthMoonValid": false
+  },
+  "DeepSeek_V4_Pro_high-2": {
+    "earthMoonValid": false
+  },
+  "DeepSeek_V4_Pro_high-3": {
+    "earthMoonValid": false
+  },
+  "GLM5.2Max-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GLM5.2Max": {
+    "earthMoonValid": false
   },
   "GLM5.3(Max)V1": {
     "earthMoonValid": false
@@ -962,8 +993,107 @@ const expectedMoonAdjustments = {
   "GLM5.3(Max)V2-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
+  "GLM_5_1_high-1": {
+    "earthMoonValid": false
+  },
+  "GPT5.5xHigh-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Luna(Max)V1": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Luna(Max)V2": {
+    "earthMoonValid": false
+  },
+  "GPT5.6LunaMax-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Max)V1": {
+    "earthMoonValid": true
+  },
+  "GPT5.6SolUltra-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(high)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Medium)V1": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Light)V1": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(Light)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT5.6SolUltra-WebGL2": {
+    "earthMoonValid": true
+  },
+  "GPT5.6SolUltra": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(xhigh)V1": {
+    "earthMoonValid": true
+  },
+  "GPT5.6Sol(xhigh)V2": {
+    "earthMoonValid": false
+  },
+  "GPT5.6Sol(xhigh)V3": {
+    "earthMoonValid": true
+  },
+  "GPT5.6TerraUltra-Three": {
+    "earthMoonValid": false
+  },
+  "GPT5.6TerraUltra-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "GPT_5_5_xhigh": {
+    "earthMoonValid": false
+  },
+  "Gemini3.1Pro-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini3.5Flash-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini3.6Flash(high)V0": {
+    "earthMoonValid": false
+  },
+  "Gemini3.6Flash-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini3.7Flash(high)V1": {
+    "earthMoonValid": false
+  },
+  "Gemini3.7Flash(high)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Gemini_3_5_flash_high": {
+    "earthMoonValid": true
+  },
+  "Grok4.5": {
+    "earthMoonValid": false
+  },
   "Grok4.6(xhigh)V1": {
-    "moonQuality": 0.5
+    "earthMoonValid": true
+  },
+  "Grok4.6(xhigh)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Hy3-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Hy3": {
+    "earthMoonValid": false
   },
   "KimiK3Max-TasksAssignedByOpus5": {
     "earthMoonValid": true
@@ -980,8 +1110,47 @@ const expectedMoonAdjustments = {
   "KimiK3(Max)V3": {
     "earthMoonValid": false
   },
+  "LongCat2.0-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "LongCat2.0": {
+    "earthMoonValid": true
+  },
+  "Mimo_2_5_Pro_high-1": {
+    "earthMoonValid": false
+  },
+  "MiniMaxM3-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MiniMaxM3(high)V2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "MiniMax_M3_thinking-1": {
+    "earthMoonValid": false
+  },
+  "Opus_4_8_Max": {
+    "earthMoonValid": false
+  },
+  "Opus4.8Ultra-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Qwen3.7Max": {
+    "earthMoonValid": false
+  },
   "Qwen3.8Max-TasksAssignedByOpus5": {
-    "moonQuality": 0.5
+    "earthMoonValid": false
+  },
+  "Qwen3.8MaxV2-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8MaxV2": {
+    "earthMoonValid": true
+  },
+  "Qwen3.8Max-inQoder": {
+    "earthMoonValid": false
+  },
+  "Qwen3.8MaxV1-inQoder": {
+    "earthMoonValid": true
   },
   "Qwen3.8Max(Max)V1": {
     "earthMoonValid": true
@@ -993,6 +1162,12 @@ const expectedMoonAdjustments = {
     "earthMoonValid": false
   },
   "Qwen3.8Max(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Sonnet5Ultra": {
+    "earthMoonValid": true
+  },
+  "Sonnet5Ultra-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
   "MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5": {
@@ -1016,7 +1191,13 @@ const expectedMoonAdjustments = {
   "OmenAlpha(Max)V1": {
     "earthMoonValid": false
   },
+  "OmenAlpha(Max)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": true
+  },
   "GPT6Astra(Light)V1-TasksAssignedByOpus5": {
+    "earthMoonValid": false
+  },
+  "Opus5(Low)V1-TasksAssignedByOpus5": {
     "earthMoonValid": false
   },
   "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5": {
@@ -1070,9 +1251,7 @@ const expectedOtherComets = {
   "DeepSeek-V4-Flash-0731": 3,
   "DeepSeekV4Pro0813(Max)V2": 1,
   "GLM5.3(Max)V3": 1,
-  "GPT5.6Luna(Max)V2": 2,
-  "GPT5.6SolUltra-WebGL2": 1,
-  "GPT5.6SolUltra": 1,
+  "GPT5.6Luna(Max)V2": 1,
   "Grok4.5": 1,
   "LongCat2.0": 3,
   "GPT6Astra(Ultra)V1": 3,
@@ -1099,13 +1278,16 @@ for (const work of WORKS) {
   const required = [...recordKeys, ...presentOptional];
   exactKeys(score, required, `${id} record`);
   check(typeof score.reference === 'boolean', `${id}: reference must be boolean`);
-  const inCurrentReview = visibleWorks.some(work => work.id === id) && !Object.hasOwn(protectedScoreDigests, id);
-  if (inCurrentReview) {
-    const reviewDate = id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
-    check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every current non-protected work must retain its own completed V3 review provenance`);
-    check(score.visualBase === null, `${id}: the current review must not retain legacy visual scoring inputs`);
+  const isProtected = Object.hasOwn(protectedScoreDigests, id);
+  const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
+  const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
+  if (inCurrentReview || inArchiveReview) {
+    const reviewDate = inArchiveReview ? '2026-10-15' : id === HAIKU_MAX_SPEC_ID || id === 'KimiK3(Max)V3' ? '2026-10-12' : '2026-10-11';
+    check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
+    check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
+    if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
     if (Array.isArray(score.moonEvidence)) check(!Object.hasOwn(score, 'moonQuality'), `${id}: per-moon evidence must replace the old global quality multiplier`);
-  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected and archived records must retain their original review provenance`);
+  } else check(!Object.hasOwn(score, 'reviewedAt') && !Object.hasOwn(score, 'reviewVersion'), `${id}: protected records must retain their original review provenance`);
   exactKeys(score.featureMap, nested.featureMap, `${id}.featureMap`);
   exactKeys(score.orbitModel, nested.orbitModel, `${id}.orbitModel`);
   exactKeys(score.orbitRuntime, nested.orbitRuntime, `${id}.orbitRuntime`);
@@ -1245,7 +1427,8 @@ for (const work of [doubaoOneLine, doubaoDetailed, astraLightDetailed, opusLowDe
 check(solMaxDetailed?.group === 'B' && solMaxDetailed?.tier === 1 && solMaxDetailed?.pair === null, 'GPT-5.6 Sol Max must be an unpaired Tier 1 detailed-spec run');
 check(JSON.stringify(solMaxDetailed?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${solMaxDetailed.shot}`, import.meta.url)), 'GPT-5.6 Sol Max detailed must show in Codex and have a screenshot');
 for (const work of [solXHighDetailed, solHighDetailed]) {
-  check(work?.group === 'B' && work?.tier === 2 && work?.pair === null, `${work?.id || 'GPT-5.6 Sol detailed'} must be an unpaired Tier 2 detailed-spec run`);
+  const expectedTier = work === solHighDetailed ? 4 : 2;
+  check(work?.group === 'B' && work?.tier === expectedTier && work?.pair === null, `${work?.id || 'GPT-5.6 Sol detailed'} must retain its reviewed tier and unpaired detailed-spec metadata`);
   check(JSON.stringify(work?.tags) === JSON.stringify(['in Codex']) && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Sol detailed'} must show in Codex and have a screenshot`);
 }
 check(solMaxDetailed?.bytes === 86118 && solMaxDetailed?.lines === 1061 && solMaxDetailed?.msaa === true, 'GPT-5.6 Sol Max detailed metadata must match the supplied file');
@@ -1257,7 +1440,7 @@ for (const work of lowerEffortRuns) {
   check(work?.tech === 'WebGL2' && work?.net.length === 0 && fs.existsSync(new URL(`../${work.shot}`, import.meta.url)), `${work?.id || 'GPT-5.6 Sol lower effort'} must be offline WebGL2 with a screenshot`);
 }
 check(solMediumOneLine?.group === 'A' && solMediumOneLine?.bytes === 22057 && solMediumOneLine?.lines === 161 && solMediumOneLine?.msaa === true, 'GPT-5.6 Sol Medium one-line metadata must match the supplied file');
-check(solMediumDetailed?.group === 'B' && solMediumDetailed?.bytes === 37827 && solMediumDetailed?.lines === 111 && solMediumDetailed?.msaa === false, 'GPT-5.6 Sol Medium detailed metadata must match the supplied file');
+check(solMediumDetailed?.group === 'B' && solMediumDetailed?.bytes === 37827 && solMediumDetailed?.lines === 111 && solMediumDetailed?.msaa === true, 'GPT-5.6 Sol Medium detailed metadata must match the supplied file');
 check(solLightOneLine?.group === 'A' && solLightOneLine?.bytes === 20733 && solLightOneLine?.lines === 127 && solLightOneLine?.msaa === true, 'GPT-5.6 Sol Light one-line metadata must match the supplied file');
 check(solLightDetailed?.group === 'B' && solLightDetailed?.bytes === 31891 && solLightDetailed?.lines === 79 && solLightDetailed?.msaa === true, 'GPT-5.6 Sol Light detailed metadata must match the supplied file');
 for (const work of [lunaMax1, lunaMax2]) {
@@ -1319,7 +1502,7 @@ check(grok46?.group === 'A' && grok46Detailed?.group === 'B' && grok46?.tier ===
 check(grok46?.pair === 'grok46' && grok46Detailed?.pair === 'grok46', 'Grok 4.6 runs must form one explicit pair');
 check(stripCreationDate(grok46?.model) === 'Grok 4.6 (xHigh)' && stripCreationDate(grok46Detailed?.model) === 'Grok 4.6 (xHigh)', 'Grok 4.6 visible naming must be canonical');
 check(grok46?.title === '日心仪 · Helios Orrery' && grok46Detailed?.title === '太阳系实时运动模型', 'Grok 4.6 visible titles must match the audited files');
-check(grok46?.bytes === 59361 && grok46?.lines === 1527 && grok46?.tech === 'Three.js' && grok46?.needsFloat === false && grok46?.msaa === true, 'Grok 4.6 one-line source metadata must match the replaced file');
+check(grok46?.bytes === 59361 && grok46?.lines === 1527 && grok46?.tech === 'Three.js' && grok46?.needsFloat === true && grok46?.msaa === false, 'Grok 4.6 one-line source metadata must match the replaced file');
 check(JSON.stringify(grok46?.net) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net']), 'Grok 4.6 one-line network dependencies must match the replaced file');
 check(grok46Detailed?.bytes === 88989 && grok46Detailed?.lines === 2134 && grok46Detailed?.tech === 'WebGL2' && grok46Detailed?.needsFloat === false && grok46Detailed?.msaa === true && grok46Detailed?.net.length === 0, 'Grok 4.6 detailed source metadata must match the audited file');
 for (const work of [grok45, grok46, grok46Detailed]) {
@@ -1480,7 +1663,7 @@ const gemini36OneLine = WORKS.find(w => w.id === 'Gemini3.6Flash(high)V0');
 const gemini36Detailed = WORKS.find(w => w.id === 'Gemini3.6Flash-TasksAssignedByOpus5');
 check(gemini36OneLine?.group === 'A' && gemini36OneLine?.tier === 3 && gemini36OneLine?.pair === 'gemini36flash', 'Gemini 3.6 Flash V0 must be the paired Tier 3 one-line entry');
 check(gemini36Detailed?.group === 'B' && gemini36Detailed?.tier === 3 && gemini36Detailed?.pair === 'gemini36flash', 'Gemini 3.6 Flash detailed run must remain Tier 3 and join the new pair');
-check(gemini36OneLine?.bytes === 40641 && gemini36OneLine?.lines === 1085 && gemini36OneLine?.tech === 'Three.js' && gemini36OneLine?.needsFloat === false && gemini36OneLine?.msaa === true, 'Gemini 3.6 Flash V0 source metadata must match the audited file');
+check(gemini36OneLine?.bytes === 40641 && gemini36OneLine?.lines === 1085 && gemini36OneLine?.tech === 'Three.js' && gemini36OneLine?.needsFloat === false && gemini36OneLine?.msaa === false, 'Gemini 3.6 Flash V0 source metadata must match the audited file');
 check(JSON.stringify(gemini36OneLine?.net) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net']), 'Gemini 3.6 Flash V0 network dependencies must match the audited file');
 check(JSON.stringify(gemini36OneLine?.tags) === JSON.stringify(['主动改写为幻想风格']), 'Gemini 3.6 Flash V0 must disclose its deliberate fantasy reframing');
 for (const work of [gemini36OneLine, gemini36Detailed]) {
@@ -1494,9 +1677,9 @@ const gemini37OneLine = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1');
 const gemini37Detailed = WORKS.find(w => w.id === 'Gemini3.7Flash(high)V1-TasksAssignedByOpus5');
 check(gemini37OneLine?.group === 'A' && gemini37OneLine?.tier === 3 && gemini37OneLine?.pair === 'gemini37flash', 'Gemini 3.7 Flash one-line run must be the paired Tier 3 entry');
 check(gemini37Detailed?.group === 'B' && gemini37Detailed?.tier === 3 && gemini37Detailed?.pair === 'gemini37flash', 'Gemini 3.7 Flash detailed run must be the paired Tier 3 entry');
-check(gemini37OneLine?.bytes === 86959 && gemini37OneLine?.lines === 2410 && gemini37OneLine?.tech === 'Three.js' && gemini37OneLine?.needsFloat === false && gemini37OneLine?.msaa === true, 'Gemini 3.7 Flash one-line source metadata must match the audited file');
+check(gemini37OneLine?.bytes === 86959 && gemini37OneLine?.lines === 2410 && gemini37OneLine?.tech === 'Three.js' && gemini37OneLine?.needsFloat === false && gemini37OneLine?.msaa === false, 'Gemini 3.7 Flash one-line source metadata must match the audited file');
 check(JSON.stringify(gemini37OneLine?.net) === JSON.stringify(['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com']), 'Gemini 3.7 Flash one-line network dependencies must match the audited file');
-check(gemini37Detailed?.bytes === 156951 && gemini37Detailed?.lines === 3967 && gemini37Detailed?.tech === 'WebGL2' && gemini37Detailed?.needsFloat === true && gemini37Detailed?.msaa === true && gemini37Detailed?.net.length === 0, 'Gemini 3.7 Flash detailed source metadata must match the audited file');
+check(gemini37Detailed?.bytes === 156951 && gemini37Detailed?.lines === 3967 && gemini37Detailed?.tech === 'WebGL2' && gemini37Detailed?.needsFloat === false && gemini37Detailed?.msaa === true && gemini37Detailed?.net.length === 0, 'Gemini 3.7 Flash detailed source metadata must match the audited file');
 for (const work of [gemini37OneLine, gemini37Detailed]) {
   check(stripCreationDate(work?.model) === 'Gemini 3.7 Flash (high)', `${work?.id || 'Gemini 3.7 Flash'} visible naming must be canonical`);
   check(SITE.environmentTag(work) === 'in Antigravity' && SITE.chips(work, null).includes('in Antigravity'), `${work?.id || 'Gemini 3.7 Flash'} must render the in Antigravity tag`);

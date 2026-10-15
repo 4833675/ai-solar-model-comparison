@@ -655,7 +655,15 @@ window.WORKS=[
   "title": "HELIOS · 太阳系动态观测站",
   "needsFloat": false,
   "msaa": false,
-  "feats": ["kepler","rings","belt","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(high)V1.jpg",
   "jsErrors": 0,
@@ -663,10 +671,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 2,
   "rank": 99
- },
+},
  {
   "id": "Opus5Ultra-TasksAssignedByOpus5",
   "file": "models/Opus5Ultra-TasksAssignedByOpus5.html",
@@ -678,31 +688,31 @@ window.WORKS=[
   "bytes": 142181,
   "lines": 3425,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Opus5Ultra-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "Claude Opus 5 (Ultracode·xhigh) 从自己的一句话标杆反推说明书后再次实现；主动校正天文数据，并修复长期动画与性能问题",
+  "note": "原生离线 WebGL2 的 JPL 世纪率/开普勒行星轨道、校准回归的哈雷、双向环影、动态小天体群、HDR/Bloom/ACES 与大气有效。逐颗有向法线复核后，仅海卫一的负周期与实际右手基共同给出正确156.9°；月球和另六颗赤道卫星方向错误，不能按旧八颗满分。轨道线按偏近点角采样，与实际曲线同源。逆行行星的几何pole又叠加负自转周期，卫星未正确同步自转，数据项温和扣分。拖拽、聚焦、持续跟随成立；缩放下限.02可进入天体，此刻仅日期、显示与镜头分离，无完整重置。",
   "issue": null,
   "net": [],
   "fix": null,
   "tags": [
-   "近一半时间在调整性能(功能早就完成了)"
+    "近一半时间在调整性能(功能早就完成了)"
   ],
   "tier": 1,
   "rank": 0
- },
+},
  {
   "id": "DeepSeek-V4-Flash-0731",
   "file": "models/DeepSeek-V4-Flash-0731.html",
@@ -714,30 +724,30 @@ window.WORKS=[
   "bytes": 59338,
   "lines": 1242,
   "title": "太阳系模拟 · Solar System",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/DeepSeek-V4-Flash-0731.jpg",
-  "jsErrors": 1,
-  "note": null,
+  "jsErrors": 3,
+  "note": "九天体使用焦点椭圆、开普勒求解和倾角/节点/近心点，但部分J2000 M0混用了平均经度，且零时相差半日，历元部分分。月球独立黄道5.145°根数和27.322日周期有效。土星环无真实投影；粒子带只修改CPU数组未标记上传，首帧后不运动；Bloom/OutputPass ACES有效，大气是sprite辉光。三条独立彗星轨迹存在但彗核sprite未赋位置，完整性部分分。行星逆行轴与负转速叠加。行星只有sphere而拾取表读取mesh，悬停点击会报错；侧栏仍可目标跟踪。暂停有效，复位仅镜头；无浮点回退和场景MSAA。 Sun半径7大于水/金/地各自最大日距加实体半径2.367/3.863/5.067，三内行星完全被太阳遮住，计完整性扣分，不升级fatal。",
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net"
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tier": 3,
   "rank": 16
- },
+},
  {
   "id": "DeepSeek-V4-Flash-0731-TasksAssignedByOpus5",
   "file": "models/DeepSeek-V4-Flash-0731-TasksAssignedByOpus5.html",
@@ -749,28 +759,28 @@ window.WORKS=[
   "bytes": 97427,
   "lines": 2159,
   "title": "太阳系 · 实时轨道模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/DeepSeek-V4-Flash-0731-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "离线原生 WebGL2 的行星六根数/世纪率、开普勒、真实哈雷、双向环影、带运动和后期有效。卫星中月球错误套用地球赤道参考，海卫一在实际左手基中被负周期翻成23.1°，其余六颗有效，卡戎保留。等平均近点角384点轨道线使高偏心哈雷近日点折线偏离，路径部分计分。卫星实时日心/地距字段未采用实际卫星坐标，自转pole/符号也有不一致，数据合并扣分。桌面拖拽结束仍触发独立click点选，投影拾取缺少FOV尺度；固定缩放下限可进入大天体。列表聚焦和连续跟随可用，此刻只重置日期。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 6
- },
+},
  {
   "id": "DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5",
   "file": "models/DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5.html",
@@ -797,8 +807,8 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "作者标记为未完成：页面仍保留大面积调试覆盖层，且主循环同时由 frame 自调度和 drive 每帧重复调用，运行越久，重复渲染循环越多",
-  "issue": null,
+  "note": "本地WebGL2带HDR回退、泛光/ACES、大气与运动粒子带，环仅单向遮影。JPL/Kepler与Halley实际轨道有效，240点真近点采样未闭合最后一段，贴合部分。8颗卫星仅Triton有向参考面和方向有效。frame与drive各自续约RAF且drive每次调用frame，造成永久链数递增；实跑队列requested-called从38增至71，L2核心长程故障，改按T4未完成且不设旧数字封顶。行星自转模型方向与pole冲突、质量格式有错误，数据3.5。聚焦复制被下一帧替换的数组，不随动；缩放可穿入，日期按钮不重置全状态。",
+  "issue": "L2：双RAF自调度持续新增永久渲染链，长程负载无界；聚焦目标为过期位置。",
   "net": [],
   "fix": null,
   "tier": 4,
@@ -818,28 +828,28 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "JPL/开普勒行星轨道、真实哈雷、双向环影、运动带和HDR/Bloom/ACES/大气有效；旧过曝外观不扣分。逐有向法线仅海卫一有效，月球及另六颗卫星方向错误。行星/哈雷轨迹并非完全同一采样和实体路径，路径部分计分。暂停后自转循环仍用非零速度推进；卫星把显示单位直接当AU显示距离及地距，数据项合并扣分，不重复扣卫星方向。拖拽抑制成立，但点选用设备像素对CSS坐标；缩放会被聚焦距离逐帧拉回且下限可穿入。仍有连续跟随，此刻仅改日期。",
   "issue": null,
   "net": [],
   "fix": null,
   "tags": [
-   "in Claude CLI"
+    "in Claude CLI"
   ],
- "tier": 3,
- "rank": 17
- },
+  "tier": 3,
+  "rank": 17
+},
  {
   "id": "DeepSeek-V4-Pro-0813-V1",
   "file": "models/DeepSeek-V4-Pro-0813-V1.html",
@@ -999,28 +1009,28 @@ window.WORKS=[
   "bytes": 111405,
   "lines": 2595,
   "title": "太阳系实时运动模型 — DeepSeek V4 Pro (Max)",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/DeepSeekProMax-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "离线原生 WebGL2 使用真实JPL行星根数/开普勒和哈雷轨道、运动带、Bloom/ACES与大气。环只有部分遮影，按部分环功能计分。八颗卫星全部参考/方向错误：月球世界+Z正相位逆行，其他卫星把原始黄道转轴直接当世界转轴，缺少坐标变换。轨道线缓存静态根数/等M采样，不能全程贴合。行星自转轴同样混用黄道和世界坐标、哈雷回归说明与模型日期不同，数据温和扣分。拖拽释放会误点，固定缩放下限可穿入；聚焦保存旧位置快照而不更新，没有持续跟随；此刻只改日期。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 1
- },
+},
  {
   "id": "DeepSeek_V4_Pro_high-1",
   "file": "models/DeepSeek_V4_Pro_high-1.html",
@@ -1032,25 +1042,25 @@ window.WORKS=[
   "bytes": 21539,
   "lines": 613,
   "title": "Solar System",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "belt",
-   "bloom",
-   "aces"
+    "belt",
+    "bloom",
+    "aces"
   ],
   "weight": "light",
   "shot": "assets/shots/DeepSeek_V4_Pro_high-1.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "联网Three.js提供八颗行星的示意圆轨道、运动小行星带与Bloom，土星环只是受光透明几何，没有物理环影。没有真实根数、开普勒变速或历元；唯一月球继承随机地球倾斜与自转，计无效，不在数据项重复扣分。行星自转速度和轴倾为任意值，金星等方向错误。仅有拖拽缩放，没有聚焦、跟随、暂停或复位；最小距离5大于最大实体半径。半浮点后期无回退，离屏场景无MSAA。  实际Bloom输出先用MeshBasicMaterial对base执行ACES，再叠加未经统一映射的Bloom，故ACES为0.4部分分。",
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net"
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tier": 3,
   "rank": 11
- },
+},
  {
   "id": "DeepSeek_V4_Pro_high-2",
   "file": "models/DeepSeek_V4_Pro_high-2.html",
@@ -1062,26 +1072,26 @@ window.WORKS=[
   "bytes": 45293,
   "lines": 1102,
   "title": "太阳系运动模型",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "belt",
-   "bloom",
-   "aces",
-   "atmo"
+    "belt",
+    "bloom",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/DeepSeek_V4_Pro_high-2.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星按近似周期沿圆轨道运动，倾角存在但相位随机，没有开普勒变速与历元。静态轨道线未复现随相位变化的完整Euler变换，路径部分吻合。RingGeometry用setXY写三个坐标，第三项被忽略，土星环退化为直线，环项为零。运动带和Bloom有效；后期缺少OutputPass，ACES部分有效；大气是边缘辉光。无卫星、哈雷或其他彗星。自转速度随机且不随模拟倍率变化；没有暂停按钮，R仅复位镜头；聚焦只平滑改变观察目标，未保持镜头相对位置。半浮点后期无回退、无场景MSAA。 实际Bloom输出先用MeshBasicMaterial对base执行ACES，再叠加未经统一映射的Bloom，故ACES为0.4部分分。",
   "issue": null,
   "net": [
-   "unpkg.com"
+    "unpkg.com"
   ],
   "fix": null,
   "tier": 3,
   "rank": 12
- },
+},
  {
   "id": "DeepSeek_V4_Pro_high-3",
   "file": "models/DeepSeek_V4_Pro_high-3.html",
@@ -1096,22 +1106,22 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": true,
   "feats": [
-   "belt",
-   "aces",
-   "atmo"
+    "belt",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/DeepSeek_V4_Pro_high-3.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星使用近似周期的示意圆轨道，实体与轨道线一致；没有偏心根数、开普勒变速、轨道节点或历元。土星环和静态小行星带为部分实现，ACES直接渲染有效，没有Bloom，大气仅透明壳。唯一月球固定在黄道0°面，缺少倾角与节点，计无效。行星统一任意自转速度，物理数据部分分。点击聚焦为一次固定目标运镜，没有持续跟随；速度归零仍自转，复位只恢复镜头。直接渲染不要求浮点颜色附件，画布MSAA开启。",
   "issue": null,
   "net": [
-   "unpkg.com"
+    "unpkg.com"
   ],
   "fix": null,
   "tier": 3,
   "rank": 13
- },
+},
  {
   "id": "GLM5.2Max-TasksAssignedByOpus5",
   "file": "models/GLM5.2Max-TasksAssignedByOpus5.html",
@@ -1123,28 +1133,28 @@ window.WORKS=[
   "bytes": 142608,
   "lines": 3539,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GLM5.2Max-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "本地WebGL2、HDR回退及多级泛光/ACES/大气有效；环只有行星投到环的求交代码且衰减反向，缺环投到行星。JPL根数和Kepler传播正确，轨道线固定J2000并等M采样，取部分贴合。8颗卫星中6颗有效；Moon黄道坐标再次映射后有向倾角95.145°，Triton重复翻成23.1°。几何逆行pole与负自转周期还使部分行星自转方向错误，数据项单独扣分。拖拽后的click未被抑制，缩放可进入球体；聚焦复制位置且不持续跟随，此刻仅重置日期。无已证实fatal。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 2,
   "rank": 3
- },
+},
  {
   "id": "GLM5.2Max",
   "file": "models/GLM5.2Max.html",
@@ -1156,27 +1166,27 @@ window.WORKS=[
   "bytes": 45327,
   "lines": 1068,
   "title": "太阳系 · Solar System",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo"
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/GLM5.2Max.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星按近似公转周期沿示意圆轨道运动，实体与路径一致；没有开普勒变速、倾角/节点与历元。运动小行星带、Bloom及OutputPass ACES有效，环无物理环影，大气只是Fresnel边缘辉光。Moon缺倾角、节点且周期任意，计无效。自转周期公式取了反比后又相除，水星反比地球快58.6倍，金星和天王星另有轴倾负速双翻，数据部分分。最小缩放8小于太阳半径12，能进入太阳。聚焦运镜有效，后续只跟随目标点；速度0停行星但复位只镜头。浮点后期无降级，无场景MSAA。",
   "issue": null,
   "net": [
-   "unpkg.com"
+    "unpkg.com"
   ],
   "fix": null,
   "tier": 2,
   "rank": 2
- },
+},
  {
   "id": "GLM5.3(Max)V1",
   "file": "models/GLM5.3(Max)V1.html",
@@ -1371,25 +1381,25 @@ window.WORKS=[
   "bytes": 22453,
   "lines": 623,
   "title": "太阳系运动模型",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "belt",
-   "bloom",
-   "aces"
+    "belt",
+    "bloom",
+    "aces"
   ],
   "weight": "light",
   "shot": "assets/shots/GLM_5_1_high-1.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "联网Three.js使用太阳位于焦点的椭圆与近似周期、偏心率，但直接匀速推进参数角，没有开普勒求解、节点方向或真实历元。轨道线和实体位置同源。只有静态小行星带；Bloom有效，ACES部分有效，土星环无物理投影，没有行星大气。唯一月球挂在地球倾斜自转mesh上，计无效。金星和天王星轴倾与负自转叠加，方向重复翻转，数据部分分。聚焦与持续镜头跟随成立；暂停只停公转，行星和月球仍自转，没有完整复位。半浮点后期无回退，场景无MSAA。  实际Bloom输出先用MeshBasicMaterial对base执行ACES，再叠加未经统一映射的Bloom，故ACES为0.4部分分。",
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net"
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tier": 3,
   "rank": 7
- },
+},
  {
   "id": "GPT5.5xHigh-TasksAssignedByOpus5",
   "file": "models/GPT5.5xHigh-TasksAssignedByOpus5.html",
@@ -1401,17 +1411,17 @@ window.WORKS=[
   "bytes": 116500,
   "lines": 2919,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.5xHigh-TasksAssignedByOpus5.jpg",
@@ -1422,7 +1432,7 @@ window.WORKS=[
   "fix": null,
   "tier": 2,
   "rank": 2
- },
+},
  {
   "id": "GPT5.6Luna(Max)V1",
   "file": "models/GPT5.6Luna(Max)V1.html",
@@ -1436,7 +1446,14 @@ window.WORKS=[
   "title": "太阳系 · 动态星历",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","bloom","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Luna(Max)V1.jpg",
   "jsErrors": 0,
@@ -1444,10 +1461,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Luna(Max)V2",
   "file": "models/GPT5.6Luna(Max)V2.html",
@@ -1461,18 +1480,32 @@ window.WORKS=[
   "title": "GPT5.6Luna · Solar System Observatory",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Luna(Max)V2.jpg",
   "jsErrors": 0,
   "note": null,
   "issue": null,
-  "net": ["cdn.jsdelivr.net","fonts.googleapis.com"],
+  "net": [
+    "cdn.jsdelivr.net",
+    "fonts.googleapis.com"
+  ],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6LunaMax-TasksAssignedByOpus5",
   "file": "models/GPT5.6LunaMax-TasksAssignedByOpus5.html",
@@ -1484,17 +1517,17 @@ window.WORKS=[
   "bytes": 80272,
   "lines": 595,
   "title": "太阳系 · 实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6LunaMax-TasksAssignedByOpus5.jpg",
@@ -1505,7 +1538,7 @@ window.WORKS=[
   "fix": null,
   "tier": 2,
   "rank": 4
- },
+},
  {
   "id": "GPT5.6Sol(Max)V1",
   "file": "models/GPT5.6Sol(Max)V1.html",
@@ -1520,13 +1553,13 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(Max)V1.jpg",
@@ -1537,7 +1570,7 @@ window.WORKS=[
   "fix": null,
   "tier": 1,
   "rank": 5
- },
+},
  {
   "id": "GPT5.6SolUltra-TasksAssignedByOpus5",
   "file": "models/GPT5.6SolUltra-TasksAssignedByOpus5.html",
@@ -1549,17 +1582,17 @@ window.WORKS=[
   "bytes": 123582,
   "lines": 997,
   "title": "太阳系实时运动模型 · 黄道观测仪",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6SolUltra-TasksAssignedByOpus5.jpg",
@@ -1570,7 +1603,7 @@ window.WORKS=[
   "fix": null,
   "tier": 1,
   "rank": 2
- },
+},
  {
   "id": "GPT5.6Sol(Max)V1-TasksAssignedByOpus5",
   "file": "models/GPT5.6Sol(Max)V1-TasksAssignedByOpus5.html",
@@ -1584,7 +1617,16 @@ window.WORKS=[
   "title": "太阳系 · 实时轨道模型",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
@@ -1592,10 +1634,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 1,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5",
   "file": "models/GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5.html",
@@ -1609,7 +1653,16 @@ window.WORKS=[
   "title": "太阳系 · 实时轨道观测仪",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
@@ -1617,10 +1670,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 2,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(high)V1-TasksAssignedByOpus5",
   "file": "models/GPT5.6Sol(high)V1-TasksAssignedByOpus5.html",
@@ -1634,18 +1689,29 @@ window.WORKS=[
   "title": "太阳系实时轨道仪",
   "needsFloat": false,
   "msaa": false,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(high)V1-TasksAssignedByOpus5.jpg",
-  "jsErrors": 0,
-  "note": null,
-  "issue": null,
+  "jsErrors": 2,
+  "note": "选择月球会触发 TypeError 并停止主循环",
+  "issue": "卫星信息卡读取不存在的 orbit.a（L2）",
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
-  "tier": 2,
+  "tags": [
+    "in Codex"
+  ],
+  "tier": 4,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(Medium)V1",
   "file": "models/GPT5.6Sol(Medium)V1.html",
@@ -1659,7 +1725,12 @@ window.WORKS=[
   "title": "太阳系 · 轨道观测仪",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","bloom"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom"
+  ],
   "weight": "light",
   "shot": "assets/shots/GPT5.6Sol(Medium)V1.jpg",
   "jsErrors": 0,
@@ -1667,10 +1738,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(Medium)V1-TasksAssignedByOpus5",
   "file": "models/GPT5.6Sol(Medium)V1-TasksAssignedByOpus5.html",
@@ -1683,8 +1756,15 @@ window.WORKS=[
   "lines": 111,
   "title": "太阳系 · 实时轨道仪",
   "needsFloat": false,
-  "msaa": false,
-  "feats": ["kepler","rings","belt","comet","bloom","moons"],
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(Medium)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
@@ -1692,10 +1772,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(Light)V1",
   "file": "models/GPT5.6Sol(Light)V1.html",
@@ -1709,7 +1791,12 @@ window.WORKS=[
   "title": "太阳系 · 运动模型",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","bloom","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "bloom",
+    "moons"
+  ],
   "weight": "light",
   "shot": "assets/shots/GPT5.6Sol(Light)V1.jpg",
   "jsErrors": 0,
@@ -1717,10 +1804,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(Light)V1-TasksAssignedByOpus5",
   "file": "models/GPT5.6Sol(Light)V1-TasksAssignedByOpus5.html",
@@ -1734,7 +1823,15 @@ window.WORKS=[
   "title": "太阳系 · 实时轨道模型",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(Light)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
@@ -1742,10 +1839,12 @@ window.WORKS=[
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Codex"],
+  "tags": [
+    "in Codex"
+  ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6SolUltra-WebGL2",
   "file": "models/GPT5.6SolUltra-WebGL2.html",
@@ -1757,16 +1856,16 @@ window.WORKS=[
   "bytes": 75268,
   "lines": 314,
   "title": "黄道曝光 · 原生 WebGL2 太阳系",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/GPT5.6SolUltra-WebGL2.jpg",
@@ -1777,7 +1876,7 @@ window.WORKS=[
   "fix": null,
   "tier": 1,
   "rank": 3
- },
+},
  {
   "id": "GPT5.6SolUltra",
   "file": "models/GPT5.6SolUltra.html",
@@ -1789,14 +1888,14 @@ window.WORKS=[
   "bytes": 747831,
   "lines": 1310,
   "title": "太阳系 · ORBITAL ATLAS",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "belt",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "belt",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/GPT5.6SolUltra.jpg",
@@ -1807,7 +1906,7 @@ window.WORKS=[
   "fix": null,
   "tier": 2,
   "rank": 4
- },
+},
  {
   "id": "GPT5.6Sol(xhigh)V1",
   "file": "models/GPT5.6Sol(xhigh)V1.html",
@@ -1822,11 +1921,11 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/GPT5.6Sol(xhigh)V1.jpg",
@@ -1836,12 +1935,12 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tags": [
-   "in Zcode",
-   "中转站"
+    "in Zcode",
+    "中转站"
   ],
   "tier": 3,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(xhigh)V2",
   "file": "models/GPT5.6Sol(xhigh)V2.html",
@@ -1854,14 +1953,14 @@ window.WORKS=[
   "lines": 187,
   "title": "HELIOCENTRIC · 太阳系实时轨道模型",
   "needsFloat": false,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(xhigh)V2.jpg",
@@ -1871,12 +1970,12 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tags": [
-   "in Zcode",
-   "中转站"
+    "in Zcode",
+    "中转站"
   ],
   "tier": 2,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6Sol(xhigh)V3",
   "file": "models/GPT5.6Sol(xhigh)V3.html",
@@ -1889,14 +1988,14 @@ window.WORKS=[
   "lines": 1688,
   "title": "SOLARIS · 太阳系动态观测仪",
   "needsFloat": false,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6Sol(xhigh)V3.jpg",
@@ -1906,11 +2005,11 @@ window.WORKS=[
   "net": [],
   "fix": null,
   "tags": [
-   "in Codex"
+    "in Codex"
   ],
   "tier": 2,
   "rank": 99
- },
+},
  {
   "id": "GPT5.6TerraUltra-Three",
   "file": "models/GPT5.6TerraUltra-Three.html",
@@ -1922,16 +2021,16 @@ window.WORKS=[
   "bytes": 67600,
   "lines": 1216,
   "title": "GPT-5.6 Terra (Ultra·Max) · Three.js 太阳系",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/GPT5.6TerraUltra-Three.jpg",
@@ -1939,12 +2038,12 @@ window.WORKS=[
   "note": null,
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net"
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tier": 3,
   "rank": 8
- },
+},
  {
   "id": "GPT5.6TerraUltra-TasksAssignedByOpus5",
   "file": "models/GPT5.6TerraUltra-TasksAssignedByOpus5.html",
@@ -1956,17 +2055,17 @@ window.WORKS=[
   "bytes": 94766,
   "lines": 1689,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/GPT5.6TerraUltra-TasksAssignedByOpus5.jpg",
@@ -1977,7 +2076,7 @@ window.WORKS=[
   "fix": null,
   "tier": 1,
   "rank": 3
- },
+},
  {
   "id": "GPT_5_5_xhigh",
   "file": "models/GPT_5_5_xhigh.html",
@@ -1990,15 +2089,15 @@ window.WORKS=[
   "lines": 4061,
   "title": "太阳系运动模型 - 单文件版",
   "needsFloat": true,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/GPT_5_5_xhigh.jpg",
@@ -2009,7 +2108,7 @@ window.WORKS=[
   "fix": null,
   "tier": 3,
   "rank": 3
- },
+},
  {
   "id": "Gemini3.1Pro-TasksAssignedByOpus5",
   "file": "models/Gemini3.1Pro-TasksAssignedByOpus5.html",
@@ -2024,24 +2123,24 @@ window.WORKS=[
   "needsFloat": true,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Gemini3.1Pro-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "JPL/开普勒行星、土星双向环影、HDR/Bloom/ACES实际可运行。源中虽声明卫星与哈雷参数，最终renderLoop没有绘制卫星、哈雷、小行星带、大气或轨道线，不能按声明和复选框给功能分；缺少地球月球。自转按真实帧秒而非模拟天推进，与时间速度不一致；压缩和镜头插值未限制dt，后台恢复易超调，稳定性部分。列表聚焦和按新天体位置持续跟随成立；滚轮下限1.1可进入太阳/巨行星，此刻只重置日期。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 6
- },
+},
  {
   "id": "Gemini3.5Flash-TasksAssignedByOpus5",
   "file": "models/Gemini3.5Flash-TasksAssignedByOpus5.html",
@@ -2053,28 +2152,28 @@ window.WORKS=[
   "bytes": 112129,
   "lines": 2960,
   "title": "太阳系实时运动模型 - High Precision Solar System Simulation",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Gemini3.5Flash-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "JPL/开普勒行星、真实哈雷、双向环影和动态小天体带有效，ACES有效。Bloom只有高亮提取及线性放大，没有模糊扩散，部分计分；大气只有表面limb，未绘制大气壳。月球有向174.855°无效；六颗普通赤道卫星母星/方向/周期成立但忽略全部倾角，仅半分；海卫一实际180°而非156.9°，无效。缓存初始根数的轨道线与传播状态不全贴合。computedPositions每帧重建使自转相位每帧归零，模拟固定.016秒随帧率变化，实时数据亦有缺项，分属数据/整合扣分。聚焦、跟随和拖拽成立，缩放可穿入，只有日期复位。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 3
- },
+},
  {
   "id": "Gemini3.6Flash(high)V0",
   "file": "models/Gemini3.6Flash(high)V0.html",
@@ -2087,31 +2186,31 @@ window.WORKS=[
   "lines": 1085,
   "title": "宇宙幻想 3D 霓光太阳系",
   "needsFloat": false,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "rings",
-   "bloom",
-   "aces",
-   "moons"
+    "rings",
+    "bloom",
+    "aces",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/Gemini3.6Flash(high)V0.jpg",
   "jsErrors": 0,
-  "note": "源码和页面明确将任务改写为脱离真实物理约束的赛博幻想天体系统",
+  "note": "实现为幻想太阳系：中央是晶体能源核，八行星名称/描述与速度均为艺术设定，数据真实性为零，但圆轨道和交互仍按真实功能计分。未实现真实轨道根数、开普勒变速、方向与历元。环为线框几何，轨道粒子流不算火木之间小行星带，能量网格不是大气。r128的Bloom及内建材质ACES有效；月球无倾角/节点和真实周期，计无效。聚焦运镜有效，跟随只调整target；最小缩放5小于中央核14，可进入实体。暂停不停止核心自转，复位仅镜头。LDR后期无需浮点附件，无场景MSAA。",
   "issue": null,
   "net": [
-   "fonts.googleapis.com",
-   "fonts.gstatic.com",
-   "cdnjs.cloudflare.com",
-   "cdn.jsdelivr.net"
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "cdnjs.cloudflare.com",
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tags": [
-   "主动改写为幻想风格"
+    "主动改写为幻想风格"
   ],
   "tier": 3,
   "rank": 19
- },
+},
  {
   "id": "Gemini3.6Flash-TasksAssignedByOpus5",
   "file": "models/Gemini3.6Flash-TasksAssignedByOpus5.html",
@@ -2124,26 +2223,26 @@ window.WORKS=[
   "lines": 2506,
   "title": "太阳系实时运动模型 - Solar System Real-time Simulation",
   "needsFloat": true,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Gemini3.6Flash-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生WebGL2的行星JPL/开普勒、实际哈雷、小天体带、ACES和视线密度大气有效。环只有部分遮影；Bloom复选框/制服存在，但最终后期完全未读取uBloomEnabled，也无高亮模糊链，实际0。八颗卫星全部直接套世界黄道平面，未用母星赤道；月球方向也反向，全部无效。轨道线初始根数/缓存更新不足，路径部分。自转/实时字段有误差，数据合并扣分，不重复扣卫星参考面。拖拽释放可触发独立click，缩放下限可穿入；列表聚焦和持续跟随可用，此刻仅日期，无完整复位。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 4
- },
+},
  {
   "id": "Gemini3.7Flash(high)V1",
   "file": "models/Gemini3.7Flash(high)V1.html",
@@ -2156,31 +2255,31 @@ window.WORKS=[
   "lines": 2410,
   "title": "3D 太阳系超拟真动力学与天体演化模型",
   "needsFloat": false,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Gemini3.7Flash(high)V1.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "九行星有焦点椭圆和近似偏心率/周期、部分倾角，但直接匀速推进参数角，没有开普勒变速或真实历元。默认路径吻合，真实尺度开关只改实体轨道距离而不重建轨道线，pathFit部分分。环接收行星投影但未castShadow，单向环影为部分实现；运动带、r128 Bloom/内建材质ACES有效，大气为Fresnel壳。月球固定黄道0°、周期任意，计无效。自转和带运动不随模拟倍率，资料中所称真实尺度也不是实际比例，数据/完整性部分分。聚焦和位移跟随有效；min3小于太阳16，缩放部分分，暂停锁物理更新但无完整复位。LDR后期无需浮点附件/场景MSAA。",
   "issue": null,
   "net": [
-   "cdnjs.cloudflare.com",
-   "cdn.jsdelivr.net",
-   "fonts.googleapis.com",
-   "fonts.gstatic.com"
+    "cdnjs.cloudflare.com",
+    "cdn.jsdelivr.net",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com"
   ],
   "fix": null,
   "tier": 3,
   "rank": 18
- },
+},
  {
   "id": "Gemini3.7Flash(high)V1-TasksAssignedByOpus5",
   "file": "models/Gemini3.7Flash(high)V1-TasksAssignedByOpus5.html",
@@ -2192,28 +2291,28 @@ window.WORKS=[
   "bytes": 156951,
   "lines": 3967,
   "title": "太阳系实时动力学与天体物理模拟系统",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/Gemini3.7Flash(high)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生离线WebGL2完整具有JPL/开普勒行星、实际哈雷、双向环影、动态小天体群、HDR/Bloom/ACES和视线散射大气。逐颗卫星复核月球反向、海卫一23.1°错误，其余六颗含卡戎有效。轨道线用初始根数，传播日期后未按世纪率重建，路径部分。暂停后自转仍推进，卫星距离基准a0取自身导致同组距离塌缩，另有自转pole符号/遥测简化，数据合并扣分。拖拽和聚焦/跟随可用，缩放可进入太阳，此刻仅日期复位。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 11
- },
+},
  {
   "id": "Gemini_3_5_flash_high",
   "file": "models/Gemini_3_5_flash_high.html",
@@ -2225,25 +2324,25 @@ window.WORKS=[
   "bytes": 1142691,
   "lines": 28042,
   "title": "宇宙奥德赛：太阳系三维运动模型 | Solar System 3D Motion Model - 单文件版",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "belt",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "belt",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/Gemini_3_5_flash_high.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "打包Three.js直接渲染，近似真实半长轴/偏心率/周期和倾角、Newton开普勒成立，但没有节点/近心点方向，M0由名字hash产生，历元为零。十颗卫星仅Moon黄道5.145°有效，其余把赤道倾角套黄道，Triton又双翻；Moon轨道线也错用母星倾角，路径部分分，不在data重复扣。土星环双向shadowMap有效；没有主带、Bloom或大气散射/边缘层，直接ACES有效。逆行轴与负转速叠加、速度遥测公式错误，数据部分分。聚焦先飞向mesh局部原点，结束才跳到世界位置，部分分；之后位移跟随有效。min3小于太阳12，暂停仍自转，复位仅镜头。直接渲染无需浮点附件，画布MSAA开启。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 4
- },
+},
  {
   "id": "Grok4.5",
   "file": "models/Grok4.5.html",
@@ -2255,33 +2354,34 @@ window.WORKS=[
   "bytes": 52037,
   "lines": 1524,
   "title": "太阳系 · 实时天体动力学模型",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/Grok4.5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星用焦点椭圆、开普勒求解和近似周期/倾角，轨道线同源；缺少节点/近心点方向，随机初相位、无历元。运动带、Bloom/OutputPass ACES有效，土星环无投影，大气仅Fresnel。五颗卫星全部全球XZ，不是对应黄道/母星赤道参考，质量均零；不在data重复扣。存在一颗独立运动示意彗星，无真实哈雷。金星/天王星倾斜与负自转双翻，数据部分分。聚焦与跟随主要修改target，过远才拉镜头，均部分分；min3小于太阳4.2。暂停锁行星但太阳/尾巴动画继续，复位只镜头。半浮点无回退/场景MSAA。",
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net",
-   "fonts.googleapis.com"
+    "cdn.jsdelivr.net",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com"
   ],
   "fix": null,
   "tags": [
-   "in build"
+    "in build"
   ],
   "tier": 3,
   "rank": 6
- },
+},
  {
   "id": "Grok4.6(xhigh)V1",
   "file": "models/Grok4.6(xhigh)V1.html",
@@ -2293,35 +2393,35 @@ window.WORKS=[
   "bytes": 59361,
   "lines": 1527,
   "title": "日心仪 · Helios Orrery",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/Grok4.6(xhigh)V1.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "十颗行星/矮行星和哈雷使用近似真实根数、开普勒求解与一致路径，所有天体从模拟0时近日点开始，没有真实历元。哈雷高偏心逆行轨道成立。十二颗卫星中Moon独立黄道5.15°与周期有效；其余十一颗把赤道倾角直接套黄道，Triton另有负周期双翻，计无效，不在data重复扣。运动带、Bloom/OutputPass ACES有效；环为不受光MeshBasic，没有物理影；大气为rim。金星/天王星/冥王星轴倾加负自转重复翻转，数据部分分。镜头主要aim跟踪、过远才追，聚焦/跟随部分分，min4小于太阳4.6。暂停仍动太阳/风，复位镜头。半浮点无回退/MSAA。",
   "issue": null,
   "net": [
-   "fonts.googleapis.com",
-   "fonts.gstatic.com",
-   "cdn.jsdelivr.net"
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tags": [
-   "in build"
+    "in build"
   ],
   "tier": 2,
   "rank": 7
- },
+},
  {
   "id": "Grok4.6(xhigh)V1-TasksAssignedByOpus5",
   "file": "models/Grok4.6(xhigh)V1-TasksAssignedByOpus5.html",
@@ -2336,28 +2436,28 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Grok4.6(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "本地WebGL2含有效双向环影、运动粒子带、HDR泛光、ACES与大气。JPL/Kepler和近日点历元有效，轨道每帧重建但256个等M样本在哈雷近日点过疏，贴合取部分。8颗卫星只有Triton有向参考面/方向正确；Moon与普通赤道卫星反向，单按卫星规则扣。行星模型正相位自转沿负pole，且离子尾anti取-halley.pos指向太阳，数据项扣至3.5。跟随/选取/拖拽有效，缩放下限1.6可进入太阳和巨行星，此刻仅回到当前日期。",
   "issue": null,
   "net": [],
   "fix": null,
   "tags": [
-   "in build"
+    "in build"
   ],
   "tier": 2,
   "rank": 99
- },
+},
  {
   "id": "Hy3-TasksAssignedByOpus5",
   "file": "models/Hy3-TasksAssignedByOpus5.html",
@@ -2372,28 +2472,28 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Hy3-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "本地WebGL2有运动带、HDR泛光/ACES和大气，环只有单向行星遮影。Kepler与JPL公式正确，但实体使用原黄道XYZ、轨道线却用(x,z,-y)，实际体线错转90°，pathFit为0。8颗卫星6颗有效，Moon参考面错误、Triton逆行重复翻转。渲染把水星作为第二个太阳并使用太阳半径；卫星材质字段未传入，数据/完整性各作适度扣分。拖拽可误拾取，缩放不按半径限制，卫星列表只聚焦母星且所有聚焦不持续跟随。Now回到启动日期，非全状态重置；无核心fatal。",
   "issue": null,
   "net": [],
   "fix": null,
   "tags": [
-   "in WorkBuddy"
+    "in WorkBuddy"
   ],
   "tier": 3,
   "rank": 7
- },
+},
  {
   "id": "Hy3",
   "file": "models/Hy3.html",
@@ -2405,30 +2505,30 @@ window.WORKS=[
   "bytes": 24955,
   "lines": 524,
   "title": "太阳系运动模型 · Solar System",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "rings",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "rings",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/Hy3.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星有近似周期和匹配圆轨道，没有真实偏心根数、开普勒变速、节点与历元。土星环无物理投影，未实现小行星带；Bloom/OutputPass ACES有效，大气仅Fresnel壳。月球继承地球赤道倾角，计无效。金星和天王星轴倾加负自转重复翻转，物理数据部分分。选择行星时未将镜头目标置于该行星，只将后续位移加给原镜头与目标，跟随部分分、聚焦为零。暂停锁住行星/月球运动，太阳自转继续，复位只镜头。最小距离12安全；半浮点后期无回退/场景MSAA。",
   "issue": null,
   "net": [
-   "unpkg.com"
+    "unpkg.com"
   ],
   "fix": null,
   "tags": [
-   "in WorkBuddy"
+    "in WorkBuddy"
   ],
   "tier": 3,
   "rank": 17
- },
+},
  {
   "id": "KimiK3Max-TasksAssignedByOpus5",
   "file": "models/KimiK3Max-TasksAssignedByOpus5.html",
@@ -2617,7 +2717,7 @@ window.WORKS=[
   "bytes": 103845,
   "lines": 2465,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": false,
   "feats": [
     "kepler",
@@ -2631,11 +2731,11 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/LongCat2.0-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "撤销仅凭白场/观感的旧fatal，主行星与控制仍运行，恢复原T3。原生离线WebGL2具有JPL/开普勒轨道、实际哈雷与动态小行星。八颗卫星使用未压缩母星AU位置加显示距离，实际不绕显示母星，全部无效。环只有行星投环单向影；大气视线撞击参数错误退化为边缘光；合成在加入Bloom后又覆盖红蓝通道，仅绿通道保留泛光，功能部分计分。轨道线仅建初始根数，真实比例开关也未重建，路径部分。自转符号与基手性不一致、数据/开关整合有缺漏。拖拽会误点，缩放可进入太阳，聚焦只保存旧位置，不跟随，无完整复位。",
   "issue": null,
   "net": [],
   "fix": null,
-  "tier": 4,
+  "tier": 3,
   "rank": 2
 },
  {
@@ -2652,18 +2752,18 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "belt"
+    "belt"
   ],
   "weight": "light",
   "shot": "assets/shots/LongCat2.0.jpg",
   "jsErrors": 0,
-  "note": "一句话组中唯一没有使用 3D 的作品",
+  "note": "原生Canvas2D提供八行星和约略周期比的二维圆轨道示意，没有开普勒变速、节点或历元；轨道绘制把zoom乘了两次，非默认缩放时不贴合实体。土星环、静态小行星带和行星渐变辉光为部分实现，无真正Bloom/ACES。月球是二维示意，计0.5质量。三颗有独立移动彗核和尾巴的示意彗星可辨认，没有哈雷；尾巴朝向太阳、光照固定屏幕方向，数据部分分。拖拽平移和缩放有效，双击只加选中圈，未聚焦或跟随镜头。速度0可暂停，复位只平移/缩放。无需浮点附件，MSAA不适用。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 16
- },
+},
  {
   "id": "Mimo_2_5_Pro_high-1",
   "file": "models/Mimo_2_5_Pro_high-1.html",
@@ -2678,22 +2778,22 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": true,
   "feats": [
-   "belt",
-   "aces",
-   "atmo"
+    "belt",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/Mimo_2_5_Pro_high-1.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星沿匹配的示意圆轨道按近似周期比运动，无开普勒求解、轨道方向或历元。Shader运动带有效，土星/天王星环无物理投影；直接ACES有效，没有后期Bloom，地球只有边缘辉光大气。唯一月球无独立倾角/节点并继承父组自转，计无效。所有行星使用相同自转速度且金星倾角错误，数据部分分。拖拽旋转、平移与缩放存在，最小距离20安全；没有聚焦跟随，暂停只锁行星运动，带/太阳仍动，复位只镜头。直接渲染无需浮点颜色附件，画布MSAA有效。",
   "issue": null,
   "net": [
-   "cdnjs.cloudflare.com"
+    "cdnjs.cloudflare.com"
   ],
   "fix": null,
   "tier": 3,
   "rank": 10
- },
+},
  {
   "id": "MiniMaxM3-TasksAssignedByOpus5",
   "file": "models/MiniMaxM3-TasksAssignedByOpus5.html",
@@ -2720,8 +2820,8 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiniMaxM3-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
-  "issue": "渲染异常：背景呈白色而非星空，画面中有黑色楔形缺口，仅太阳可见。界面与数据面板本身正常。",
+  "note": "本地WebGL2及HDR回退/MSAA有效，泛光/ACES与运动带存在，环影/大气仅部分实现。核心故障为uSunDir全NaN；主实体使用原AU坐标，太阳显示半径4.6吞没内行星，轨道线另用34*r^.62，pathFit为0。8颗卫星km转AU乘除写反，实际距离达千万至亿级，全部无效。L1按T4未完成、无旧数字封顶，卫星单位错误不再重复扣correctness.data。Halley Kepler/Tp和反日方向存在。行星信息/光强近似较粗，data4；拖拽误触拾取，缩放不断被聚焦预设拉回且可穿入，列表部分可聚焦，随动会更新目标，此刻只改日期。",
+  "issue": "L1：非太阳主实体阳光方向为NaN，原AU位置与显示半径混用令内行星位于太阳内部；卫星单位转换也失效。",
   "net": [],
   "fix": null,
   "tags": [
@@ -2756,8 +2856,8 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiniMaxM3-high-V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
-  "issue": "未完成：全屏后期四边形顶点布局错误，且 4× MSAA 解析使用了非法的 LINEAR 过滤，主画布持续全黑、仅界面可见；时间秒数还显示 undefined。",
+  "note": "本地WebGL2有HDR回退和实际4样本MSAA，LINEAR解析实测GL错误0，不能沿用旧非法解析说明。主后期quad把vec3缓冲按vec2读取，最终主画布失败；实体逐轴dispR将负坐标钳成.11258并破坏椭圆象限，几何部分、定向0，Kepler/根数/历元公式仍有效。8颗卫星Moon反向、其余母星pole漏worldZ负号，均无效。环是平面条带映色且遮影方向无效，大气uModel未上传、SunDir恒零；泛光quad也仅部分。真实距离动画使用模拟dtDays，负速可发散，stability0。L1改T4未完成、无数字封顶。信息把显示坐标当AU、秒字段undefined及遗漏卫星列表使data3.5/integrity4；拖拽可用，缩放可穿入，列表部分聚焦但画布拾取矩阵列错误，不持续随动，此刻仅改时间。",
+  "issue": "L1：主后期四边形顶点布局错误，主画布失效；逐轴幂律把负坐标钳到正值，破坏轨道象限。实测MSAA解析GL错误为0。",
   "net": [],
   "fix": null,
   "tags": [
@@ -2777,8 +2877,8 @@ window.WORKS=[
   "bytes": 50657,
   "lines": 1477,
   "title": "Solar System · Real-time Keplerian Simulation",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
     "kepler",
     "rings",
@@ -2789,8 +2889,8 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/MiniMax_M3_thinking-1.jpg",
   "jsErrors": 0,
-  "note": null,
-  "issue": null,
+  "note": "八行星有焦点椭圆、Newton开普勒求解和近似偏心率/周期，但节点/相位随机，实体变换把面内分量赋到竖轴，轨道线却仍在另一平面，路径不吻合。环无真实投影、无主小行星带；Bloom/OutputPass ACES有效，大气为rim。唯一月球周期缺2π且参考面错误，计无效。自转为任意视觉速率，数据部分分。目标跟踪只改target；缩放最小1.5大于实体，安全。正常滑杆0.5会由0×Infinity产生NaN并污染模拟时间和实体，实跑确认L2；fatal仅标识且应显示T4，不封顶。暂停仍自转，reset不修复NaN速度。半浮点后期无回退/场景MSAA。 低速输入污染只在runtime3扣一次；有限输入下开普勒数值稳定仍1，不另扣同一故障。",
+  "issue": "正常将速度滑杆设为0.5会永久污染速度/时间/实体为NaN；复位不修复速度。",
   "net": [
     "cdn.jsdelivr.net",
     "fonts.googleapis.com",
@@ -2845,26 +2945,26 @@ window.WORKS=[
   "lines": 23610,
   "title": "太阳系 · 实时运动模型",
   "needsFloat": true,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/Opus_4_8_Max.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "打包Three.js使用焦点椭圆、Newton开普勒、真实角根数与J2000平均经度减近心点经度，实体/路径同源；半长轴是任意显示距离，没有保留真实距离比例，根数部分分。八颗卫星使用随机黄道倾角，方向相对行星公转反向且周期缺2π，全部无效，不在data重复扣。土星/天王星环无真实阴影；运动带、Bloom/OutputPass ACES有效，大气为Fresnel。坐标x,z,y反射后未对应修正自转，金星/天王星又负速双翻，数据部分分。拖拽安全缩放、聚焦与位移跟随有效。暂停锁行星和卫星，但太阳/云层仍动，复位镜头而非初始日期。半浮点后期无回退、无场景MSAA。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 2,
   "rank": 3
- },
+},
  {
   "id": "Opus4.8Ultra-TasksAssignedByOpus5",
   "file": "models/Opus4.8Ultra-TasksAssignedByOpus5.html",
@@ -2876,28 +2976,28 @@ window.WORKS=[
   "bytes": 102012,
   "lines": 1969,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Opus4.8Ultra-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "本地WebGL2提供有效双向环影、运动粒子带、HDR多级泛光、ACES和大气。JPL随历元传播、Kepler与轨道线一致；10年缓存变化对这些行星轨道仅小量。8颗卫星均因有向法线反向失效：右手基的正XZ相位沿负pole，Triton取绝对周期也未修正这个基向问题。母星模型使用Xcos-Zsin，不能以其自转方向替代卫星r×v判断。Halley实体/Tp有效，界面2061年7月与固定周期推算不完全一致，数据4.5。拖拽/缩放/聚焦/随动有效，缩放最小8大于所有球体半径；此刻仅重置时间。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 1,
   "rank": 1
- },
+},
  {
   "id": "Qwen3.7Max",
   "file": "models/Qwen3.7Max.html",
@@ -2909,28 +3009,28 @@ window.WORKS=[
   "bytes": 32409,
   "lines": 818,
   "title": "太阳系运动模型",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/Qwen3.7Max.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "八行星使用焦点椭圆和Newton开普勒求解、近似偏心率与周期，路径同源；缺少轨道倾角/节点/近心点方向且相位随机，无历元。运动带和Bloom有效；Composer没有OutputPass，ACES部分有效。土星环无真实环影，大气只是Fresnel壳。唯一月球固定黄道0°，计无效。金星和天王星轴倾与负自转重复翻转，数据部分分。拖拽缩放安全，没有聚焦跟随；暂停公转/月球但行星自转继续，无复位。半浮点后期无回退，场景无MSAA。 实际Bloom输出先用MeshBasicMaterial对base执行ACES，再叠加未经统一映射的Bloom，故ACES为0.4部分分。",
   "issue": null,
   "net": [
-   "cdn.jsdelivr.net"
+    "cdn.jsdelivr.net"
   ],
   "fix": null,
   "tier": 3,
   "rank": 9
- },
+},
  {
   "id": "Qwen3.8Max-TasksAssignedByOpus5",
   "file": "models/Qwen3.8Max-TasksAssignedByOpus5.html",
@@ -2945,25 +3045,25 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8Max-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "本地WebGL2的运动带、泛光/ACES和大气有效，环缺环投行星阴影。主轨道根数/Kepler/定向公式存在，但122行将L先转弧度后M再次乘DEG，真实日期相位和平均运动均错，epoch不给分；729–738同一输入错误令轨道线只覆盖约6.283°弧，pathFit为0。8颗卫星Moon有向轨道反向，其余母星pole漏world Z负号，均无效。离子尾指向太阳、部分自转pole/负周期冲突，数据3.5；卫星信息面板无分支，完整性4.5。拖拽误触click、缩放可进太阳；聚焦与随动有效，此刻只重置日期，无fatal。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 5
- },
+},
  {
   "id": "Qwen3.8MaxV2-TasksAssignedByOpus5",
   "file": "models/Qwen3.8MaxV2-TasksAssignedByOpus5.html",
@@ -2978,25 +3078,25 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8MaxV2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
-  "issue": null,
+  "note": "本地WebGL2含HDR回退、实际MSAA、双向环影、运动带、泛光/ACES和大气。主行星JPL/Kepler/历元公式正确，固定128点轨道缓存仅在比例过渡重建，长期贴合部分。8颗卫星全部只用世界XZ平面，母星赤道axis计算后未使用；Moon同时反向，按卫星项扣分。空白画布点击使focusOn(-1)的距离NaN，实测点击650ms后相机/VP失效，L2改T4未完成且无数字封顶；此故障仅由runtime3与fatal记录，交互不重复扣。暂停仍继续自转，离子尾指向太阳且pole Z号错误，data3.5。缩放下限1可穿入巨行星，列表聚焦和连续随动有效，此刻只重置日期。",
+  "issue": "L2：空白画布点击将无效索引-1送入聚焦，镜头距离和投影矩阵变为NaN，主画布失效。",
   "net": [],
   "fix": null,
-  "tier": 3,
+  "tier": 4,
   "rank": 9
- },
+},
  {
   "id": "Qwen3.8MaxV2",
   "file": "models/Qwen3.8MaxV2.html",
@@ -3011,22 +3111,22 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "moons"
   ],
   "weight": "light",
   "shot": "assets/shots/Qwen3.8MaxV2.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生Canvas2D投影八行星，近似周期/偏心率/倾角存在，但r=a(1−e cos角)不是焦点椭圆，也无开普勒变速、节点或历元。实体与所绘同源路径吻合。运动小行星带有效；环和渐变大气为部分实现，无Bloom/ACES。月球为屏幕空间示意，质量0.5；无彗星。公开基础行星数据近似正确，不重复从轨道简化扣数据分。水平拖拽与缩放有效，垂直拖拽倾角每帧被滑杆覆盖，因此拖拽部分分。没有聚焦跟随，速度0停天体但太阳动画仍继续，无复位。无浮点/MSAA要求。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 18
- },
+},
  {
   "id": "Qwen3.8Max-inQoder",
   "file": "models/Qwen3.8Max-inQoder.html",
@@ -3038,27 +3138,27 @@ window.WORKS=[
   "bytes": 20615,
   "lines": 547,
   "title": "太阳系 3D 模型 - Three.js",
-  "needsFloat": false,
-  "msaa": true,
+  "needsFloat": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo"
+    "kepler",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/Qwen3.8Max-inQoder.jpg",
   "jsErrors": 0,
-  "note": "产出环境为 Qoder（IDE 智能体），与其余作品的对话式环境不同，差异未必全部来自模型本身",
+  "note": "八行星保留近似真实半长轴比例、偏心率和周期，六次迭代开普勒方程，焦点椭圆与实体同源；没有轨道方向，全部在模拟0时近日点，没有真实历元。运动带/Bloom有效，r160 Composer缺OutputPass，ACES部分有效；环无物理投影，大气为rim。Moon平面与周期均不符，计无效。行星统一自转速度且未实现所述天王星倾斜，数据部分分。点击仅显示资料，不移动镜头；拖拽/安全缩放有效，无跟随，归零速度仍自转，未实现复位。半浮点后期无降级、场景无MSAA。 实际Bloom输出先用MeshBasicMaterial对base执行ACES，再叠加未经统一映射的Bloom，故ACES为0.4部分分。",
   "issue": null,
   "net": [
-   "unpkg.com"
+    "unpkg.com"
   ],
   "fix": null,
   "tier": 3,
   "rank": 14
- },
+},
  {
   "id": "Qwen3.8MaxV1-inQoder",
   "file": "models/Qwen3.8MaxV1-inQoder.html",
@@ -3073,20 +3173,20 @@ window.WORKS=[
   "needsFloat": false,
   "msaa": false,
   "feats": [
-   "kepler",
-   "belt",
-   "atmo"
+    "kepler",
+    "belt",
+    "atmo"
   ],
   "weight": "light",
   "shot": "assets/shots/Qwen3.8MaxV1-inQoder.jpg",
   "jsErrors": 0,
-  "note": "同上，产出环境为 Qoder（IDE 智能体）。这是较早的一版，后被同环境下的 3D 版本取代",
+  "note": "原生二维Canvas使用焦点椭圆与五次开普勒迭代、近似半长轴和周期，但忽略倾角/节点且全部初始近日点，无历元。路径吻合、运动带有效，土星/天王星环与大气渐变为部分实现，无真正Bloom/ACES。月球屏幕圆圈为0.5质量，无彗星。光照始终朝屏幕左上角，数据部分分；不重复从轨道简化扣数据。拖拽平移/缩放有效，hover资料不是镜头聚焦或跟随。速度0可暂停，无复位。无需浮点颜色附件，MSAA不适用。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 3,
   "rank": 15
- },
+},
  {
   "id": "Qwen3.8Max(Max)V1",
   "file": "models/Qwen3.8Max(Max)V1.html",
@@ -3230,26 +3330,26 @@ window.WORKS=[
   "lines": 3298,
   "title": "太阳系运动模型 · Claude Sonnet 5 (Ultracode·xhigh)",
   "needsFloat": false,
-  "msaa": true,
+  "msaa": false,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "heavy",
   "shot": "assets/shots/Sonnet5Ultra.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "打包r128 Three.js使用真实近似根数、J2000历元和Newton开普勒，三维位置/行星路径同源。六颗卫星分黄道Moon与母星赤道规则卫星，倾角、周期和方向均有效；但所绘卫星路径未应用倾角且z方向相反，路径部分分。环无真实投影、运动带和选择性Bloom有效，大气仅rim；所有天体自写ShaderMaterial和最终base+bloom合成都未调用toneMapping，ACES属性无效。金星/天王星/冥王星负转速叠加大于90°轴倾双翻，带shader把以日为单位的角速乘86400，数据部分分。聚焦有效，后续只target追踪；min2.2小于太阳约6.92，缩放部分分。暂停锁模拟运动，只有今日/视图复位，未完整恢复初态。LDR后期无浮点要求/场景MSAA。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 2,
   "rank": 2
- },
+},
  {
   "id": "Sonnet5Ultra-TasksAssignedByOpus5",
   "file": "models/Sonnet5Ultra-TasksAssignedByOpus5.html",
@@ -3261,28 +3361,28 @@ window.WORKS=[
   "bytes": 126295,
   "lines": 3007,
   "title": "太阳系实时运动模型",
-  "needsFloat": true,
+  "needsFloat": false,
   "msaa": true,
   "feats": [
-   "kepler",
-   "rings",
-   "belt",
-   "comet",
-   "bloom",
-   "aces",
-   "atmo",
-   "moons"
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
   ],
   "weight": "medium",
   "shot": "assets/shots/Sonnet5Ultra-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生WebGL2文档版真实JPL世纪率、J2000历元、稳健开普勒及正确行星方向成立，行星/哈雷路径同源。八卫星按有向轨道核对仅Triton有效：Moon重复交换坐标轴后为95.145°，其余六颗规则卫星在proper母赤道基中顺序相反而逆行，质量为零，不在数据项重复扣。三套双向解析环影、运动带、Bloom/完整ACES与视线撞击参数密度/日照/前散射大气有效。金星/天王星/冥王星大倾角再配负转速，方向双翻；哈雷周期推出2061-06-08而公开写7月，data部分分。拖拽、聚焦和随目标移动的球坐标镜头有效；最小距离0.9可进入太阳/大型行星，缩放部分分。暂停锁模拟运动，但只有“此刻”与视图操作，无完整状态复位。HDR支持RGBA8降级，自建最多4×MSAA；统一浏览器实跑无错误。",
   "issue": null,
   "net": [],
   "fix": null,
   "tier": 1,
   "rank": 1
- },
+},
  {
   "id": "MuseSpark1.3Contributor(xhigh)V1",
   "file": "models/MuseSpark1.3Contributor(xhigh)V1.html",
@@ -3591,18 +3691,30 @@ window.WORKS=[
   "title": "太阳系动力模型 · OmenAlpha(Max)V1",
   "needsFloat": false,
   "msaa": false,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/OmenAlpha(Max)V1.jpg",
   "jsErrors": 0,
-  "note": null,
-  "issue": null,
+  "note": "原生WebGL2实现随世纪变化的J2000根数、稳健Newton/二分求解及正确方向，行星/哈雷与路径同源，哈雷有1986近日点历元。七颗卫星中五颗规则卫星有效；Moon错误继承Earth倾斜，Triton157°再负相位双翻，二者无效，不在data重复扣。双向解析环影、运动带、HDR/Bloom/ACES有效，大气是Fresnel日侧辉光。Triton资料速度漏用Neptune GM而回退Earth值，data部分分。相机先更新再算位置，跟随滞后一帧；自由视角可缩入太阳，选中才有限制。暂停带仍按实时时间运动，复位只镜头/今日。正常前台短停顿实跑后看门狗累积4条持久rAF链，同timestamp的dt0回退0.016，时钟实测持续过速3.72050倍，L2成立、runtime3、自动T4且无额外分数封顶；轨道求解数值稳定保留1，不重复扣data。HDR有RGBA8降级，无MSAA。",
+  "issue": "正常前台1350ms短主线程停顿后，看门狗直调自调度frame累积4条持久rAF链；同timestamp的dt=0又回退0.016，使模拟时钟持续过速，实测1.2043秒内推进应有值的3.72050倍。",
   "net": [],
   "fix": null,
-  "tags": ["in Zcode", "匿名参测"],
-  "tier": 2,
+  "tags": [
+    "in Zcode",
+    "匿名参测"
+  ],
+  "tier": 4,
   "rank": 34
- },
+},
  {
   "id": "OmenAlpha(Max)V1-TasksAssignedByOpus5",
   "file": "models/OmenAlpha(Max)V1-TasksAssignedByOpus5.html",
@@ -3616,18 +3728,30 @@ window.WORKS=[
   "title": "太阳系 · 实时运动模型",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/OmenAlpha(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生WebGL2文档版JPL世纪率、J2000历元、开普勒求解、正确手性及压缩路径同源成立，哈雷按E采样避免近日点大缺口。八颗卫星全部有效：实际构造时已将周期取绝对值，proper参考中x=cosθ/z=−sinθ使规则卫星顺行，Triton156.9°单独实现真逆行。三套双向解析环影、运动带、Bloom/ACES及视线密度/光照/前散射大气有效。金星/天王星/冥王星负自转叠加大倾角双翻，data部分分，与卫星不重复；哈雷公开写2061年年中，与周期推出6月8日相容，不扣此项。拖拽抑制误点，缩放按目标半径1.5倍限制，聚焦及持续位移跟随有效。暂停物理时间，但无完整镜头/时间/速度/开关一次复位。HDR可RGBA8降级、自建4×MSAA；看门狗只UI.step不续rAF，无一句话版加链问题。统一实跑无错误。",
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Zcode", "匿名参测"],
+  "tags": [
+    "in Zcode",
+    "匿名参测"
+  ],
   "tier": 2,
   "rank": 34
- },
+},
  {
   "id": "GPT6Astra(Light)V1-TasksAssignedByOpus5",
   "file": "models/GPT6Astra(Light)V1-TasksAssignedByOpus5.html",
@@ -3677,18 +3801,29 @@ window.WORKS=[
   "title": "太阳系实时运动模型",
   "needsFloat": false,
   "msaa": true,
-  "feats": ["kepler","rings","belt","comet","bloom","aces","atmo","moons"],
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
   "weight": "medium",
   "shot": "assets/shots/Opus5(Low)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": null,
+  "note": "原生WebGL2文档版真实JPL世纪率、J2000历元、稳健开普勒与正确行星手性成立。哈雷N220均匀M路径在默认日期的压缩真实曲线最大弦距24.088988单位、彗核半径0.9，近日点缺口使pathFit部分分，非fatal。八卫星仅Triton实际有向156.9°有效；Moon174.855°，六颗正周期规则卫星在proper基中逆行，质量零，不在data重复扣。双向解析环影、运动带、Bloom/ACES与视线密度/前散射大气有效。金星/天王星/冥王星负速配倒置轴双翻，哈雷周期下一近日点2061-06-08却说明7月，data部分分。拖拽抑制误点，聚焦/持续球坐标跟随有效；最小缩放0.35可穿太阳/行星，暂停锁物理但无完整复位。HDR可RGBA8降级、自建最多4×MSAA；统一实跑无错误。",
   "issue": null,
   "net": [],
   "fix": null,
-  "tags": ["in Claude Code"],
+  "tags": [
+    "in Claude Code"
+  ],
   "tier": 1,
   "rank": 0
- },
+},
  {
   "id": "GPT6Astra(Ultra)V1",
   "file": "models/GPT6Astra(Ultra)V1.html",
