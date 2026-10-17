@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"DeepSeek V4.1 Flash 1017 (Max)": {
+  "direction": "up",
+  "count": 3,
+  "zh": "速度快缓存高；干活慢消耗多。",
+  "en": "Fast generation and high cache hits; slow task completion and high token usage."
+},
+
     'Claude Haiku 5.5 (Ultracode·Max)': { direction: 'up', count: 5, zh: '……', en: '……' },
     'Claude Haiku 5.5 (Ultracode·xhigh)': { direction: 'up', count: 5, zh: '这价格，有问题都是我的问题', en: 'At this price, any problems are on me' },
     'Claude Sonnet 5.5 (Max)': { direction: 'up', count: 5, zh: '马甲脱了！你到底是谁？', en: 'The disguise is off! Who are you really?' },

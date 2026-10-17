@@ -1,11 +1,14 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"0":"第0梯队","1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","deepseekv41flash1017","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
+window.PAIR_TITLES={"deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max)","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","GPT5.5xHigh-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","LongCat2.0-TasksAssignedByOpus5","LongCat2.0","Mimo_2_5_Pro_high-1","Opus_4_8_Max","Opus4.8Ultra-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6TerraUltra-Three","GPT5.6TerraUltra-TasksAssignedByOpus5","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Opus5(Max)V1","MiniMax_M3_thinking-1","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3(high)V2-TasksAssignedByOpus5","Opus5Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Gemini3.1Pro-TasksAssignedByOpus5"];
 window.WORK_CREATION_DATES={
+"DeepSeekV4.1Flash1017(Max)V1":"261017",
+"DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5":"261017",
+
  "GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5":"261015",
  "GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5":"261015",
  "Haiku5.5(Ultracode·Max)V1":"261011",
@@ -152,6 +155,78 @@ window.WORK_CREATION_DATES={
  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5":"260908"
 };
 window.WORKS=[
+{
+  "id": "DeepSeekV4.1Flash1017(Max)V1",
+  "file": "models/DeepSeekV4.1Flash1017(Max)V1.html",
+  "model": "DeepSeek V4.1 Flash 1017 (Max)",
+  "group": "A",
+  "pair": "deepseekv41flash1017",
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 823378,
+  "lines": 3515,
+  "title": "太阳系 · Solar System — Real-Time Orbital Model",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeekV4.1Flash1017(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": "本轮重新核最终内嵌 Three.js r159 执行链：JPL世纪率/开普勒与径向压缩、15卫星中14颗基本有效、双向环影、运动双带、自建HDR/Bloom和末尾ACES成立；大气仅边缘辉光。月球继承倾斜Earth轴，实际黄道23.966176°，quality0并只执行月球锚点扣；其余按drawn母赤道与周期/实际有向法线信用，不突增高精IAU要求。轨道引导线固定启动T，实体继续世纪率，30年后Pluto旧guide偏5.44px，pathFit部分。父轴方位简化、反相自转使名义锁定失败、带映射逆转、Phobos年/日科普单位合并data4，不重复moon/path。无哈雷/额外彗星。拖拽/聚焦和物理暂停/Now可用，A无完整reset；默认Phobos跟随12仅2屏内，follow部分；暂停近缩另有77顶点near剪裁缺口，zoom部分。实跑JS/GL/net均0，无fatal。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in dsh"
+  ],
+  "tier": 2,
+  "rank": 36
+},
+{
+  "id": "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5",
+  "file": "models/DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5.html",
+  "model": "DeepSeek V4.1 Flash 1017 (Max)",
+  "group": "B",
+  "pair": "deepseekv41flash1017",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 172460,
+  "lines": 4345,
+  "title": "太阳系 · 实时轨道模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "原生离线 WebGL2，按详细任务逐条复核。JPL世纪率/J2000、开普勒行星和哈雷、同源动态路径、双带、Bloom/最终ACES及解析大气有效；8颗卫星忠实采用任务给定局部正Z/Rx和proper母基，按任务信用全计，实际Moon174.855°等方向仍明确保留，不称物理已修。行星投环阴影单位正确，但球面环影太阳方向漏逆自转，双向环影部分计分。月球卡把母星日心距当与地球距离并据此算光行时，data4.5；离子尾antiSun实际取朝太阳，独立完整性4.5，不在Halley重复扣。拖拽、平滑聚焦、默认及中速跟随、安全缩放、物理暂停、正倒放和此刻实际通过，任务不要求全状态重置。HDR降级/4×MSAA/手机重建正常，JS/GL/外网0，无致命故障，视觉不计分。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in dsh"
+  ],
+  "tier": 2,
+  "rank": 36
+},
+
  {
   "id": "Opus5(Max)V1",
   "file": "models/Opus5(Max)V1.html",
@@ -227,7 +302,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8Flash(xhigh)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 的行星椭圆、运动带、Bloom/ACES、九颗卫星示意与独立周期彗星可运行。开普勒迭代混用归一化初值与未归一化平均近点角，当前彗星残差约1.75弧度；起始日期还偏移3.5天，分别只扣求解和历元。卫星采用统一零相位、简化距离与黄道参考面，其中月球黄道参考面成立，其余八颗把母星赤道面错误替换为黄道面，计为无效。",
+  "note": "重新核对最终Three.js调用链：Bloom后OutputPass真实ACES，运动带成立；环仅母星投环、表面边缘大气仍部分分。开普勒初值归一化但残差用未归一化M，当前周期彗星残差1.74777rad；标注2026-09-01对应轨道时刻偏3.5天，分别保留求解/历元扣分。全局(x,z,+y)反射须用轴向变换，月球实际黄北5.1°有效，其余8颗未变换到母星赤道、方向与参考面均不正确。独立周期彗星可加1，无哈雷。表面局部法线对世界光向仍是独立data4；minDistance2可进入Sun9/Jupiter4.6，复位仅镜头。跟随已由本轮默认速度跟随运行验证。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net"
@@ -265,7 +340,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务重新核对：8颗卫星计6颗任务有效。升交点基准未转弧度且变化率遗漏世纪因子，保留轨道定向扣分。月球多做坐标交换后有向倾角84.855°，海卫一因左手母轴基为23.1°，均非任务§3.7所要求的直接世界偏移/正交模型基，保留逐颗扣分。7月底文案直接来自任务验收，与给定Tp/P的6月日期冲突不归责模型；暂停和此刻成立，无须完整状态重置。滚轮下限仍可穿入，保留缩放部分分。视觉不计分。",
+  "note": "完整任务及最终调用链复核：月球额外坐标交换成84.855°、Triton左手母轴成23.1°，仍为6颗有效；不能把提示内生方向冲突当另一项扣分。升交点基准未转弧度、rate遗漏T保留定向扣分。新增确证：环投行星只处理Lo.y<0，另一太阳侧缺影，环部分分；257个等M点使哈雷近日点到折线11.1225显示单位，路径部分分；彗尾−position实际向日，独立data4。球网格局部朝外与负行列式模型净合成朝内，BACK剔除画远侧，integrity4。暂停/此刻符合任务、无需完整reset；缩放下限1.2仍可穿大球。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -301,7 +376,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Hy4Preview(high)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 使用完整 JPL 世纪率与归一化开普勒求解，提供18颗卫星示意、哈雷/恩克/67P、运动双小天体带及Bloom/ACES。环仅解析行星投影，未向行星投影；大气为方向性边缘辉光。卫星随机初相并统一置于母星简化赤道面，月球的黄道倾角因此套错参考面，地球月球计为无效，其余17颗理想化圆轨道仍计有效；卫星轨道线又遗漏各自倾角，路径匹配部分分。",
+  "note": "重新读实际完整父链：世界映射(x,z,−y)保持右手，卫星scene→母星平移→Rx(−tilt)→moHolder没有额外反射；正P的(cosθ,+sinθ sin i,+sinθ cos i)使普通卫星r×v对母几何pole为180−i，海卫一负P/inc23净23°，月球黄道151.415°。旧把17颗计有效漏查有向运动，本次18颗均无效；这是一句话A，没有文档公式免责。月线本就漏倾角及固定J2000行星线，pathFit.5保留。环缺环向球投影、大气rim、真实Bloom后ACES保留；JPL与Kepler完整。哈雷/恩克/67P有独立轨道，哈雷ω误当ϖ以及密度单位/负spin叠翻在data4一次说明；不再重复扣彗星功能或orbit方向。zoom仍可穿球、Now仅日期。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net"
@@ -339,7 +414,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Hy4Preview(high)V2.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 提供完整JPL世纪率、稳健开普勒、真实哈雷、运动小天体带、双向环影及Bloom/ACES。13颗卫星中，月球在黄道面作近似运动可计有效，其余12颗把相对母星赤道的倾角套到黄道面，海卫一还同时用负周期与156.8°倾角，均计无效而不重复扣data。大气仅方向性边缘光；金星、天王星和冥王星把负自转周期与翻转轴重复使用，数据部分分。",
+  "note": "本次核到旧Moon有效判断错误：行星proper映射(x,z,−y)，月球局部正Z圆周的r×v对黄北174.855°，实际逆行，应无效；其他12颗仍绕全球参考面而非母赤道，均无效，卫星问题不重复扣data。JPL/Kepler完整，双向环影空间单位一致，Bloom后OutputPass真实ACES，大气rim部分分。行星轨道线固定J2000，哈雷720等M采样近日点粗疏，pathFit降部分。聚焦半径缩放安全，但overview/ESC重设1.2下限小于太阳22，缩放改部分；Now和wide分别只恢复日期/镜头。负自转与大tilt重复翻转在data4保留。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net",
@@ -379,7 +454,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Hy4Preview(high)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：月球/海卫一物理方向成立，其余6颗按§3.7正Z局部圆轨道与右手母轴基逐式实现，撤回提示诱发的方向扣分；实际普通卫星有向倾角仍约179.5–179.95°，未宣称物理修正。环双向投影、大气与后期保持满分。独立错误仍在：卫星将公转天数填入rotH再除24，自转快24倍，且信息卡称潮汐锁定，data保留3.5；不重复扣卫星轨道。暂停/此刻有效恢复满分，滚轮0.16可穿入仍部分分。视觉不计分。",
+  "note": "完整任务与最终链重新核对：8颗卫星按任务信用成立，保留实际有向角，未把提示诱发方向错误归责。JPL/Kepler/均E轨道线、母星偏移与动态缩放一致，运动带、六级Bloom后ACES和撞击参数大气成立。新查ring-on-body和表面光照的sunO/camO只按母basis变换，却未逆掉模型中额外Ry(phase)，环影随自转偏移，rings改部分；母星投环方向/单位正确。原data3.5仍由卫星把天数当rotH后/24、快24倍且声称潮汐锁定承担，不再为环影重复扣。暂停/此刻符合任务，zoom0.16可入球仍部分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -415,7 +490,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Hy4Preview(high)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：月球直接将正Z局部圆轨道经Rx后的偏移加到母星世界位置，6颗普通赤道卫星采用右手母轴基，均忠实§3.7，撤回提示诱发的方向扣分；实际月球174.855°、普通卫星约179.5–179.95°仍保留证据，并不声称物理正确。海卫一实际156.9°原分保持。环影、真实元素/路径、运动带、大气/后期保持满分。暂停/此刻有效，不要求完整重置；聚焦半径下限成立，但overview下限1.2可进入半径4.6的太阳，缩放保留部分分。视觉不计分。",
+  "note": "逐任务重核：8颗卫星完整按§3.7实际路径计任务有效，物理角与免责原因保留。GPU均E512轨道与当前元素同坐标，双向环影使用实际含自转逆变换、正确半径和t>0，六级Bloom合成后ACES、撞击参数大气与运动带成立。新增独立数据错误：moon显示偏移直接混入未压缩AU坐标，信息卡据此计算与地距离及光行时，月球显示约数AU而非0.00257AU；太阳又在自转循环被跳过，data5改4一次。任务给定signedspin/July矛盾不扣；暂停/此刻可用，overview下限1.2入Sun保留zoom.5。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -451,7 +526,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3Flash(Max)V2.jpg",
   "jsErrors": 0,
-  "note": "联网Three.js采用真实固定J2000根数、稳健开普勒和同源轨道采样，九颗卫星、真实哈雷、运动双带、Bloom/ACES及聚焦跟随成立。月球以toEcliptic:true放在黄道参考面，其余卫星在母星赤道面作理想化圆轨道，均有效。环为透明几何而无物理投影，大气只是壳层边缘光；天王星和冥王星负自转符号与翻转轴重复使用，数据部分分。",
+  "note": "重新核对：行星同源均E256轨道、固定真实J2000根数及开普勒成立，9颗卫星通过实际负Z圆周与母轴变换有向有效，Moon独立黄道5.14°。环为无阴影透明MeshBasic、大气rim，Bloom后OutputPass真实ACES和运动双带成立。data4.5改4：Uranus/Pluto负spin叠倾轴仍错，Moon等负Z轨道却mesh.rotation.y=−θ+π使固定面无法持续朝母星，独立潮汐锁定错误，另Sun实体无物理自转；不扣moon轨道。哈雷核心元素/过近日点标定成立，尘埃尾沿正速度偏移不在orbit/功能重复扣。zoom1.4可入大球、Now/wide分开恢复，pauseReset仍.5。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net"
@@ -490,7 +565,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3Flash(Max)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核：8颗卫星中7颗按任务要求计分；6颗普通赤道卫星的右手母轴基+正Z圆轨道照§3.7，撤回提示诱发的反向扣分，实际约179.5–179.95°仍注明。月球分支却把黄道偏移换成[c,s*cosI,s*sinI]直接当world，使有向倾角95.145°，不是提示要求，保留无效及地月扣分；海卫一实际156.9°保持有效。球面环影世界长度未除显示半径，rings仍部分分。暂停/此刻成立恢复满分；按显示半径限制缩放与聚焦/跟随保持满分。视觉不计分。",
+  "note": "完整任务及最终draw链复核：7颗任务有效、Moon额外映射95.145°仍无效，原球面环影世界长度误当归一化半径保留rings.4。新核哈雷512等M线近日点粗采样，pathFit改.5；独立尘埃尾的差分平均角表达式先乘TAU再%1，并把正速度当negVel，data改4.5，不与哈雷轨道信用重复。撞击参数大气、六级Bloom后ACES、GPU运动带成立。默认cam虽focusSun但minD2<Sun4.6，显式聚焦才安全，zoom改.5；暂停/Now符合任务，跟随直接取当前pos成立。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -527,7 +602,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3Flash(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线WebGL2使用完整JPL世纪率、开普勒及同源采样，六颗卫星、运动小天体带、实际Bloom/ACES和安全聚焦跟随有效。月球通过eq:false独立黄道参考面，其他五颗在母星赤道面，均有效。标为哈雷的运动把角度转弧度写成除法，速度快约3283倍，不计哈雷且不转其他彗星。环投向行星的交点未限制环内外半径，产生整片半球遮光，只给部分环分；大气仅方向性边缘光。",
+  "note": "重新核对最终有效定义：末尾mul3被定义为恒等矩阵，所有实体spinM均失效；独立data4保留，旧“逆时自转”说明纠正为实际无物理自转。6颗卫星正周期正Z运动在proper世界净反向，月球174.9134°而非5.1°，全部0。局部球面三角网格朝内且模型proper、BACK剔除，integrity4。环径范围钳值取代范围拒绝、环面投影又混绝对世界位置，rings.4；大气rim。完整JPL/同源行星线、实际Bloom后ACES和运动带保留。所谓哈雷把角度转弧度写成除法，运动快3282.8倍，仍不计且不改其他彗星。安全聚焦缩放成立，Now只改日期且paused时实体暂不重算，A复位仍部分分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -563,7 +638,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3Flash(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核：8颗卫星仍计6颗有效，月球95.145°来自额外坐标交换，海卫一23.1°来自左手母轴基，均不由§3.7的右手母轴基公式免责。哈雷状态写入临时Array.from后丢弃，实体位置保持零，Halley分保持0；环兼容点路径缺连续结构，rings部分分保留。独立信息错误为Moon沿用母星地心距离，地月显示0 AU，data保留4，不与卫星参考面或哈雷重复扣分。暂停与此刻有效恢复满分；其余交互保持。主行星运行有效，无fatal，视觉不计分。",
+  "note": "完整任务与最终函数重核：八颗仍6颗有效，Moon额外映射95.145°、Triton左手基23.1°不能按提示proper公式免责。新增硬证据：Ribbon.fill原地覆盖输入，80点圆上传474顶点仅剩2个不同位置，实际行星/月球/哈雷轨道与尾缎带均退化，pathFit0，不在integrity重复扣。球网格本地朝外但makeBodyModel左手基净朝内，BACK剔除独立integrity4。哈雷仍将结果写临时Array.from后丢弃、实际保持原点，功能0；Moon地心距离沿用母星0AU，data4保留。环兼容点路径部分分，真实撞击参数大气、六级Bloom合成后ACES和运动带成立；安全缩放/聚焦/跟随及暂停此刻符合任务。",
   "issue": "兼容探测切换到点状降级渲染后，轨道、环和日冕失去连续形态，太阳周边出现明显棋盘格光晕；聚焦木星、土星后天体仍小到难以观察",
   "net": [],
   "fix": null,
@@ -598,7 +673,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DoubaoSeedEvolving0827(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 使用固定 J2000 根数与开普勒方程，行星及轨道线同源，小行星带、Bloom/ACES 和持续聚焦跟随有效。轨道点采用 x/z 正向映射，却使用标准右手 Ry(node) 与 Ry(peri) 定向，导致节点和近心点角符号相反；倾角有实现，定向只给部分分，不再因同一坐标手性问题重复扣历元或数据项。土星环只有行星投向环的单向阴影，大气为边缘光。",
+  "note": "原生离线WebGL2；固定J2000根数、Kepler及实体/轨道同源，节点/近心点符号不一致保留定向半分。六颗母赤道近似卫星有效；月球错误继承23.44°地球赤道、Triton缺156.9°逆行倾角，分别剔除，月球锚点扣2。环仅行星投环影，大气为边缘光，运动小行星带与Bloom后ACES有效。新增确认：球网格朝内而以正行列式模型/CULL_BACK绘制，完整性扣1；表面使用旋转后的世界方向作纹理输入，球体自转不带动地表，数据扣1。深空视图以太阳为中心时最小距离3小于太阳半径3.6，缩放半分。暂停能冻结物理时间，完整复位不足；实跑：暂停后点击地球精确中心[720,450]却切到太阳（太阳当时在屏外/背面），拾取半分；全景dist3进入太阳3.6也已实证。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -634,7 +709,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：月球直接世界偏移、普通赤道卫星右手母轴基配正Z圆轨道忠实§3.7，撤回提示诱发方向扣分；物理月球174.855°及普通卫星约179.5–179.95°仍存在并注明，海卫一156.9°保持有效。7月底文案与给定Tp/P冲突来自任务，撤data扣分。独立缺陷保留：离子尾朝太阳，integrity4；暂停只停JD却仍更新自转，实跑800ms地球spin5.40025→.703303，pauseReset仍.5；此刻可用。缩放可穿入仍部分分。环影、运动带与后期保持满分，视觉不计分。",
+  "note": "离线原生WebGL2，HDR可降级、场景4×MSAA、双向环影、指数密度大气、运动双带及Bloom后ACES成立。完整JPL世纪率与Kepler/历元定向有效；八颗卫星忠实spec§3.7局部正Z/母轴算法，保留任务信用及真实有向角证据，不把提示矛盾归责模型。新增：Halley按等平近点角仅384段采样，压缩空间轨迹最坏偏离8.1227而核半径.16，pathFit半分；普通地球表面实际绕正轴反转，另所有卫星以母星方向作太阳照明，合计数据扣1。离子尾朝日的独立完整性扣1保留；暂停后spin仍按非零dayStep推进、无聚焦zoom floor.5小于太阳4.6，交互各半分。等待camDist与wanted误差<2%后，默认Io12样本仅3在屏内且多次深度为负，follow半分；暂停JD固定而Earthspin从.3776到2.01797，已实证。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -877,7 +952,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeek-V4-Pro-0813-V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 的真实偏心率、J2000相位、开普勒运动、双运动带和Bloom/ACES成立。轨道方向只使用错误次序的节点与倾角旋转；轨道线另加近日点辐角而实体未加，2026-10-11水星与火星距各自轨道线约为半长轴的6.1%，分别在方向和路径项处理，不再扣data。七颗卫星中月球错误置于地球赤道、海卫一缺少约23°倾角，五颗其余圆轨道仍有效。",
+  "note": "重新按完整世界坐标约定审查：正Z行星映射对应反射，不能直接以+Y误杀所有卫星；五颗普通母赤道圆轨道保留基本信用，Moon错误Earth赤道、Triton缺倾角仍0。实体未应用近日点辐角、线却应用，pathFit0；节点/倾角错误顺序单列定向部分分，不再data扣同错。新确证卫星显示开关只控制空moonGroup，实际卫星全挂母星tiltG，integrity4.5。data4.5改为可证的普通行星自转与该反射世界公转方向不一致，不沿用未经手性检查的旧自转说明。环无阴影、rim大气部分，Bloom/ACES与运动带成立。宽景可入Sun，A仅镜头复位部分；默认速度下聚焦地球，实测持续在视野内，保留跟随满分。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net",
@@ -916,7 +991,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：月球和海卫一物理方向成立，其余6颗按§3.7 右手母轴基配正Z轨道实现，撤回提示诱发的反向扣分，实际普通卫星约179.5–179.95°仍注明。环面射线未拒绝负t的独立环影错误保留rings部分分。自转以天增量直接除小时周期，较题给小时转天慢24倍，data4保留；7月文案冲突不再作为扣分理由。暂停以Date.now+offset生成JD，实跑1秒仍漂移1.00398秒，pauseReset.5保留；此刻有效。其它轨道/功能/交互保持，视觉不计分。",
+  "note": "按完整任务重核8颗卫星：Moon5.145°与Triton156.9°物理有效，普通6颗按§3.7正Z+proper母轴逐式实现保留任务信用及实际179.5–179.95°角。真实均E行星/哈雷轨道与月球平移、运动带、大气和Bloom后ACES均成立。环影未拒负t仍部分分。data4保留小时周期被当日慢24倍，另尘埃速度差分拿对象当数组、继而拿数组当对象，归一化fallback恒+Y，数据错误不重复扣哈雷功能。新增overview没有聚焦1.6R界，滚轮/pinch下限.05可入Sun，zoom改.5；暂停Date.now仍推进保留.5，此刻有效。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -952,7 +1027,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeekV4Pro0813(Max)V2.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 使用真实固定J2000根数、归一化开普勒及同源轨道采样，提供运动双带、哈雷和独立C/2025模型彗星、Bloom/ACES。五颗卫星中月球采用独立黄道开普勒轨道有效，四颗伽利略卫星却在母星自转轴垂直的另一平面运行，计无效。环没有物理投影，大气仅双层Fresnel辉光。彗尾方向指向太阳，金星/天王星符号和轴翻转重复处理，太阳聚变说明也有数量错误，数据部分分。",
+  "note": "重核Z朝上的真实世界映射：月球独立5.145°黄道开普勒有效，四木卫localXY与母星实际localY极轴夹90°仍无效。J2000真根数、求解、定向与历元有效；新量化2000等M哈雷线在M=.0004725距实体.85991显示单位=3.91核半径，路径改部分分，不在data再扣。哈雷和独立C/2025保留功能。环无投影、双Fresnel大气部分，OutputPass真实ACES及Bloom/运动带成立。彗尾向日、Z朝上世界却用Y轴为行星极轴及太阳聚变说明数量错误，data4保留；安全缩放/聚焦跟随可用，A只复位镜头。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net"
@@ -990,7 +1065,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：月球/海卫一物理方向成立，6颗普通赤道卫星的右手母轴基+正Z圆轨道忠实§3.7，撤回提示诱发的方向扣分，实际约179.5–179.95°仍注明。球投环把正确smoothstep阴影再取1减，背阳遮挡锥内外明暗反转，rings部分分保留。clampSpin限的是绝对目标与当前相位之差，高倍速产生欠账后暂停仍逐帧追赶，实跑JD固定而800ms地球spin增加10.56rad，保留真实暂停部分分，不以缺完整reset扣分；此刻有效。滚轮0.4可穿入仍部分分；其余轨道、数据、功能与交互保持，视觉不计分。",
+  "note": "完整任务重核8颗卫星沿proper母轴/直接黄道分支，物理Moon5.145/Triton156.9成立，普通6颗提示公式反向保留任务信用。新增路径证据：320等M哈雷线在M=−.0057225距连续实体9.60338显示单位=32.01核半径，行星线另固定J2000，pathFit改.5，不重扣data。新增独立data4.5：所有moon.spin和draw实参恒0，却称月球始终同面朝地，真实物理自转缺失；不扣其轨道。环影反相/缺负t过滤和局部光向未去spin仍同feature部分分。Bloom后ACES、真实近似大气、运动带与Halley有效。pause绝对phase欠账逐帧追赶，原实测800ms+10.56rad仍部分，非缺完整reset；手动zoom.4可穿入，其他交互保留。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -1214,11 +1289,11 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "联网Three.js实现完整JPL世纪率、开普勒及匹配轨道，运动双小天体带、Bloom/ACES和4×场景MSAA成立。15颗卫星中月球错置地球赤道、海卫一仅反向赤道圆轨道而缺少约23°倾角，计无效，其余13颗理想化母星圆轨道有效，不因圆轨道自扣。双向环影代码存在，但世界环法线始终未随倾斜环更新，故只给部分分；大气为方向性边缘壳光。",
+  "note": "联网Three.js；完整JPL世纪率与Kepler、同坐标轨道/行星运动、运动双带、Bloom后OutputPass ACES成立。纠正旧误扣：初始化L1300先更新世界矩阵，再L1301–1308读取环网格世界法线，纯数学与母极点积1；双向环影空间/长度一致，恢复环满分。大气仍仅Fresnel壳光。15颗名义卫星中月球继承地球赤道、Triton无真实倾角剔除，其他13颗母赤道圆轨道保留基本信用；运行验证确认暂停simMs固定但Phobos角4.339→3.982仍追赶；沿原pauseReset半分计，不在moon/data重复扣。金星/天王星/冥王星自转重复翻转且卫星局部反旋抵消pivot，自称潮汐锁定实际固定朝向，数据4。轨道线虽然固定J2000，但2026至2100实算偏差远小于实际显示球半径，不仅因代码未更新强扣pathFit。全景min10可入太阳14，缩放半分；聚焦后按位移量精确跟随，完整复位不足。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in Zcode"
@@ -1252,11 +1327,11 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3(Max)V2.jpg",
   "jsErrors": 0,
-  "note": "联网Three.js用完整JPL世纪率、归一化开普勒和同源采样绘制匹配轨道，七颗卫星、真实哈雷、运动小天体带、Bloom/ACES与4×场景MSAA成立。月球特意挂在未倾斜地球系统并加5.14°黄道倾角，海卫一用负周期与23°倾角只反转一次，均有效。环只有透明受光几何，没有物理投影，大气仅Fresnel壳光；金星/天王星自转重复反转，地球夜光贴图作为不分昼夜的emissive使用，数据部分分。",
+  "note": "联网Three.js使用完整JPL世纪率、Kepler、同源采样轨道、运动双带及Bloom后OutputPass ACES；大气仅Fresnel，环只有透明受光几何。纠正旧卫星信用：最终实体位置L1414为(cos,0,+sin)，而全局行星L381为proper(x,z,-y)，七颗月轨道方向全部反了：月球174.86°、五颗普通卫星180°、Triton23°顺行，全部计无效且月球锚点扣2；这是A版，无任务提示免责。金星/天王星双翻、夜光不分昼夜与小行星带同样逆行合并数据扣1，不重复卫星缺陷。真实Halley成立。行星聚焦及delta跟随成立，最小距离18>太阳8.5、聚焦floor2.2R安全；卫星拾取仅信息卡、完整复位不足。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in Zcode"
@@ -1290,7 +1365,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3(Max)V3.jpg",
   "jsErrors": 0,
-  "note": "离线WebGL2的JPL世纪率、开普勒、匹配轨道、运动双带、哈雷/恩克、Bloom/ACES与跟随成立。十颗卫星中月球错误挂在地球赤道面，计无效，其余九颗母星圆轨道含只反转一次的海卫一有效。环投向行星的射线计算混用归一化光向与未归一参数，只给部分环分；大气为方向性边缘光。",
+  "note": "离线WebGL2，JPL世纪率、Kepler、同源轨道、运动双带、Halley/Encke、Bloom后ACES有效；大气仅方向边光，环投影混用射线单位。最终proper母基的X cos+Z sin使普通卫星反向、Triton23°顺行，月球156.56°，十颗全无效并扣月球锚点。撤回旧GL错误推断：近日点实绘GL0，runtime恢复5；但tail实际VAO/两属性buffer全非尾缓冲，尾几何画错。另真实rtScene无depth附件、所有sphere模型漏b.R全半径1，三项独立结构损坏合计integrity3，不重复扣其他项。自转双翻/假同步/Halley文案等data4。实测Enceladus min.25进入真实球R1；稳定Io12样本仅2屏内，zoom/follow各半分。缺完整复位，原件未改、旧图复用。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -1326,7 +1401,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核8颗卫星：Moon所用黄道基再经eclVecToWorld后实际为世界恒等基，其正Z局部Rx偏移直接加母星世界坐标；6颗普通卫星右手母轴基均忠实§3.7，撤回提示诱发扣分。实际月球174.855°、普通卫星约179.5–179.95°仍注明，海卫一156.9°保持有效，并非模型物理已修正。7月文案沿用任务验收冲突，data恢复5；暂停/此刻有效，不要求全状态重置，pauseReset恢复1。真实元素/路径、环影、运动带、大气/后期及其余交互保持满分，视觉不计分。",
+  "note": "离线原生WebGL2；JPL世纪率、Kepler、同源动态轨道、运动双带、指数密度大气、Bloom后ACES、HDR降级及4×MSAA有效。八颗moon按任务正Z/proper母轴算法保留任务信用及原实际有向角，提示矛盾不归责模型。新确认漏项：addBody预设basis(0,0)，最终if(!basis)永不执行，使全部行星实际轴仍全球Y，未实现题给倾角/极点；Halley状态缺a却用于vis-viva，速度显示NaN，合计data3.5。环模型本已有R而顶点又乘uScale=R，实际环半径R²、球面投影仍按R，环半分；不重复扣data。八颗moon未登记bodyByKey，明确列表聚焦按钮无响应，focus半分。其余拖拽、安全缩放、精确位置跟随、暂停/当前时刻/倒放成立，无完整reset额外义务。 实跑Moon/Triton按钮始终停在Sun、地轴全球Y、Halley显示NaN km/s均证实，未发生JS错误。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -1362,7 +1437,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GLM5.3(Max)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按任务复核：8颗卫星中7颗按任务要求计分。月球直接世界偏移、普通卫星右手母轴基配正Z轨道忠实§3.7，撤回提示诱发扣分；实际月球174.855°、普通卫星约179.5–179.95°仍存在。海卫一擅将给定−5.876854改为正值，实际有向23.1°，独立偏离题给数据，仍计0。7月文案冲突来自任务，data恢复5；暂停/此刻有效，无完整reset要求，恢复满分。滚轮0.05可穿入保留部分分；其余功能/轨道/交互保持，实跑GL0不能仅据LINEAR字样判fatal。视觉不计分。",
+  "note": "离线原生WebGL2，JPL世纪率、Kepler、径向压缩、真实行星轴模型、双向环影、密度大气、运动双带、Bloom后ACES、HDR/MSAA成立；不因GL0路径的LINEAR字样判fatal。八颗moon中六颗忠实任务局部正Z算法，保留任务信用；Triton自行把负周期改正、实际23.1°顺行仍无效。新确认Charon显示距离始终0，和Pluto重合、没有月轨道，改无效。轨道缓冲每采样写两份顶点却POINTS只画n，使所有轨道只显示前半周，pathFit半分。Halley有真实轨道/周期与活动期双尾，保留3；但远日距>6.5AU时无实体彗核/彗发，结构完整性4.5。其余独立数据错误未证实，题给自转双翻与June/July矛盾免责；安全缩放仍不足(min.05)、拖拽聚焦/稳定位置跟随/暂停Now倒放成立。 实跑确认Charon与Pluto重合dDisp0，轨道POINTS512而geoCount1024/buffer32768；远日Halley距离34.94、ion/dust0且无核绘制，GL0。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -2557,7 +2632,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/KimiK3Max-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：8颗卫星实际参考面、周期和有向法线均有效，负Z局部轨道与海卫一23.1°/负周期组合正确；JPL轨道、双向环影、大气及后期分项保持。暂停dtDays为0，此刻确实恢复当前时间，满足任务要求，撤销额外全状态复位要求。滚轮全局下限0.25可穿入天体，zoom仍部分计分。",
+  "note": "完整任务与最终绑定重核：8颗卫星负Z圆周配proper母轴/独立黄道，实际有向倾角均有效；归一化开普勒、当前JPL根数与每帧均E256行星/哈雷线同坐标，Moon线同倾角与母星平移。真实双向环影使用同空间、母半径及正t，运动带、撞击参数大气、Bloom后ACES成立。新增独立data4：antiSun=−halley.pos实际向日、尾沿其延伸，Sun模型uSpin又恒IDENT3而无物理自转；不重复扣Halley功能。暂停物理dtDays0/此刻真回当前，任务满分；Play按钮被note层覆盖但空格正常，完整性是否需部分扣分交运行影响校准。滚轮.25可穿球仍zoom.5，其他交互有效。 本轮运行确认note长期遮挡可见Play且没有正常关闭途径，独立integrity4.5；空格暂停仍1，不重复扣。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -2590,7 +2665,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/KimiK3Max.jpg",
   "jsErrors": 0,
-  "note": "联网Three.js以真实固定J2000根数和稳健开普勒绘制同源轨道，运动双带、真实哈雷、Bloom/ACES与聚焦跟随成立。七颗卫星中月球错置地球赤道、海卫一缺少约23°轨道倾角，计无效，其余五颗母星圆轨道有效。环没有物理阴影，大气为Fresnel边缘光；金星/天王星自转重复反转，哈雷模型下次近日点为2061-05-29却写成7月，数据部分分。",
+  "note": "重新阅读完整最终app：反射世界(x,z,+y)下五颗普通母赤道圆轨道有向有效，Moon错误Earth赤道、Triton缺23.1°倾角仍0。真实固定J2000元素、归一化Kepler、完整定向和同源行星线成立。新增量化720等M哈雷线最大距连续实体5.73308显示单位=16.38核半径，pathFit1改.5，不在data再扣。环无阴影、大气rim；Bloom后OutputPass真实ACES及运动带成立。data4保留：普通行星+RY自转与反射世界物理公转方向不一致、哈雷近日点相位与7月宣传不一致，Sun仅动画噪声；不复扣卫星/路径。真实Halley功能3，安全跟随，globalzoom1.5可入Sun10和Jupiter5.97；A仅镜头复位。",
   "issue": null,
   "net": [
     "cdn.jsdelivr.net"
@@ -2625,7 +2700,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/KimiK3(Max)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：Moon及六颗普通赤道卫星照§3.7正Z/Rx与右手母轴算法执行，实际有向角仍174.855°/179.x°，按任务归责撤销这些方向扣分，不宣称物理正确；海卫一实际方向原已成立。暂停、倒放和此刻符合任务，无全状态复位扣分。哈雷June/July矛盾来自任务，不扣模型。纯函数确认双尾为xyz+alpha四浮点布局，640浮点/160顶点与16字节stride吻合，撤销旧完整性误扣。保留卫星轨道圈未倾斜、面板显示坐标混AU及缩放可穿入。",
+  "note": "完整任务与最终绑定复核：Moon174.855°、六ordinary179.x°按§3.7逐式的方向矛盾不归责，实际角保留；Triton物理156.9°。JPL当前根数/均E256轨道与实体一致，但月轨圈省略incl，pathFit.5重证。双向环影正确物体逆变换/半径/t，真实大气、运动带及Bloom后ACES均满；双尾xyz+alpha16B/160顶点真实有效，撤回旧误扣继续成立。面板world显示偏移/SCALE混入AU错误重证，另SUN无rotH自转推进跳过、面板宣25.05天却矩阵恒初phase，data4；不扣提示signedspin/JuneJuly。paused推进完全停、此刻可用，B满分；滚轮下限.06无安全界仍zoom.5，聚焦跟随正常。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -2660,7 +2735,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/KimiK3(Max)V2.jpg",
   "jsErrors": 0,
-  "note": "离线WebGL2使用JPL世纪率、开普勒和同一轨道采样，运动带、实际Bloom/ACES及持续聚焦跟随成立；支持浮点HDR、RGBA8回退和多采样。八颗卫星只有半径/周期采用真实值，除月球外倾角和节点随机，月球又把黄道5.14°套入地球赤道，均不计有效卫星；这些硬错误只在卫星项扣分。环仅行星投影，大气是表面与壳层边缘光，没有哈雷；未选择天体时缩放可进入太阳，没有完整复位。",
+  "note": "完整最终代码重核后修正旧卫星全0：世界proper(x,z,−y)，母基为左手，但卫星正Z圆周的净r×v反而与所绘母轴正向；六regular周期/母赤道基本有效，随机±3°倾角各计.5，Moon实际黄北27.6386°和Triton179.776°仍0。当前JPL+均E288主轨道同源，真实运动带和Bloom后ACES成立；环仅母星投环、rim大气、无哈雷。新增独立data4：左手model下RY纹理的物理自转净−pole，Earth156.56°，运动belt也与proper行星反向；不再data扣moon。bodyPass未启用剔除，不能仅det负扣完整性。暂停dt归0同时冻结相机focus/zoom插值，暂停后新聚焦无法移动，focus改.5已由本轮运行确认；zoom原.5仍仅一次。物理暂停正常，Ahome仅镜头恢复。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -2696,7 +2771,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/KimiK3(Max)V3.jpg",
   "jsErrors": 0,
-  "note": "新标准源码与实跑复核：联网 Three.js 使用开普勒行星轨道、哈雷、运动小行星带和 Bloom/ACES；唯一月球沿偏离地心的圆运行，判无效。环无物理阴影、大气仅边缘辉光；哈雷轨道线采样不足、自转与彗星数据有误，近景缩放可穿入天体。后处理使用无回退的半浮点目标，场景目标 samples=0。",
+  "note": "完整实际app及最后绑定重新核对，原分项保持：真实固定J2000元素/归一化Kepler与全局反射(x,z,+y)映射、主轨道同源。唯一Moon同一XYZ组混入Ry/Rz，净路径Y恒.241892且绕地心上方黄道平行圈，0；不能把瞬时r×v5.14°误认为固定轨道。Halley360等M路径近日点4.317显示单位错位，pathFit.5。环无投影、大气rim，Bloom后OutputPass真实ACES和运动带成立。data3.5重证：普通行星自转与同反射世界公转方向不一致、Halley相位为1986-01-09而非2月、尾仅历史位置串，分别独立而不复扣Moon/path。正常聚焦后精确平移跟随，zoom.6可入Earth1；暂停冻结物理运动，云纹漂移是装饰不扣，A全景只恢复镜头仍.5。",
   "issue": null,
   "net": [
    "cdn.jsdelivr.net"
@@ -3213,7 +3288,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/Qwen3.8Max(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线Canvas2D以真实偏心率和周期求解椭圆，运动小行星带与平移、缩放、聚焦、跟随可用；显示半长轴、方向和初相为自定义，未绑定真实历元，分别仅在轨道项扣分。月球为屏幕空间周期椭圆，计半质量示意。标为哈雷的彗星使用e0.86、平面自定义方向和初相，不是真实哈雷，不转算其他彗星。环与大气为2D示意，没有Bloom/ACES，暂停成立但缺完整复位。视觉与Canvas路线本身不扣分。",
+  "note": "完整Canvas2D最终app重读后维持分项：真偏心率/周期配七次Newton推进椭圆，半长轴/方向/初相自定义且未绑定真实历元，分别仅扣轨道根数、定向和历元。解析ctx.ellipse与实体同焦点旋转精确贴合，520运动小行星成立。Moon是27.3日屏幕椭圆示意，半质量保留；e.86自定义平面“哈雷”不计，不转其他彗星。环前后半圆与径向辉光只部分，未有Bloom/ACES。2D平移、平滑缩放和聚焦持续跟随可用，drag部分；zoom不按3D穿球规则误扣。暂停冻结轨道/月球，太阳图案属装饰；缺完整A复位保留.5。视觉和Canvas选择均不扣。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3245,7 +3320,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/Qwen3.8Max(Max)V2.jpg",
   "jsErrors": 0,
-  "note": "联网Three.js保留真实偏心率、周期和轨道倾角，但半长轴、近日点方向与初相是显示自定义值，没有真实历元；轨道线与实体一致。月球固定在黄道平面，缺少月球倾角和节点，计无效；标为哈雷的e0.86/i9°彗星并非真实哈雷。实际Bloom成立，但仅设置renderer.ACES而后期未加OutputPass，ACES未应用。无大气，环无物理投影；自转速率约慢十倍且金星轴角有误，数据部分分。",
+  "note": "完整实际Three.js调用链与最后绑定复核后维持分项：真e/P/i的椭圆成立，但a/ω/初相自定义，无真实历元，行星线/实体同父组同变换。Moon固定黄道XZ缺5.145与节点仍0；自定义e.86/i9°“哈雷”仍0不转其他彗星。环MeshBasic无阴影、无大气；实际UnrealBloomPass成立，后期最终无OutputPass/ACES合成，renderer设置未应用到最终后期，ACES0。自转速度约慢10.47倍、Venus2.6rad误轴，data4.5；普通自转方向相对反射世界也不一致，聚合数据扣分不触及Moon。globalmin12可入Sun30/Jup19；Sun实体按walltime自转，暂停仍转，本来pauseReset.5重证，A缺完整复位不重复扣。跟随精确平移当前位置，拖拽/聚焦有效。",
   "issue": null,
   "net": [
     "unpkg.com"
@@ -3280,7 +3355,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8Max(Max)V3.jpg",
   "jsErrors": 0,
-  "note": "离线WebGL2以真实偏心率/周期与简化倾角绘制一致的椭圆，运动带、实际图像Bloom和ACES成立；半长轴、方向与相位为显示自定义值，没有真实历元。月球固定在黄道平面，计无效；e0.86/i9°的哈雷标签对象也非真实哈雷，不转其他彗星。环无物理投影，大气仅表面边缘光；行星自转约慢十倍、金星轴角有误，仅扣data。聚焦、持续跟随和安全距离40的缩放成立，缺完整复位。",
+  "note": "完整最终原生WebGL2调用链复核后维持分项：真e/P与简化i椭圆同源，a/ω/初相自定义、无真实历元，根数/定向部分和历元0；运动带、实际提亮/双向模糊/ACES合成成立。Moon固定全球XZ无5.145仍0，自定义e.86/i9°“哈雷”仍0不转其他彗星。环无双向投影、大气是表面Fresnel部分。自转Earth.6rad/日约慢10.47倍、Venus2.6rad误轴，data4.5保留且不在Moon/轨道复扣。球网格绕序虽向内但全流程从未启用CULL，不据关键词扣完整性。相机持续按当前体位移跟随，globalmin40>Sun30/Jup19安全，拖拽/拾取/聚焦可用；暂停冻结物理相位，A无完整复位仍.5。RGBA8后期无浮点需求，最终scene没有MSAA。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3313,7 +3388,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Qwen3.8Max(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：Moon和六颗普通卫星直接采用§3.7正Z/Rx及右手母轴，实际反向角度保留，但这些提示算法内生方向问题撤销扣分；海卫一原方向有效，8颗按任务口径计入。哈雷按给定Tp/P计算，July文案来自任务验收，不扣数据。暂停冻结模拟与自转，此刻回当前时间，任务没有全状态复位要求。唯一保留的数值扣项为滚轮没有目标半径保护而可穿入。",
+  "note": "完整任务与最终绑定复核：8颗卫星按§3.7逐式实现，实际有向角保留但提示内生方向矛盾不归责；JPL/归一化Kepler/日期、视线撞击参数大气、GPU运动带和六级Bloom后ACES成立。新增确证：球面环影的太阳向量只逆母basis却遗漏模型Ry自转，ring-on-body错位，环部分分；256等M点的哈雷线近日点到折线11.1498显示单位（111.50倍核半径），路径部分分，稳定性不重复扣。独立数据错误是冥族39.45AU却使用海王星1.5倍平均运动，正确3:2共振应为2/3倍，data4.5；任务并未给该错误n公式。撤旧zoom扣分：最终相机始终按当前目标1.6倍显示半径限距，太阳聚焦也安全。暂停/倒放/此刻符合任务，不要求全状态复位；跟随直接读当前体位置。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3411,11 +3486,11 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/MuseSpark1.3Contributor(xhigh)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 使用 JPL 世纪率/开普勒轨道。月球有独立黄道根数，另十一颗卫星绕世界 Y 轴，而此作品行星黄道北实际为 Z 轴，参考面明显错误且有非闭合起伏；仅月球计有效，不重复扣数据项。土星环只有行星柱影，大气是随太阳调制的边缘光，两项只给部分分。哈雷、动态小天体带和 Bloom/ACES 存在。金星自转周期误用 2802 小时；支持聚焦和持续跟随，缩放可进入大型天体，缺完整重置。",
+  "note": "联网Three.js完整JPL形式世纪率与Kepler、同源轨道、动态双带、Bloom后OutputPass ACES有效。新核实Pluto升节点错写128.65786387，和110.30393684相差18.3539°，elements半分；坐标公式本身正确，不在定向/数据再扣此错。独立月球黄道5.145°轨道有效；其余11颗绕世界Y并含sin(.9θ)非闭合起伏，和本作黄道北Z及母星赤道不符，均无效。环仅行星投环影，大气为边缘壳光。全体行星轴Rz(tilt)·Y始终在黄道XY面、Venus2802小时错误及Sun.05rad/day=125.66天合计data3.5。真实比例按钮只重建Sun/planet几何却漏全部moon（月球R.27>地球.02），完整性4.5。拖拽聚焦跟随有效，min.5可入太阳6，完整复位不足；watchdog只排空rAF无复制主循环，不判fatal。 实跑真实尺度Earth geometry半径.02而Moon.27，确认13.5倍反转。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in Zcode"
@@ -3449,7 +3524,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：月球直接照§3.7正Z/Rx世界偏移，实际174.855°方向仍记录，撤销提示内生逆行扣分；其余七颗已有物理有效方向。暂停togglePlay调用updateSpeed将djd归0，实跑800ms日期和earth.phase均完全不变，撤销旧暂停误判及全状态复位要求。保留过渡结束即停止跟随、信息卡仅选择时刷新和缩放可穿入；哈雷任务自身June/July冲突不扣。",
+  "note": "原生离线WebGL2的JPL世纪率、Kepler、同源动态轨道、运动双带、密度大气和Bloom后ACES成立。Moon直接正Z/Rx按任务信用，其余七颗最终有向轨道正确（left-handed母基与符号组合后得实际.05/.47/.2/.19/.35/156.9/.08°）；不拿有bug母星或单一符号误杀。新环影射线交点公式分子误用光向，命中点不在环平面，只环半分。Moon卡缺r/lat却toFixed，实际点击Moon抛toFixed TypeError，但frame184→270→397持续，runtime4、非fatal。球体外绕序配det−1模型/BACK剔除画远半球，彗尾负world方向朝日且远日无实体核，合计integrity3.5。信息卡仅选择时更新的data4保留。暂停Earth/JD固定，但Sun/moon姿态取墙钟simT继续转，pauseReset半分；不在数据重复此时钟缺陷。过渡结束即停止跟随follow0、zoom最低.5可入太阳保留。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3483,12 +3558,12 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/Gemini3.8Flash(high)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 的小行星带和 Bloom/ACES 可用，土星环没有双向环影，大气只是边缘辉光。行星以匀速角代入极坐标椭圆，没有开普勒求解、完整节点/近日点定向或历元相位。仅一颗月球，轨道平面为简化黄道面且按帧增加固定角度，按半颗有效卫星计，没有哈雷。按下即拾取，聚焦和跟随只更新视线目标而不移动镜头保持距离；巡航被选取逻辑立即关闭，无完整重置。",
+  "note": "联网Three r128有动态小行星带和真实Bloom；ACES只在Bloom叠加前的基础画面执行，最终加法CopyShader不做tone mapping，部分分；无双向环影，大气仅Fresnel。焦点极坐标椭圆几何成立，但匀真近点角推进，无Kepler/完整Ωω/历元。唯一月球是3D全球XZ零倾角且按帧动画，旧半颗信用撤销并按无效月球锚点。自转的年/日速度比例不成立、倾轴Euler与自转顺序产生绕全球Y的转动，聚合data4保留，不重复轨道/卫星问题。巡航调用selectBody立即把自身关闭，integrity4。按下即选择影响拖拽；聚焦/跟随仅改变controls.target不平移镜头；minDistance1.5可入Sun半径10、无完整重置，均保留部分交互分。无致命错误。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net",
-    "cdnjs.cloudflare.com"
-  ],
+  "cdn.jsdelivr.net",
+  "cdnjs.cloudflare.com"
+],
   "fix": null,
   "tags": [
     "in Antigravity"
@@ -3522,7 +3597,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/Gemini3.8Flash(high)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：六颗普通赤道卫星照§3.7右手母轴与正Z/Rx执行，实际179.x°记录不改，撤销任务算法内生反向扣分；海卫一原有效。Moon另做Y/Z映射导致95.145°近竖直，非提示要求，仍无效并保留月球锚点扣分。暂停、正倒放与此刻有效，撤销额外完整复位要求。保留拖动释放误选与可穿入缩放；视觉不重新评分。",
+  "note": "原生离线WebGL2的JPL世纪率/定向Kepler、运动小天体双带、双向同单位环影、密度大气、真实Bloom后ACES成立。七颗赤道卫星按任务正Z/Rx算法保留信用/实际角不改；Moon重复Y/Z世界转换产生95.145°，仍无效和锚点扣分。重新原函数密采样发现Halley256等M轨道折线最大偏差13.4619显示单位，核半径.65，pathFit部分分；不另扣Kepler/历元。球网格三角形为朝内绕序，母轴proper det+1、BACK/CCW未修正，实际画远半球，完成度4。非地球卫星卡把母星日心距当距地球（L2785），data4.5，不重复卫星平面错误。拖动释放会触发无阈值click拾取，缩放下限.5能入Sun4.6，维持部分；持续聚焦跟随、暂停/倒放/此刻均成立，不额外要求全状态复位。无fatal。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3558,11 +3633,11 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/Gemini3.8Flash(high)V2.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 实现定向开普勒轨道、动态小天体带、哈雷与 Bloom/ACES。行星环只有行星投向环的阴影，大气为边缘光。地球 M0 错用平均黄经，历元相位偏移约 103°；月球埋在地球内部，按无效月球扣分。七颗其他卫星的 Z 坐标符号与行星映射相反，木卫与土卫变成逆行，海卫一反成顺行；全部不计有效卫星，不再因同一卫星问题重复扣数据项。金星自转方向与大倾角叠加重复翻转。",
+  "note": "联网Three r160有完整定向焦点椭圆、同源按E采样轨迹、运动双带、哈雷、真实Bloom后OutputPass ACES。环只有行星投环影、气氛仅Fresnel。新复核发现高偏心率Kepler初值固定+π，对负M的20001点采样有3220点未收敛、最大方程残差4.30×10^9；Kepler部分分，稳定性不因同一问题重复扣。Earth错把平均黄经100.464当M0，历元部分分。月球最大轨道半径.0488<地球3全埋入，另七颗均全球XZ、未继承赤道且有向方向错误，全无效/锚点扣分。旧“金星双反”撤销：该rotPeriod是正值；实际独立data4依据卡片把以天计Earth.997/Jupiter.413标为小时，以及Euler自转绕全球Y使倾轴随相位摆动。Moon显示开关只遍历另七颗而遗漏月球，integrity4.5。目录聚焦真实飞行且无明确必须canvas点取要求，focus恢复1；跟随只改target不平移camera、zoom1<Sun12、完整重置缺失保留。无fatal。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in Zcode"
@@ -3596,7 +3671,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/Gemini3.8Flash(high)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：Moon直接world平面偏移的正Z相位产生174.855°有向角，示意节点未给定，方向反转源于提示算法，撤销该颗扣分且保留实际角度。六颗普通卫星原已有效；海卫一因left-handed母基成为23.1°顺行，属于额外基错误，仍不计。哈雷June/July任务冲突不扣，暂停与此刻满足要求。保留未实际执行HDR Bloom金字塔、月球把1AU日心距当与地球距离的面板错误、拖拽误选及可穿入缩放。",
+  "note": "原生离线WebGL2的JPL世纪率/定向Kepler、同源E采样轨迹、运动双带、双向同空间环影、密度大气及最终ACES成立。Bloom管线实际已删，只余眩光/日冕，保留.4而非看到注释判满。Moon直接正Z世界偏移的174.855°属任务算法信用；普通六颗实际有向倾角符合母轴，Triton因额外left-handed母基23.1°顺行仍无效。新核算球三角朝外但实际planet basis det−1、BACK/CCW无修正，所有行星画远面；另Halley只有轨道/尾和标签，无任何球核draw，近远日均缺实体，合计integrity3.5，不重复扣Halley奖励/环。data4保留：Moon地距错当约1AU/8分钟，且太阳模型仅固定scale、月球等未做潮汐姿态；不与卫星轨道质量重复。注意left-handed母基乘局部负phase反而令Earth实际自转轴dot期望≈1，不误扣普通自转方向；任务大tilt/signed冲突免责。拖动触发click及minDistance.08穿入保留，持续跟随、暂停/Now满足任务，fatalnull。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3632,11 +3707,11 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/MuseSpark1.3Contributor(xhigh)V2.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 具备完整定向的 J2000/开普勒行星轨道、六颗名义卫星、哈雷、Bloom/ACES 和持续跟随。环没有双向物理阴影，大气为边缘光，小天体带是静止点阵，均给部分功能分。六颗卫星的 Z 符号与行星黄道映射相反，方向全部错误且轨迹竖直起伏不闭合，均不计有效，月球执行无效锚点扣分，不重复扣数据项。哈雷相位来自任意 L=0；行星自转按墙钟推进，暂停仍转。",
+  "note": "联网Three r160有定向Kepler/J2000相位、同源动态缩放轨道、哈雷和Bloom后OutputPass ACES；静态小天体带.4、无双向环影.4、Fresnel大气.4保留。新增定向部分分：默认scalePos将worldY额外乘1.6，真实倾角由I变atan(1.6tanI)，如冥王星17.16°→26.2921°，不是整体坐标反射，线和实体虽一致但科学平面被改。六颗卫星全球XZ+非闭合.9频率竖直摆动，方向及参考面均不成立，0颗/无效月球锚点，数据不重复扣。data3.5保留独立实体无倾轴（全部绕全球Y）、太阳无实体自转及Halley任意L=0历元；暂停仍自转仅归pause项。完整度4.5保留改准彗尾依据：Sprite.rotation用worldXY atan2，未投影到随相机旋转的billboard平面，反日尾方向不能随视角成立。拖拽阈值、聚焦/持续跟随可用；minDistance3<Sun10、暂停只冻结JD/卫星而行星自转仍按墙钟，部分交互。无fatal。",
   "issue": null,
   "net": [
-    "unpkg.com"
-  ],
+  "unpkg.com"
+],
   "fix": null,
   "tags": [
     "in Pi"
@@ -3670,7 +3745,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：Moon及六颗普通赤道卫星使用§3.7正Z/Rx与右手母轴，实际反向角度照旧记录，撤销提示内生方向扣分；海卫一原有效。哈雷July验收文案与给定Tp/P相矛盾，不扣数据。保留拖动误选、固定缩放下限可穿入；暂停虽冻结JD及行星spin，卫星球面phase仍叠加真实时间simT.t*.1而继续转动，pauseReset维持部分分，原因改为真实暂停不完全，不要求全状态复位。",
+  "note": "原生离线WebGL2有JPL世纪率/定向Kepler、8颗按任务信用卫星、双带GPU运动、真实Bloom/ACES/密度大气。新核实际矩阵：CPU modelMat写成Bᵀ而顶点又乘B，world=BᵀBRy(phase)a=Ry(phase)a，倾轴抵消；程序纹理vObj=B·world点，与自转phase无关，表面世界锚定，data4。因此旧暂停仍传墙钟moonSpin虽然属实，但可见程序纹理不旋转，该旧pause扣分撤销，实体JD/轨道/有效姿态已冻结；装饰uTime不当成物理暂停故障。环影把已旋转的vObj与basis-local光向混用，实际环模型也是Bᵀ但传正常axis法线，双向环影未成立，rings.4。原函数密采样300等M的Halley曲线在JD2461331最大误差11.4586>核.35，首点虽锚定实体仍整圈粗折线离轨，pathFit.5，不重复Kepler/历元。离子尾用-hwp朝太阳、核仅6.5AU内画，聚合integrity4。Moon和普通卫星方向冲突为任务算法信用，Triton负周期+156.9按proper基实际逆行有效，不凭buggy母星自转剔除。鼠标拖动末点重置导致释放误选、缩放最小2可入Sun4.6保留；聚焦/持续跟随/Now/正倒放可用，fatalnull。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3780,7 +3855,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6Astra(Light)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：Moon及六颗普通卫星正Z相位的反向来自提示，保留实际174.855°/179.x°角度并按任务计入7颗。海卫一自行将156.9°改23.1°后仍用负周期，proper母基下实际变顺行，非直接照任务实现，仍无效。其余轨道、渲染、数据和安全缩放分项保持；暂停及此刻符合任务，不要求全状态复位。",
+  "note": "完整任务及最终WebGL2管线重读：真实JPL世纪率/归一化Kepler/均E轨道线与实际实体同源，8颗卫星逐链保留实际有向角与任务归责；Moon和六regular的正Z相位反向依§3.7免责，Triton自行改23.1后再负周期实际23.1仍无效。环影正确逆完整model，双向空间单位一致；17900运动小天体、视线撞击参数大气、六级Bloom后ACES均成立。暂停物理增量为0、Now真回当前，B不要求全状态reset。新查全景保留旧selected却把目标切Sun，滚轮下限仍按旧目标半径，Earth→全景后min1.152<Sun4.6，zoom部分；聚焦/正常跟随保持。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3852,7 +3927,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/GPT6Astra(Ultra)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、带真实黄道参考面的七颗卫星，以及哈雷、恩克、67P、斯威夫特四颗独立周期彗星。双向土星环影、动态小行星带、HDR/Bloom/ACES、聚焦跟随及按半径限制缩放均有实际实现。大气着色只用视角边缘幂次和昼夜调制，属于边缘辉光，只给部分功能分。暂停停止模拟时间，缺少一次恢复镜头、时间、速度与全部显示状态的完整重置。",
+  "note": "完整实际应用与最后绑定重读，七颗卫星全部由真实黄道根数推进：Moon含节点回归/近心进动，其余六颗为明确标注的固定JPL瞬时根数，实际有向母轴夹角0.0085–.4555°有效。四颗独立周期彗星含哈雷，均E960轨道、反日离子尾/反速度尘尾真实绘制，奖励保持。行星JPL世纪率、局部浮点原点、10天刷新轨道与320点卫星线正确；环双向影在完整世界空间、运动带、Bloom后ACES保持。大气仍只幂次rim，部分分。聚焦后逐帧精确平移相机、相对半径安全缩放，暂停物理相位固定；A日期/镜头分开恢复仍.5。所有数据/完整性原满分重新证实，不为贴图或视觉扣分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3888,7 +3963,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/GPT6Astra(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线打包 Three.js 完整实现 JPL 世纪率/开普勒行星轨道、黄道月球、土星环双向阴影、动态小行星带、HDR/Bloom/ACES、真实比例与持续跟随。大气仅是幂次边缘辉光，改按部分有效计；没有哈雷或其他彗星。按天体半径限制缩放，暂停可锁住模拟日期；“现在”和总览分别恢复日期或镜头，没有完整状态复位。",
+  "note": "完整离线Three应用及最后事件/RAF重读，原分项保持。行星真实JPL世纪率/Kepler与均E640轨道同源；唯一Moon用独立黄道5.145°、节点/近心进动，真实有向有效，128点线附着地球并20天刷新，误差低于卫星核尺度。土星环双向影正确逆axis和spin，运动2500点带、HalfFloat真MSAA、Bloom后手写ACES成立，大气仍rim。IAU北轴配signed周期而非大tilt重复翻转，真实距离与信息面板一致，无独立data扣。聚焦后相机精确追踪位移、近观半径下限安全，但真实比例全景下限.025<Sun.03723765，zoom改部分；暂停物理相位固定，日期与镜头分别恢复，A仍.5。无哈雷/其他彗星。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3924,7 +3999,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/GPT6Astra(xhigh)V1.jpg",
   "jsErrors": 0,
-  "note": "离线打包 Three.js 使用完整定向的 JPL 世纪率/开普勒轨道、黄道月球、土星环双向阴影、独立运动的小行星带、HDR/Bloom/ACES、三种比例和持续跟随。大气仅是随日照调制的边缘辉光，按部分有效计。没有哈雷或其他彗星；聚焦与半径安全缩放有实现，日期与相机分别复位，缺少恢复全部状态的完整重置。",
+  "note": "完整最终应用重新核对：JPL世纪率/归一化Kepler及512均E轨道同源，Moon独立黄道5.145°带节点/近心进动，逐颗有向有效。环影统一世界空间，3000点带真实Kepler、HalfFloat多采样和Bloom后手写ACES成立，大气rim保持部分。物理spin由IAU北极与signed周期推进，没把教科书大tilt再叠一次，data满分重新证实；无哈雷/其他彗星。新查全景/俯瞰缩放下限.2<Rsun3.1，近观2.8R安全，zoom改部分。跟随精确平移当前体位置，暂停JD与spin固定；A此刻和镜头分开复位仍.5。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3960,7 +4035,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeekV4.1Flash0910(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 包含 JPL 世纪率/开普勒行星轨道、15 颗已绘制卫星、双向环影、动态小行星带与柯伊伯带、Bloom/ACES 和持续跟随。大气以 Fresnel 边缘光和简化前向项组成，没有实际大气光程积分，按部分有效计。",
+  "note": "完整3019行原件与最后绑定本轮重新阅读并抽取最终纯函数复算。JPL世纪率/Kepler/世界坐标与运动双带、真实Bloom后ACES成立；大气仅Fresnel边缘项。15颗卫星有效12：Moon黄北5.145°，Iapetus实际15.413089°接近源码15.47°母赤道近似，撤销旧Laplace误读；Titania/Oberon对真实物理顺行轴179.667729°/179.943318°、Triton对Neptune轴47.415987°仍无效，Charon不跟Pluto错误spin误扣。15颗卫星GPU轨道线未加母星平移且incl被乘0，pathFit部分；行星固定J2000线不另扣epoch/data/stability。环投球成立，球投环的world遮挡半径却恒1.02而Saturn真实应2.761672，rings部分。独立data4：Sun实体spin始终0、Pluto负rotP及卫星锁定轴/朝向错误；本轮固定朝面漂移Moon57.17°/Io51.05°/Charon112.65°。局部球网格朝外与负det模型净合成向内，实际CCW/BACK画远侧，integrity4。默认1天/秒火卫一跟随12样本均丢视野，follow部分；聚焦近距有1.6R+.02保护，但R全景滚轮实测.07767<Sun3，zoom仍部分。暂停物理运动有效，A只恢复速度/镜头仍.5；无哈雷/其他彗星，无fatal，T3保留。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -3996,7 +4071,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：六颗普通赤道卫星右手母轴+正Z/Rx照提示实现，实际179.x°保留并撤销算法内生方向扣分；海卫一原方向有效。Moon却额外映射Y/Z，实际95.145°近竖直，保持无效。哈雷July文案不再扣给模型，data恢复4，但卫星把显示坐标当AU混入实时距离的独立错误保留。暂停、倒放与此刻有效，撤销全状态复位要求；缩放可穿入仍部分计分。",
+  "note": "本轮逐条参照完整任务、重新读3067行最终执行链：原生离线WebGL2、HDR降级与自建4×MSAA成立。双向环影使用含自转的完整模型逆旋转和实际世界半径，动态带、Bloom后最终ACES及解析密度/日照/Mie大气均有效。8颗卫星保留7颗任务信用；Moon额外Y/Z映射使黄道有向倾角95.145°，仍无效，六颗普通赤道卫星的179.x°属任务正Z/Rx内生方向，Triton156.9°实际有效。哈雷420等E轨迹弦距小于核，但最终draw仅r<6.5AU时执行，默认远日段有核却无轨迹，pathFit改部分；不重复扣Halley或完整性。卫星把显示距离混入AU导致实时距离/光行时错误、行星模型额外Ry(-spin)反转属独立数据问题，data4；不扣任务轴倾/负周期或June/July冲突。球网格外绕序与proper模型相容、clear前恢复深度写，未见0910一句话版的剔除或轨道平移故障。拖拽、聚焦和直接跟随有效，暂停/倒放/此刻按任务成立；固定0.35缩放下限缺半径保护，zoom保留部分，不要求全状态reset。无致命故障。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4031,11 +4106,11 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMoXProPreview(Unknown)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 使用定向 J2000/开普勒行星轨道、动态小行星带与 Bloom/ACES。环没有双向环影，大气是边缘光；唯一月球的 Z 坐标符号与行星黄道映射相反，公转方向错误，按无效月球计并执行月球锚点扣分，该问题不再扣数据项。“真实尺寸”没有同步云层、大气与月球尺寸；聚焦只一次插值 55%，之后只移动观察目标，近景和持续跟随仅部分有效。金星/天王星的负周期与大倾角叠加重复逆行。",
+  "note": "联网 Three.js 的八行星 J2000/开普勒轨道与同源轨迹、动态小行星带、Bloom 和末尾 OutputPass 的 ACES 有效。环缺双向阴影，大气是边缘辉光。唯一月球实际公转方向与行星映射相反，计无效并执行月球锚点扣分，不重复扣数据。负自转周期与大倾角叠加、真实尺寸漏云层/大气/月球仍是独立缺陷。聚焦只一次插值55%，持续观察只移动目标，近景聚焦与跟随部分有效；Space冻结模拟日期但太阳仍按墙钟转，缺完整重置。无彗星，视觉不计分。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in MiMo"
@@ -4069,7 +4144,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按完整任务复核：7颗卫星原有物理有效方向保持，海卫一23.1°来自额外left-handed母轴，仍无效。行星主体与轨道线使用不同world映射、球面环影未启用、月球日心距离误显示绕地轨道半径及缩放回弹均为独立实现缺陷，继续保留。暂停冻结JD/物理自转，此刻恢复当前时刻；撤销额外全状态复位要求，其余分项不变。",
+  "note": "按完整任务与最终执行链复核：原生离线 WebGL2 的 JPL/开普勒、动态带、Bloom/最终 ACES 和解析大气有效。环面半径单位正确，但球面环影固定关闭，部分计分。行星实体直接用黄道XYZ，轨迹用(x,z,−y)，路径不合；只在路径项扣。8颗卫星7颗有效，海卫一额外左手母轴导致23.1°仍无效。月球日心距离误显示母轨道半径，data4；球面反绕序与负模型基净抵消，完整性满分。聚焦/跟随、暂停/正倒放/此刻可用，缩放被持续焦点距离拉回。任务给定自转/哈雷日期矛盾不归责，无额外全状态重置要求，无其他彗星或已证致命故障。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4104,13 +4179,13 @@ window.WORKS=[
   ],
   "weight": "medium",
   "shot": "assets/shots/Step5Preview(high)V1.jpg",
-  "jsErrors": 21,
-  "note": "联网 Three.js 一句话版有 JPL 世纪率/开普勒行星轨道、12 颗名义卫星、哈雷、小行星带与柯伊伯带、Bloom/ACES。选择卫星后 updateClock 访问不存在的 el，逐帧异常阻断最终绘制，保留 L2 致命错误标记；分数按各分项正常计算，梯队标为未完成。轨道线混淆近日点黄经与幅角而错位，哈雷相位也近似；环额外旋转 90°且影子判定反向，大气为边缘光，地球云层半径异常。",
-  "issue": "选择卫星后逐帧异常阻断最终绘制，核心观察功能失效。",
+  "jsErrors": 1,
+  "note": "重新检查最终源码：联网 Three.js 的真实行星开普勒求解、运动带、Bloom/末尾 ACES 有效，大气为边缘光。环几何额外转90°且影子判定反向；轨迹把近日点黄经当幅角，与主体不合。12颗卫星中月球及4颗木卫沿既有基本信用有效，另7颗仍有错误参考面或逆行方向，不重复扣数据。Halley幅角/历元、向太阳的尾、特洛伊镜像及Pluto倾角率误抄构成data3.5；Earth云层物理半径误作显示尺度、真实尺寸漏卫星构成integrity3.5，撤销旧无充分支撑的2/2。正常选择卫星会在updateClock访问缺失el并中断绘制，本轮实跑已确认L2/runtime3：正常Moon选择后renderFrame固定、未再绘制。完整相机过渡与同量平移跟随存在，不以过远或同一信息异常重复扣focus/follow。暂停仍有太阳墙钟自转，无完整复位。",
+  "issue": "正常选择卫星触发缺失el异常，阻断每帧最终绘制（L2）。",
   "net": [
-    "cdn.jsdelivr.net",
-    "threejs.org"
-  ],
+  "cdn.jsdelivr.net",
+  "threejs.org"
+],
   "fix": null,
   "tags": [
     "in Zcode"
@@ -4143,8 +4218,8 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Step5Preview(high)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：不把任务2.2/3.6给定的转轴、自转符号或2.5/8.2哈雷日期矛盾归责给模型；撤去回归日期扣分。仍保留两类独立数据错误：压缩显示距离直接标AU，以及光行时漏AU到km并混用天/秒换算。8颗卫星缺tilt/poleLon/rotH使轴和模型矩阵NaN，实体无效；全屏顶点数据布局与16字节步长不符，主画面与拾取投影失配，核心L2及灰色未完成保持。暂停JD固定但自转相位继续增加已实跑确认，pause部分分；聚焦不持续跟随及缩放边界问题保留。行星Kepler、环影、带、后期和大气既有证据不变，视觉不计分。",
-  "issue": "八颗卫星绘制矩阵为 NaN，且全屏合成布局错误导致画面与标签错位。",
+  "note": "逐条对照任务与最终执行：给定轴倾/负自转、卫星算法和哈雷日期冲突不归责模型，也不要求全状态复位。Kepler行星、同源路径、动态带、双向环影、Bloom/最终ACES与解析大气有效。8颗卫星缺自身轴/自转字段导致模型NaN，只计卫星项。最终全屏buffer按错误交错步长读取，clip顶点与UV整体错配，核心合成失效，integrity2/L2；主循环本身持续，runtime恢复5，聚焦不重复扣。压缩显示长度标AU、光行时错误量纲两个独立数据链保留data3。暂停只冻JD而自转继续、跟随目标停在旧位置；固定缩放边界可能穿Sun，分别按独立控制部分/无效计分。",
+  "issue": "最终全屏合成顶点/UV布局错配导致整体核心合成失效（L2）；不重复以卫星NaN扣运行分。",
   "net": [],
   "fix": null,
   "tags": [
@@ -4178,7 +4253,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMo2.6Flash(Unknown)V1.jpg",
   "jsErrors": 0,
-  "note": "离线打包 Three.js 使用 J2000 开普勒轨道、一颗简化黄道月球、动态小行星带和自制 Bloom。环没有双向阴影，大气是边缘辉光。默认 Bloom 离屏路径与最终合成未调用 ACES，仅关闭 Bloom 后直接渲染才启用，保留部分色调映射分。小行星带按墙钟整体旋转，暂停仍运动；金星和天王星的负自转周期与大倾角叠加重复翻转，“10y/s”仅 912.5 天/秒。",
+  "note": "离线打包 Three.js 的 J2000/开普勒轨道与同源轨迹、运动小行星带和自制 Bloom 有效。唯一月球对本程序反射世界黄北实际约4.574°，方向、母星和27.322天周期正确，沿基本小角近似计有效。环无双向投影，大气为边缘光；默认 Bloom 合成未调用 ACES，仅关 Bloom 直渲染生效，部分计分。负周期与大倾角叠加、“10y/s”实际912.5天/秒是数据问题。暂停冻结行星但太阳和小行星带继续墙钟运动，系统视图仅恢复镜头。聚焦、跟随和安全缩放成立。撤旧无独立证据的完整性半分扣项，避免重复归责；无彗星，视觉不计分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4214,7 +4289,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 4,
-  "note": "按详细任务原文复核：8颗卫星的周期、倾角、参考面及正Z圆轨道绕X倾斜后加母星世界坐标/正交基，均沿任务2.4/3.7实现，按任务依从计8颗。原实测月球174.855°、普通赤道卫星约179.x°仍保留；撤回提示内生方向矛盾的归责不表示物理运动被修好。哈雷固定Tp/P与7月底文字的冲突来自任务2.5/8.2，不再扣分；独立的统一30小时卫星自转近似仍保留数据部分扣分。暂停、正倒放与此刻功能成立，任务未要求全状态复位，pause计1。末尾L2890选择覆盖触发const lightMin重赋异常，拖拽后误点及缩放穿入等实际缺陷保持原分；既有渲染与轨道项不变。",
+  "note": "重新核最终覆盖函数与完整任务：原生离线 WebGL2 的开普勒轨道、同源路径、8颗任务给定算法卫星、哈雷、动态带、双向环影、Bloom、最终 ACES 与解析大气有效。存在独立实现错误：proper模型配内绕序球网格且实际BACK/CCW剔除，实体完整性4；自转基矩阵额外反号及卫星统一30小时，data4。非地球行星信息更新对const赋值抛异常，最终选择函数因此没执行聚焦距离设置，runtime3/focus部分计分，无核心停机证据。拖拽后的click未抑制，缩放虽算minD但未执行保护；持续跟随、暂停/此刻/正倒放成立。任务自身signed自转/卫星算法矛盾不归责。",
   "issue": "选择非地球行星时反复抛出 Assignment to constant variable，信息与自动拉近受影响。",
   "net": [],
   "fix": null,
@@ -4249,11 +4324,11 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMo2.6Pro(Unknown)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js 具备 J2000/开普勒行星轨道、小行星带、Bloom/ACES 与持续跟随。六颗名义卫星使用的 Z 符号与行星黄道映射相反，公转方向全部错误，土卫六又未变换到母星赤道面，均不计有效卫星，月球按无效锚点扣分，不重复扣数据项。环无双向环影，大气为边缘光；行星自转与小行星带按墙钟推进，暂停仍运动，金星/天王星重复逆行。",
+  "note": "联网 Three.js 的固定真实根数/开普勒与同源轨迹、动态带、Bloom 和末尾 OutputPass 的 ACES 有效；环无双向阴影，大气为边缘光。6颗卫星公转坐标与行星映射相反，全部无效，月球锚点扣分不重复到数据。自转依墙钟而非模拟日期、负周期叠大倾角，以及速度面板显示固定近日点值仍为独立data3.5。拖拽开始即选目标，缩放下限可小于太阳，聚焦过渡过早结束；持续跟随的camera与target平移链完整。暂停不停止物理自转，系统视图非完整重置。旧完整性4无独立硬错，撤重复归责恢复5；无彗星，无已证致命故障。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net"
-  ],
+  "cdn.jsdelivr.net"
+],
   "fix": null,
   "tags": [
     "in MiMo"
@@ -4287,7 +4362,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：8颗卫星的正Z局部轨道、X倾斜、带符号周期及黄道/赤道分支忠实遵循2.4/3.7，撤回提示内生的月球与普通卫星方向扣分；实际174.855°/179.x°有向角不改，也不声称物理已修好。哈雷7月底文案与给定Tp/P的冲突不归责模型。原审查把L403–414/L424–441的原始AU坐标映射world误读为压缩显示坐标，行星与彗星面板距离/光行时实际正确；月球混合坐标的dE仅死变量，未显示，不因此扣数据。真实比例关闭后仍向1插值、离子尾朝太阳的独立完整性问题继续保留。暂停门控覆盖日期和物理自转，正倒放与此刻可用；无全状态复位不是任务缺项，pause计1。缩放下限及其余原有评分保持。",
+  "note": "按完整任务与最终绑定复核，原生 WebGL2 的 JPL/开普勒、同源路径、8颗任务算法卫星、哈雷、动态带、Bloom/最终 ACES 和解析大气有效。新增硬证据：球面环影用未逆自转的母基，而实体已转，环影部分计分；所有球体的normalMat也漏当前自转，影响独立球面光照。真实尺度关闭仍向硬压缩插值、离子尾指向太阳，三项合并完整性3.5，不重复归责到数据或哈雷。数据面板单位正确，给定signed自转/卫星算法冲突免责。拖拽、聚焦、跟随、暂停/此刻/正倒放完整；缩放最低.05可入太阳，保留部分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4323,7 +4398,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/Grok4.7(xhigh)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、13 颗名义卫星、哈雷与恩克、双向环影、动态小天体带、Bloom/ACES 和聚焦跟随；大气为 Fresnel 边缘光。通用卫星基底的 Z=X×Y 配合正角推进，使火卫两颗、土卫三颗方向逆转，海卫一反成顺行；卡戎也与 Pluto 的 IAU 正 Wrate 方向不符。",
+  "note": "原生离线长时段 JPL/开普勒与同源轨迹、动态带、双向世界坐标环影、Bloom/最终 ACES、哈雷及独立恩克彗星有效；大气为边缘光。13颗卫星中月球节点/倾角和天卫三方向有效，其余实际有向轨道含木星基矩阵/母赤道逆向错误，按卫星项扣。冥王星IAU北极配负自转率是独立data4.5。球网格显式校正外绕序，深度写入在透明层后恢复，未发现0910式剔除或清屏故障。缩放缺半径保护，暂停无完整A重置，分别部分计分。默认3days/s选Phobos并等聚焦距离收敛至2%内后，12个中心投影仍全在屏外，低通目标明显滞后，follow部分；不重复扣focus/zoom。视觉不计分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4359,7 +4434,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Grok4.7(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：月球和海卫一原有向法线有效；另6颗赤道卫星严格采用3.7的正Z局部圆轨道、X倾斜和母星正交基，提示内生方向矛盾不再归责，按任务依从共计8颗。原约179.x°角度记录不变，不把免责说成物理修正。2.5给定哈雷Tp/P与8.2七月底预设相冲突，撤销这项数据扣分。暂停以JD增量驱动并冻结物理自转，正倒放、改期、此刻均有绑定，任务未要求全状态重置，pause计1。固定0.45缩放下限可穿入天体仍保留部分分；其它渲染、轨道与交互证据不变。",
+  "note": "按完整任务复核最终绑定：原生离线 WebGL2 的 JPL世纪率/开普勒、同源行星/月球/哈雷路径、8颗任务算法卫星、动态带、双向环影、Bloom/最终 ACES 和解析大气均有效。球体网格显式校正外绕序，model、normal和逆投光矩阵均含当前自转，排除同类坐标漏洞。拖拽、完整聚焦/持续跟随、暂停物理运动与此刻/正倒放可用；最小缩放.45小于太阳4.6且没有动态半径守卫，保留zoom部分。任务给定signed自转/卫星算法/哈雷日期矛盾不扣，无额外全状态重置要求；无其它彗星，未见独立数据/完整性硬错。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4430,7 +4505,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiniMaxM3.1FlashPreview(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 包含 JPL 世纪率/开普勒行星轨道、Meeus 月球、20 颗名义卫星、双向环影、小行星带/柯伊伯带、Bloom/ACES 与安全缩放。大气仅是边缘辉光，按部分有效计。土卫八把 Laplace 面倾角套在土星赤道面，五颗天王星卫星又未匹配母星负自转方向，剔除六颗后计 14 颗有效卫星，超额奖励仍满。地球错误地给地月质心加上完整月球地心位移，日心位置偏差只扣数据项。",
+  "note": "原生离线 WebGL2 的 JPL/开普勒、Meeus月球、动态带、双向环影、Bloom/最终ACES与安全缩放有效，大气仅边缘光。20颗卫星按本轮基本参考面复算，土卫八15.47°赤道近似恢复有效；5颗天王星卫星方向仍错，计15颗有效，奖励上限不变。新发现所有卫星引导线强制落母赤道、遗漏实际倾角与节点，行星引导线正常，pathFit部分。独立数据包括黄赤转换符号、把完整Moon位移加到地月质心、E替真近点角。定时器每120ms永久新增RAF链，实测链数38→89；8ms guard使暂停JD/自转仍固定，不误称时钟加速或已发生L2，runtime4。云/大气较小LOD配原sphere索引数，跨阈值实测GL1282，独立integrity3.5。focus仅切目标，双击才拉近；持续跟随和物理暂停成立，无完整A重置。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4466,7 +4541,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：8颗卫星的带符号周期、倾角、黄道/赤道参考及正Z再绕X的构造遵循2.4/3.7，撤回提示内生方向扣分。原月球174.855°、普通卫星179.x°角度保留，按任务依从计分不表示物理轨道已修好。给定哈雷周期与7月28日文字冲突不再扣分；仍保留冥王星及若干额外矮行星rotH小时又乘24、科普中共振圈数/质心等自行添加的错误。暂停按ST.djd门控自转、正倒放和此刻成立，任务无全状态复位要求，pause计1。固定0.35缩放下限可穿入保持原扣分，其余证据不变。",
+  "note": "按完整任务与最终执行复核：原生离线 WebGL2 的 JPL/开普勒、8颗任务算法卫星、哈雷、动态带、Bloom/最终ACES和解析大气有效。新核球面环影把normalMat的R/r当作inverseR乘世界光向量，且仅单侧生效；环面球影正确，rings部分。额外矮行星rotH小时再乘24及科普共振圈数错误独立保留data4.5。球网格与模型绕序、normal矩阵、深度状态完整；交互拖拽/聚焦/跟随及任务暂停/此刻/倒放成立，.35缩放无半径保护保留部分。任务给定轴倾/负周期、卫星算法及哈雷日期冲突不扣。另将原待量化的路径核实：哈雷512等M采样在可达1986近日点段最大弦距6.53071显示单位，大于核半径0.34，pathFit改部分；其余路径正常，不在数据或哈雷项重复扣。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4502,7 +4577,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/GPT6.1Sol(Ultra)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 内嵌纹理，使用 JPL 世纪率/开普勒行星轨道、13 颗卫星和哈雷，双向环影、动态小天体带、HDR/Bloom/ACES 及持续聚焦跟随均有实现。大气沿视线做八步密度与光学深度积分，并计算日照遮挡和散射相函数，维持完整功能分。卫星使用固定近似根数、手调 J2000 相位，哈雷以固定二体周期推进，数据项保留扣分；没有重复扣有效卫星项。",
+  "note": "重新核完整最终源码：离线原生 WebGL2 的 JPL世纪率/开普勒与同源引导线、13颗有正确基本有向参考面的卫星、哈雷、动态带、双向环影、HDR/Bloom/最终ACES，以及8步视线密度和光学深度散射均实际有效。平均卫星根数、示意初相、EMB位置与哈雷二体近似均已明示，没有独立证据要求额外高精历表或扣分；旧data4和integrity4.5无独立硬错，恢复5。外绕序/proper模型、深度状态和真实尺度链成立；拖拽、按半径保护的缩放、完整聚焦和直接跟随有效。物理暂停工作，“现在”与全景分离，没有完整A状态重置，保留pauseReset部分。另将原待量化的路径核实：哈雷512等M采样在可达1986近日点段最大弦距0.32834显示单位，大于核半径0.09，pathFit改部分；其余路径正常，不在数据或哈雷项重复扣。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4538,7 +4613,7 @@ window.WORKS=[
   "weight": "heavy",
   "shot": "assets/shots/Sonnet5.5(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 使用 DE441 初值与 IAS15/1PN N 体积分，主要行星和月球由同一动力学引擎推进，其他卫星从星历锚点传播并插值，轨道面与逆行方向随实际状态向量建立。67 颗卫星、哈雷及超过三颗独立额外彗星、双向环影、动态小天体带、HDR/Bloom/ACES、真实光程大气散射与持续跟随均有实现。",
+  "note": "重新逐执行链与状态数据复核：离线原生 WebGL2 的 DE441锚点/IAS15/1PN动力学、由当前r/v重建的同源路径、67颗有向卫星状态、哈雷及超过3颗额外独立彗星、双向解析环影、动态带、HDR/Bloom/最终ACES和真实光程大气散射有效。卫星逐颗解码实际锚点并核proper变换，逆行按r×v保留，不以母自转猜方向。重新独算哈雷SBDB二体周期27728.046天，下一近日点2062-01-08与页面2061-07-28仍不合，A数据保留4.5。单主循环、完整飞行/直接跟随与逐帧半径缩放守卫有效；物理暂停成立，Now与仅恢复显示参数的设置复位分离，无完整A状态重置。视觉不计分，两类奖励均封顶。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4570,7 +4645,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6Astra(Light)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL1 使用 JPL 世纪率/开普勒轨道，行星与轨道线同源，支持持续聚焦跟随和按半径限制缩放。小行星带为静止点阵；土星只有行星投向环的单向阴影，大气是表面边缘辉光，均给部分功能分。太阳光晕是加法 billboard，没有实际 Bloom/ACES，没有卫星或彗星。暂停只停止模拟时间，“此刻”和全景分别恢复日期或镜头，缺少完整状态复位。",
+  "note": "完整WebGL1原生应用及最后绑定重读，原分项保持：真实JPL世纪率/12次Newton与完整三角旋转，行星和512均E轨道同源、30天刷新，没有哈雷/卫星。静止2000点带仅部分分，土星环只有母星投环、表面Fresnel大气均部分；日冕是解析billboard，非Bloom或ACES。球绕序虽朝内但全程未启用CULL，不扣完整性；clear前上一帧已恢复depthMasktrue，未误判深度残留。大倾角配正spin正确表达逆行，轴方位/初经度简化已明确说明，不引入IAU严格项。跟随在近观直接锁当前体、缩放始终按所追目标或太阳2.8R限距安全；暂停物理JD/spin冻结，A日期和镜头分别恢复仍.5。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4606,7 +4681,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6Astra(Medium)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：8颗卫星的参考面、周期及实际有向法线原本均有效，保持不变；未因模型自行修正负周期/大倾角组合增加额外奖励。行星根数、运动带、环影、视线大气及后期证据保持。L133的暂停、正倒放、改期与此刻绑定，L142用暂停门控的dd同时驱动JD和物理自转；任务6/8.1没有全状态重置要求，撤销仅因“此刻单独改日期”造成的半分扣减，pause计1。有效跟随与按目标半径限制滚轮的原有评分保持，视觉不计分。",
+  "note": "完整任务与最终170行应用复核：8颗卫星负Z/proper母轴、Triton仅用绝对周期与156.9°，实际有向角均有效，不靠提示免责。JPL/稳健Newton、384均E行星/哈雷线、逐帧母星平移的卫星线正确。环影完整orient逆变换且双向半径单位一致，17900运动小天体、撞击参数大气、六级Bloom后ACES满分重新证实；raw卫星按km/AU另算，实时数据没有混显示单位。暂停dd=0同时冻结物理自转、Now真回当前符合任务，装饰云纹elapsed不归暂停。新查鼠标wheel有1.7R/全景5保护，但双指pinch另走固定min.8，可进入Sun4.6，zoom部分；其余交互保持。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4639,7 +4714,7 @@ window.WORKS=[
   "weight": "light",
   "shot": "assets/shots/GPT6Luna(Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线 Canvas2D 使用 JPL 世纪率/开普勒轨道，行星与轨道线经过同一投影，小行星带随模拟时间运动。月球按 27.32 天周期在地球旁做屏幕空间椭圆，不随三维镜头旋转，维持半颗有效卫星。土星环和大气只为示意，没有彗星及实际 Bloom/ACES。拖拽与缩放可用，点击行星只更新参数和选中标记，没有镜头聚焦或持续跟随；暂停可用，复位只恢复视角。Canvas2D 本身不另扣分。",
+  "note": "离线 Canvas2D 的 JPL世纪率/开普勒与同源三维投影行星路径、随模拟时间运动的小行星带有效。土星环和大气是绘图示意；普通渐变/阴影光晕没有亮源提取与扩散Bloom，也无ACES。唯一月球按27.32天在地球旁画屏幕空间椭圆，计半颗有效，未声称真实3D参考面。选择只改参数与标记、镜头仍固定太阳，focus部分/follow0；拖拽和有界缩放成立。JD物理暂停可用，resetView只恢复镜头。未见独立运行/数据/完整性错误，不因Canvas本身额外扣分，无彗星。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4675,7 +4750,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6Luna(Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按文件尾部最终覆盖与任务原文复核：L232修正后的月球及另外6颗卫星保持有效；海卫一在L74额外左手母基下实际有向倾角23.1°，该基手性不是任务要求，继续不计，仍为7颗。哈雷固定Tp/P与任务8.2七月底文本的矛盾不归责，撤销原数据扣分。最终L231/L233实时坐标修正继续有效；L230选哈雷仍清空camera.follow，持续跟随部分分保持。L186/187/232已提供暂停、正倒放、改期和此刻且冻结物理自转，任务不要求全状态复位，pause计1。渲染、轨道、缩放及其它项不变。",
+  "note": "重新核全部文件尾覆盖与完整任务：原生 WebGL2 的 JPL/开普勒、当前同源行星路径、7颗有效卫星、哈雷、动态带、双向世界环影、Bloom/最终ACES和解析大气有效。海卫一仍因额外左手母基实际23.1°无效，任务不要求该左手基。新增独立完整性证据：外绕序球网格配负det模型和实际BACK/CCW剔除，净显示内侧，integrity4；不重复到卫星或数据。哈雷最终选择清空follow，持续跟随部分；普通聚焦/跟随、拖拽、安全缩放与任务暂停/此刻/正倒放有效。任务给定自转/日期冲突不归责，也不额外要求全状态reset。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4711,13 +4786,13 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Haiku5.5(Ultracode)V1.jpg",
   "jsErrors": 0,
-  "note": "联网 Three.js r160 使用 JPL 世纪率/开普勒行星轨道、Meeus 月球、四颗木卫和土卫六，六颗卫星的基本参考面与方向成立。哈雷、两类动态小天体带、HDR/Bloom/ACES 和持续聚焦跟随均有实现。地球运动正常，但轨道绘制把 earth 改传成 BODIES 中不存在的 emb，轨道线退化到太阳，其余路径有效，路径拟合给部分分，不重复扣运行正确性。",
+  "note": "重新核最终 Three.js r160 执行链：JPL世纪率/开普勒、Meeus月球及5颗正确母赤道规则卫星、哈雷、动态带、Bloom与末尾OutputPass的ACES有效。Earth引导线仍因earth→emb改传而在BODIES查空，退化太阳原点；Earth实体正常，仅pathFit部分扣。普通环材质无双向阴影，大气为边缘光。实体/云/大气与尺寸缩放同步，数据单位和EMB质量修正成立，无独立正确性硬错。拖拽/完整聚焦/相对平移跟随可用；.02近距下限缺半径保护，reset仅镜头/选择，分别部分。需运行CDN及字体，Composer无实际MSAA；无其它彗星或致命故障。",
   "issue": null,
   "net": [
-    "cdn.jsdelivr.net",
-    "fonts.googleapis.com",
-    "fonts.gstatic.com"
-  ],
+  "cdn.jsdelivr.net",
+  "fonts.googleapis.com",
+  "fonts.gstatic.com"
+],
   "fix": null,
   "tags": [
     "in Claude Code"
@@ -4751,7 +4826,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Haiku5.5(Ultracode)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：月球及另外6颗卫星的实际有向法线保持有效；Charon在L1154/1163额外因Pluto负rotH翻转moonFrame参考极，继续不计，仍为7颗。任务3.7只给初始相位变量、没有卫星历表，界面“角位置、相位等真实”的措辞沿任务0；撤回要求模型额外取得真实卫星历表的归责，不宣称实际物理初相已经验证。暂停stepDays为0并冻结自转，正倒放与此刻有效；任务未要求全状态复位，pause计1。既有行星、带、环影、大气、HDR/Bloom/ACES、跟随及安全缩放评分不变。",
+  "note": "对照完整任务与最终绑定重新核：原生离线 WebGL2 的 JPL/开普勒、同源行星与卫星路径、7颗有效卫星、哈雷、动态带、双向解析环影、HDR/Bloom/最终ACES和解析大气有效。Charon额外依据Pluto负rotH翻转moonFrame，实际179.92°仍无效，不把母星错误自转当真实参考。新增缩放实证：Sun半径4.6，wheel可将距离缩到1.5000035，近距无动态半径守卫，zoom降部分；小星体焦点安全不掩盖太阳问题。拖拽、完整聚焦/直接跟随和冻结物理的暂停/此刻/倒放可用。任务本身参数、相位未给历表和日期冲突不归责，无全状态reset要求；无其它独立正确性硬错。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4787,7 +4862,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Haiku5.5(Ultracode·Max)V1.jpg",
   "jsErrors": 0,
-  "note": "离线原生 WebGL2 使用 JPL 世纪率/开普勒行星轨道、Meeus 月球、22 颗已绘制卫星、哈雷、双向土星环影、动态小天体带和 HDR/Bloom/ACES。",
+  "note": "重新核原生离线 WebGL2 的 JPL/开普勒、Meeus月球、22颗卫星、哈雷、双向环影、动态带与HDR/Bloom/最终ACES；大气仍为边缘光。卫星按真实有向基核16颗有效，5颗天王星卫星方向及土卫八7.57°Laplace参考误用保留无效，奖励仍满；不依母星错误自转推断。缓存1200天的月球路径本轮纯函数复算：启动JD2461313.5后500天到旧引导线最近约25003km，pathFit部分，实体稳定。土卫七错误同步锁定与海卫一同步姿态错误独立data4，不重复轨道/卫星。完整聚焦、精确跟随与逐帧半径安全缩放成立；暂停位置/自转有效，Now和视图reset分离，A部分。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4814,7 +4889,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "按详细任务原文复核：8颗卫星的参考面、周期及实际有向法线均有效，保持不变。金星、天王星和冥王星的大倾角几何轴、负rotH及有符号限速自转正是任务2.2/3.6/7.11给定组合，其物理双反矛盾不归责模型，data恢复5，不声称自转效果已修好。L4240/4410提供此刻、暂停、正倒放与改期，任务6/8.1无全状态复位要求，pause计1。哈雷512个等平均近点角轨道样本在近日点最大弦偏差约6.465显示单位不是任务规定采样法，pathFit仍部分分；地球聚焦可缩到0.3小于半径0.72，zoom部分分保持。其余渲染、数据、跟随证据不变。",
+  "note": "完整对照任务重新核：原生离线 WebGL2 的 JPL/开普勒、8颗实际有向倾角和参考面正确卫星、哈雷、双向环影、动态带、HDR/Bloom/最终ACES及解析大气有效。哈雷引导线512均平均近点角采样造成近日点最大弦距约6.465显示单位，保留pathFit部分；实体和其它轨迹不因此再扣正确性。自转参数和signed/clamp组合忠实任务，其物理双反矛盾不扣。Moon采用真实orbit h作同步轴，未见额外锁定反向错误。拖拽、完整聚焦、直接跟随与暂停/此刻/倒放成立，任务无fullreset；固定最低.3可进半径.72地球，zoom部分。无其它独立正确性硬错或额外彗星。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4848,7 +4923,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "自包含原生 WebGL2 实现 JPL 世纪率/开普勒轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线密度大气和 HDR/Bloom/ACES。自转按详细任务给定参数及公式执行，规定的时间控制均完成；全景缩放仍可穿入太阳。",
+  "note": "按完整任务和最终执行链重新核：自包含 WebGL2 的JPL/开普勒、8颗有正确有向参考面/周期卫星、哈雷、双向环影、动态17900带粒子、HDR/Bloom/最终ACES及解析大气有效。模型/法线/环投光都含实际自转，球网格外绕序，排除同类漏洞。512均偏近点角路径与实体同源，哈雷弦误差小于.22核半径。任务给定tilt、负rotH、signed/clamp和June/July矛盾不归责，初相示意已披露。拖拽、聚焦/跟随和暂停物理/日期/此刻/倒放有效；全景最低.5可入Sun4.6，zoom部分，焦点按1.45R安全。无其他已证硬错，98.75建议不变。",
   "issue": null,
   "net": [],
   "fix": null,
@@ -4875,7 +4950,7 @@ window.WORKS=[
   "weight": "medium",
   "shot": "assets/shots/GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5.jpg",
   "jsErrors": 0,
-  "note": "自包含原生 WebGL2 实现 JPL 世纪率/开普勒轨道、8颗有效卫星、哈雷、双向环影、动态小天体带、视线密度大气和 HDR/Bloom/ACES。全景与聚焦缩放均有安全下限；正倒放、暂停、此刻及持续聚焦跟随可用。",
+  "note": "完整任务与最终源码重新复核：原生离线 WebGL2 的JPL/开普勒、8颗正确有向参考面和周期卫星、哈雷、双向解析环影、17900运动带粒子、HDR/Bloom/最终ACES及解析大气有效。最终model/normal/环坐标和球绕序配套，轨迹同源；768均偏近点角哈雷最大压缩弦距.00850，小于.22核半径。示意初相和二体日期已披露，任务自转参数/算法矛盾不归责。拖拽抑制误点、完整聚焦/持续跟随、暂停物理与此刻/日期/倒放成立；全景min8、焦点1.8R(土星2.75R)安全。哈雷构图偏移随当前位置重算。未见新独立数据、运行或完整性缺陷，100建议不变。",
   "issue": null,
   "net": [],
   "fix": null,

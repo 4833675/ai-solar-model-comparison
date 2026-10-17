@@ -22,6 +22,8 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+["DeepSeek V4.1 Flash 1017",0.3,1.2,0.006,"deepseek",null,"2026-10-17"],
+
     ['Claude Fable 5.1', 10, 50, .25, 'claude'],
     ['Claude Opus 5.5', 4, 20, .2, 'claude', null, '2026-09-27'],
     ['Claude Opus 5', 5, 25, .5, 'claude'],
