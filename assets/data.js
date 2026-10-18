@@ -1,11 +1,14 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"0":"第0梯队","1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","deepseekv41flash1017","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","deepseekv41flash1017","deepseekv41flash1017v2","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max)","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
+window.PAIR_TITLES={"deepseekv41flash1017v2":"DeepSeek V4.1 Flash 1017 (Max) #2","deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max) #1","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","GPT5.5xHigh-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","LongCat2.0-TasksAssignedByOpus5","LongCat2.0","Mimo_2_5_Pro_high-1","Opus_4_8_Max","Opus4.8Ultra-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6TerraUltra-Three","GPT5.6TerraUltra-TasksAssignedByOpus5","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Opus5(Max)V1","MiniMax_M3_thinking-1","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3(high)V2-TasksAssignedByOpus5","Opus5Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Gemini3.1Pro-TasksAssignedByOpus5"];
 window.WORK_CREATION_DATES={
+"DeepSeekV4.1Flash1017(Max)V2":"261018",
+"DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5":"261018",
+
 "DeepSeekV4.1Flash1017(Max)V1":"261017",
 "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5":"261017",
 
@@ -156,9 +159,81 @@ window.WORK_CREATION_DATES={
 };
 window.WORKS=[
 {
+  "id": "DeepSeekV4.1Flash1017(Max)V2",
+  "file": "models/DeepSeekV4.1Flash1017(Max)V2.html",
+  "model": "DeepSeek V4.1 Flash 1017 (Max) #2",
+  "group": "A",
+  "pair": "deepseekv41flash1017v2",
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 2623050,
+  "lines": 3212,
+  "title": "太阳系 · 实时轨道仪 — HELIOS",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeekV4.1Flash1017(Max)V2.jpg",
+  "jsErrors": 0,
+  "note": "离线打包Three.js r128，JPL世纪根数/当前UTC历元、开普勒、proper世界坐标及同源轨道线成立。7颗卫星中，月球黄道3.43363°、周期和顺行正确但倾角数值偏离5.145°，部分计0.5；4颗木卫及Titan/Triton未建立母赤道，实际有向法线不符而无效。环只母星投环影，大气仅Fresnel边缘辉光；运动双带、自建提亮/双级模糊及Bloom后统一ACES有效。负周期叠加大倾角造成Venus/Uranus/Pluto自转再翻、卫星名义锁定反转、belt的+Z映射逆行及Venus半径用直径合并数据扣分，不在moon重复。640段引导线误差及冻结世纪率漂移均小于实体半径，路径满分。A暂停/镜头复位部分；实跑确认默认Io跟随20次均离屏，镜头半径0.7000002而target滞后约2.4，跟随部分；正常Pause后JD、Earth/Moon位置与自转、双带时间和Sun实体自转完全冻结。暂停Sun最小距离0.280005小于半径3.6，缩放部分已实证。JS/GL0、requests[]，无任何彗星、无fatal。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Zcode"
+  ],
+  "tier": 2,
+  "rank": 36
+},
+{
+  "id": "DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5",
+  "file": "models/DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5.html",
+  "model": "DeepSeek V4.1 Flash 1017 (Max) #2",
+  "group": "B",
+  "pair": "deepseekv41flash1017v2",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 137886,
+  "lines": 3784,
+  "title": "太阳系 · 实时运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "原生离线 WebGL2，逐条对照详细任务复核。JPL世纪率/J2000、开普勒行星和哈雷、运动双带、Bloom/最终ACES及解析大气有效；8颗卫星忠实采用任务给定正Z/Rx/proper母轴，按任务信用全计，实际Moon174.855°等方向保留，不称物理已修。球面环影的光向漏逆自转，双向环影部分计分。行星与哈雷轨道线漏黄道到世界换轴，和实体偏离多个半径；默认Io近景跟随因目标平滑滞后仍会出屏。月球距地/光行时及反日离子尾正确，不重复扣分。拖拽、安全缩放、聚焦、物理暂停、正倒放和此刻有效，任务不要求全状态重置。视觉不计分。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Zcode"
+  ],
+  "tier": 2,
+  "rank": 36
+},
+
+{
   "id": "DeepSeekV4.1Flash1017(Max)V1",
   "file": "models/DeepSeekV4.1Flash1017(Max)V1.html",
-  "model": "DeepSeek V4.1 Flash 1017 (Max)",
+  "model": "DeepSeek V4.1 Flash 1017 (Max) #1",
   "group": "A",
   "pair": "deepseekv41flash1017",
   "featured": false,
@@ -193,7 +268,7 @@ window.WORKS=[
 {
   "id": "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5",
   "file": "models/DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5.html",
-  "model": "DeepSeek V4.1 Flash 1017 (Max)",
+  "model": "DeepSeek V4.1 Flash 1017 (Max) #1",
   "group": "B",
   "pair": "deepseekv41flash1017",
   "featured": false,

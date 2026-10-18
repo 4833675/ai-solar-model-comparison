@@ -3,6 +3,316 @@
   'use strict';
 
   window.SCORES = {
+"DeepSeekV4.1Flash1017(Max)V2": {
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 7,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 0.5,
+      "actualInclinationDeg": 3.4336303624504017,
+      "actualEclipticInclinationDeg": 3.4336303624504017,
+      "actualDrawnEquatorInclinationDeg": 23.676107470419513,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.321661,
+      "reference": "ecliptic",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "L2246–2305/L2425–2434最终r=(cos a,.06 sin a,−sin a)，parent.moonsGroup未继承Earth tilt，proper world黄北+Y；有向r×v黄道3.433630362°，周期27.321661d、母关联/顺行正确，黄道参考面成立但incline数值偏离5.145°，部分quality0.5并保留Earth Moon锚点。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 3.332921583468809,
+      "actualEclipticInclinationDeg": 1.1457628381751443,
+      "actualDrawnEquatorInclinationDeg": 3.332921583468809,
+      "expectedInclinationDeg": 0.036,
+      "periodDays": 1.769138,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "月球挂parent.moonsGroup仅做母星平移，未建立母赤道basis；实际直接黄道小斜率圆，与已有QwenFlashA同口径错误参考面quality0，不因Jupiter倾轴较小而碰巧近似计半分。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 3.570254354171716,
+      "actualEclipticInclinationDeg": 1.7183580016531674,
+      "actualDrawnEquatorInclinationDeg": 3.570254354171716,
+      "expectedInclinationDeg": 0.466,
+      "periodDays": 3.551181,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "月球挂parent.moonsGroup仅做母星平移，未建立母赤道basis；实际直接黄道小斜率圆，与已有QwenFlashA同口径错误参考面quality0，不因Jupiter倾轴较小而碰巧近似计半分。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 3.3329215834684804,
+      "actualEclipticInclinationDeg": 1.1457628381748262,
+      "actualDrawnEquatorInclinationDeg": 3.3329215834684804,
+      "expectedInclinationDeg": 0.177,
+      "periodDays": 7.154553,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "月球挂parent.moonsGroup仅做母星平移，未建立母赤道basis；实际直接黄道小斜率圆，与已有QwenFlashA同口径错误参考面quality0，不因Jupiter倾轴较小而碰巧近似计半分。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 3.8779599438359225,
+      "actualEclipticInclinationDeg": 2.2906100426371614,
+      "actualDrawnEquatorInclinationDeg": 3.8779599438359225,
+      "expectedInclinationDeg": 0.192,
+      "periodDays": 16.689017,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "月球挂parent.moonsGroup仅做母星平移，未建立母赤道basis；实际直接黄道小斜率圆，与已有QwenFlashA同口径错误参考面quality0，不因Jupiter倾轴较小而碰巧近似计半分。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 26.752738523934813,
+      "actualEclipticInclinationDeg": 1.1457628381751443,
+      "actualDrawnEquatorInclinationDeg": 26.752738523934813,
+      "expectedInclinationDeg": 0.34854,
+      "periodDays": 15.945421,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "月球挂parent.moonsGroup仅做母星平移，未转Saturn赤道；有向r×v对所绘母赤道26.752738524°，不是约0.34854°，错误参考面quality0。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 151.25492092389024,
+      "actualEclipticInclinationDeg": 174.85723544211393,
+      "actualDrawnEquatorInclinationDeg": 151.25492092389024,
+      "expectedInclinationDeg": 156.865,
+      "periodDays": -5.876854,
+      "reference": "drawn-parent-equator",
+      "sourceLines": [
+        2246,
+        2269,
+        2286,
+        2425,
+        2427,
+        2431,
+        2433
+      ],
+      "reason": "负周期确逆行，但在黄道小斜率圆而非Neptune赤道建轨；有向r×v对所绘母赤道151.254920924°而非约156.865°，未建母赤道/正确倾角quality0。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "离线打包Three.js r128，JPL世纪根数/当前UTC历元、开普勒、proper世界坐标及同源轨道线成立。7颗卫星中，月球黄道3.43363°、周期和顺行正确但倾角数值偏离5.145°，部分计0.5；4颗木卫及Titan/Triton未建立母赤道，实际有向法线不符而无效。环只母星投环影，大气仅Fresnel边缘辉光；运动双带、自建提亮/双级模糊及Bloom后统一ACES有效。负周期叠加大倾角造成Venus/Uranus/Pluto自转再翻、卫星名义锁定反转、belt的+Z映射逆行及Venus半径用直径合并数据扣分，不在moon重复。640段引导线误差及冻结世纪率漂移均小于实体半径，路径满分。A暂停/镜头复位部分；实跑确认默认Io跟随20次均离屏，镜头半径0.7000002而target滞后约2.4，跟随部分；正常Pause后JD、Earth/Moon位置与自转、双带时间和Sun实体自转完全冻结。暂停Sun最小距离0.280005小于半径3.6，缩放部分已实证。JS/GL0、requests[]，无任何彗星、无fatal。",
+  "reviewedAt": "2026-10-18",
+  "reviewVersion": "V3-20261018"
+},
+"DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5": {
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 174.85499999999865,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.32166,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.94999999998507,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.53000000004016,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.79999999999472,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.81000000000498,
+      "expectedInclinationDeg": 0.19,
+      "periodDays": 16.689,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 179.65000000005355,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.9000000002329,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": -5.876854,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 179.9200000065072,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.3872,
+      "reason": "L2563–2589原函数数值r×v；严格spec§3.7正Z、Rx和proper母轴/黄道直接相加，内生反向不归责；保留实际有向角，不声称物理修复。"
+    }
+  ],
+  "reviewedAt": "2026-10-18",
+  "reviewVersion": "V3-20261018",
+  "note": "原生离线 WebGL2，逐条对照详细任务复核。JPL世纪率/J2000、开普勒行星和哈雷、运动双带、Bloom/最终ACES及解析大气有效；8颗卫星忠实采用任务给定正Z/Rx/proper母轴，按任务信用全计，实际Moon174.855°等方向保留，不称物理已修。球面环影的光向漏逆自转，双向环影部分计分。行星与哈雷轨道线漏黄道到世界换轴，和实体偏离多个半径；默认Io近景跟随因目标平滑滞后仍会出屏。月球距地/光行时及反日离子尾正确，不重复扣分。拖拽、安全缩放、聚焦、物理暂停、正倒放和此刻有效，任务不要求全状态重置。视觉不计分。"
+},
+
 "DeepSeekV4.1Flash1017(Max)V1": {
   "reference": false,
   "orbitModel": {

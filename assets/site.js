@@ -37,6 +37,19 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"DeepSeekV4.1Flash1017(Max)V2": {
+  "direction": "up",
+  "count": 3,
+  "zh": "我给过你机会了",
+  "en": "I gave you a chance"
+},
+"DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5": {
+  "direction": "up",
+  "count": 3,
+  "zh": "我给过你机会了",
+  "en": "I gave you a chance"
+},
+
 "DeepSeek V4.1 Flash 1017 (Max)": {
   "direction": "up",
   "count": 3,
@@ -105,7 +118,7 @@
   const recommendationModelKey = model => String(model || '').replace(/\s+\(\d{6}\)$/, '').replace(/ #\d+$/, '');
   const personalRecommendationFor = work => {
     const modelKey = recommendationModelKey(work && work.model);
-    const value = PERSONAL_RECOMMENDATIONS[modelKey];
+    const value = PERSONAL_RECOMMENDATIONS[work && work.id] || PERSONAL_RECOMMENDATIONS[modelKey];
     if (isArchivedWork(work) || LEGACY_MODEL_FAMILIES.has(modelKey.replace(/\s+\([^()]*\)$/, ''))) return {
       reason: value ? (I18N.en ? value.en : value.zh) : '—',
       symbols: '-', direction: 'legacy', count: 0, sortValue: 0,
