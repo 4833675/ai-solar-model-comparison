@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"MiniMax M3.1 Flash (Max)":{
+  "direction": "down",
+  "count": 1,
+  "zh": "",
+  "en": ""
+},
+
 "DeepSeekV4.1Flash1017(Max)V2": {
   "direction": "up",
   "count": 3,

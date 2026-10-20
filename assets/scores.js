@@ -3,6 +3,718 @@
   'use strict';
 
   window.SCORES = {
+"MiniMaxM3.1Flash(Max)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0,
+    "stability": 1
+  },
+  "moons": 18,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.320151303617098,
+      "expectedInclinationDeg": 5.145,
+      "nominalPeriodDays": 27.321661,
+      "instantAngularPeriodDays": 31.348569812277194,
+      "reference": "ecliptic",
+      "reason": "L538–570/L737–741：独立Meeus月球地心黄道级数；有向黄道倾角本轮历元5.320151°，一月范围4.434–5.873°为扰动近似，平均月运动/真实日历/母关联成立，质量1。不把对母星错误黄赤pole的夹角当Moon轨道倾角。",
+      "actualToDrawnNorthDeg": 19.09132770830185,
+      "physicalInclinationRangeDeg": [
+        4.434434960957399,
+        5.8726196098634595
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 0,
+      "actualInclinationDeg": 42.84522657947402,
+      "expectedInclinationDeg": 1.075,
+      "nominalPeriodDays": 0.3189102589826629,
+      "instantAngularPeriodDays": 0.24285542922494868,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.242855d而表给0.318910d；独立Rx(−EPS)物理母pole的有向r×v倾角42.845227°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 1.0737341972061125,
+      "physicalInclinationRangeDeg": [
+        41.544595747016686,
+        42.85242743234838
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 0,
+      "actualInclinationDeg": 42.68715376713618,
+      "expectedInclinationDeg": 1.788,
+      "nominalPeriodDays": 1.2624408416276485,
+      "instantAngularPeriodDays": 0.5662986312553169,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.566299d而表给1.262441d；独立Rx(−EPS)物理母pole的有向r×v倾角42.687154°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.9243565094889179,
+      "physicalInclinationRangeDeg": [
+        40.15437925874463,
+        43.55799808849499
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 46.87337198828318,
+      "expectedInclinationDeg": 0.036,
+      "nominalPeriodDays": 1.769137799754121,
+      "instantAngularPeriodDays": 0.33578484273783843,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.335785d而表给1.769138d；独立Rx(−EPS)物理母pole的有向r×v倾角46.873372°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.008347152961210604,
+      "physicalInclinationRangeDeg": [
+        46.83757632218499,
+        46.906346728985454
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 47.20330153293227,
+      "expectedInclinationDeg": 0.466,
+      "nominalPeriodDays": 3.551181079177,
+      "instantAngularPeriodDays": 0.37080321676984257,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.370803d而表给3.551181d；独立Rx(−EPS)物理母pole的有向r×v倾角47.203302°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.42618483543832136,
+      "physicalInclinationRangeDeg": [
+        46.41823091941827,
+        47.33923531920676
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 46.999169181997644,
+      "expectedInclinationDeg": 0.177,
+      "nominalPeriodDays": 7.154553119547032,
+      "instantAngularPeriodDays": 0.39107831634868684,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.391078d而表给7.154553d；独立Rx(−EPS)物理母pole的有向r×v倾角46.999169°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.16408072565420098,
+      "physicalInclinationRangeDeg": [
+        46.70061253942039,
+        47.045491226539816
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 46.94289796138307,
+      "expectedInclinationDeg": 0.192,
+      "nominalPeriodDays": 16.689017974837274,
+      "instantAngularPeriodDays": 0.40368298776982436,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.403683d而表给16.689018d；独立Rx(−EPS)物理母pole的有向r×v倾角46.942898°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.1901027870913474,
+      "physicalInclinationRangeDeg": [
+        46.68537151446452,
+        47.06100517299399
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 46.9473622045817,
+      "expectedInclinationDeg": 0.348,
+      "nominalPeriodDays": 15.945447576488629,
+      "instantAngularPeriodDays": 0.43123003151811024,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.431230d而表给15.945448d；独立Rx(−EPS)物理母pole的有向r×v倾角46.947362°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.29861075859147707,
+      "physicalInclinationRangeDeg": [
+        46.350719728818575,
+        47.0260982585962
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "rhea",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 46.957957520655256,
+      "expectedInclinationDeg": 0.345,
+      "nominalPeriodDays": 4.517499664324678,
+      "instantAngularPeriodDays": 0.4033798634910911,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.403380d而表给4.517500d；独立Rx(−EPS)物理母pole的有向r×v倾角46.957958°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.29117640424327706,
+      "physicalInclinationRangeDeg": [
+        46.36428331511165,
+        47.0394877562156
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 46.704809079413096,
+      "expectedInclinationDeg": 0.009,
+      "nominalPeriodDays": 1.3702180837122833,
+      "instantAngularPeriodDays": 0.33495507550150444,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.334955d而表给1.370218d；独立Rx(−EPS)物理母pole的有向r×v倾角46.704809°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.008454412311162314,
+      "physicalInclinationRangeDeg": [
+        46.68795879040557,
+        46.70572889336961
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "iapetus",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 50.584312180496106,
+      "expectedInclinationDeg": 15.47,
+      "nominalPeriodDays": 79.3308495725786,
+      "instantAngularPeriodDays": 0.4449943210328647,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.444994d而表给79.330850d；独立Rx(−EPS)物理母pole的有向r×v倾角50.584312°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 5.1031395136439555,
+      "physicalInclinationRangeDeg": [
+        31.581464789638215,
+        61.445402056513274
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 45.61604441327711,
+      "expectedInclinationDeg": 0.34,
+      "nominalPeriodDays": 8.70586545787208,
+      "instantAngularPeriodDays": 0.7828012572623766,
+      "reference": "negative physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.782801d而表给8.705865d；独立Rx(−EPS)物理母pole的有向r×v倾角45.616044°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 179.844018574884,
+      "physicalInclinationRangeDeg": [
+        45.41231119665382,
+        46.08355073748894
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "oberon",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 45.70336259328028,
+      "expectedInclinationDeg": 0.058,
+      "nominalPeriodDays": 13.463228557003683,
+      "instantAngularPeriodDays": 0.7588854502943169,
+      "reference": "negative physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.758885d而表给13.463229d；独立Rx(−EPS)物理母pole的有向r×v倾角45.703363°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 179.95108454293066,
+      "physicalInclinationRangeDeg": [
+        45.694102286170846,
+        45.80853486474849
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "ariel",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 45.718155359294855,
+      "expectedInclinationDeg": 0.26,
+      "nominalPeriodDays": 2.52037887166924,
+      "instantAngularPeriodDays": 1.0051285774871843,
+      "reference": "negative physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期1.005129d而表给2.520379d；独立Rx(−EPS)物理母pole的有向r×v倾角45.718155°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 179.76315483124588,
+      "physicalInclinationRangeDeg": [
+        45.50755855876444,
+        46.00001832491841
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "miranda",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 47.35211989116592,
+      "expectedInclinationDeg": 4.232,
+      "nominalPeriodDays": 1.4134819134635417,
+      "instantAngularPeriodDays": 1.4612189528753685,
+      "reference": "negative physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期1.461219d而表给1.413482d；另用独立Rx(−EPS)正确IAU母pole量得有向r×v倾角47.352120°，不是原错误frame.z下的近似倾角。质量0。Miranda虽周期巧合接近，正确物理pole夹角47.352°，不能恢复半分；相同卫星问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 175.63422497355776,
+      "physicalInclinationRangeDeg": [
+        47.35211989116589,
+        48.122329379576385
+      ],
+      "parentFrameDeterminant": 1
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 32.111953507875135,
+      "expectedInclinationDeg": 156.865,
+      "nominalPeriodDays": 5.876854078286229,
+      "instantAngularPeriodDays": 0.6583242408909632,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.658324d而表给5.876854d；独立Rx(−EPS)物理母pole的有向r×v倾角32.111954°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 17.072766208445266,
+      "physicalInclinationRangeDeg": [
+        20.95438971361403,
+        66.74536998497611
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "proteus",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 43.65908238725055,
+      "expectedInclinationDeg": 0.075,
+      "nominalPeriodDays": 1.1223120626100491,
+      "instantAngularPeriodDays": 0.41986709573511705,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期0.419867d而表给1.122312d；独立Rx(−EPS)物理母pole的有向r×v倾角43.659082°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.030622830746868546,
+      "physicalInclinationRangeDeg": [
+        43.583265664871625,
+        43.718791284160865
+      ],
+      "parentFrameDeterminant": 0.9999999999999997
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 0,
+      "actualInclinationDeg": 33.99624443196929,
+      "expectedInclinationDeg": 0.08,
+      "nominalPeriodDays": 6.387222999112575,
+      "instantAngularPeriodDays": 3.1942477863678786,
+      "reference": "physical IAU north",
+      "reason": "L573–600/L743–747：moonOffset的坐标乘包含母星W0+Wd*d的每日旋转frame，叠加母星自转，实际瞬时角周期3.194248d而表给6.387223d；独立Rx(−EPS)物理母pole的有向r×v倾角33.996244°。质量0，不把declared i或n当实际轨道；同一问题不在data再次扣。",
+      "actualToDrawnNorthDeg": 0.040367915560341854,
+      "physicalInclinationRangeDeg": [
+        33.9241044325201,
+        34.08327829257965
+      ],
+      "parentFrameDeterminant": 1
+    }
+  ],
+  "halley": false,
+  "otherComets": 1,
+  "correctness": {
+    "runtime": 4,
+    "data": 3,
+    "integrity": 4
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，JPL世纪率/开普勒、Meeus月球、运动双带、HDR三层Bloom与最终ACES有效；大气仅边缘壳。环投影到星球正确，星球投到环的射线符号相反，环部分。行星引导线因按数组索引创建orb_0而实际请求orb_mercury等全部缺失，pathFit0。18颗名义卫星中Moon有效；其余乘带每日W的母星frame，周期叠加母自转，17颗无效（Miranda虽周期巧合接近，实际有向轨道偏离正确物理母pole47°），同一卫星问题不在data重复。无哈雷，有独立恩克彗星1奖励；实际彗头POINTS1在视野内且GL0，不另扣非法不可见尾的朝向。grid累计offset错误产生负drawcount，comet把浮点数量作顶点数越界，实测重复GL_INVALID_VALUE/INVALID_OPERATION（终态1282）合并runtime4；611帧主loop持续且JS0/错误面板空、无fatal。黄赤变换反号、Sun质心质量单位与动态带角度单位合并data3。两个独立显示缺陷合并integrity4：26000星的单位方向被作为原点附近world坐标绘制，全系视角仅占.000228×.000186像素；卫星显示先于母星坐标更新，真实比例、moonGain1、普通UI10^5×下，Moon显示中心比同帧phys/1000错50059.252km，即28.81274个Moon半径。后者是显示次序故障，保留Moon轨道quality1，不重复扣已缺失行星引导线的pathFit。物理暂停前后JD/全部天体phys/disp/frame/双带一致；Moon在10^5×跟随12/12屏内且camera lag0，显示错位不当跟随故障重复扣。拖拽/聚焦/Now/倒放成立；最近Moon视距.1<实体半径1.7374，R仅回Sun且保留10^5×倒放，两项部分。",
+  "reviewedAt": "2026-10-20",
+  "reviewVersion": "V3-20261020"
+},
+"MiniMaxM3.1Flash(Max)V2":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 7,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "reference": "ecliptic",
+      "actualInclinationDeg": 5.1071886582372965,
+      "actualEclipticInclinationDeg": 5.1071886582372965,
+      "actualDrawnEquatorInclinationDeg": 153.49514647520581,
+      "unorientedEquatorPlaneAngle": 26.504853524794186,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.321661,
+      "sourceLines": [
+        523,
+        780,
+        2003,
+        2021
+      ],
+      "reason": "最终ELP-2000月理覆盖名义Kepler Moon：proper世界变换后r×v黄道倾角4.99–5.11°、27.32d周期、真实父关联和顺行成立。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 3.0954885315034533,
+      "actualEclipticInclinationDeg": 0.05000000000036243,
+      "actualDrawnEquatorInclinationDeg": 176.90451146849657,
+      "unorientedEquatorPlaneAngle": 3.0954885315034346,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "实际moonRelative未经母赤道basis直接当黄道，r×v与母赤道平面无向夹角3.095489°，不是输入0.05°；参考面缺失quality0，不由母星错误自转方向倒推。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 3.445757098674246,
+      "actualEclipticInclinationDeg": 0.46999999999861186,
+      "actualDrawnEquatorInclinationDeg": 176.55424290132575,
+      "unorientedEquatorPlaneAngle": 3.4457570986742496,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "实际moonRelative未经母赤道basis直接当黄道，r×v与母赤道平面无向夹角3.445757°，不是输入0.47°；参考面缺失quality0，不由母星错误自转方向倒推。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 2.952278307571623,
+      "actualEclipticInclinationDeg": 0.19999999999981222,
+      "actualDrawnEquatorInclinationDeg": 177.04772169242838,
+      "unorientedEquatorPlaneAngle": 2.9522783075716177,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "实际moonRelative未经母赤道basis直接当黄道，r×v与母赤道平面无向夹角2.952278°，不是输入0.2°；参考面缺失quality0，不由母星错误自转方向倒推。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 3.2976916730512227,
+      "actualEclipticInclinationDeg": 0.189999999998867,
+      "actualDrawnEquatorInclinationDeg": 176.70230832694878,
+      "unorientedEquatorPlaneAngle": 3.2976916730512187,
+      "expectedInclinationDeg": 0.19,
+      "periodDays": 16.689017,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "实际moonRelative未经母赤道basis直接当黄道，r×v与母赤道平面无向夹角3.297692°，不是输入0.19°；参考面缺失quality0，不由母星错误自转方向倒推。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 26.567024693656855,
+      "actualEclipticInclinationDeg": 0.34999999999958503,
+      "actualDrawnEquatorInclinationDeg": 153.43297530634314,
+      "unorientedEquatorPlaneAngle": 26.56702469365686,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945421,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "实际moonRelative未经母赤道basis直接当黄道，r×v与母赤道平面无向夹角26.567025°，不是输入0.35°；参考面缺失quality0，不由母星错误自转方向倒推。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "reference": "parent-equator",
+      "actualInclinationDeg": 38.26962047987922,
+      "actualEclipticInclinationDeg": 23.115000000022107,
+      "actualDrawnEquatorInclinationDeg": 141.73037952012078,
+      "unorientedEquatorPlaneAngle": 38.26962047987922,
+      "expectedInclinationDeg": 156.885,
+      "periodDays": -5.876854,
+      "sourceLines": [
+        338,
+        424,
+        1978,
+        1998
+      ],
+      "reason": "156.885°和负P同时进入标准Kepler公式，实际有向r×v相对黄道23.115°，且未建立Neptune赤道basis；对正确映射母赤道有向角38.2696°，不是156.885°，quality0。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "离线打包Three.js r149，JPL世纪根数/开普勒与当前UTC历元、8行星proper世界坐标、双带、6级Bloom后统一ACES、真实哈雷有效。7颗卫星仅最终ELP Moon有效，另6颗缺母赤道参考面，Triton还叠加负周期与156.885°反转。土/天王星环最终均与母赤道垂直90°，母星缺环纹理，环影只有部分实现；大气为边缘光。初始轨道线误差小于实体半径，但正常比例按钮往返把已缩放顶点再次视作AU，同刻实体恢复后guide仍扩大50–149倍。正常顺行行星实体自转实际反向，合并data4；Pluto在太阳中心无状态/运动，以及“真实比例”仍失真，独立integrity4。默认Io12/12、快速8/8居中，跟随满分；暂停后JD/实体自转位置/双带/Sun时间全冻结，反放与Now正常。Sun最小缩放.0300196<R4.6，缩放部分；缺A完整reset，暂停与重置部分。隔离运行errors[]/warnings[]/GL0、scene4×MSAA/depth16完整，无fatal。",
+  "reviewedAt": "2026-10-20",
+  "reviewVersion": "V3-20261020"
+},
+"MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": false,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "periodDays": 27.32166,
+      "expectedInclinationDeg": 5.145,
+      "actualInclinationDeg": 95.14499999997227,
+      "normal": [
+        8.103446960681964e-13,
+        -0.0896765581917414,
+        0.9959709407964087
+      ],
+      "parentBasisDet": 0.9999999999999996,
+      "displayDistance": 1.692,
+      "displayRadius": 0.41717975576163957,
+      "quality": 0,
+      "reason": "L584–586额外黄道换轴使实际有向倾角95.145°，且L1598–1606低模VAO被环索引覆盖、solid draw越界失败；不在data重复扣。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "periodDays": 1.769138,
+      "expectedInclinationDeg": 0.05,
+      "actualInclinationDeg": 179.9500000000215,
+      "normal": [
+        0.015706522524579665,
+        -0.9992157192491046,
+        -0.03634902413654959
+      ],
+      "parentBasisDet": 0.9999999999999998,
+      "displayDistance": 5.072701990581489,
+      "displayRadius": 0.42555487470019454,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "periodDays": 3.551181,
+      "expectedInclinationDeg": 0.47,
+      "actualInclinationDeg": 179.53000000000063,
+      "normal": [
+        0.023035513513669545,
+        -0.9990738154962562,
+        -0.03634386202530011
+      ],
+      "parentBasisDet": 0.9999999999999998,
+      "displayDistance": 6.549329760091805,
+      "displayRadius": 0.39881469291737826,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "periodDays": 7.154553,
+      "expectedInclinationDeg": 0.2,
+      "actualInclinationDeg": 179.80000000000567,
+      "normal": [
+        0.018324136644577577,
+        -0.9991712026402209,
+        -0.03634740473163345
+      ],
+      "parentBasisDet": 0.9999999999999998,
+      "displayDistance": 8.467211377968514,
+      "displayRadius": 0.4968563570569457,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "periodDays": 16.689,
+      "expectedInclinationDeg": 0.19,
+      "actualInclinationDeg": 179.80999999999153,
+      "normal": [
+        0.018149632745673848,
+        -0.9991743834731205,
+        -0.036347520442343746
+      ],
+      "parentBasisDet": 0.9999999999999998,
+      "displayDistance": 11.550961278442577,
+      "displayRadius": 0.4786688483426695,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "periodDays": 15.945,
+      "expectedInclinationDeg": 0.35,
+      "actualInclinationDeg": 179.6499999998692,
+      "normal": [
+        -0.08670360454768464,
+        -0.8795655473836275,
+        0.467810787406809
+      ],
+      "parentBasisDet": 0.9999999999999999,
+      "displayDistance": 5.762367519261363,
+      "displayRadius": 0.4921194026359892,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "periodDays": -5.876854,
+      "expectedInclinationDeg": 156.9,
+      "actualInclinationDeg": 156.8999999998982,
+      "normal": [
+        -0.06502117000725864,
+        -0.9963154193599251,
+        -0.05592702921257469
+      ],
+      "parentBasisDet": 0.9999999999999998,
+      "displayDistance": 4.300994261818852,
+      "displayRadius": 0.3756334807417218,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "periodDays": 6.3872,
+      "expectedInclinationDeg": 0.08,
+      "actualInclinationDeg": 179.91999997688987,
+      "normal": [
+        0.6781818362551503,
+        0.3888023724446739,
+        0.6236201665717569
+      ],
+      "parentBasisDet": 1,
+      "displayDistance": 0.8357995353352305,
+      "displayRadius": 0.26804258921600144,
+      "quality": 0,
+      "reason": "L588–594的proper母轴/正Z/Rx周期忠实spec§3.7，原轨道可获任务信用；但L1598–1606低模VAO被环索引覆盖、实际solid draw越界失败，只有标签（Titan另有大气壳层），故最终有效质量0，不再在runtime/integrity重复扣。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 3,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 1
+  },
+  "fatal": "L2",
+  "fatalReason": "loop的simMs推进多乘1000，轨道/卫星/带与自转使用相差1000倍的模拟时钟，默认实时档持续过速；运行实测约.9054秒墙钟推进917模拟秒，而名义应.9054秒，偏差由源公式的额外1000确定。",
+  "reviewedAt": "2026-10-20",
+  "reviewVersion": "V3-20261020",
+  "note": "原生离线WebGL2，逐条对照任务。JPL世纪根数/开普勒与行星轨道线、动态双带、Bloom/最终ACES及解析大气有效。核心时钟多乘1000，使JD、公转与自转不同步，实跑确认，按L2未完成；分数不封顶。低模VAO索引被环缓冲覆盖，8颗卫星实体逐draw均GL1282失败，只在卫星项扣；月球还多做坐标换轴，实际有向95.145°。其余7颗原轨道遵循任务算法，给定数据诱发方向不归责，但不能给未绘实体分；Titan仅有独立气壳。环的正背光分支反向，哈雷没有轨道线，离子尾向日；压缩world误作AU/光行时、低速标签×60合并扣数据。缩放回弹且可穿Sun；默认Io跟随12/12屏内，校准实际1天/秒后仅5/12屏内，部分分。物理暂停、倒放、此刻有效，任务未要求全状态复位。视觉不计分；致命错误自动灰色未完成。"
+},
+
 "DeepSeekV4.1Flash1017(Max)V2": {
   "reference": false,
   "featureMap": {

@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   const sources = {
+    minimax31flash: "https://platform.minimax.io/docs/pricing/overview",
     claude: 'https://platform.claude.com/docs/en/about-claude/pricing',
     openai: 'https://developers.openai.com/api/docs/pricing',
     google: 'https://ai.google.dev/gemini-api/docs/pricing',
@@ -22,6 +23,8 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+["MiniMax M3.1 Flash",0.15,0.6,0.015,"minimax31flash",null,"2026-10-20"],
+
 ["DeepSeek V4.1 Flash 1017",0.3,1.2,0.006,"deepseek",null,"2026-10-17"],
 
     ['Claude Fable 5.1', 10, 50, .25, 'claude'],
