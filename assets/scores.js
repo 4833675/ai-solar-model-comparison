@@ -3,6 +3,179 @@
   'use strict';
 
   window.SCORES = {
+"KimiK3.1Pro(Max)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 0,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 1,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.1587466562818065,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.321583231105077,
+      "reference": "ecliptic",
+      "reason": "实际最终moonRelativeAU采用同一全局反射(x,z,+y)；以det(M)*M黄北[0,-1,0]而非错误母自转为参考，有向r×v≈5.15875°（含节点进动），黄道5.145°及27.32158d基本有效。增强模式保留方向，真实比例直接AU缩放；不额外要求外部高精历表。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4.5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，九行星JPL世纪根数/开普勒、当前UTC历元和统一反射世界映射有效。唯一Moon按正确映射黄北有向5.15875°/27.32158d，基本有效。主带位置虽更新，VBO却将全部3600颗颜色和点尺寸清零，带实际不可见，belt0，不重复扣完整性。环局部光向漏逆自转且无环投行星影，部分；大气仅rim。真实提亮/高斯Bloom后统一ACES成立。增强轨道线当前贴合，真实比例固定J2000/512等M旧线，当前Pluto实测偏264.339个实体半径，pathFit部分。全局反射后实体自转仍用+Y，普通行星及Moon名义锁定方向错误合并data4.5，不改已正确Moon轨道信用。真实Pause冻结JD/11天体位置与实体自转；默认Moon跟随16/16屏内，保留满分，不因30天/秒高速平滑限制重复过罚。拖拽、Nav/标签聚焦、Now和倒放有效；选中Sun近缩安全，但总览自由缩放distance.042<R2.15进入太阳，zoom部分。overview仅镜头复位、保留倒放速度，A重置部分。JS/GL/net均0，390×844正常；无彗星，无fatal。",
+  "reviewedAt": "2026-10-24",
+  "reviewVersion": "V3-20261024"
+},
+"KimiK3.1Pro(Max)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 174.85500000000022,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.32166,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.94999999999234,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.5300000000014,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.79999999999654,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 179.8099999999992,
+      "expectedInclinationDeg": 0.19,
+      "periodDays": 16.689,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 179.65000000000356,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.89999999999384,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": -5.876854,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 179.91999999998782,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.3872,
+      "reason": "原函数中心差分有向r×v；显示分支严格采用任务§3.7正Z/Rx及proper母轴或黄道直接相加，内生方向按任务信用，不声称物理反向已修。真实AU支路缺分量的问题统一归data；实跑uDistanceNaN但solid确实绘制，不能据NaN输入误判全部卫星无效。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，逐条对照实际任务。JPL世纪率/J2000、开普勒九行星和哈雷、同源引导线、运动双带、双向环影、Bloom后最终ACES及解析大气有效。8颗卫星显示轨道忠实采用任务正Z/Rx/proper母基，按任务信用；Moon174.855°等实际有向角保留，不称物理已经纠正。7颗赤道卫星的真实AU支路少写q[2]，导致信息卡距日/距地/光行时NaN并给光照上传NaN；实跑31×31 Io实体像素差分证明solid仍绘制，不能由NaN输入推断不可见，统一data4扣分而不重复moon或完整性。独立银河背景顶点输入vUv未绑定，空VAO给默认零，三点退化为一点，星表和主景仍运行，完整性部分。实际物理暂停冻结JD/实体位置与自转；1天/秒Io跟随12/12屏内、目标lag0，drag/focus/Now/reverse与距离比例回切有效；近缩可进入Sun（.6<R4.6），zoom部分。任务不要求全状态reset。JS/模型GL0，无fatal；视觉不计分。",
+  "reviewedAt": "2026-10-24",
+  "reviewVersion": "V3-20261024"
+},
+
 "MiniMaxM3.1Flash(Max)V1":{
   "reference": false,
   "featureMap": {

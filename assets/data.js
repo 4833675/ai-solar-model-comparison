@@ -1,11 +1,14 @@
 // 由扫描脚本生成，请勿手改
 window.FEAT_LABELS={"kepler":"开普勒轨道","rings":"土星环结构","belt":"小行星带","comet":"哈雷彗星","bloom":"泛光","aces":"ACES 色调映射","atmo":"大气散射","moons":"卫星系统"};
 window.TIER_LABELS={"0":"第0梯队","1":"第一梯队","2":"第二梯队","3":"第三梯队","4":"未完成","9":"未分组"};
-window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","deepseekv41flash1017","deepseekv41flash1017v2","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","minimax31flashv1","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
+window.PAIR_ORDER=["opus5","gpt56sol","opus48","gpt56terra","kimik3","kimik3v2","kimik31pro","sonnet5","deepseekv4pro0813","deepseekv4pro0813v2","glm53v1","glm53v2","glm52","qwen38max","grok46","gpt55","gemini35","gemini36flash","deepseekv4flash0731","gemini37flash","longcat","hy3","doubao","hy4v1","hy4v2","glm53flashv2","minimax","qwen38flash","musespark13","gemini38flashv1","gemini38flashv2","musespark13v2","omenalpha","deepseekv41flash0910","deepseekv41flash1017","deepseekv41flash1017v2","mimoxpropreview","step5preview","mimo26flash","mimo26pro","grok47","minimax31flash","minimax31flashv1","gpt6astralight","gpt6luna","haiku55","haiku55max","gpt61sol"];
 window.PAIR_NOTES={};
-window.PAIR_TITLES={"minimax31flashv1":"MiniMax M3.1 Flash (Max) #1","deepseekv41flash1017v2":"DeepSeek V4.1 Flash 1017 (Max) #2","deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max) #1","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
+window.PAIR_TITLES={"kimik31pro":"Kimi K3.1 Pro (Max)","minimax31flashv1":"MiniMax M3.1 Flash (Max) #1","deepseekv41flash1017v2":"DeepSeek V4.1 Flash 1017 (Max) #2","deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max) #1","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","GPT5.5xHigh-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","LongCat2.0-TasksAssignedByOpus5","LongCat2.0","Mimo_2_5_Pro_high-1","Opus_4_8_Max","Opus4.8Ultra-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6TerraUltra-Three","GPT5.6TerraUltra-TasksAssignedByOpus5","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Opus5(Max)V1","MiniMax_M3_thinking-1","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3(high)V2-TasksAssignedByOpus5","Opus5Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Gemini3.1Pro-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5"];
 window.WORK_CREATION_DATES={
+"KimiK3.1Pro(Max)V1":"261024",
+"KimiK3.1Pro(Max)V1-TasksAssignedByOpus5":"261024",
+
 "MiniMaxM3.1Flash(Max)V1":"261020",
 "MiniMaxM3.1Flash(Max)V2":"261020",
 "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5":"261020",
@@ -162,6 +165,77 @@ window.WORK_CREATION_DATES={
  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5":"260908"
 };
 window.WORKS=[
+{
+  "id": "KimiK3.1Pro(Max)V1",
+  "file": "models/KimiK3.1Pro(Max)V1.html",
+  "model": "Kimi K3.1 Pro (Max)",
+  "group": "A",
+  "pair": "kimik31pro",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 82231,
+  "lines": 1094,
+  "title": "ORRERY · 太阳系动力学模型",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/KimiK3.1Pro(Max)V1.jpg",
+  "jsErrors": 0,
+  "note": "原生离线WebGL2，九行星JPL世纪根数/开普勒、当前UTC历元和统一反射世界映射有效。唯一Moon按正确映射黄北有向5.15875°/27.32158d，基本有效。主带位置虽更新，VBO却将全部3600颗颜色和点尺寸清零，带实际不可见，belt0，不重复扣完整性。环局部光向漏逆自转且无环投行星影，部分；大气仅rim。真实提亮/高斯Bloom后统一ACES成立。增强轨道线当前贴合，真实比例固定J2000/512等M旧线，当前Pluto实测偏264.339个实体半径，pathFit部分。全局反射后实体自转仍用+Y，普通行星及Moon名义锁定方向错误合并data4.5，不改已正确Moon轨道信用。真实Pause冻结JD/11天体位置与实体自转；默认Moon跟随16/16屏内，保留满分，不因30天/秒高速平滑限制重复过罚。拖拽、Nav/标签聚焦、Now和倒放有效；选中Sun近缩安全，但总览自由缩放distance.042<R2.15进入太阳，zoom部分。overview仅镜头复位、保留倒放速度，A重置部分。JS/GL/net均0，390×844正常；无彗星，无fatal。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Zcode"
+  ],
+  "tier": 2,
+  "rank": 0
+},
+{
+  "id": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
+  "file": "models/KimiK3.1Pro(Max)V1-TasksAssignedByOpus5.html",
+  "model": "Kimi K3.1 Pro (Max)",
+  "group": "B",
+  "pair": "kimik31pro",
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 91118,
+  "lines": 307,
+  "title": "太阳系 · 实时运动模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "comet",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/KimiK3.1Pro(Max)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "原生离线WebGL2，逐条对照实际任务。JPL世纪率/J2000、开普勒九行星和哈雷、同源引导线、运动双带、双向环影、Bloom后最终ACES及解析大气有效。8颗卫星显示轨道忠实采用任务正Z/Rx/proper母基，按任务信用；Moon174.855°等实际有向角保留，不称物理已经纠正。7颗赤道卫星的真实AU支路少写q[2]，导致信息卡距日/距地/光行时NaN并给光照上传NaN；实跑31×31 Io实体像素差分证明solid仍绘制，不能由NaN输入推断不可见，统一data4扣分而不重复moon或完整性。独立银河背景顶点输入vUv未绑定，空VAO给默认零，三点退化为一点，星表和主景仍运行，完整性部分。实际物理暂停冻结JD/实体位置与自转；1天/秒Io跟随12/12屏内、目标lag0，drag/focus/Now/reverse与距离比例回切有效；近缩可进入Sun（.6<R4.6），zoom部分。任务不要求全状态reset。JS/模型GL0，无fatal；视觉不计分。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Zcode"
+  ],
+  "tier": 1,
+  "rank": 0
+},
+
 {
   "id": "MiniMaxM3.1Flash(Max)V1",
   "file": "models/MiniMaxM3.1Flash(Max)V1.html",

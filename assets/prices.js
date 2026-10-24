@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   const sources = {
+    kimi31pro: "https://platform.kimi.ai/",
     minimax31flash: "https://platform.minimax.io/docs/pricing/overview",
     claude: 'https://platform.claude.com/docs/en/about-claude/pricing',
     openai: 'https://developers.openai.com/api/docs/pricing',
@@ -23,6 +24,7 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Kimi K3.1 Pro",2,10,0.2,"kimi31pro",null,"2026-10-24"],
 ["MiniMax M3.1 Flash",0.15,0.6,0.015,"minimax31flash",null,"2026-10-20"],
 
 ["DeepSeek V4.1 Flash 1017",0.3,1.2,0.006,"deepseek",null,"2026-10-17"],

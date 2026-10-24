@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Kimi K3.1 Pro (Max)":{
+  "direction": "down",
+  "count": 5,
+  "zh": "钱都拿去给AA充值了吗？卖这么贵你家里知道吗？",
+  "en": "Did all the money go toward topping up AA? Does your family know you charge this much?"
+},
+
 "MiniMax M3.1 Flash (Max)":{
   "direction": "down",
   "count": 1,

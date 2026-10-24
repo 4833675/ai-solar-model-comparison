@@ -13,6 +13,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
 }
 
 const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
+const KIMI31_PRO_IDS = new Set(["KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5"]);
 const MINIMAX_FLASH_IDS = new Set(["MiniMaxM3.1Flash(Max)V1","MiniMaxM3.1Flash(Max)V2","MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5"]);
 const RETIRED_MINIMAX_PREVIEW_IDS = new Set(["MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5"]);
 const HAIKU_MAX_SPEC_ID = 'Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5';
@@ -34,6 +35,9 @@ const canonical = value => Array.isArray(value) ? value.map(canonical)
 const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
+  "KimiK3.1Pro(Max)V1": "Kimi K3.1 Pro (Max)",
+  "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": "Kimi K3.1 Pro (Max)",
+
   "MiniMaxM3.1Flash(Max)V1": "MiniMax M3.1 Flash (Max) #1",
   "MiniMaxM3.1Flash(Max)V2": "MiniMax M3.1 Flash (Max) #2",
   "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5": "MiniMax M3.1 Flash (Max)",
@@ -183,6 +187,9 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  "KimiK3.1Pro(Max)V1": 73.20333333333333,
+  "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": 96.45,
+
   "MiniMaxM3.1Flash(Max)V1": 66.23666666666666,
   "MiniMaxM3.1Flash(Max)V2": 72.30333333333333,
   "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5": 76.44333333333333,
@@ -336,6 +343,9 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  "KimiK3.1Pro(Max)V1": "0|0.4|0|1|1|0.4|1|1|1|1|1|0.5|1|1|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:bca2bec9abde1c1fd54e995a1f8e317cfc9afda3fd24ad2d4026895d027e6675",
+  "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|-|1|0.5|1|1|1|-|-|moonEvidence:37bbace8bf6d9d87c923495ad470a192c7528d5b8afd498204017b73f8a5711d",
+
   "MiniMaxM3.1Flash(Max)V1": "0|0.4|1|1|1|0.4|1|1|1|1|1|0|1|18|1|0|1|4|3|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:9521d65a0e16e0a0c1d7ee40a20d14519b4288660aaf57ef139d91d5dfe062d1",
   "MiniMaxM3.1Flash(Max)V2": "0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|7|1|1|0|5|4|4|-|1|0.5|1|1|0.5|-|-|moonEvidence:dfbc1e3b179dd3f1695e5bb012277f8c261f46ce52772dd0f6087ac086d5acc5",
   "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5": "0|0.4|1|1|1|1|1|1|1|1|1|0.5|1|8|1|1|0|3|4|4.5|-|1|0.5|1|0.5|1|L2|loop的simMs推进多乘1000，轨道/卫星/带与自转使用相差1000倍的模拟时钟，默认实时档持续过速；运行实测约.9054秒墙钟推进917模拟秒，而名义应.9054秒，偏差由源公式的额外1000确定。|moonEvidence:540e5f405acf2a3f4b1f9dbc23f24a4ff04055756a4f0a879e32d92421da7a98",
@@ -496,10 +506,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 144, `WORKS count must be 144, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 144, `SCORES count must be 144, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 144, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 144, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 146, `WORKS count must be 146, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 146, `SCORES count must be 146, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 146, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 146, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -530,8 +540,8 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 }
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
-check(WORKS.filter(w => w.group === 'A').length === 80, 'Group A count must be 80 after adding both MiniMax Flash one-line runs');
-check(WORKS.filter(w => w.group === 'B').length === 64, 'Group B count must be 64 after adding MiniMax Flash detailed spec');
+check(WORKS.filter(w => w.group === 'A').length === 81, 'Group A count must be 81 after adding Kimi K3.1 Pro');
+check(WORKS.filter(w => w.group === 'B').length === 65, 'Group B count must be 65 after adding Kimi K3.1 Pro');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
 const restoredIds = new Set(['KimiK3(Max)V3']);
@@ -620,8 +630,10 @@ for (const [id, expected] of Object.entries(protectedScoreDigests))
 for (const id of restoredIds) {
   check(archiveBaselineIds.includes(id) && SITE.isVisibleWork(SITE.byId(id)) && !SITE.isArchivedWork(SITE.byId(id)), id + ': restore only the confirmed misplaced archive entry');
 }
-// Completed 2026-10-17 source, task-attribution and runtime re-review.
+// Completed source, task-attribution and runtime reviews; each record retains its own review date.
 const currentReviewIds = new Set([
+  "KimiK3.1Pro(Max)V1",
+  "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
 "MiniMaxM3.1Flash(Max)V1",
 "MiniMaxM3.1Flash(Max)V2",
 "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5",
@@ -696,6 +708,7 @@ const currentReviewIds = new Set([
   "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5"
 ]);
 const currentSpecReviewIds = new Set([
+  "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
 "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5",
 "DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5",
 
@@ -730,11 +743,11 @@ const currentSpecReviewIds = new Set([
   "GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5",
   "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5"
 ]);
-const originalWorks = WORKS.filter(work => !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
+const originalWorks = WORKS.filter(work => !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
 const originalAssets = originalWorks.flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(originalAssets.length === 278 && digest(originalAssets) === '65c0d06a691930614fb636b9737294a20a13a6ff8cd2eb9a6c3fc7f481fb1e8a', 'All 278 existing model originals and saved screenshots must remain unchanged');
-check(currentReviewIds.size === 71 && currentSpecReviewIds.size === 32 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the two newly reviewed V2 records');
+check(currentReviewIds.size === 73 && currentSpecReviewIds.size === 33 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the newly reviewed Kimi K3.1 Pro records');
 check(JSON.stringify([...currentReviewIds].sort()) === JSON.stringify(visibleWorks.filter(w=>!Object.hasOwn(protectedScoreDigests,w.id)).map(w=>w.id).sort()), 'Current source review must cover exactly all eligible current records, including folded runs');
 for (const id of currentSpecReviewIds) check(SITE.isVisibleWork(SITE.byId(id)) && SITE.byId(id).group === 'B', id + ': task-attribution scope must contain only current detailed-spec works');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
@@ -750,9 +763,9 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 74, 'Active WORKS count must be 74');
-check(visibleWorks.filter(w => w.group === 'A').length === 42, 'Active Group A count must be 42');
-check(visibleWorks.filter(w => w.group === 'B').length === 32, 'Active Group B count must be 32');
+check(visibleWorks.length === 76, 'Active WORKS count must be 76');
+check(visibleWorks.filter(w => w.group === 'A').length === 43, 'Active Group A count must be 43');
+check(visibleWorks.filter(w => w.group === 'B').length === 33, 'Active Group B count must be 33');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
   const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
@@ -763,26 +776,26 @@ for (const id of ['Opus5Ultra-WebGL2', ...MINIMAX_FLASH_IDS]) check(SITE.isVisib
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) { const work=SITE.byId(id); check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': archive lookup must open the retained original and screenshot without entering active lists'); }
-check(PAIR_ORDER.length === 47 && new Set(PAIR_ORDER).size === 47, 'PAIR_ORDER must contain 47 configured pair keys, including the new MiniMax Flash V1 pair');
+check(PAIR_ORDER.length === 48 && new Set(PAIR_ORDER).size === 48, 'PAIR_ORDER must contain 48 configured pair keys, including Kimi K3.1 Pro');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 29, 'Expected 29 complete active pairs after replacing MiniMax Preview with MiniMax Flash V1');
+check(SITE.pairs().length === 30, 'Expected 30 complete active pairs after adding Kimi K3.1 Pro');
 check(!SITE.pairs().some(pair => pair.a.pair === 'minimax'), 'The retired MiniMax M3 pair must not appear in current comparisons');
 check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must leave current comparisons when only its detailed-spec side is archived');
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
 check(historicalOpusPair?.a?.id === 'Opus5Ultra-WebGL2' && historicalOpusPair?.b?.id === 'Opus5Ultra-TasksAssignedByOpus5', 'The complete retained work set must preserve the historical Opus 5 pair across current and offline tabs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
-check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","qwen38max","gpt6luna","gpt6astralight","mimo26pro","hy4v2"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
+check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","qwen38max","gpt6luna","gpt6astralight","kimik31pro","mimo26pro"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
-check(PAIR_ORDER[7] === 'deepseekv4pro0813' && PAIR_ORDER[8] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 08 and 09');
-check(PAIR_ORDER[9] === 'glm53v1' && PAIR_ORDER[10] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 10 and 11');
-check(PAIR_ORDER[12] === 'qwen38max', 'The Qwen 3.8 Max pair must occupy comparison position 13');
-check(PAIR_ORDER[13] === 'grok46', 'The Grok 4.6 pair must occupy comparison position 14');
-check(PAIR_ORDER[16] === 'gemini36flash', 'Gemini 3.6 Flash must occupy comparison position 17');
-check(PAIR_ORDER[18] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 19 after inserting Grok 4.6');
-check(PAIR_ORDER[21] === 'doubao' && PAIR_ORDER[22] === 'hy4v1' && PAIR_ORDER[23] === 'hy4v2' && PAIR_ORDER[24] === 'glm53flashv2' && PAIR_ORDER[25] === 'minimax' && PAIR_ORDER[26] === 'qwen38flash', 'Doubao, Hy 4 #1/#2, GLM 5.3 Flash #2, MiniMax, and Qwen 3.8 Flash must occupy the final comparison positions');
-check(PAIR_ORDER[27] === 'musespark13' && PAIR_ORDER[28] === 'gemini38flashv1' && PAIR_ORDER[29] === 'gemini38flashv2' && PAIR_ORDER[30] === 'musespark13v2' && PAIR_ORDER[31] === 'omenalpha', 'MuseSpark, Gemini 3.8 Flash, and Omen Alpha must be appended in their declared pair order');
-check(PAIR_ORDER[32] === 'deepseekv41flash0910' && context.window.PAIR_TITLES.deepseekv41flash0910 === 'DeepSeek V4.1 Flash 0910 (Max)', 'DeepSeek V4.1 Flash 0910 must be the final configured pair');
+check(PAIR_ORDER[8] === 'deepseekv4pro0813' && PAIR_ORDER[9] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 09 and 10');
+check(PAIR_ORDER[10] === 'glm53v1' && PAIR_ORDER[11] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 11 and 12');
+check(PAIR_ORDER[13] === 'qwen38max', 'The Qwen 3.8 Max pair must occupy comparison position 14');
+check(PAIR_ORDER[14] === 'grok46', 'The Grok 4.6 pair must occupy comparison position 15');
+check(PAIR_ORDER[17] === 'gemini36flash', 'Gemini 3.6 Flash must occupy comparison position 18');
+check(PAIR_ORDER[19] === 'gemini37flash', 'Gemini 3.7 Flash must occupy comparison position 20 after inserting Kimi K3.1 Pro');
+check(PAIR_ORDER[22] === 'doubao' && PAIR_ORDER[23] === 'hy4v1' && PAIR_ORDER[24] === 'hy4v2' && PAIR_ORDER[25] === 'glm53flashv2' && PAIR_ORDER[26] === 'minimax' && PAIR_ORDER[27] === 'qwen38flash', 'Doubao, Hy 4 #1/#2, GLM 5.3 Flash #2, MiniMax, and Qwen 3.8 Flash must occupy the final comparison positions');
+check(PAIR_ORDER[28] === 'musespark13' && PAIR_ORDER[29] === 'gemini38flashv1' && PAIR_ORDER[30] === 'gemini38flashv2' && PAIR_ORDER[31] === 'musespark13v2' && PAIR_ORDER[32] === 'omenalpha', 'MuseSpark, Gemini 3.8 Flash, and Omen Alpha must be appended in their declared pair order');
+check(PAIR_ORDER[33] === 'deepseekv41flash0910' && context.window.PAIR_TITLES.deepseekv41flash0910 === 'DeepSeek V4.1 Flash 0910 (Max)', 'DeepSeek V4.1 Flash 0910 must retain its historical configured pair');
 
 check(digest(WORKS.filter(w=>HIDDEN_WORK_IDS.includes(w.id)&&!retiredDeepSeek0910Ids.has(w.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(w.id)).map(w=>[w,SCORES[w.id]])) === '99863775f12c8befb9f6044c9f374b1f2dbc2354bffefe15ee1e22d1dc94ea28', 'All66 archived scores, notes and work metadata must remain unchanged');
 for(const original of [{"path":"models/DeepSeekV4.1Flash1017(Max)V1.html","sha256":"e473b55e79a0b88690194d5f415496054f986f94bbdacb50822f2ffd7bea67df"},{"path":"assets/shots/DeepSeekV4.1Flash1017(Max)V1.jpg","sha256":"67be1fc09da73f450aa8455613356b662c90676a89a13e1508b1bf9021ce28f4"},{"path":"models/DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5.html","sha256":"33e684b9d7913f89a173fca336e9f1697fdcaaaf139cd07b637536420837700e"},{"path":"assets/shots/DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5.jpg","sha256":"fe0917d5bbb98fb75325b4e1abf95ddb631d5499e4a6893574293af9006398b4"}])check(createHash('sha256').update(fs.readFileSync(asset(original.path))).digest('hex')===original.sha256, original.path+': preserve supplied1017 originals and their saved screenshots');
@@ -807,13 +820,13 @@ for(const original of [{"path":"models/DeepSeekV4.1Flash1017(Max)V1.html","sha25
 
 // The V2 addition preserves all 139 published scores, source files, screenshots,
 // creation dates and measurement-day recommendations from b1222b2.
-const preV2Ids = WORKS.filter(work => !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
+const preV2Ids = WORKS.filter(work => !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
 check(preV2Ids.length===139 && digest(preV2Ids.map(id=>[id,SCORES[id]]))==='99965896b1d51278bb63f8538abadbfb5b50cc5add57dd3ce788144daaea04ec', 'V2 addition must preserve all139 prior score records, including notes and provenance');
 check(digest(preV2Ids.map(id=>SITE.byId(id)))==='a4f7be77d7f4b9d63afe3944eec550b430b390d1156e336b3bb834647fe9585f', 'V2 addition may only add#1 to the two V1 display names among old work metadata');
 check(digest(preV2Ids.map(id=>[id,WORK_CREATION_DATES[id]]))==='8a2bad264090fde23437ac9fba946e31ddbdcbf2d0ad0ecdad8699e109c57ee6', 'V2 addition must preserve old139 filesystem dates');
 const unchangedPreV2RecommendationIds = preV2Ids.filter(id=>!retiredDeepSeek0910Ids.has(id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(id));
 check(unchangedPreV2RecommendationIds.length===135 && digest(unchangedPreV2RecommendationIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==='5b0ff43b02e6e628065e7c2cb2825653e4350307ff113aefa88a9cbb51596e51', 'MiniMax publication must preserve the other135 preV2 measurement-day recommendations');
-check(PAIR_ORDER[33]==='deepseekv41flash1017' && PAIR_ORDER[34]==='deepseekv41flash1017v2' && context.window.PAIR_TITLES.deepseekv41flash1017==="DeepSeek V4.1 Flash 1017 (Max) #1" && context.window.PAIR_TITLES.deepseekv41flash1017v2==="DeepSeek V4.1 Flash 1017 (Max) #2", 'DeepSeek1017 #1/#2 comparisons must retain declared adjacent pair order and titles');
+check(PAIR_ORDER[34]==='deepseekv41flash1017' && PAIR_ORDER[35]==='deepseekv41flash1017v2' && context.window.PAIR_TITLES.deepseekv41flash1017==="DeepSeek V4.1 Flash 1017 (Max) #1" && context.window.PAIR_TITLES.deepseekv41flash1017v2==="DeepSeek V4.1 Flash 1017 (Max) #2", 'DeepSeek1017 #1/#2 comparisons must retain declared adjacent pair order and titles');
 for(const expected of [
   {
     "id": "DeepSeekV4.1Flash1017(Max)V2",
@@ -867,11 +880,11 @@ for(const id of retiredDeepSeek0910Ids){
  check(SITE.isArchivedWork(work)&&!SITE.isVisibleWork(work)&&SCORES[id].reviewedAt==='2026-10-17'&&SCORES[id].reviewVersion==='V3-20261017',id+': archive existing review provenance without re-auditing');
  check(rec?.symbols==='-'&&rec.direction==='legacy'&&rec.count===0&&rec.sortValue===0&&rec.reason==='梁子继续加油啊'&&rec.tooltip==='老模型都不推荐使用',id+': retired recommendation must use the standard gray dash and retain the measurement-day reason');
 }
-const unchangedRecommendationIds = WORKS.filter(work=>!MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)).map(work=>work.id).sort();
+const unchangedRecommendationIds = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)).map(work=>work.id).sort();
 check(unchangedRecommendationIds.length===137 && digest(unchangedRecommendationIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==='d763372f6bea28fa7245a207c77e00c0fc8356b1ef46a0d4a68d4e9399fa8a71', 'MiniMax publication must preserve all other137 prior recommendations including both1017V2 overrides');
-check(digest(WORKS.filter(work=>!MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
-const allOriginalAssets = WORKS.filter(work=>!MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(digest(WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>key!=='Kimi K3.1 Pro'&&key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
+const allOriginalAssets = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(allOriginalAssets.length===282&&digest(allOriginalAssets)==='34698bb11b74da1f1154b475ea1f670cac13089328118ce2bd9456ce5ef09748', 'MiniMax publication must preserve all282 prior model originals and saved screenshots');
 
 
@@ -980,6 +993,78 @@ for(const expected of [
  else check(work.tier===3&&score.manualAdjustment===-6&&score.fatal===null,expected.id+': apply the requested T3 deduction only to nonfatal one-line runs');
 }
 
+
+// Kimi K3.1 Pro publication: reuse the completed review and saved screenshots.
+const kimi31PreviousWorks = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id));
+const kimi31PreviousIds = kimi31PreviousWorks.map(work=>work.id).sort();
+check(kimi31PreviousWorks.length===144&&digest(kimi31PreviousWorks)==="e9eea112015acb53b422fb17210095269cd1dd46730fbf738374c2f1fd26c871"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!KIMI31_PRO_IDS.has(id))))==="15d1a64efa556204bcdc9b41b0c16b90a15a69ac1426149264cf4704a6841e47"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!KIMI31_PRO_IDS.has(id))))==="4c85ae581ce7e9fbe99b7d0b72de8b5a97325b504fd86ec823db33a6eb8bdcdd", 'Kimi K3.1 publication must preserve all144 prior metadata, full scores and dates');
+check(digest(kimi31PreviousIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="6988a93f8b9e97639b590477850bf7ef72afeb334096f9273407848db9196855", 'Kimi K3.1 publication must preserve all144 previous measurement-day recommendations');
+const kimi31PreviousAssets=kimi31PreviousWorks.flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(kimi31PreviousAssets.length===288&&digest(kimi31PreviousAssets)==="0d1e2a88463a7dcb279f09386ded9462e08ef065aea668024a631f9914eafea4", 'Kimi K3.1 publication must preserve all288 previous originals and screenshots');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='Kimi K3.1 Pro')))==="a71a1e3e629144c47664f22e6971b6e6b24e0b2f51a058f11df3995dac5ed414"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8", 'Kimi K3.1 publication must preserve every previously saved price');
+check(PAIR_ORDER[6]==='kimik31pro'&&context.window.PAIR_TITLES.kimik31pro==='Kimi K3.1 Pro (Max)', 'Kimi K3.1 Pro pair must follow Kimi K3 #2 without renaming older pairs');
+const kimi31Pair=SITE.pairs().find(pair=>pair.a.pair==='kimik31pro');
+check(kimi31Pair?.a.id==="KimiK3.1Pro(Max)V1"&&kimi31Pair?.b.id==="KimiK3.1Pro(Max)V1-TasksAssignedByOpus5", 'Kimi K3.1 Pro comparison must use its matching A/B originals');
+for(const expected of [
+  {
+    "id": "KimiK3.1Pro(Max)V1",
+    "group": "A",
+    "model": "Kimi K3.1 Pro (Max)",
+    "tier": 2,
+    "environment": "Zcode",
+    "pair": "kimik31pro",
+    "expectedExact": 73.20333333333333,
+    "tech": "WebGL2",
+    "needsFloat": false,
+    "msaa": false,
+    "net": [],
+    "jsErrors": 0,
+    "bytes": 82231,
+    "lines": 1094,
+    "creation": "2026-10-24T11:21:22+0800",
+    "file": "models/KimiK3.1Pro(Max)V1.html",
+    "shot": "assets/shots/KimiK3.1Pro(Max)V1.jpg",
+    "sourceSHA256": "ecaeb6903647ccaecf5a40e31075417c96c39a9cea0c72a60580ad27864050c7",
+    "shotSHA256": "79dec8ed94db4f2e512773dd1169d211d76ab87ecbeedd6e02934c8225ed72d7",
+    "scoreDigest": "32859bec8e1d286de7112a3e6fed8f05750461d8ff9a5957a9d3a3920b4b4c57"
+  },
+  {
+    "id": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
+    "group": "B",
+    "model": "Kimi K3.1 Pro (Max)",
+    "tier": 1,
+    "environment": "Zcode",
+    "pair": "kimik31pro",
+    "expectedExact": 96.45,
+    "tech": "WebGL2",
+    "needsFloat": false,
+    "msaa": true,
+    "net": [],
+    "jsErrors": 0,
+    "issue": null,
+    "file": "models/KimiK3.1Pro(Max)V1-TasksAssignedByOpus5.html",
+    "shot": "assets/shots/KimiK3.1Pro(Max)V1-TasksAssignedByOpus5.jpg",
+    "bytes": 91118,
+    "lines": 307,
+    "sourceSHA256": "00df04d144a6bccd4ed105ad3325cff7a091a4d3ba4dd676db76939fed481b8a",
+    "shotSHA256": "15a7f66ed54c132fb56d0ee3738fe590d6824b2aa69db493e5e90bfd90e2d318",
+    "scoreDigest": "d9c962d737843a60031f559cc7695f2f9eba768ab0e3a693ba6231d316d5ebb0"
+  }
+]){
+ const work=SITE.byId(expected.id),score=SITE.scoreFor(work),rec=SITE.personalRecommendationFor(work);
+ check(work&&SITE.isVisibleWork(work)&&!SITE.isArchivedWork(work)&&work.group===expected.group&&work.tier===expected.tier&&work.pair===expected.pair,expected.id+': Kimi K3.1 grouping, tier and pair');
+ for(const key of ['file','shot','tech','bytes','lines','needsFloat','msaa','jsErrors'])check(work[key]===expected[key],expected.id+': supplied Kimi K3.1 '+key);
+ check(work.net.length===0&&WORK_CREATION_DATES[work.id]==='261024'&&stripCreationDate(work.model)===expected.model,expected.id+': retain actual creation date, canonical name and native offline renderer');
+ check(createHash('sha256').update(fs.readFileSync(asset(work.file))).digest('hex')===expected.sourceSHA256&&createHash('sha256').update(fs.readFileSync(asset(work.shot))).digest('hex')===expected.shotSHA256,expected.id+': preserve original and reuse saved1440x900 screenshot');
+ check(SITE.environmentName(work)==='Zcode'&&rec.direction==='down'&&rec.count===5&&rec.symbols==='▽▽▽▽▽'&&rec.reason==="钱都拿去给AA充值了吗？卖这么贵你家里知道吗？",expected.id+': supplied Zcode, five red triangles and exact author reason');
+ check(digest(SCORES[work.id])===expected.scoreDigest&&score.reviewedAt==='2026-10-24'&&score.reviewVersion==='V3-20261024',expected.id+': publish completed scientific review without evidence drift');
+ close(score.exact,expected.expectedExact,expected.id+': tier-adjusted final score');
+ check(score.fatal===null&&score.manualAdjustment===(work.group==='A'?-3:0)&&score.total===(work.group==='A'?73:96),expected.id+': T2 correction applies only to one-line result');
+ const price=SITE.priceFor(work);
+ check(price.input===2&&price.output===10&&price.cache===.2&&price.source==='https://platform.kimi.ai/'&&price.date==='2026-10-24'&&SITE.priceCell(work).includes('2 / 10 / 0.2'),expected.id+': exact new-family official USD pricing');
+ check(SITE.modelLogoFor(work)==='assets/logos/kimi.png',expected.id+': retain Kimi brand logo');
+}
+
 const referenceIds = ['Opus5Ultra-WebGL2'];
 check(JSON.stringify(Object.entries(SCORES).filter(([, score]) => score.reference).map(([id]) => id).sort()) === JSON.stringify(referenceIds), 'Only Claude Opus 5 (Ultracode·xhigh) may be flagged as the benchmark');
 
@@ -1072,6 +1157,7 @@ for (const [part, maximum] of Object.entries({features:12, orbit:30, moons:12, m
 check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SITE.scoreTipHtml(opusMax, opusMaxScore)), 'Opus 5 (Max) tooltip must contain only the current scoring treatment');
 
 const expectedPrices = {
+  "Kimi K3.1 Pro": [2, 10, 0.2],
   "MiniMax M3.1 Flash": [0.15, 0.6, 0.015],
   "Claude Fable 5.1": [
     10,
@@ -1410,7 +1496,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
+for (const [group, expectedCount] of [['A', 27], ['B', 23]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -1430,6 +1516,13 @@ for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
   check(!displayRows.some(work => /GPT-5\.6 (Sol|Terra|Luna)|Claude Sonnet 5 \(/.test(work.model)), `${group}: newly archived families must not occur in active table rows`);
   const expectedFolds = {
   "A": [
+    {
+      "family": "KimiK3.1Pro(Max)V1",
+      "type": null,
+      "id": "KimiK3.1Pro(Max)V1",
+      "exact": 73.20333333333333,
+      "alternates": []
+    },
     {
       "family": "MiniMax M3.1 Flash (Max)",
       "type": "runs",
@@ -1641,6 +1734,13 @@ for (const [group, expectedCount] of [['A', 26], ['B', 22]]) {
     }
   ],
   "B": [
+    {
+      "family": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
+      "type": null,
+      "id": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
+      "exact": 96.45,
+      "alternates": []
+    },
     {
       "family": "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5",
       "type": null,
@@ -2279,7 +2379,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
+    const reviewDate = KIMI31_PRO_IDS.has(id) ? '2026-10-24' : MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -2885,7 +2985,7 @@ for (const lang of ['zh', 'en']) {
     else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
   };
   checkLunaHaikuHome(true);
-  check(countRows() === 26 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 26 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
+  check(countRows() === 27 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 27 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
   const firstDefaultRow = body().match(/^<tr\b[\s\S]*?<\/tr>/)?.[0] || '';
   check(firstDefaultRow.includes('Opus5.5(Max)V1') && body().includes('Fable5.1(Max)V1') && body().indexOf('Opus5.5(Max)V1') < body().indexOf('Fable5.1(Max)V1'), lang + ': the default one-line table must place Opus 5.5 first, ahead of the equal-scoring Fable 5.1');
   check((firstDefaultRow.match(/recommend-symbol-up/g) || []).length === 5 && !firstDefaultRow.includes('recommend-symbol-down') && firstDefaultRow.includes(lang === 'zh' ? '109是因为满分只有109' : '109 only because the maximum is 109'), lang + ': Opus 5.5 must show five green up-triangles and its requested localized reason');
@@ -2931,7 +3031,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
-  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 22', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(one('#tableCountA').textContent === '2 / 27' && one('#tableCountB').textContent === '0 / 23', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
@@ -2956,9 +3056,9 @@ for (const lang of ['zh', 'en']) {
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   checkLunaHaikuHome(true);
-  check(countRows() === 22, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 23, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 26, lang + ': one-line tab must restore its 26 primary model rows');
+  check(countRows() === 27, lang + ': one-line tab must restore its 27 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
     one('#modelSearchInput').value = query;
     one('#modelSearchInput').listeners.input();
@@ -2981,7 +3081,7 @@ for (const lang of ['zh', 'en']) {
   check(one('#gridA').innerHTML.includes('GPT6.1Sol(Ultra)V1') && [SOL61_SPEC_ID, SOL61_XHIGH_SPEC_ID].every(id => one('#gridB').innerHTML.includes(id)) && sandbox.window.WORKS.filter(work => localSite.modelMatches(work, 'GPT-6.1 Sol')).length === 3, lang + ': Sol search must retain all three current candidates across both galleries');
   for (const tab of tabs.slice(2)) { tab.listeners.click(); check(countRows() === 0, lang + ': the new Sol pair must not enter either offline tab'); }
   tabs[0].listeners.click();
-  one('#modelSearchInput').value = 'Kimi K3';
+  one('#modelSearchInput').value = 'Kimi K3 (Max)';
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 1 && ['KimiK3Max', 'KimiK3(Max)V2', 'KimiK3(Max)V3'].every(id => body().includes(id)) && body().includes('recommend-symbol-up') && one('#gridA').innerHTML.includes('KimiK3(Max)V3'), lang + ': Kimi search must restore #3 in the current folded row and gallery with the family recommendation');
@@ -3014,6 +3114,20 @@ for (const lang of ['zh', 'en']) {
   for(const index of [0,1]){tabs[index].listeners.click();check(countRows()===0,lang+': retired MiniMax Preview must not match either current tab');}
   for(const [index,id] of [[2,'MiniMaxM3.1FlashPreview(Max)V1'],[3,'MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5']]){tabs[index].listeners.click();check(countRows()===1&&body().includes(id)&&!body().includes('recommend-symbol-up')&&!body().includes('recommend-symbol-down'),lang+': each offline tab must retain its matching Preview original with a dash');}
   check(!one('#gridA').innerHTML.includes('MiniMaxM3.1FlashPreview')&&!one('#gridB').innerHTML.includes('MiniMaxM3.1FlashPreview'),lang+': Preview must leave active galleries');
+  one('#modelSearchInput').value='';one('#modelSearchInput').listeners.input();tabs[0].listeners.click();
+
+
+  tabs[0].listeners.click();
+  one('#modelSearchInput').value='Kimi K3.1 Pro';one('#modelSearchInput').listeners.input();
+  for(const [index,id,tier,total] of [[0,"KimiK3.1Pro(Max)V1",2,73],[1,"KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",1,96]]){
+    tabs[index].listeners.click();
+    const html=body(),reason=lang==='zh'?"钱都拿去给AA充值了吗？卖这么贵你家里知道吗？":"Did all the money go toward topping up AA? Does your family know you charge this much?";
+    check(countRows()===1&&html.includes(id)&&html.includes('<tr data-tier="'+tier+'">')&&html.includes('tier-cell-'+tier)&&html.includes('>'+total+'<')&&html.includes('Zcode')&&html.includes('261024')&&html.includes(reason),lang+': Kimi K3.1 must show exact score, tier, date, environment and localized author reason');
+    check((html.match(/recommend-symbol-down/g)||[]).length===5&&!html.includes('recommend-symbol-up')&&!html.includes('table-variants-trigger')&&html.match(/<a class="table-model" href="([^"]+)"/)?.[1]==='view'+(lang==='en'?'.en':'')+'.html?w='+encodeURIComponent(id),lang+': Kimi K3.1 must remain a separate new family with five red triangles and the matching source link');
+    check(html.includes('score-pill is-high')===(index===1)&&html.includes('2 / 10 / 0.2')&&html.includes('assets/logos/kimi.png'),lang+': only the96-point Kimi task badge is green; both rows show new-family price and logo');
+    check(one(index===0?'#gridA':'#gridB').innerHTML.includes(id),lang+': Kimi K3.1 screenshot must be included in its active gallery');
+  }
+  for(const index of [2,3]){tabs[index].listeners.click();check(countRows()===0,lang+': Kimi K3.1 must not enter either archive tab');}
   one('#modelSearchInput').value='';one('#modelSearchInput').listeners.input();tabs[0].listeners.click();
 
   one('#modelSearchInput').value = 'DeepSeek V4.1 Flash 0910';
@@ -3126,6 +3240,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 }
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
+  "Kimi K3.1 Pro (Max)": ["down",5,"钱都拿去给AA充值了吗？卖这么贵你家里知道吗？"],
   "MiniMax M3.1 Flash (Max)": ["down", 1, ""],
 "DeepSeekV4.1Flash1017(Max)V2": [
   "up",
@@ -3529,9 +3644,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">42') && enHome.includes('id="aAll">42') && zhHome.includes('id="bAll">32') && enHome.includes('id="bAll">32') && zhHome.includes('id="tAll">144') && enHome.includes('id="tAll">144'), 'Both home pages must publish 42/32 active counts and 144 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 42 件和文档组 32 件') && enHome.includes('prefer the 29 paired results over treating all 42 one-line and 32 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('29 组同模型') && enHome.includes('29 same-model') && ["47.77 / 70","60.55 / 70","31.37 / 36","31.99 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 29-pair statistics');
+check(zhHome.includes('id="aAll">43') && enHome.includes('id="aAll">43') && zhHome.includes('id="bAll">33') && enHome.includes('id="bAll">33') && zhHome.includes('id="tAll">146') && enHome.includes('id="tAll">146'), 'Both home pages must publish 43/33 active counts and 146 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 43 件和文档组 33 件') && enHome.includes('prefer the 30 paired results over treating all 43 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('30 组同模型') && enHome.includes('30 same-model') && ["47.62 / 70","60.66 / 70","31.43 / 36","32.00 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 30-pair statistics');
 check(zhHome.includes('详细文档版以实际任务原文为验收依据') && zhHome.includes('任务依从与物理正确性的区别') && enHome.includes('Detailed-spec entries are assessed against the actual task.') && enHome.includes('distinguishes task compliance from physical correctness'), 'Both home pages must preserve the task-attribution rule and distinguish credited task compliance from physical correctness');
 check(!zhHome.includes('没有显示稳定提升') && !zhHome.includes('没有显示出稳定提升') && !enHome.includes('no stable lift'), 'The revised sample summaries must not retain a stale claim that execution failed to improve after the corrected task-attribution review');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
@@ -3598,72 +3713,72 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
-check(stats.pairedSummary.n === 29, 'Paired statistics must use 29 active pairs');
-close(stats.pairedSummary.coverage.a, 47.77241379310344, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 60.54827586206895, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":25,"tie":0,"decline":4}), 'coverage paired outcomes must match the independent evidence');
-close(stats.pairedSummary.execution.a, 31.371264367816103, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 31.988505747126442, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":17,"tie":2,"decline":10}), 'execution paired outcomes must match the independent evidence');
-close(stats.pairedSummary.exact.a, 75.72988505747126, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 89.74367816091954, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":25,"tie":0,"decline":4}), 'exact paired outcomes must match the independent evidence');
+check(stats.pairedSummary.n === 30, 'Paired statistics must use 30 active pairs');
+close(stats.pairedSummary.coverage.a, 47.62066666666665, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 60.66333333333331, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":26,"tie":0,"decline":4}), 'coverage paired outcomes must match the independent evidence');
+close(stats.pairedSummary.execution.a, 31.425000000000008, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 32.003888888888895, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":17,"tie":2,"decline":11}), 'execution paired outcomes must match the independent evidence');
+close(stats.pairedSummary.exact.a, 75.64566666666666, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 89.96722222222222, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":26,"tie":0,"decline":4}), 'exact paired outcomes must match the independent evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      42,
-      49.48666666666664,
-      31.986507936507945,
-      78.75888888888888
+      43,
+      49.340930232558115,
+      32.009689922480625,
+      78.62968992248061
     ],
     "b": [
-      32,
-      60.45187499999999,
-      32.229687500000004,
-      89.96281250000001
+      33,
+      60.55939393939393,
+      32.23636363636364,
+      90.15939393939396
     ]
   },
   "withoutReferences": {
     "a": [
-      41,
-      49.13268292682925,
-      31.888617886178867,
-      78.24081300813008
+      42,
+      48.99190476190475,
+      31.91468253968255,
+      78.120873015873
     ],
     "b": [
-      32,
-      60.45187499999999,
-      32.229687500000004,
-      89.96281250000001
+      33,
+      60.55939393939393,
+      32.23636363636364,
+      90.15939393939396
     ]
   },
   "withoutTier4": {
     "a": [
-      41,
-      49.41024390243901,
-      32.1,
-      78.72975609756097
+      42,
+      49.26285714285712,
+      32.12103174603175,
+      78.5981746031746
     ],
     "b": [
-      30,
-      61.12999999999999,
-      32.67944444444445,
-      90.90944444444445
+      31,
+      61.22258064516128,
+      32.672043010752695,
+      91.08817204301076
     ]
   },
   "withoutReferencesOrTier4": {
     "a": [
-      40,
-      49.04549999999998,
-      32.002500000000005,
-      78.198
+      41,
+      48.90341463414632,
+      32.02642276422765,
+      78.0761788617886
     ],
     "b": [
-      30,
-      61.12999999999999,
-      32.67944444444445,
-      90.90944444444445
+      31,
+      61.22258064516128,
+      32.672043010752695,
+      91.08817204301076
     ]
   }
 };
