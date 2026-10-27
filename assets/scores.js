@@ -3,6 +3,220 @@
   'use strict';
 
   window.SCORES = {
+"GPT6.1Terra(Ultra)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 0,
+    "bloom": 0,
+    "aces": 0,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 0,
+  "hasEarthMoon": false,
+  "earthMoonValid": false,
+  "moonEvidence": [],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 0.5,
+    "follow": 0,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线Canvas2D，八行星使用JPL世纪根数、J2000/当前UTC历元、Newton开普勒和同源三维投影轨道，路径贴合；Canvas选择本身不扣分。土星环和行星径向光晕仅示意，无实际Bloom/ACES、小行星带、卫星或彗星。表面光照固定屏幕左上且无实体自转，归data4。独立遮挡故障：太阳始终先画、所有行星随后再画；正常拖到低角度并将日期滑块置1，金星深度−.857且投影完整落入太阳，仍画到太阳前方，integrity4.5，不与环/功能缺失重复。拖拽、有界二维缩放和物理暂停有效；点击只改信息与选中圈，镜头仍居中太阳，focus部分、follow0；复位恢复当前日期/视角，但保留1000天每秒、暂停及关闭轨道的状态，reset部分。JS/外网0，390px正常；无fatal。",
+  "reviewedAt": "2026-10-27",
+  "reviewVersion": "V3-20261027"
+},
+"GPT6.1Terra(Ultra)V2":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 0,
+    "bloom": 0,
+    "aces": 0,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 0,
+  "hasEarthMoon": false,
+  "earthMoonValid": false,
+  "moonEvidence": [],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 0.5,
+    "follow": 0,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线WebGL1，八行星JPL世纪根数、开普勒与当前UTC历元有效，反射映射(x,z,+y)本身可用，240等E同源轨道线贴合。土星环有结构但无双向阴影，行星仅rim大气；太阳billboard光晕不是亮源提取/扩散Bloom，也无ACES。未实现小行星带、卫星或彗星。反射世界的轨道黄北为−Y，但表面仍绕+Y侧轴推进，地球等实际逆行；另太阳自转.03rad/日对应209.44日，独立物理问题合并data4。真实距离开关将1AU缩到.20266单位却保留Sun半径.34，实测水星距.0722+半径.13、金星距.1467+半径.19均完全埋入太阳，integrity4.5，不当作视觉偏好。拖拽、安全有界缩放及物理暂停有效；选择只改资料、相机仍对太阳，focus部分/follow0；复位保留1000天每秒、暂停、真实比例与关轨道，reset部分。默认4×MSAA/depth24，JS/GL/net0，390px正常，无fatal。",
+  "reviewedAt": "2026-10-27",
+  "reviewVersion": "V3-20261027"
+},
+"GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.14499999999973,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.32166,
+      "reference": "ecliptic",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05000000000036243,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47000000000248926,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19999999999981222,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.18999999999694875,
+      "expectedInclinationDeg": 0.19,
+      "periodDays": 16.689,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.3500000000016677,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.89999999999569,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": -5.876854,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.0799999999939542,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.3872,
+      "reference": "equator",
+      "reason": "原函数中心差分有向r×v与周期闭合复算成立；world=(x,z,−y)保持右手性，Triton补角配负周期后实际156.9°。真实AU及显示轨道同向且实体实际draw无GL错误。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，逐条对照实际任务。JPL世纪根数/J2000、稳健开普勒九行星与哈雷、同源180等E轨道、运动主带/希尔达/特洛伊/柯伊伯、双向同空间环影、亮源25采样扩散Bloom后全画面ACES、视线密度大气均有效。八颗卫星的周期/参考面及有向倾角实际成立：Moon5.145°、Io.05°、Triton156.9°、Charon.08°，全计；Triton对负周期用补角，正确处理了方向。球网格2592非退化三角全部朝外、模型基det≈1，HDR/depth24完整，可退RGBA8，JS/GL/外网0。信息卡真实AU和光行时有限，物理暂停冻结JD/全部位置与自转，Now和倒放有效。太阳近缩distance2.002<R4.6，zoom部分；Io在约1.053天每秒时，默认视角24/24在屏内，正常拖拽后的视角16/18在屏内、相机滞后约2.9单位，follow部分，不标核心fatal。聚焦平滑成立；任务没有全状态reset、额外卫星初相历表或潮汐锁定UI要求，任务自转表的内生符号矛盾也不归责。390px与真实比例往返正常，视觉不计分。",
+  "reviewedAt": "2026-10-27",
+  "reviewVersion": "V3-20261027"
+},
+
 "KimiK3.1Pro(Max)V1":{
   "reference": false,
   "featureMap": {

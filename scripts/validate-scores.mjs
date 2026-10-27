@@ -13,6 +13,7 @@ for (const file of ['assets/data.js', 'assets/scores.js', 'assets/prices.js', 'a
 }
 
 const { WORKS, SCORES, PAIR_ORDER, HIDDEN_WORK_IDS, WORK_CREATION_DATES, SITE } = context.window;
+const TERRA61_IDS = new Set(["GPT6.1Terra(Ultra)V1","GPT6.1Terra(Ultra)V2","GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5"]);
 const KIMI31_PRO_IDS = new Set(["KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5"]);
 const MINIMAX_FLASH_IDS = new Set(["MiniMaxM3.1Flash(Max)V1","MiniMaxM3.1Flash(Max)V2","MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5"]);
 const RETIRED_MINIMAX_PREVIEW_IDS = new Set(["MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5"]);
@@ -35,6 +36,10 @@ const canonical = value => Array.isArray(value) ? value.map(canonical)
 const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
+  "GPT6.1Terra(Ultra)V1": "GPT-6.1 Terra (Ultra·Max) #1",
+  "GPT6.1Terra(Ultra)V2": "GPT-6.1 Terra (Ultra·Max) #2",
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5": "GPT-6.1 Terra (Ultra·Max)",
+
   "KimiK3.1Pro(Max)V1": "Kimi K3.1 Pro (Max)",
   "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": "Kimi K3.1 Pro (Max)",
 
@@ -187,6 +192,10 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  "GPT6.1Terra(Ultra)V1": 64.12,
+  "GPT6.1Terra(Ultra)V2": 64.12,
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5": 97.25,
+
   "KimiK3.1Pro(Max)V1": 73.20333333333333,
   "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": 96.45,
 
@@ -343,6 +352,10 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  "GPT6.1Terra(Ultra)V1": "0|0.4|0|0|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|4|4.5|-|1|1|0.5|0|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "GPT6.1Terra(Ultra)V2": "0|0.4|0|0|0|0.4|1|1|1|1|1|1|1|0|0|0|0|5|4|4.5|-|1|1|0.5|0|0.5|-|-|moonEvidence:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|5|5|-|1|0.5|1|0.5|1|-|-|moonEvidence:d0d4e394aa5fa5f75078b29b83300adaa6d3e5bd51f6e6032576fba7ec79d6bf",
+
   "KimiK3.1Pro(Max)V1": "0|0.4|0|1|1|0.4|1|1|1|1|1|0.5|1|1|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:bca2bec9abde1c1fd54e995a1f8e317cfc9afda3fd24ad2d4026895d027e6675",
   "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5": "0|1|1|1|1|1|1|1|1|1|1|1|1|8|1|1|0|5|4|4.5|-|1|0.5|1|1|1|-|-|moonEvidence:37bbace8bf6d9d87c923495ad470a192c7528d5b8afd498204017b73f8a5711d",
 
@@ -506,10 +519,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 146, `WORKS count must be 146, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 146, `SCORES count must be 146, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 146, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 146, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 149, `WORKS count must be 149, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 149, `SCORES count must be 149, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 149, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 149, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -524,7 +537,7 @@ for (const work of WORKS) {
 }
 const renamedUltraIds = {
   Claude: ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5Ultra-WebGL2', 'Opus4.8Ultra-TasksAssignedByOpus5', 'Sonnet5Ultra', 'Sonnet5Ultra-TasksAssignedByOpus5'],
-  GPT: ['GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1', SOL61_SPEC_ID],
+  GPT: [...TERRA61_IDS, 'GPT5.6SolUltra-TasksAssignedByOpus5', 'GPT5.6SolUltra-WebGL2', 'GPT5.6SolUltra', 'GPT5.6TerraUltra-Three', 'GPT5.6TerraUltra-TasksAssignedByOpus5', 'GPT6Astra(Ultra)V1', 'GPT6.1Sol(Ultra)V1', SOL61_SPEC_ID],
 };
 const renamedHaikuIds = ['Haiku5.5(Ultracode)V1', 'Haiku5.5(Ultracode)V1-TasksAssignedByOpus5'];
 check(WORKS.every(work => !/^(?:Claude |GPT-).*\(Ultra\)/.test(work.model)), 'WORKS must no longer display the standalone Claude/GPT Ultra name');
@@ -540,8 +553,8 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 }
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
-check(WORKS.filter(w => w.group === 'A').length === 81, 'Group A count must be 81 after adding Kimi K3.1 Pro');
-check(WORKS.filter(w => w.group === 'B').length === 65, 'Group B count must be 65 after adding Kimi K3.1 Pro');
+check(WORKS.filter(w => w.group === 'A').length === 83, 'Group A count must be 83 after adding both Terra6.1 runs');
+check(WORKS.filter(w => w.group === 'B').length === 66, 'Group B count must be 66 after adding Terra6.1 task');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
 const restoredIds = new Set(['KimiK3(Max)V3']);
@@ -632,6 +645,9 @@ for (const id of restoredIds) {
 }
 // Completed source, task-attribution and runtime reviews; each record retains its own review date.
 const currentReviewIds = new Set([
+  "GPT6.1Terra(Ultra)V1",
+  "GPT6.1Terra(Ultra)V2",
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5",
   "KimiK3.1Pro(Max)V1",
   "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
 "MiniMaxM3.1Flash(Max)V1",
@@ -708,6 +724,7 @@ const currentReviewIds = new Set([
   "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5"
 ]);
 const currentSpecReviewIds = new Set([
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5",
   "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
 "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5",
 "DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5",
@@ -743,11 +760,11 @@ const currentSpecReviewIds = new Set([
   "GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5",
   "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5"
 ]);
-const originalWorks = WORKS.filter(work => !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
+const originalWorks = WORKS.filter(work => !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
 const originalAssets = originalWorks.flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(originalAssets.length === 278 && digest(originalAssets) === '65c0d06a691930614fb636b9737294a20a13a6ff8cd2eb9a6c3fc7f481fb1e8a', 'All 278 existing model originals and saved screenshots must remain unchanged');
-check(currentReviewIds.size === 73 && currentSpecReviewIds.size === 33 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the newly reviewed Kimi K3.1 Pro records');
+check(currentReviewIds.size === 76 && currentSpecReviewIds.size === 34 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the newly reviewed Kimi K3.1 Pro records');
 check(JSON.stringify([...currentReviewIds].sort()) === JSON.stringify(visibleWorks.filter(w=>!Object.hasOwn(protectedScoreDigests,w.id)).map(w=>w.id).sort()), 'Current source review must cover exactly all eligible current records, including folded runs');
 for (const id of currentSpecReviewIds) check(SITE.isVisibleWork(SITE.byId(id)) && SITE.byId(id).group === 'B', id + ': task-attribution scope must contain only current detailed-spec works');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
@@ -763,9 +780,9 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 76, 'Active WORKS count must be 76');
-check(visibleWorks.filter(w => w.group === 'A').length === 43, 'Active Group A count must be 43');
-check(visibleWorks.filter(w => w.group === 'B').length === 33, 'Active Group B count must be 33');
+check(visibleWorks.length === 79, 'Active WORKS count must be 79');
+check(visibleWorks.filter(w => w.group === 'A').length === 45, 'Active Group A count must be 45');
+check(visibleWorks.filter(w => w.group === 'B').length === 34, 'Active Group B count must be 34');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
   const work = SITE.byId(id), recommendation = SITE.personalRecommendationFor(work);
@@ -776,16 +793,16 @@ for (const id of ['Opus5Ultra-WebGL2', ...MINIMAX_FLASH_IDS]) check(SITE.isVisib
 check(visibleWorks.every(w => !w.model.includes('Qwen 3.8 Max Preview')), 'No retired Qwen Preview work may remain on visible site surfaces');
 check(visibleWorks.every(w => !/^DeepSeek V4 Pro \(Max\)/.test(w.model)), 'No retired DeepSeek V4 Pro work may remain on visible site surfaces');
 for (const id of expectedHiddenIds) { const work=SITE.byId(id); check(SITE.isArchivedWork(work) && !SITE.isVisibleWork(work) && fs.existsSync(asset(work.file)) && fs.existsSync(asset(work.shot)), id + ': archive lookup must open the retained original and screenshot without entering active lists'); }
-check(PAIR_ORDER.length === 48 && new Set(PAIR_ORDER).size === 48, 'PAIR_ORDER must contain 48 configured pair keys, including Kimi K3.1 Pro');
+check(PAIR_ORDER.length === 49 && new Set(PAIR_ORDER).size === 49, 'PAIR_ORDER must contain 49 configured pair keys, including GPT6.1Terra');
 check(!PAIR_ORDER.includes('qwen38') && !Object.hasOwn(context.window.PAIR_TITLES, 'qwen38'), 'The Preview comparison must be absent from visible pair metadata');
 check(!PAIR_ORDER.includes('deepseek') && !Object.hasOwn(context.window.PAIR_TITLES, 'deepseek'), 'The retired DeepSeek V4 Pro comparison must be absent from visible pair metadata');
-check(SITE.pairs().length === 30, 'Expected 30 complete active pairs after adding Kimi K3.1 Pro');
+check(SITE.pairs().length === 31, 'Expected 31 complete active pairs after adding GPT6.1Terra');
 check(!SITE.pairs().some(pair => pair.a.pair === 'minimax'), 'The retired MiniMax M3 pair must not appear in current comparisons');
 check(!SITE.pairs().some(pair => pair.a.pair === 'opus5'), 'The Opus 5 pair must leave current comparisons when only its detailed-spec side is archived');
 const historicalOpusPair = SITE.pairs(WORKS).find(pair => pair.a.pair === 'opus5');
 check(historicalOpusPair?.a?.id === 'Opus5Ultra-WebGL2' && historicalOpusPair?.b?.id === 'Opus5Ultra-TasksAssignedByOpus5', 'The complete retained work set must preserve the historical Opus 5 pair across current and offline tabs');
 check(typeof SITE.displayPairs === 'function', 'SITE must expose the six largest positive detailed-spec gains');
-check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","qwen38max","gpt6luna","gpt6astralight","kimik31pro","mimo26pro"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
+check(JSON.stringify(SITE.displayPairs().map(pair => pair.a.pair)) === JSON.stringify(["gemini38flashv1","qwen38max","gpt61terra","gpt6luna","gpt6astralight","kimik31pro"]), 'Featured comparisons must be the six largest positive detailed-spec score gains');
 check(PAIR_ORDER[4] === 'kimik3' && PAIR_ORDER[5] === 'kimik3v2', 'Kimi K3 #1 and #2 must occupy comparison positions 05 and 06');
 check(PAIR_ORDER[8] === 'deepseekv4pro0813' && PAIR_ORDER[9] === 'deepseekv4pro0813v2', 'DeepSeek V4 Pro 0813 #1 and #2 must occupy comparison positions 09 and 10');
 check(PAIR_ORDER[10] === 'glm53v1' && PAIR_ORDER[11] === 'glm53v2', 'GLM 5.3 #1 and #2 must occupy comparison positions 11 and 12');
@@ -820,7 +837,7 @@ for(const original of [{"path":"models/DeepSeekV4.1Flash1017(Max)V1.html","sha25
 
 // The V2 addition preserves all 139 published scores, source files, screenshots,
 // creation dates and measurement-day recommendations from b1222b2.
-const preV2Ids = WORKS.filter(work => !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
+const preV2Ids = WORKS.filter(work => !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
 check(preV2Ids.length===139 && digest(preV2Ids.map(id=>[id,SCORES[id]]))==='99965896b1d51278bb63f8538abadbfb5b50cc5add57dd3ce788144daaea04ec', 'V2 addition must preserve all139 prior score records, including notes and provenance');
 check(digest(preV2Ids.map(id=>SITE.byId(id)))==='a4f7be77d7f4b9d63afe3944eec550b430b390d1156e336b3bb834647fe9585f', 'V2 addition may only add#1 to the two V1 display names among old work metadata');
 check(digest(preV2Ids.map(id=>[id,WORK_CREATION_DATES[id]]))==='8a2bad264090fde23437ac9fba946e31ddbdcbf2d0ad0ecdad8699e109c57ee6', 'V2 addition must preserve old139 filesystem dates');
@@ -880,11 +897,11 @@ for(const id of retiredDeepSeek0910Ids){
  check(SITE.isArchivedWork(work)&&!SITE.isVisibleWork(work)&&SCORES[id].reviewedAt==='2026-10-17'&&SCORES[id].reviewVersion==='V3-20261017',id+': archive existing review provenance without re-auditing');
  check(rec?.symbols==='-'&&rec.direction==='legacy'&&rec.count===0&&rec.sortValue===0&&rec.reason==='梁子继续加油啊'&&rec.tooltip==='老模型都不推荐使用',id+': retired recommendation must use the standard gray dash and retain the measurement-day reason');
 }
-const unchangedRecommendationIds = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)).map(work=>work.id).sort();
+const unchangedRecommendationIds = WORKS.filter(work=>!TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)).map(work=>work.id).sort();
 check(unchangedRecommendationIds.length===137 && digest(unchangedRecommendationIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==='d763372f6bea28fa7245a207c77e00c0fc8356b1ef46a0d4a68d4e9399fa8a71', 'MiniMax publication must preserve all other137 prior recommendations including both1017V2 overrides');
-check(digest(WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>key!=='Kimi K3.1 Pro'&&key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
-const allOriginalAssets = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(digest(WORKS.filter(work=>!TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>key!=='GPT-6.1 Terra'&&key!=='Kimi K3.1 Pro'&&key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
+const allOriginalAssets = WORKS.filter(work=>!TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(allOriginalAssets.length===282&&digest(allOriginalAssets)==='34698bb11b74da1f1154b475ea1f670cac13089328118ce2bd9456ce5ef09748', 'MiniMax publication must preserve all282 prior model originals and saved screenshots');
 
 
@@ -995,13 +1012,13 @@ for(const expected of [
 
 
 // Kimi K3.1 Pro publication: reuse the completed review and saved screenshots.
-const kimi31PreviousWorks = WORKS.filter(work=>!KIMI31_PRO_IDS.has(work.id));
+const kimi31PreviousWorks = WORKS.filter(work=>!TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id));
 const kimi31PreviousIds = kimi31PreviousWorks.map(work=>work.id).sort();
-check(kimi31PreviousWorks.length===144&&digest(kimi31PreviousWorks)==="e9eea112015acb53b422fb17210095269cd1dd46730fbf738374c2f1fd26c871"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!KIMI31_PRO_IDS.has(id))))==="15d1a64efa556204bcdc9b41b0c16b90a15a69ac1426149264cf4704a6841e47"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!KIMI31_PRO_IDS.has(id))))==="4c85ae581ce7e9fbe99b7d0b72de8b5a97325b504fd86ec823db33a6eb8bdcdd", 'Kimi K3.1 publication must preserve all144 prior metadata, full scores and dates');
+check(kimi31PreviousWorks.length===144&&digest(kimi31PreviousWorks)==="e9eea112015acb53b422fb17210095269cd1dd46730fbf738374c2f1fd26c871"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="15d1a64efa556204bcdc9b41b0c16b90a15a69ac1426149264cf4704a6841e47"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="4c85ae581ce7e9fbe99b7d0b72de8b5a97325b504fd86ec823db33a6eb8bdcdd", 'Kimi K3.1 publication must preserve all144 prior metadata, full scores and dates');
 check(digest(kimi31PreviousIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="6988a93f8b9e97639b590477850bf7ef72afeb334096f9273407848db9196855", 'Kimi K3.1 publication must preserve all144 previous measurement-day recommendations');
 const kimi31PreviousAssets=kimi31PreviousWorks.flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(kimi31PreviousAssets.length===288&&digest(kimi31PreviousAssets)==="0d1e2a88463a7dcb279f09386ded9462e08ef065aea668024a631f9914eafea4", 'Kimi K3.1 publication must preserve all288 previous originals and screenshots');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='Kimi K3.1 Pro')))==="a71a1e3e629144c47664f22e6971b6e6b24e0b2f51a058f11df3995dac5ed414"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8", 'Kimi K3.1 publication must preserve every previously saved price');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='GPT-6.1 Terra'&&family!=='Kimi K3.1 Pro')))==="a71a1e3e629144c47664f22e6971b6e6b24e0b2f51a058f11df3995dac5ed414"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8", 'Kimi K3.1 publication must preserve every previously saved price');
 check(PAIR_ORDER[6]==='kimik31pro'&&context.window.PAIR_TITLES.kimik31pro==='Kimi K3.1 Pro (Max)', 'Kimi K3.1 Pro pair must follow Kimi K3 #2 without renaming older pairs');
 const kimi31Pair=SITE.pairs().find(pair=>pair.a.pair==='kimik31pro');
 check(kimi31Pair?.a.id==="KimiK3.1Pro(Max)V1"&&kimi31Pair?.b.id==="KimiK3.1Pro(Max)V1-TasksAssignedByOpus5", 'Kimi K3.1 Pro comparison must use its matching A/B originals');
@@ -1063,6 +1080,100 @@ for(const expected of [
  const price=SITE.priceFor(work);
  check(price.input===2&&price.output===10&&price.cache===.2&&price.source==='https://platform.kimi.ai/'&&price.date==='2026-10-24'&&SITE.priceCell(work).includes('2 / 10 / 0.2'),expected.id+': exact new-family official USD pricing');
  check(SITE.modelLogoFor(work)==='assets/logos/kimi.png',expected.id+': retain Kimi brand logo');
+}
+
+
+// GPT6.1Terra: immutable reviewed inputs, user metadata and previous publication.
+const terra61PreviousWorks=WORKS.filter(w=>!TERRA61_IDS.has(w.id));
+check(terra61PreviousWorks.length===146&&digest(terra61PreviousWorks)==="5e49dcdd9ce8f16125afac2cd9379822a52763c68d3ae4898cd11da5cd0fb3df"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!TERRA61_IDS.has(id))))==="dbe953d6eead65276710a9058a94257958bf541ef0a04e39f04f89bc169ab5bf"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!TERRA61_IDS.has(id))))==="dc55ab1ed9f09ad8649294c1f9dbf26e29d9b448a0d93132d602680f24d2ab60",'Terra publication must preserve146 prior metadata, scores and dates');
+check(digest(terra61PreviousWorks.map(w=>w.id).sort().map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="8309bb4a981e55dd691f97898522674bce37eb7586e0be9bf90cb96f79c3fcec",'Terra publication must preserve146 previous recommendations');
+const terra61PreviousAssets=terra61PreviousWorks.flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(terra61PreviousAssets.length===292&&digest(terra61PreviousAssets)==="69566cfb290a649c8e3b9614d1aeeffeb34fba95da4d57c46713529871e2a9a8",'Terra publication must preserve292 previous original files/screenshots');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([k])=>k!=='GPT-6.1 Terra')))==="5fda08e4222ca6eda065ea103ddff539412538d68d18367d6926ff04929f20a8"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'Terra publication must preserve all previously saved prices');
+check(PAIR_ORDER.at(-1)==='gpt61terra'&&context.window.PAIR_TITLES.gpt61terra==='GPT-6.1 Terra (Ultra·Max) #1','New Terra pair follows Sol and uses explicit V1 title');
+const terra61Pair=SITE.pairs().find(p=>p.a.pair==='gpt61terra');
+check(terra61Pair?.a.id==="GPT6.1Terra(Ultra)V1"&&terra61Pair?.b.id==="GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5"&&SITE.byId("GPT6.1Terra(Ultra)V2").pair===null,'Terra pair must compare matching V1 originals only');
+for(const expected of [
+  {
+    "id": "GPT6.1Terra(Ultra)V1",
+    "group": "A",
+    "model": "GPT-6.1 Terra (Ultra·Max) #1",
+    "tier": 2,
+    "environment": "Codex",
+    "pair": "gpt61terra",
+    "expectedExact": 64.12,
+    "tech": "Canvas2D",
+    "needsFloat": false,
+    "msaa": false,
+    "net": [],
+    "jsErrors": 0,
+    "issue": null,
+    "bytes": 21382,
+    "lines": 49,
+    "creation": "2026-10-27T02:37:27.565Z",
+    "file": "models/GPT6.1Terra(Ultra)V1.html",
+    "shot": "assets/shots/GPT6.1Terra(Ultra)V1.jpg",
+    "sourceSHA": "afb5e70f114a6c27100adc51f84967ee5fb9e432f04d1005f704b733dd6da388",
+    "shotSHA": "d4d4feb4f61b2508ff523d54296a54d7b915250d3a561a1701b8937dd47866cb",
+    "scoreDigest": "11ba551ffae3c929b72ce019924f3b6ced981c62bfe0cdd2f47250dfb541b0d8"
+  },
+  {
+    "id": "GPT6.1Terra(Ultra)V2",
+    "group": "A",
+    "model": "GPT-6.1 Terra (Ultra·Max) #2",
+    "tier": 2,
+    "environment": "Codex",
+    "pair": null,
+    "expectedExact": 64.12,
+    "tech": "WebGL",
+    "needsFloat": false,
+    "msaa": true,
+    "net": [],
+    "jsErrors": 0,
+    "issue": null,
+    "bytes": 25979,
+    "lines": 75,
+    "creation": "2026-10-27T02:46:13.933Z",
+    "file": "models/GPT6.1Terra(Ultra)V2.html",
+    "shot": "assets/shots/GPT6.1Terra(Ultra)V2.jpg",
+    "sourceSHA": "e8df0c7cf068760daf1757d8cda8be214076ce9e778c822f62f3b2bb9f0fc1b0",
+    "shotSHA": "81d1a0d30a132df9fb1b065908ee3fc7b29a22d3d29974dec507fac1071f7ed4",
+    "scoreDigest": "afa0eaca24c67118279161a2256de99d3cb1f7eb1c5fd18a2bfd8ea464c650ad"
+  },
+  {
+    "id": "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5",
+    "group": "B",
+    "model": "GPT-6.1 Terra (Ultra·Max)",
+    "tier": 1,
+    "environment": "Codex",
+    "pair": "gpt61terra",
+    "expectedExact": 97.25,
+    "tech": "WebGL2",
+    "needsFloat": false,
+    "msaa": false,
+    "net": [],
+    "jsErrors": 0,
+    "issue": null,
+    "bytes": 56306,
+    "lines": 184,
+    "creation": "2026-10-27T02:42:39.521Z",
+    "file": "models/GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5.html",
+    "shot": "assets/shots/GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5.jpg",
+    "sourceSHA": "daadc88d8a94cb09af506eb0ba4dc0342ef50b274adb08e8642c3f21d4718301",
+    "shotSHA": "4f00e66b7877586d8795297950c0b8e20391154a91166a52963749dec48bcabe",
+    "scoreDigest": "b0fc540c719a7f75482d33a803f67cdb55a7de54e574d88025b82cda76b53379"
+  }
+]){
+ const w=SITE.byId(expected.id),s=SITE.scoreFor(w),r=SITE.personalRecommendationFor(w);
+ check(w&&SITE.isVisibleWork(w)&&!SITE.isArchivedWork(w)&&w.group===expected.group&&w.tier===expected.tier&&w.pair===expected.pair,expected.id+': authorized grouping/tier/pair');
+ for(const key of ['file','shot','tech','bytes','lines','needsFloat','msaa','jsErrors'])check(w[key]===expected[key],expected.id+': exact supplied '+key);
+ check(w.net.length===0&&WORK_CREATION_DATES[w.id]==='261027'&&stripCreationDate(w.model)===expected.model,expected.id+': exact creation date, canonical name and offline source');
+ check(createHash('sha256').update(fs.readFileSync(asset(w.file))).digest('hex')===expected.sourceSHA&&createHash('sha256').update(fs.readFileSync(asset(w.shot))).digest('hex')===expected.shotSHA,expected.id+': preserve original and saved screenshot');
+ check(digest(SCORES[w.id])===expected.scoreDigest&&s.reviewedAt==='2026-10-27'&&s.reviewVersion==='V3-20261027',expected.id+': reuse completed review without scientific evidence drift');
+ close(s.exact,expected.expectedExact,expected.id+': requested tier-adjusted exact');check(s.total===(w.group==='A'?64:97)&&s.manualAdjustment===(w.group==='A'?-3:0)&&s.fatal===null,expected.id+': requested tier correction without fatal');
+ check(SITE.environmentName(w)==='Codex'&&r.direction==='up'&&r.count===3&&r.symbols==='△△△'&&r.reason==='能用',expected.id+': requested environment and three green triangles with literal reason');
+ const price=SITE.priceFor(w);check(price.input===2&&price.output===7.5&&price.cache===.1&&price.date==='2026-10-27'&&price.source==='https://developers.openai.com/api/docs/models/gpt-6.1-terra'&&SITE.priceCell(w).includes('2 / 7.5 / 0.1'),expected.id+': official highest-context standard price');
+ check(SITE.modelLogoFor(w)==='assets/logos/openai.png',expected.id+': OpenAI brand logo');
 }
 
 const referenceIds = ['Opus5Ultra-WebGL2'];
@@ -1157,6 +1268,7 @@ for (const [part, maximum] of Object.entries({features:12, orbit:30, moons:12, m
 check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SITE.scoreTipHtml(opusMax, opusMaxScore)), 'Opus 5 (Max) tooltip must contain only the current scoring treatment');
 
 const expectedPrices = {
+  "GPT-6.1 Terra": [2, 7.5, 0.1],
   "Kimi K3.1 Pro": [2, 10, 0.2],
   "MiniMax M3.1 Flash": [0.15, 0.6, 0.015],
   "Claude Fable 5.1": [
@@ -1435,7 +1547,7 @@ check(fs.existsSync(asset(sol61Spec.shot)) && SITE.isVisibleWork(sol61Spec) && !
 check(createHash('sha256').update(fs.readFileSync(asset(sol61Spec.shot))).digest('hex') === 'adb9f5aaa8d14068cd3c2cb473327ea7f20387a300d9a40d2b0b8e0262a65da1', 'The verified 1440×900 JPEG runtime screenshot must remain unchanged');
 check(SITE.priceFor(sol61Spec).date === '2026-09-30' && SITE.priceCell(sol61Spec).includes('4 / 15 / 0.2'), 'Sol detailed spec must reuse the existing verified Sol pricing');
 const sol61Pair = SITE.pairs().find(pair => pair.a.pair === 'gpt61sol');
-check(sol61Pair?.a.id === sol61.id && sol61Pair?.b.id === SOL61_SPEC_ID && PAIR_ORDER.at(-1) === 'gpt61sol' && context.window.PAIR_TITLES.gpt61sol === 'GPT-6.1 Sol (Ultra·Max)', 'Sol must append exactly its matching one-line and detailed originals');
+check(sol61Pair?.a.id === sol61.id && sol61Pair?.b.id === SOL61_SPEC_ID && PAIR_ORDER.indexOf('gpt61sol') === PAIR_ORDER.indexOf('gpt61terra')-1 && context.window.PAIR_TITLES.gpt61sol === 'GPT-6.1 Sol (Ultra·Max)', 'Sol must append exactly its matching one-line and detailed originals');
 close(SITE.scoreFor(sol61Spec).exact - SITE.scoreFor(sol61).exact, -1.25, 'Sol detailed-minus-one-line exact difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'gpt61sol'), 'Sol must join the full pair population without displacing a larger positive featured gain');
 check(SCORES[SOL61_SPEC_ID].visualBase === null && SCORES[SOL61_SPEC_ID].moons === 8 && SCORES[SOL61_SPEC_ID].earthMoonValid === true && Array.isArray(SCORES[SOL61_SPEC_ID].moonEvidence) && SCORES[SOL61_SPEC_ID].moonEvidence.length === 8 && SCORES[SOL61_SPEC_ID].moonEvidence.every(moon => moon.quality === 1), 'The new Sol review must retain its eight independently verified moons and no legacy visual input');
@@ -1472,7 +1584,7 @@ const haikuMaxSpecSource = fs.readFileSync(asset(haikuMaxSpec.file));
 check(haikuMaxSpecSource.length === 191845 && [...haikuMaxSpecSource].filter(byte => byte === 10).length === 4506 && createHash('sha256').update(haikuMaxSpecSource).digest('hex') === '76c9edf174191632523af63d251cdfbcdb4e81d90cdb57904860b5114de56ebc', 'The new Haiku Ultracode·Max detailed original must remain byte-for-byte unchanged');
 check(fs.existsSync(asset(haikuMaxSpec.shot)) && SITE.isVisibleWork(haikuMaxSpec) && !SITE.isArchivedWork(haikuMaxSpec), 'Haiku Ultracode·Max detailed spec must expose its saved runtime screenshot as a current work');
 const haikuMaxPair = SITE.pairs().find(pair => pair.a.pair === 'haiku55max');
-check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.at(-2) === 'haiku55max' && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must retain its complete pair immediately before Sol without replacing the existing xhigh pair');
+check(haikuMaxPair?.a.id === haikuMax.id && haikuMaxPair?.b.id === haikuMaxSpec.id && PAIR_ORDER.indexOf('haiku55max') === PAIR_ORDER.indexOf('gpt61sol')-1 && context.window.PAIR_TITLES.haiku55max === 'Claude Haiku 5.5 (Ultracode·Max)', 'Haiku Max must retain its complete pair immediately before Sol without replacing the existing xhigh pair');
 close(SITE.scoreFor(haikuMaxSpec).exact - SITE.scoreFor(haikuMax).exact, -0.27666666666667084, 'Haiku Max detailed-minus-one-line exact score difference');
 check(!SITE.displayPairs().some(pair => pair.a.pair === 'haiku55max'), 'The Haiku Max pair must enter the full pair population without replacing a larger positive featured gain');
 check(SITE.lunaHaikuComparisons().every(row => row.haiku.id.startsWith('Haiku5.5(Ultracode·Max)V1')), 'The independent Luna/Haiku comparison must use only the Max works while preserving the xhigh ordinary pair');
@@ -1496,7 +1608,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 27], ['B', 23]]) {
+for (const [group, expectedCount] of [['A', 28], ['B', 24]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -1516,6 +1628,15 @@ for (const [group, expectedCount] of [['A', 27], ['B', 23]]) {
   check(!displayRows.some(work => /GPT-5\.6 (Sol|Terra|Luna)|Claude Sonnet 5 \(/.test(work.model)), `${group}: newly archived families must not occur in active table rows`);
   const expectedFolds = {
   "A": [
+    {
+      "family": "GPT-6.1 Terra (Ultra·Max)",
+      "type": "runs",
+      "id": "GPT6.1Terra(Ultra)V1",
+      "exact": 64.12,
+      "alternates": [
+        "GPT6.1Terra(Ultra)V2"
+      ]
+    },
     {
       "family": "KimiK3.1Pro(Max)V1",
       "type": null,
@@ -1735,6 +1856,13 @@ for (const [group, expectedCount] of [['A', 27], ['B', 23]]) {
   ],
   "B": [
     {
+      "family": "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5",
+      "type": null,
+      "id": "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5",
+      "exact": 97.25,
+      "alternates": []
+    },
+    {
       "family": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
       "type": null,
       "id": "KimiK3.1Pro(Max)V1-TasksAssignedByOpus5",
@@ -1938,6 +2066,10 @@ for (const [family, id] of Object.entries(expectedCurrentDocPrimaries)) check(cu
 const recordKeys = ['reference', 'featureMap', 'orbitModel', 'orbitRuntime', 'moons', 'hasEarthMoon', 'halley', 'otherComets', 'correctness', 'visualBase', 'interaction', 'fatal', 'note'];
 const optionalRecordKeys = ['fatalReason', 'moonQuality', 'earthMoonValid', 'moonEvidence', 'reviewedAt', 'reviewVersion'];
 const expectedMoonAdjustments = {
+  "GPT6.1Terra(Ultra)V1": {"earthMoonValid":false},
+  "GPT6.1Terra(Ultra)V2": {"earthMoonValid":false},
+  "GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5": {"earthMoonValid":true},
+
   "MiniMaxM3.1Flash(Max)V1": {"earthMoonValid":true},
   "MiniMaxM3.1Flash(Max)V2": {"earthMoonValid":true},
   "MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5": {"earthMoonValid":false},
@@ -2379,7 +2511,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = KIMI31_PRO_IDS.has(id) ? '2026-10-24' : MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
+    const reviewDate = TERRA61_IDS.has(id) ? '2026-10-27' : KIMI31_PRO_IDS.has(id) ? '2026-10-24' : MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -2985,7 +3117,7 @@ for (const lang of ['zh', 'en']) {
     else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
   };
   checkLunaHaikuHome(true);
-  check(countRows() === 27 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 27 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
+  check(countRows() === 28 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 28 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
   const firstDefaultRow = body().match(/^<tr\b[\s\S]*?<\/tr>/)?.[0] || '';
   check(firstDefaultRow.includes('Opus5.5(Max)V1') && body().includes('Fable5.1(Max)V1') && body().indexOf('Opus5.5(Max)V1') < body().indexOf('Fable5.1(Max)V1'), lang + ': the default one-line table must place Opus 5.5 first, ahead of the equal-scoring Fable 5.1');
   check((firstDefaultRow.match(/recommend-symbol-up/g) || []).length === 5 && !firstDefaultRow.includes('recommend-symbol-down') && firstDefaultRow.includes(lang === 'zh' ? '109是因为满分只有109' : '109 only because the maximum is 109'), lang + ': Opus 5.5 must show five green up-triangles and its requested localized reason');
@@ -3031,7 +3163,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
-  check(one('#tableCountA').textContent === '2 / 27' && one('#tableCountB').textContent === '0 / 23', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(one('#tableCountA').textContent === '2 / 28' && one('#tableCountB').textContent === '0 / 24', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
@@ -3056,9 +3188,9 @@ for (const lang of ['zh', 'en']) {
   check(body().includes('colspan="10"'), lang + ': empty state must span all ten columns');
   one('#modelSearchClear').listeners.click();
   checkLunaHaikuHome(true);
-  check(countRows() === 23, lang + ': clearing search must preserve the selected detailed-spec tab');
+  check(countRows() === 24, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 27, lang + ': one-line tab must restore its 27 primary model rows');
+  check(countRows() === 28, lang + ': one-line tab must restore its 28 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
     one('#modelSearchInput').value = query;
     one('#modelSearchInput').listeners.input();
@@ -3128,6 +3260,20 @@ for (const lang of ['zh', 'en']) {
     check(one(index===0?'#gridA':'#gridB').innerHTML.includes(id),lang+': Kimi K3.1 screenshot must be included in its active gallery');
   }
   for(const index of [2,3]){tabs[index].listeners.click();check(countRows()===0,lang+': Kimi K3.1 must not enter either archive tab');}
+  one('#modelSearchInput').value='';one('#modelSearchInput').listeners.input();tabs[0].listeners.click();
+
+
+  tabs[0].listeners.click();one('#modelSearchInput').value='GPT-6.1 Terra';one('#modelSearchInput').listeners.input();
+  check(countRows()===1&&body().includes("GPT6.1Terra(Ultra)V1")&&body().includes("GPT6.1Terra(Ultra)V2")&&body().includes('table-variants-trigger'),lang+': Terra one-line V1/V2 must collapse under one row');
+  check(body().match(/<a class="table-model" href="([^"]+)"/)?.[1]==='view'+(lang==='en'?'.en':'')+'.html?w='+encodeURIComponent("GPT6.1Terra(Ultra)V1"),lang+': exact tie keeps first Terra run as primary');
+  for(const [index,total,tier,triangleCount]of[[0,64,2,3],[1,97,1,3]]){
+    tabs[index].listeners.click();const html=body(),reason=lang==='zh'?'能用':'Usable';
+    check(countRows()===1&&html.includes('<tr data-tier="'+tier+'">')&&html.includes('>'+total+'<')&&html.includes('Codex')&&html.includes(reason)&&html.includes('261027'),lang+': Terra score/tier/date/environment/reason');
+    check((html.match(/recommend-symbol-up/g)||[]).length===triangleCount&&!html.includes('recommend-symbol-down')&&html.includes('score-pill is-high')===(index===1),lang+': Terra triangle/high-badge mismatch at tab '+index+'; expected '+triangleCount+', actual '+(html.match(/recommend-symbol-up/g)||[]).length+', high='+html.includes('score-pill is-high'));
+    check(html.includes('2 / 7.5 / 0.1')&&html.includes('assets/logos/openai.png'),lang+': Terra pricing and OpenAI logo');
+  }
+  for(const index of[2,3]){tabs[index].listeners.click();check(countRows()===0,lang+': Terra must stay out of offline tabs');}
+  check(one('#gridA').innerHTML.includes("GPT6.1Terra(Ultra)V1")&&one('#gridA').innerHTML.includes("GPT6.1Terra(Ultra)V2")&&one('#gridB').innerHTML.includes("GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5"),lang+': all three Terra screenshots must be in current galleries');
   one('#modelSearchInput').value='';one('#modelSearchInput').listeners.input();tabs[0].listeners.click();
 
   one('#modelSearchInput').value = 'DeepSeek V4.1 Flash 0910';
@@ -3240,6 +3386,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 }
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
+  "GPT-6.1 Terra (Ultra·Max)": ["up",3,"能用"],
   "Kimi K3.1 Pro (Max)": ["down",5,"钱都拿去给AA充值了吗？卖这么贵你家里知道吗？"],
   "MiniMax M3.1 Flash (Max)": ["down", 1, ""],
 "DeepSeekV4.1Flash1017(Max)V2": [
@@ -3644,9 +3791,9 @@ check(!zhHome.includes('14 组严格对照') && !enHome.includes('14 strict pair
 check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome.includes('Tier 2 receives −3, Tier 3 receives −6'), 'Both home pages must publish the current human-experience tier deductions');
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
-check(zhHome.includes('id="aAll">43') && enHome.includes('id="aAll">43') && zhHome.includes('id="bAll">33') && enHome.includes('id="bAll">33') && zhHome.includes('id="tAll">146') && enHome.includes('id="tAll">146'), 'Both home pages must publish 43/33 active counts and 146 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 43 件和文档组 33 件') && enHome.includes('prefer the 30 paired results over treating all 43 one-line and 33 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
-check(zhHome.includes('30 组同模型') && enHome.includes('30 same-model') && ["47.62 / 70","60.66 / 70","31.43 / 36","32.00 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 30-pair statistics');
+check(zhHome.includes('id="aAll">45') && enHome.includes('id="aAll">45') && zhHome.includes('id="bAll">34') && enHome.includes('id="bAll">34') && zhHome.includes('id="tAll">149') && enHome.includes('id="tAll">149'), 'Both home pages must publish 45/34 active counts and 149 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 45 件和文档组 34 件') && enHome.includes('prefer the 31 paired results over treating all 45 one-line and 34 detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('31 组同模型') && enHome.includes('31 same-model') && ["47.34 / 70","60.77 / 70","31.32 / 36","32.04 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 31-pair statistics');
 check(zhHome.includes('详细文档版以实际任务原文为验收依据') && zhHome.includes('任务依从与物理正确性的区别') && enHome.includes('Detailed-spec entries are assessed against the actual task.') && enHome.includes('distinguishes task compliance from physical correctness'), 'Both home pages must preserve the task-attribution rule and distinguish credited task compliance from physical correctness');
 check(!zhHome.includes('没有显示稳定提升') && !zhHome.includes('没有显示出稳定提升') && !enHome.includes('no stable lift'), 'The revised sample summaries must not retain a stale claim that execution failed to improve after the corrected task-attribution review');
 check(zhHome.includes('第一梯队只代表主观分组，不会自动成为标杆') && enHome.includes('Tier 1 is only a subjective grouping and does not automatically confer benchmark status'), 'Both home pages must separate subjective Tier 1 placement from benchmark status');
@@ -3713,72 +3860,72 @@ const stats = SITE.scoreStats();
 close(stats.maxima.coverage + stats.maxima.execution, 106, 'Score maxima');
 check(stats.maxima.coverage === 70 && stats.maxima.execution === 36 && stats.maxima.total === 106, 'Max definition must be 70 coverage + 36 execution = 106, including both three-point bonuses');
 check(stats.maxima.final === 109, 'Tier 0 final ceiling must be separately defined as 109');
-check(stats.pairedSummary.n === 30, 'Paired statistics must use 30 active pairs');
-close(stats.pairedSummary.coverage.a, 47.62066666666665, 'Paired a coverage mean');
-close(stats.pairedSummary.coverage.b, 60.66333333333331, 'Paired b coverage mean');
-check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":26,"tie":0,"decline":4}), 'coverage paired outcomes must match the independent evidence');
-close(stats.pairedSummary.execution.a, 31.425000000000008, 'Paired a execution mean');
-close(stats.pairedSummary.execution.b, 32.003888888888895, 'Paired b execution mean');
-check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":17,"tie":2,"decline":11}), 'execution paired outcomes must match the independent evidence');
-close(stats.pairedSummary.exact.a, 75.64566666666666, 'Paired a exact mean');
-close(stats.pairedSummary.exact.b, 89.96722222222222, 'Paired b exact mean');
-check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":26,"tie":0,"decline":4}), 'exact paired outcomes must match the independent evidence');
+check(stats.pairedSummary.n === 31, 'Paired statistics must use 31 active pairs');
+close(stats.pairedSummary.coverage.a, 47.33999999999998, 'Paired a coverage mean');
+close(stats.pairedSummary.coverage.b, 60.770967741935465, 'Paired b coverage mean');
+check(JSON.stringify(stats.pairedSummary.coverage.outcomes) === JSON.stringify({"improve":27,"tie":0,"decline":4}), 'coverage paired outcomes must match the independent evidence');
+close(stats.pairedSummary.execution.a, 31.320967741935494, 'Paired a execution mean');
+close(stats.pairedSummary.execution.b, 32.044086021505386, 'Paired b execution mean');
+check(JSON.stringify(stats.pairedSummary.execution.outcomes) === JSON.stringify({"improve":18,"tie":2,"decline":11}), 'execution paired outcomes must match the independent evidence');
+close(stats.pairedSummary.exact.a, 75.27387096774193, 'Paired a exact mean');
+close(stats.pairedSummary.exact.b, 90.2021505376344, 'Paired b exact mean');
+check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"improve":27,"tie":0,"decline":4}), 'exact paired outcomes must match the independent evidence');
 
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      43,
-      49.340930232558115,
-      32.009689922480625,
-      78.62968992248061
+      45,
+      48.87777777777776,
+      31.84037037037038,
+      77.9848148148148
     ],
     "b": [
-      33,
-      60.55939393939393,
-      32.23636363636364,
-      90.15939393939396
+      34,
+      60.66058823529411,
+      32.26617647058824,
+      90.36794117647061
     ]
   },
   "withoutReferences": {
     "a": [
-      42,
-      48.99190476190475,
-      31.91468253968255,
-      78.120873015873
+      44,
+      48.534090909090885,
+      31.74583333333334,
+      77.48446969696968
     ],
     "b": [
-      33,
-      60.55939393939393,
-      32.23636363636364,
-      90.15939393939396
+      34,
+      60.66058823529411,
+      32.26617647058824,
+      90.36794117647061
     ]
   },
   "withoutTier4": {
     "a": [
-      42,
-      49.26285714285712,
-      32.12103174603175,
-      78.5981746031746
+      44,
+      48.792727272727255,
+      31.94280303030304,
+      77.94007575757574
     ],
     "b": [
-      31,
-      61.22258064516128,
-      32.672043010752695,
-      91.08817204301076
+      32,
+      61.30937499999999,
+      32.69010416666667,
+      91.28072916666669
     ]
   },
   "withoutReferencesOrTier4": {
     "a": [
-      41,
-      48.90341463414632,
-      32.02642276422765,
-      78.0761788617886
+      43,
+      48.43906976744184,
+      31.848449612403112,
+      77.42705426356588
     ],
     "b": [
-      31,
-      61.22258064516128,
-      32.672043010752695,
-      91.08817204301076
+      32,
+      61.30937499999999,
+      32.69010416666667,
+      91.28072916666669
     ]
   }
 };

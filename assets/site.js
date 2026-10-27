@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"GPT-6.1 Terra (Ultra·Max)":{
+  "direction": "up",
+  "count": 3,
+  "zh": "能用",
+  "en": "Usable"
+},
+
 "Kimi K3.1 Pro (Max)":{
   "direction": "down",
   "count": 5,
