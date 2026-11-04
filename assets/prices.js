@@ -25,6 +25,7 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Hy 4",0.834,2.501,0.042,"hy",null,"2026-11-04"],
     ["GPT-6.1 Terra",2,7.5,0.1,"terra61",null,"2026-10-27"],
     ["Kimi K3.1 Pro",2,10,0.2,"kimi31pro",null,"2026-10-24"],
 ["MiniMax M3.1 Flash",0.15,0.6,0.015,"minimax31flash",null,"2026-10-20"],

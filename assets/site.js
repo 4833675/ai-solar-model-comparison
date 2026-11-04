@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Hy 4 (high)":{
+  "direction": "up",
+  "count": 2,
+  "zh": "对付用吧",
+  "en": "It will do"
+},
+
 "GPT-6.1 Terra (Ultra·Max)":{
   "direction": "up",
   "count": 3,

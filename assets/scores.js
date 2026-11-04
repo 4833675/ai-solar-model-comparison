@@ -3,6 +3,267 @@
   'use strict';
 
   window.SCORES = {
+"Hy4(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 9,
+  "hasEarthMoon": true,
+  "earthMoonValid": false,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 0,
+      "actualInclinationDeg": 174.85500000003807,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.321661,
+      "reference": "ecliptic",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 177.71291526439336,
+      "expectedInclinationDeg": 0.04,
+      "periodDays": 1.769,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 177.30897787584334,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 177.56365425473567,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.155,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 177.4885280844727,
+      "expectedInclinationDeg": 0.28,
+      "periodDays": 16.689,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 152.28407178532171,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 151.9498324946878,
+      "expectedInclinationDeg": 0.01,
+      "periodDays": 1.37,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0.5,
+      "actualInclinationDeg": 158.77928080845444,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": -5.877,
+      "reference": "physical parent pole from specification table",
+      "reason": "净有向角158.779°接近156.9°、周期有效，部分.5信用；不因源码全球参考面直接否定接近的实际净轨道。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 0,
+      "actualInclinationDeg": 67.25416278305293,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.387,
+      "reference": "physical parent pole from specification table",
+      "reason": "实际有向方向或母赤道参考面不成立，逐颗法向/周期证据见source-numerics.json，不在data重复扣。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，九行星真实固定J2000根数、归一化Newton开普勒、完整定向及当前UTC历元有效；已提供的九条512等E行星线与实体同源，压缩/线性比例往返后重建，最大弦距不到.078个实体半径，路径满分。未提供卫星/哈雷引导线仅记录，不额外套用B任务缺项。4400颗主带/柯伊伯粒子实际运动，亮源提取/高斯Bloom后全画面ACES有效；环只有行星投环影，大气为rim，均部分分。9颗名义卫星中Moon实际174.855°逆行，其余7颗普通卫星缺正确母赤道面；Triton净158.779°接近156.9°，部分.5颗，不能仅因源码未用母基抹掉接近的净结果。有效数.5，Moon锚点扣2后卫星基础0，无超额奖励；不在data重复扣。真实哈雷有移动POINTS彗头/反日尾，功能3；近日点幅角111.33被再次减节点58.42成52.91，另普通自转轴/负周期重复翻转及小行星带逆行，独立问题合并data4。比例按钮中心被credit遮挡，顶部约8px仍可正常点击切换，integrity4.5，非单纯视觉偏好。拖拽与平滑聚焦有效；1.005天每秒Io近景仅7/20在屏内、目标滞后约6.2，follow部分。滚轮进入Sun，distance.50015<R11.5，zoom部分。暂停JD/位置冻结但真实太阳模型矩阵继续绕Y转；Now回到启动时间而非新时刻，R仅复位镜头，pauseReset部分。所有draw有效、FBO/depth24完整，HDR可退RGBA8，JS/GL/外网0；390px正常，无fatal。",
+  "reviewedAt": "2026-11-04",
+  "reviewVersion": "V3-20261104"
+},
+"Hy4(high)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "地球",
+      "quality": 1,
+      "actualInclinationDeg": 174.8549999999751,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.32166,
+      "reference": "ecl",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "io",
+      "parent": "木星",
+      "quality": 1,
+      "actualInclinationDeg": 179.95000000001423,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "europa",
+      "parent": "木星",
+      "quality": 1,
+      "actualInclinationDeg": 179.52999999999673,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "木星",
+      "quality": 1,
+      "actualInclinationDeg": 179.79999999999654,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "callisto",
+      "parent": "木星",
+      "quality": 1,
+      "actualInclinationDeg": 179.80999999999537,
+      "expectedInclinationDeg": 0.19,
+      "periodDays": 16.689,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "titan",
+      "parent": "土星",
+      "quality": 1,
+      "actualInclinationDeg": 179.64999999999208,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "triton",
+      "parent": "海王星",
+      "quality": 1,
+      "actualInclinationDeg": 156.89999999751527,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": -5.876854,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    },
+    {
+      "id": "charon",
+      "parent": "冥王星",
+      "quality": 1,
+      "actualInclinationDeg": 179.92000000121334,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.3872,
+      "reference": "eq",
+      "reason": "忠实采用任务3.7正Z/Rx/proper基，给予任务依从信用；实际有向角不代表物理已纠正，周期闭合且实体实际draw有效。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4.5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生离线WebGL2，逐条对照实际任务。JPL世纪率/J2000、归一化开普勒九行星/哈雷、同源256等E行星/月球/哈雷引导线有效；最大Halley弦距.07617<R.14。运动主带/希尔达/特洛伊/柯伊伯、双向同空间环影、六级Bloom后统一ACES和任务视线密度大气均有效。8颗卫星忠实采用任务3.7正Z/Rx/proper母基，按任务信用全计；Moon174.855°、普通179.x°的实际有向角保留，不能称物理已纠正，Triton实际156.9°。独立信息卡缺陷：moon.ecl/rAU直接引用母星，使月球距地0.0000AU、光行时空缺，并沿用母星近远日/速度，统一data4.5，不重复扣moon。球网格4992非退化三角全朝外、模型det约1，4×MSAA/HDR/depth24与RGBA8回退实跑GL0；近日点实体核及双尾实际draw成立。物理暂停冻结JD/全部位置与实体自转，Now/倒放和比例往返有效；任务不要求全状态reset，给定自转符号/哈雷June–July内在冲突不归责。拖拽/平滑聚焦成立；1.053天每秒Io正常拖拽后仅7/20在屏内、目标滞后约3.7，follow部分；滚轮进入Sun distance1.0043<R4.6，zoom部分。JS/GL/外网0，390px正常，无fatal。",
+  "reviewedAt": "2026-11-04",
+  "reviewVersion": "V3-20261104"
+},
+
 "GPT6.1Terra(Ultra)V1":{
   "reference": false,
   "featureMap": {
