@@ -1,4 +1,4 @@
-import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore} from './blackhole-data.js';
+import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from './blackhole-data.js';
 
 const en=document.documentElement.lang.startsWith('en');
 const tr=(zh,english)=>en?english:zh;
@@ -32,12 +32,22 @@ if(viewer){
   }
 }else{
   const tbody=document.querySelector('#bh-table tbody');
-  const rows=[...BLACKHOLE_WORKS].sort((a,b)=>Number(b.reference)-Number(a.reference)||blackholeScore(b).exact-blackholeScore(a).exact);
+  let sortKey='score',sortDirection=-1;
+  function render(){
+  const rows=blackholeRows(BLACKHOLE_WORKS,sortKey,sortDirection);
   tbody.innerHTML=rows.map(w=>{
     const s=blackholeScore(w),p=window.MODEL_PRICES?.[w.priceModel];
     const price=p?`<a class="bh-price" href="${esc(p.source)}" target="_blank" rel="noopener" title="${tr('标准单价，USD / 1M；读 / 写 / 缓存读；核对日','Standard USD / 1M: input / output / cache read; checked')} ${esc(p.date)}">${p.input} / ${p.output} / ${p.cache}</a>`:'—';
-    return `<tr style="--work-tier:var(--tier${s.tier})" data-work-id="${esc(w.id)}"><td class="bh-tier-text"><a class="bh-model" href="${page('blackhole-view')}?w=${encodeURIComponent(w.id)}"><img src="assets/logos/anthropic.png" width="23" height="23" alt=""><span>${esc(w.model)}</span><small aria-hidden="true">↗</small></a></td><td class="bh-tier-text num">${w.date}</td><td class="bh-tier-text">T${s.tier}</td><td><button type="button" class="bh-score${w.reference?' is-reference':s.total>=96?' is-high':''}" data-score-id="${esc(w.id)}" aria-controls="bh-score-detail" aria-haspopup="dialog" aria-expanded="false">${w.reference?tr('⚑ 标杆','⚑ Benchmark'):s.total}</button></td><td><span class="bh-recommendation" aria-label="${tr('五个推荐','Five recommendations')}">${esc(w.recommendation)}</span></td><td class="bh-tier-text">${esc(en?w.reasonEn:w.reason)}</td><td><span class="bh-env">${esc(w.environment)}</span></td><td class="bh-tier-text">${w.tech}</td><td class="bh-tier-text num">${w.lines.toLocaleString(en?'en-US':'zh-CN')} <small>(${n(w.bytes/1024)} KB)</small></td><td class="bh-tier-text">${price}</td></tr>`;
+    const rec=Array.from(w.recommendation).map(c=>`<span class="${c==='▽'?'bh-rec-down':'bh-rec-up'}">${esc(c)}</span>`).join('');
+    return `<tr style="--work-tier:var(--tier${s.tier})" data-work-id="${esc(w.id)}"${w.example?' class="bh-example"':''}><td class="bh-tier-text"><a class="bh-model" href="${page('blackhole-view')}?w=${encodeURIComponent(w.id)}"><img src="assets/logos/${esc(w.logo)}.png" width="23" height="23" alt=""><span>${esc(w.model)}</span><small aria-hidden="true">↗</small></a></td><td class="bh-tier-text num">${w.date}</td><td class="bh-tier-text">T${s.tier}</td><td><button type="button" class="bh-score${w.example?' is-example':s.total>=96?' is-high':''}" data-score-id="${esc(w.id)}" aria-controls="bh-score-detail" aria-haspopup="dialog" aria-expanded="false">${w.example?tr('示例','Example'):s.total}</button></td><td><span class="bh-recommendation" aria-label="${esc(w.recommendation)}">${rec}</span></td><td class="bh-tier-text">${esc(en?w.reasonEn:w.reason)}</td><td><span class="bh-env">${esc(en?(w.environmentEn||w.environment):w.environment)}</span></td><td class="bh-tier-text">${w.tech}</td><td class="bh-tier-text num">${w.lines.toLocaleString(en?'en-US':'zh-CN')} <small>(${n(w.bytes/1024)} KB)</small></td><td class="bh-tier-text">${price}</td></tr>`;
   }).join('');
+  document.querySelectorAll('#bh-table th[data-k]').forEach(th=>th.setAttribute('aria-sort',th.dataset.k===sortKey?(sortDirection===1?'ascending':'descending'):'none'));
+  }
+  render();
+  document.querySelectorAll('#bh-table th[data-k]').forEach(th=>{
+    const button=document.createElement('button');button.type='button';button.textContent=th.textContent;th.textContent='';th.append(button);
+    button.addEventListener('click',()=>{if(sortKey===th.dataset.k)sortDirection*=-1;else{sortKey=th.dataset.k;sortDirection=sortKey==='score'||sortKey==='recommendation'?-1:1;}if(pop.matches(':popover-open'))pop.hidePopover();render();});
+  });
   const pop=document.getElementById('bh-score-detail');let active=null,pinned=false;
   function place(){
     if(!active||!pop.matches(':popover-open'))return;
@@ -50,17 +60,15 @@ if(viewer){
   function show(button){
     const w=BLACKHOLE_WORKS.find(w=>w.id===button.dataset.scoreId);if(!w)return;
     if(active&&active!==button)active.setAttribute('aria-expanded','false');active=button;const s=blackholeScore(w);
-    pop.innerHTML=`<button class="bh-dismiss" type="button" aria-label="${tr('关闭评分明细','Close score details')}">×</button><h2>${esc(w.model)}</h2><p>${tr('证据评分 · ','Evidence score · ')}${w.score.reviewedAt}</p><div class="bh-total">${s.total} <small>${tr('精确分','Exact')} ${n(s.exact)} · ${tr('理论最高','Theoretical maximum')} 123</small></div><div class="bh-breakdown">${BLACKHOLE_GROUPS.map(g=>`<div><span>${g.key} · ${esc(en?g.en:g.zh)}</span><b>${n(s.groups[g.key])}/${g.max}</b></div>`).join('')}<div><span>${tr('自由发挥','Original extensions')}</span><b>${n(s.free)}/20</b></div><div><span>${tr('梯队修正','Tier adjustment')} T${s.tier}</span><b>${s.adjustment>0?'+':''}${s.adjustment}</b></div></div><p style="margin-top:12px">${tr('基础','Basic')} ${n(s.base)}/60 · ${tr('进阶','Advanced')} ${n(s.advanced)}/40 · ${tr('同因返还','Root-cause refund')} ${n(s.refund)}</p><h3>${tr('扣分依据','Deductions')}</h3><ul>${w.score.deductions.map(d=>`<li>−${n(d.points)} · ${esc(en?d.en:d.zh)}</li>`).join('')}</ul><p>${esc(en?w.score.noteEn:w.score.note)}</p>${w.reference?`<p style="margin-top:10px;color:var(--gold)">${tr('标杆只作对照，不参与排名。','The benchmark is a reference and is excluded from ranking.')}</p>`:''}`;
+    pop.innerHTML=`<button class="bh-dismiss" type="button" aria-label="${tr('关闭评分明细','Close score details')}">×</button><h2>${esc(w.model)}</h2><p>${tr('证据评分 · ','Evidence score · ')}${w.score.reviewedAt}</p><div class="bh-total">${s.total} <small>${tr('精确分','Exact')} ${n(s.exact)} · ${tr('理论最高','Theoretical maximum')} 123</small></div><div class="bh-breakdown">${BLACKHOLE_GROUPS.map(g=>`<div><span>${g.key} · ${esc(en?g.en:g.zh)}</span><b>${n(s.groups[g.key])}/${g.max}</b></div>`).join('')}<div><span>${tr('自由发挥','Original extensions')}</span><b>${n(s.free)}/20</b></div><div><span>${tr('梯队修正','Tier adjustment')} T${s.tier}</span><b>${s.adjustment>0?'+':''}${s.adjustment}</b></div></div><p style="margin-top:12px">${tr('基础','Basic')} ${n(s.base)}/60 · ${tr('进阶','Advanced')} ${n(s.advanced)}/40 · ${tr('同因返还','Root-cause refund')} ${n(s.refund)}</p><p style="margin-top:9px">${tr('性能项','Performance')} ${4-s.performanceDeduction}/4 · ${tr('性能仅记录，只有作者明确要求才扣分。','Measurements are recorded; performance deductions require an explicit author request.')}</p><h3>${tr('扣分依据','Deductions')}</h3><ul>${w.score.deductions.map(d=>`<li>−${n(d.points)} · ${esc(en?d.en:d.zh)}</li>`).join('')}</ul><p>${esc(en?w.score.noteEn:w.score.note)}</p>${w.example?`<p style="margin-top:10px">${tr('示例置顶，不参与排序；未按任务文档完整执行。','This example stays pinned outside sorting; it did not follow the full task specification.')}</p>`:''}`;
     if(!pop.matches(':popover-open'))pop.showPopover();active.setAttribute('aria-expanded','true');place();
     pop.querySelector('.bh-dismiss').onclick=()=>{pinned=false;pop.hidePopover();};
   }
-  document.querySelectorAll('[data-score-id]').forEach(b=>{
-    b.addEventListener('pointerenter',()=>{if(!pinned)show(b);});
-    b.addEventListener('focus',()=>{if(!pinned)show(b);});
-    b.addEventListener('click',()=>{if(pinned&&active===b){pinned=false;pop.hidePopover();}else{show(b);pinned=true;}});
-    b.addEventListener('pointerleave',()=>setTimeout(()=>{if(!pinned&&!pop.matches(':hover')&&document.activeElement!==b&&pop.matches(':popover-open'))pop.hidePopover();},150));
-  });
+  tbody.addEventListener('pointerover',e=>{const b=e.target.closest('[data-score-id]');if(b&&b!==active&&!pinned)show(b);});
+  tbody.addEventListener('focusin',e=>{const b=e.target.closest('[data-score-id]');if(b&&!pinned)show(b);});
+  tbody.addEventListener('click',e=>{const b=e.target.closest('[data-score-id]');if(!b)return;if(pinned&&active===b){pinned=false;pop.hidePopover();}else{show(b);pinned=true;}});
+  tbody.addEventListener('pointerout',e=>{const b=e.target.closest('[data-score-id]');if(b&&!b.contains(e.relatedTarget))setTimeout(()=>{if(!pinned&&!pop.matches(':hover')&&document.activeElement!==b&&pop.matches(':popover-open'))pop.hidePopover();},150);});
   pop.addEventListener('pointerleave',()=>{if(!pinned&&document.activeElement!==active&&pop.matches(':popover-open'))pop.hidePopover();});
-  pop.addEventListener('toggle',e=>{if(e.newState==='closed'){pinned=false;active?.setAttribute('aria-expanded','false');}});
+  pop.addEventListener('toggle',e=>{if(e.newState==='closed'){pinned=false;active?.setAttribute('aria-expanded','false');active=null;}});
   addEventListener('resize',place);addEventListener('scroll',place,{passive:true});
 }

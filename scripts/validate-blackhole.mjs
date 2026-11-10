@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore} from '../assets/blackhole-data.js';
+import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../assets/blackhole-data.js';
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,1,'DeepSeek is under review, not yet listed');
+assert.equal(BLACKHOLE_WORKS.length,2,'One example and the published DeepSeek work');
 const w=BLACKHOLE_WORKS[0];
-assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.reference,true);
-assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'附加赛标杆作品');
+assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
+assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'未按任务文档执行');assert.equal(w.environment,'任务发布者');
 assert.equal(hash(await readFile(w.file)),'9e7f1a27eee623947c495c67c9bb51d61c685db1e3846fad492b27c1418df905','Renaming must preserve the reference source');
 assert.equal(hash(await readFile(w.shot)),'9175f0018a11e3732c97a59a2f55e1e98c2d435b1f66b90b1191e0c56e21f09c','Reuse the saved screenshot');
 assert.equal((await readFile(w.file)).length,w.bytes);
 assert.equal((await readFile(w.file,'utf8')).split('\n').length-1,w.lines);
-const s=blackholeScore(w);close(s.base,2608/45);close(s.advanced,36);close(s.exact,4228/45);assert.equal(s.total,94);
+const s=blackholeScore(w);close(s.base,2653/45);close(s.advanced,36);close(s.exact,4273/45);assert.equal(s.total,95);
 assert.equal(s.adjustment,0);assert.equal(s.free,0);assert.equal(s.refund,0);
 close(BLACKHOLE_GROUPS.filter(g=>g.layer==='base').reduce((a,g)=>a+g.max,0),60);
 close(BLACKHOLE_GROUPS.filter(g=>g.layer==='advanced').reduce((a,g)=>a+g.max,0),40);
@@ -27,15 +27,28 @@ assert.equal(blackholeScore(variant).total,123);
 variant.score.fatal={level:'L2'};
 assert.equal(blackholeScore(variant).tier,4);assert.equal(blackholeScore(variant).total,120);
 variant.score.rootCauses=[];variant.score.free=[{usable:0,number:1,computed:1,integrated:1}];
-close(blackholeScore(variant).exact,4228/45);assert.equal(blackholeScore(variant).free,0);
+close(blackholeScore(variant).exact,4273/45);assert.equal(blackholeScore(variant).free,0);
+
+// Machine-dependent measurements never lower the default four points.
+variant.score.base.F3={fps:1,renderScale:.1,adaptive:false,score:0};
+close(blackholeScore(variant).exact,4273/45);
+variant.score.performanceDeduction={source:'automatic',points:4};close(blackholeScore(variant).exact,4273/45);
+variant.score.performanceDeduction={source:'author',points:1,reason:'Explicit author request'};close(blackholeScore(variant).exact,4228/45);
+const d=BLACKHOLE_WORKS[1];assert.equal(d.id,'DeepSeekFlash(Max)(ZCode)V1');assert.equal(d.tier,1);assert.equal(d.recommendation,'△△△');assert.equal(d.reason,'速度快缓存高；干活慢消耗多');close(blackholeScore(d).exact,103.5);assert.equal(blackholeScore(d).total,104);
+assert.equal(hash(await readFile(d.file)),'efb1301d8dd56ffb2a2e3df1568c49560c4e1c334b12293d794b64511a93a293');
+assert.equal(hash(await readFile(d.shot)),'5a2990fbe6250390a23b1aaddd280e9a282c8024fa6b244d9eaa8fd6b4d54691');
+for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
+ const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
+ assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
+}
 
 const published=await readdir('.sites-static/blackhole');
-assert.deepEqual(published,[w.file.split('/').pop()],'Only listed submissions enter the deployment');
-assert.deepEqual(await readdir('.sites-static/assets/shots/blackhole'),[w.shot.split('/').pop()]);
-for(const path of [w.file,w.shot])assert.equal(hash(await readFile('.sites-static/'+path)),hash(await readFile(path)));
+assert.deepEqual(published.sort(),BLACKHOLE_WORKS.map(w=>w.file.split('/').pop()).sort(),'Only listed submissions enter the deployment');
+assert.deepEqual((await readdir('.sites-static/assets/shots/blackhole')).sort(),BLACKHOLE_WORKS.map(w=>w.shot.split('/').pop()).sort());
+for(const work of BLACKHOLE_WORKS)for(const path of [work.file,work.shot])assert.equal(hash(await readFile('.sites-static/'+path)),hash(await readFile(path)));
 for(const lang of ['', '.en']){
  const home=await readFile(`index${lang}.html`,'utf8');assert.ok(home.includes(`href="blackhole${lang}.html"`));
  const html=await readFile(`blackhole${lang}.html`,'utf8');assert.ok(html.includes('id="rules"'));assert.ok(html.includes('id="bh-table"'));
  assert.ok(!html.includes('参考实现-评审用')&&!html.includes('评分规则.md'),'Private judging files must not be linked');
 }
-console.log('Blackhole reference, scoring policy, bilingual routes and private deployment boundary passed.');
+console.log('Blackhole example pinning, author-only performance policy, scores and private publication boundary passed.');

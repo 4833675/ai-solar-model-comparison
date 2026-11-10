@@ -3,14 +3,14 @@ export const BLACKHOLE_WORKS = [{
   id: 'Fable5.2(Max)(Claude Code)', model: 'Claude Fable 5.2 (Max)',
   file: 'blackhole/Fable5.2(Max)(Claude Code).html',
   shot: 'assets/shots/blackhole/Fable5.2(Max)(Claude Code).jpg',
-  date: '261110', tier: 1, reference: true, environment: 'Claude Code',
-  recommendation: '△△△△△', reason: '附加赛标杆作品', reasonEn: 'Benchmark for the blackhole challenge',
+  date: '261110', tier: 1, example: true, environment: '任务发布者', environmentEn: 'Task author', logo: 'anthropic',
+  recommendation: '△△△△△', reason: '未按任务文档执行', reasonEn: 'Did not follow the task specification',
   tech: 'WebGL2', lines: 378, bytes: 40234, priceModel: 'Claude Fable 5.2',
   score: {
     task: 'blackhole-v1', reviewedAt: '2026-11-10',
     base: { A1:4, A2:4, A3:4, B1:6, B2:6, C1:4, C2:5, C3a:1, C3b:1, C3c:1, C4:2,
       F1:{hdr:1,bloom:.4,aces:1}, F2a:1.5, F2b:1.5,
-      F3:{fps:52.6,renderScale:.5,adaptive:true,score:3}, F4:2,
+      F3:{fps:52.6,renderScale:.5,adaptive:true,score:4}, F4:2,
       G1:2, G2:{working:7,score:14/9}, G3:3, G4a:2, G4b:1 },
     advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,
       J1:3,J2:3,J3:2,J4:2,J5:0,R1a:1,R1b:0,R2a:2,R2b:0,R3:1,V1:1,V2:1 },
@@ -19,11 +19,29 @@ export const BLACKHOLE_WORKS = [{
       {points:2,zh:'轨道实验室没有界面：粒子放置、有效势、轨道读数与牛顿对照均缺失。',en:'No orbit laboratory interface: particle placement, potential plot, live readouts and Newtonian comparison are missing.'},
       {points:2,zh:'未展示 S2 轨道及其相对论进动；计算接口的得分保留。',en:'S2 orbit and relativistic precession are not demonstrated; the numerical interface retains its credit.'},
       {points:.6,zh:'泛光仅做单层模糊，没有多级降采样与升采样。',en:'Bloom uses a single blur level instead of a multilevel downsample/upsample chain.'},
-      {points:1,zh:'默认画面实测 52.6 fps；帧率档 2 分，自适应降载 1 分。',en:'Default scene: 52.6 fps. Frame-rate band earns 2 points; adaptive resolution earns 1.'},
       {points:4/9,zh:'星空、泛光两个开关缺失，九项控件中七项有效。',en:'Starfield and bloom toggles are missing: seven of nine controls work.'}
     ],
     note: '自动项 68.5/68.5，六项接口与画面一致性检查均通过。后台恢复采用 62 秒等效 rAF 暂停测试，实际标签页隐藏未验证。',
     noteEn: 'Automated checks: 68.5/68.5; all six interface-to-image consistency checks pass. Recovery used an equivalent 62-second rAF suspension; literal tab hiding was not verified.'
+  }
+}, {
+  id: 'DeepSeekFlash(Max)(ZCode)V1', model: 'DeepSeek Flash (Max)',
+  file: 'blackhole/DeepSeekFlash(Max)(ZCode)V1.html',
+  shot: 'assets/shots/blackhole/DeepSeekFlash(Max)(ZCode)V1.jpg',
+  date: '261110', tier: 1, environment: 'Zcode', logo: 'deepseek',
+  recommendation: '△△△', reason: '速度快缓存高；干活慢消耗多',
+  reasonEn: 'Fast responses and frequent cache hits; slow work with heavy usage',
+  tech: 'WebGL2', lines: 3279, bytes: 139635, priceModel: null,
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-10',
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:60.1,renderScale:.51,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:2,R1a:1,R1b:1,R2a:2,R2b:.5,R3:1,V1:1,V2:1 },
+    free: [{name:'GW150914 啁啾',usable:1,number:1,computed:1,integrated:1}],rootCauses:[],fatal:null,
+    deductions: [{points:.5,zh:'S2 进动显示为固定 12.17′ 参考文字，未展示相对论积分结果；真实积分项保留满分。',en:'S2 precession is a fixed 12.17′ reference label, rather than a displayed integration result; the actual integration retains full credit.'}],
+    note: '自动项 68.5/68.5，六项画面一致性检查通过。GW150914 啁啾扩展四条判据全满足，加4分。性能只记录，不自动扣分。后台恢复采用86秒等效 rAF 暂停，实际隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks pass. The GW150914 chirp meets all four extension criteria (+4). Performance is recorded without automatic deductions. Recovery used an equivalent 86-second rAF suspension; literal tab hiding was not verified.'
   }
 }];
 
@@ -42,15 +60,26 @@ export const BLACKHOLE_GROUPS = [
 
 export function blackholeScore(work) {
   const s=work.score;
+  const p=s.performanceDeduction;
+  const performanceDeduction=p?.source==='author'&&Number.isFinite(p.points)?Math.max(0,Math.min(4,p.points)):0;
+  const effectiveBase={...s.base,F3:{...s.base.F3,score:4-performanceDeduction}};
   const value=v=>typeof v==='number'?v:('score' in v?v.score:Object.values(v).reduce((a,b)=>a+b,0));
   const sum=o=>Object.values(o).reduce((a,v)=>a+value(v),0);
-  const base=sum(s.base),advanced=sum(s.advanced);
+  const base=sum(effectiveBase),advanced=sum(s.advanced);
   const refund=(s.rootCauses||[]).reduce((a,r)=>a+Math.max(0,r.autoAfter-r.autoBefore-r.cap),0);
   const required=Math.min(100,base+advanced+refund);
   const free=Math.min(20,(s.free||[]).map(f=>f.usable?(1+f.number+f.computed+f.integrated):0).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0));
   const tier=s.fatal?4:work.tier;
   const adjustment=tier===0?3:tier===2?-3:tier===3?-6:0;
   const exact=required+free+adjustment;
-  const groups=Object.fromEntries(BLACKHOLE_GROUPS.map(g=>[g.key,Object.entries(s[g.layer]).filter(([k])=>k.startsWith(g.key)).reduce((a,[,v])=>a+value(v),0)]));
-  return {base,advanced,refund,required,free,tier,adjustment,exact,total:Math.round(exact),groups};
+  const groups=Object.fromEntries(BLACKHOLE_GROUPS.map(g=>[g.key,Object.entries(g.layer==='base'?effectiveBase:s.advanced).filter(([k])=>k.startsWith(g.key)).reduce((a,[,v])=>a+value(v),0)]));
+  return {base,advanced,refund,required,free,tier,adjustment,performanceDeduction,exact,total:Math.round(exact),groups};
+}
+
+export function blackholeRows(works, key='score', direction=-1) {
+  const examples=works.filter(w=>w.example),ranked=works.filter(w=>!w.example);
+  const get=w=>key==='score'?blackholeScore(w).exact:key==='tier'?blackholeScore(w).tier:
+    key==='recommendation'?Array.from(w.recommendation||'').reduce((n,c)=>n+(c==='△'?1:c==='▽'?-1:0),0):w[key]??'';
+  ranked.sort((a,b)=>{const x=get(a),y=get(b),v=typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y));return v*direction||a.id.localeCompare(b.id);});
+  return [...examples,...ranked];
 }
