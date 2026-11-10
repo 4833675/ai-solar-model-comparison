@@ -1,0 +1,66 @@
+import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore} from './blackhole-data.js';
+
+const en=document.documentElement.lang.startsWith('en');
+const tr=(zh,english)=>en?english:zh;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const n=x=>Number(x.toFixed(2)).toString();
+const page=name=>name+(en?'.en':'')+'.html';
+const viewer=document.querySelector('[data-bh-viewer]');
+
+if(viewer){
+  const w=BLACKHOLE_WORKS.find(w=>w.id===new URLSearchParams(location.search).get('w'));
+  document.querySelectorAll('.bh-language a').forEach(a=>{a.href+=location.search;});
+  const stage=document.getElementById('stage');
+  if(!w){
+    stage.textContent=tr('找不到这个作品。请返回附加赛列表。','Work not found. Return to the challenge list.');
+    document.querySelectorAll('[data-requires-work]').forEach(el=>el.hidden=true);
+  }else{
+    document.title=w.model+' · '+tr('黑洞附加赛','Blackhole challenge');
+    document.getElementById('bh-title').textContent=w.model;
+    document.getElementById('bh-raw').href=w.file;
+    const download=document.getElementById('bh-download');download.href=w.file;download.download=w.file.split('/').pop();
+    let frame;
+    function load(){
+      if(frame){frame.src='about:blank';frame.remove();}
+      const loading=document.getElementById('bh-loading');loading.hidden=false;
+      frame=document.createElement('iframe');frame.title=w.model+' · '+tr('克尔黑洞与吸积盘实时模型','Real-time Kerr black hole and accretion disk');
+      frame.onload=()=>{loading.hidden=true;};frame.src=w.file;stage.append(frame);
+    }
+    document.getElementById('bh-reload').addEventListener('click',load);
+    addEventListener('pagehide',()=>{if(frame){frame.src='about:blank';frame.remove();}});
+    load();
+  }
+}else{
+  const tbody=document.querySelector('#bh-table tbody');
+  const rows=[...BLACKHOLE_WORKS].sort((a,b)=>Number(b.reference)-Number(a.reference)||blackholeScore(b).exact-blackholeScore(a).exact);
+  tbody.innerHTML=rows.map(w=>{
+    const s=blackholeScore(w),p=window.MODEL_PRICES?.[w.priceModel];
+    const price=p?`<a class="bh-price" href="${esc(p.source)}" target="_blank" rel="noopener" title="${tr('标准单价，USD / 1M；读 / 写 / 缓存读；核对日','Standard USD / 1M: input / output / cache read; checked')} ${esc(p.date)}">${p.input} / ${p.output} / ${p.cache}</a>`:'—';
+    return `<tr style="--work-tier:var(--tier${s.tier})" data-work-id="${esc(w.id)}"><td class="bh-tier-text"><a class="bh-model" href="${page('blackhole-view')}?w=${encodeURIComponent(w.id)}"><img src="assets/logos/anthropic.png" width="23" height="23" alt=""><span>${esc(w.model)}</span><small aria-hidden="true">↗</small></a></td><td class="bh-tier-text num">${w.date}</td><td class="bh-tier-text">T${s.tier}</td><td><button type="button" class="bh-score${w.reference?' is-reference':s.total>=96?' is-high':''}" data-score-id="${esc(w.id)}" aria-controls="bh-score-detail" aria-haspopup="dialog" aria-expanded="false">${w.reference?tr('⚑ 标杆','⚑ Benchmark'):s.total}</button></td><td><span class="bh-recommendation" aria-label="${tr('五个推荐','Five recommendations')}">${esc(w.recommendation)}</span></td><td class="bh-tier-text">${esc(en?w.reasonEn:w.reason)}</td><td><span class="bh-env">${esc(w.environment)}</span></td><td class="bh-tier-text">${w.tech}</td><td class="bh-tier-text num">${w.lines.toLocaleString(en?'en-US':'zh-CN')} <small>(${n(w.bytes/1024)} KB)</small></td><td class="bh-tier-text">${price}</td></tr>`;
+  }).join('');
+  const pop=document.getElementById('bh-score-detail');let active=null,pinned=false;
+  function place(){
+    if(!active||!pop.matches(':popover-open'))return;
+    const r=active.getBoundingClientRect(),above=Math.max(0,r.top-22),below=Math.max(0,innerHeight-r.bottom-22),useAbove=above>=below;
+    pop.style.maxHeight=Math.max(40,useAbove?above:below)+'px';
+    const w=pop.offsetWidth,h=pop.offsetHeight;
+    pop.style.left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2))+'px';
+    pop.style.top=Math.max(12,Math.min(innerHeight-h-12,useAbove?r.top-h-10:r.bottom+10))+'px';
+  }
+  function show(button){
+    const w=BLACKHOLE_WORKS.find(w=>w.id===button.dataset.scoreId);if(!w)return;
+    if(active&&active!==button)active.setAttribute('aria-expanded','false');active=button;const s=blackholeScore(w);
+    pop.innerHTML=`<button class="bh-dismiss" type="button" aria-label="${tr('关闭评分明细','Close score details')}">×</button><h2>${esc(w.model)}</h2><p>${tr('证据评分 · ','Evidence score · ')}${w.score.reviewedAt}</p><div class="bh-total">${s.total} <small>${tr('精确分','Exact')} ${n(s.exact)} · ${tr('理论最高','Theoretical maximum')} 123</small></div><div class="bh-breakdown">${BLACKHOLE_GROUPS.map(g=>`<div><span>${g.key} · ${esc(en?g.en:g.zh)}</span><b>${n(s.groups[g.key])}/${g.max}</b></div>`).join('')}<div><span>${tr('自由发挥','Original extensions')}</span><b>${n(s.free)}/20</b></div><div><span>${tr('梯队修正','Tier adjustment')} T${s.tier}</span><b>${s.adjustment>0?'+':''}${s.adjustment}</b></div></div><p style="margin-top:12px">${tr('基础','Basic')} ${n(s.base)}/60 · ${tr('进阶','Advanced')} ${n(s.advanced)}/40 · ${tr('同因返还','Root-cause refund')} ${n(s.refund)}</p><h3>${tr('扣分依据','Deductions')}</h3><ul>${w.score.deductions.map(d=>`<li>−${n(d.points)} · ${esc(en?d.en:d.zh)}</li>`).join('')}</ul><p>${esc(en?w.score.noteEn:w.score.note)}</p>${w.reference?`<p style="margin-top:10px;color:var(--gold)">${tr('标杆只作对照，不参与排名。','The benchmark is a reference and is excluded from ranking.')}</p>`:''}`;
+    if(!pop.matches(':popover-open'))pop.showPopover();active.setAttribute('aria-expanded','true');place();
+    pop.querySelector('.bh-dismiss').onclick=()=>{pinned=false;pop.hidePopover();};
+  }
+  document.querySelectorAll('[data-score-id]').forEach(b=>{
+    b.addEventListener('pointerenter',()=>{if(!pinned)show(b);});
+    b.addEventListener('focus',()=>{if(!pinned)show(b);});
+    b.addEventListener('click',()=>{if(pinned&&active===b){pinned=false;pop.hidePopover();}else{show(b);pinned=true;}});
+    b.addEventListener('pointerleave',()=>setTimeout(()=>{if(!pinned&&!pop.matches(':hover')&&document.activeElement!==b&&pop.matches(':popover-open'))pop.hidePopover();},150));
+  });
+  pop.addEventListener('pointerleave',()=>{if(!pinned&&document.activeElement!==active&&pop.matches(':popover-open'))pop.hidePopover();});
+  pop.addEventListener('toggle',e=>{if(e.newState==='closed'){pinned=false;active?.setAttribute('aria-expanded','false');}});
+  addEventListener('resize',place);addEventListener('scroll',place,{passive:true});
+}
