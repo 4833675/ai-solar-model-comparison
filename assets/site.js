@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Claude Fable 5.2 (Max)":{
+  "direction": "up",
+  "count": 5,
+  "zh": "3h21m·$162.90",
+  "en": "3h21m·$162.90"
+},
+
 "Claude Fable 5.2 (Low)":{
   "direction": "up",
   "count": 5,
@@ -275,11 +282,17 @@
       const score = scoreFor(work), personal = personalRecommendationFor(work), price = priceFor(work);
       return Object.assign({}, work, { tier: workTier(work), environment: environmentName(work), testDate: testDateFor(work), personal,
         recommendation: personal ? personal.sortValue : 0,
-        score: score ? score.total : -1,
+        score: score ? score.total : null,
         priceInput: price ? price.input : null, priceOutput: price ? price.output : null, priceCache: price ? price.cache : null });
     });
+  const displayPriority = (a, b) => (a.rank < 0 || b.rank < 0) ? (a.rank || 0) - (b.rank || 0) : 0;
   const sortTableRows = (rows, key, direction, locale) => rows.sort((a, b) => {
       const x = a[key], y = b[key];
+      if (key === 'tier' && direction === 1 && x === y) {
+        const priority = displayPriority(a, b);
+        if (priority) return priority;
+      }
+      if (key === 'score' && (x == null || y == null)) return x == null && y == null ? scoreOrder(a, b, direction) : x == null ? 1 : -1;
       if (PRICE_KEYS.includes(key)) {
         if (x == null || y == null) return x == null && y == null ? a.model.localeCompare(b.model, locale) : x == null ? 1 : -1;
         for (const metric of [key, ...PRICE_KEYS.filter(value => value !== key)]) {
@@ -652,7 +665,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function scoreFor(w) {
     const r = (window.SCORES || {})[w.id];
-    if (!r) return null;
+    if (!r || r.unrated) return null;
     const effectiveMoons = Array.isArray(r.moonEvidence)
       ? r.moonEvidence.reduce((sum, moon) => sum + moon.quality, 0)
       : r.moons * (r.moonQuality ?? 1);
@@ -695,6 +708,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   }
 
   function scoreTipHtml(w, s) {
+    if (!s) return '';
     const part = (label, key, max) => `<div><span>${label}</span><b>${scoreNum(s.parts[key])}<i>/${max}</i></b></div>`;
     const tier = tierLabel(workTier(w));
     const high = !s.reference && s.total >= 96;
@@ -730,7 +744,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 
   function scoreCell(w) {
     const s = scoreFor(w);
-    if (!s) return '<span class="score-empty">—</span>';
+    if (!s) return `<span class="score-empty">${(window.SCORES || {})[w.id]?.unrated ? esc(t('score.unrated')) : '—'}</span>`;
     if (s.reference) return `<button type="button" class="score-trigger score-benchmark" data-score-id="${esc(w.id)}"
       aria-label="${esc(t('score.referenceAria', { name: w.model, score: s.total }))}" aria-expanded="false">
       <span aria-hidden="true">⚑</span><b>${t('benchmark.badge')}</b>
@@ -1098,7 +1112,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
     const byTier = {};
     works.forEach(w => (byTier[workTier(w)] = byTier[workTier(w)] || []).push(w));
     const tierBlock = tier => {
-      const list = byTier[tier].sort((a, b) => scoreOrder(a, b));
+      const list = byTier[tier].sort((a, b) => displayPriority(a, b) || scoreOrder(a, b));
       const benchmarkTier = tier === '1' && list[0] && list[0].group === 'A';
       return `<div class="tier tier-${tier}${tier === '4' ? ' t-fail' : ''}${benchmarkTier ? ' t-benchmark' : ''}">
           <div class="tier-hd"><span>${esc(tierLabel(tier) || tier)}</span>${benchmarkTier

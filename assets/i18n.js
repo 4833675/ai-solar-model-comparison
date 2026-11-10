@@ -7,6 +7,7 @@
 
   const UI = {
     zh: {
+      'score.unrated': '未评级',
       'score.reviewedAt': '新标准复核：{date}',
       'verdict.noWebgl.title': '无法运行',
       'verdict.noWebgl.body': '此浏览器不支持 WebGL 2，本站收录的绝大多数作品都无法显示。请改用较新的 Chrome / Edge / Firefox / Safari。',
@@ -175,6 +176,7 @@
       'tier.9': '未分组'
     },
     en: {
+      'score.unrated': 'Unrated',
       'verdict.noWebgl.title': 'Unable to run',
       'verdict.noWebgl.body': 'This browser does not support WebGL 2, so most works on this site cannot be displayed. Try a recent version of Chrome, Edge, Firefox, or Safari.',
       'verdict.mobile.title': 'Mobile device · Desktop recommended',
@@ -534,6 +536,10 @@
   };
 
   const WORK_TEXT_EN = {
+"Fable5.2(Max)V1": {
+  "title": "Solar System · Simulation"
+},
+
 "Fable5.2(Low)V1-TasksAssignedByOpus5":{
   "title": "Solar System · Real-Time Orbital Model",
   "note": "Offline native WebGL2, checked against the actual specification. JPL secular/J2000 elements, normalized Kepler solving and planet/Halley orientations work. The288-E planet and720-E Halley guides stay within0.225body radii in both distance modes. All eight moons close at their periods: actual directed Moon inclination5.145degrees and Triton156.9degrees, with proper parent bases and no extra ecliptic transform or double reversal. All17900belt particles, reciprocal ring shadows, six-level Bloom followed by full-scene ACES and ray-density atmosphere actually draw. All16128nondegenerate sphere triangles face outward; HDR/4xMSAA/depth24and RGBA8fallback work without errors. The perihelion solid nucleus and both tails draw. Pause freezes JD/positions/physical spins; reverse, Now, scale transitions and toggles work. Minimum solar camera distance6.21exceeds radius4.6; Io stays centered in20samples at0.954days/second without lag. Cards explicitly label parent heliocentric data and provide lunar Earth distance/light time. No JS/GL/external-network errors, no fatal failure, and390px layout works. Eight moons earn no extra-moon bonus and no additional comets are implemented."

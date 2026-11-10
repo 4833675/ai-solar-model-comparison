@@ -3,6 +3,8 @@
   'use strict';
 
   window.SCORES = {
+"Fable5.2(Max)V1": { "unrated": true },
+
 "Fable5.2(Low)V1-TasksAssignedByOpus5":{
   "reference": false,
   "featureMap": {
