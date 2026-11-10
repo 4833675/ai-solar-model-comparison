@@ -3,8 +3,8 @@ export const BLACKHOLE_WORKS = [{
   id: 'Fable5.2(Max)(Claude Code)', model: 'Claude Fable 5.2 (Max)',
   file: 'blackhole/Fable5.2(Max)(Claude Code).html',
   shot: 'assets/shots/blackhole/Fable5.2(Max)(Claude Code).jpg',
-  date: '261110', tier: 1, example: true, environment: '任务发布者', environmentEn: 'Task author', logo: 'anthropic',
-  recommendation: '△△△△△', reason: '未按任务文档执行', reasonEn: 'Did not follow the task specification',
+  date: '261110', tier: 1, example: true, environment: 'Claude Code', logo: 'anthropic',
+  recommendation: '△△△△△', reason: '示例、未按任务文档执行、任务发布者', reasonEn: 'Example; did not follow the task specification; task author',
   tech: 'WebGL2', lines: 378, bytes: 40234, priceModel: 'Claude Fable 5.2',
   score: {
     task: 'blackhole-v1', reviewedAt: '2026-11-10',
@@ -39,9 +39,36 @@ export const BLACKHOLE_WORKS = [{
       G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:1 },
     advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:2,R1a:1,R1b:1,R2a:2,R2b:.5,R3:1,V1:1,V2:1 },
     free: [{name:'GW150914 啁啾',usable:1,number:1,computed:1,integrated:1}],rootCauses:[],fatal:null,
-    deductions: [{points:.5,zh:'S2 进动显示为固定 12.17′ 参考文字，未展示相对论积分结果；真实积分项保留满分。',en:'S2 precession is a fixed 12.17′ reference label, rather than a displayed integration result; the actual integration retains full credit.'}],
-    note: '自动项 68.5/68.5，六项画面一致性检查通过。GW150914 啁啾扩展四条判据全满足，加4分。性能只记录，不自动扣分。后台恢复采用86秒等效 rAF 暂停，实际隐藏未验证。',
-    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks pass. The GW150914 chirp meets all four extension criteria (+4). Performance is recorded without automatic deductions. Recovery used an equivalent 86-second rAF suspension; literal tab hiding was not verified.'
+    performanceDeduction: {source:'author',points:1,reason:'站点作者指定：性能扣1分。'},
+    deductions: [
+      {points:.5,zh:'S2 进动显示为固定 12.17′ 参考文字，未展示相对论积分结果；真实积分项保留满分。',en:'S2 precession is a fixed 12.17′ reference label, rather than a displayed integration result; the actual integration retains full credit.'},
+      {points:1,zh:'站点作者指定：性能扣1分。',en:'The site author explicitly requested a one-point performance deduction.'}
+    ],
+    note: '自动项 68.5/68.5，六项画面一致性检查通过。GW150914 啁啾扩展四条判据全满足，加4分。性能按站点作者明确要求扣1分。后台恢复采用86秒等效 rAF 暂停，实际隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks pass. The GW150914 chirp meets all four extension criteria (+4). Performance loses one point at the site author’s explicit request. Recovery used an equivalent 86-second rAF suspension; literal tab hiding was not verified.'
+  }
+}, {
+  id: 'Opus5.5(xhigh)(Claude Code)V1', model: 'Claude Opus 5.5 (xhigh)',
+  file: 'blackhole/Opus5.5(xhigh)(Claude Code)V1.html',
+  shot: 'assets/shots/blackhole/Opus5.5(xhigh)(Claude Code)V1.jpg',
+  date: '261110', tier: 0, environment: 'Claude Code', logo: 'anthropic',
+  recommendation: '△△△△△', reason: '当前最优选择', reasonEn: 'The best choice right now',
+  tech: 'WebGL2', lines: 3447, bytes: 213547, priceModel: 'Claude Opus 5.5',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-10',
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:60.2,renderScale:1,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:2,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:'有限距离信标的爱因斯坦环',usable:1,number:1,computed:1,integrated:1},
+      {name:'热斑与光变曲线',usable:1,number:1,computed:1,integrated:1},
+      {name:'微引力透镜',usable:1,number:1,computed:1,integrated:1},
+      {name:'自由下落观察者与光行差',usable:1,number:1,computed:1,integrated:1},
+      {name:'GW150914 并合与引力波',usable:1,number:1,computed:1,integrated:1}
+    ],rootCauses:[],fatal:null,deductions:[],
+    note: '自动项 68.5/68.5，六项画面一致性检查及61项自检通过。五项自由发挥各4分。微透镜在 Rc=50000、u=2 时放大率误差约71%，u=1时约4%；该项仍满足至少两个关键值误差≤3%的加分条件，问题单独保留。后台恢复采用145.7秒等效 rAF 暂停，实际隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 61 self-checks pass. Five extensions earn four points each. Microlensing magnification errors are about 71% at Rc=50000, u=2 and 4% at u=1; the extension still meets the criterion of at least two key values within 3%, and these issues remain recorded. Recovery used an equivalent 145.7-second rAF suspension; literal tab hiding was not verified.'
   }
 }];
 
