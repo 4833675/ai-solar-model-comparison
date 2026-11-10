@@ -37,6 +37,13 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Claude Fable 5.2 (Low)":{
+  "direction": "up",
+  "count": 5,
+  "zh": "20m·$9.0",
+  "en": "20m·$9.0"
+},
+
 "Hy 4 (high)":{
   "direction": "up",
   "count": 2,

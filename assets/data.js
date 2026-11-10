@@ -6,6 +6,8 @@ window.PAIR_NOTES={};
 window.PAIR_TITLES={"hy4":"Hy 4 (high)","gpt61terra":"GPT-6.1 Terra (Ultra·Max) #1","kimik31pro":"Kimi K3.1 Pro (Max)","minimax31flashv1":"MiniMax M3.1 Flash (Max) #1","deepseekv41flash1017v2":"DeepSeek V4.1 Flash 1017 (Max) #2","deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max) #1","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","GPT5.5xHigh-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","LongCat2.0-TasksAssignedByOpus5","LongCat2.0","Mimo_2_5_Pro_high-1","Opus_4_8_Max","Opus4.8Ultra-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6TerraUltra-Three","GPT5.6TerraUltra-TasksAssignedByOpus5","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Opus5(Max)V1","MiniMax_M3_thinking-1","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3(high)V2-TasksAssignedByOpus5","Opus5Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Gemini3.1Pro-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5","Hy4Preview(high)V1","Hy4Preview(high)V2","Hy4Preview(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V2-TasksAssignedByOpus5","KimiK3Max-TasksAssignedByOpus5","KimiK3Max","KimiK3(Max)V2-TasksAssignedByOpus5","KimiK3(Max)V2","KimiK3(Max)V3"];
 window.WORK_CREATION_DATES={
+"Fable5.2(Low)V1-TasksAssignedByOpus5":"261110",
+
 "Hy4(high)V1":"261104",
 "Hy4(high)V1-TasksAssignedByOpus5":"261104",
 
@@ -172,6 +174,43 @@ window.WORK_CREATION_DATES={
  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5":"260908"
 };
 window.WORKS=[
+{
+  "id": "Fable5.2(Low)V1-TasksAssignedByOpus5",
+  "file": "models/Fable5.2(Low)V1-TasksAssignedByOpus5.html",
+  "model": "Claude Fable 5.2 (Low)",
+  "group": "B",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 76870,
+  "lines": 976,
+  "title": "太阳系 · 实时轨道模型",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "comet",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Fable5.2(Low)V1-TasksAssignedByOpus5.jpg",
+  "jsErrors": 0,
+  "note": "原生自包含WebGL2。逐条对照任务原文，JPL世纪率/J2000、归一化开普勒与行星/哈雷定向有效；行星288、哈雷720等E轨道采样，压缩及线性比例下最大弦距为实体半径的0.225倍。8颗卫星周期闭合，月球实际有向倾角5.145°、海卫一156.9°，母基det+1，不存在额外黄道变换或双重逆行。17900颗主带/希尔达/特洛伊/柯伊伯粒子、双向环影、六级Bloom后全画面ACES、视线密度大气实际draw有效。球网格16128个非退化三角全朝外，HDR/4×MSAA/depth24及RGBA8回退无错；近日点实体彗核和双尾可运行。暂停冻结JD/位置/实体自转，倒放、此刻、比例往返及开关有效；缩放下限6.21大于太阳半径4.6，0.954天每秒Io跟随20次均居中无滞后。信息卡正确区分母星日心距离并单列月地距离和光行时。JS/GL/外网错误均0，390px布局正常，无fatal。8颗卫星无超额奖励，未实现其他彗星。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Claude Code"
+  ],
+  "tier": 1,
+  "rank": 0
+},
+
 {
   "id": "Hy4(high)V1",
   "file": "models/Hy4(high)V1.html",

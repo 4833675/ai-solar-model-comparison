@@ -3,6 +3,148 @@
   'use strict';
 
   window.SCORES = {
+"Fable5.2(Low)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145000000000013,
+      "expectedInclinationDeg": 5.145,
+      "periodDays": 27.32166,
+      "reference": "ecliptic",
+      "parentBasisDet": 1,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.049999999993073134,
+      "expectedInclinationDeg": 0.05,
+      "periodDays": 1.769138,
+      "reference": "parent equator",
+      "parentBasisDet": 0.9999999999999998,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.46999999999938746,
+      "expectedInclinationDeg": 0.47,
+      "periodDays": 3.551181,
+      "reference": "parent equator",
+      "parentBasisDet": 0.9999999999999998,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19999999999981224,
+      "expectedInclinationDeg": 0.2,
+      "periodDays": 7.154553,
+      "reference": "parent equator",
+      "parentBasisDet": 0.9999999999999998,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19000000000270345,
+      "expectedInclinationDeg": 0.19000000000000003,
+      "periodDays": 16.689,
+      "reference": "parent equator",
+      "parentBasisDet": 0.9999999999999998,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.34999999999958503,
+      "expectedInclinationDeg": 0.35,
+      "periodDays": 15.945,
+      "reference": "parent equator",
+      "parentBasisDet": 1,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.89999999999787,
+      "expectedInclinationDeg": 156.9,
+      "periodDays": 5.876854,
+      "reference": "parent equator",
+      "parentBasisDet": 0.9999999999999998,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.07999999999851003,
+      "expectedInclinationDeg": 0.08,
+      "periodDays": 6.3872,
+      "reference": "parent equator",
+      "parentBasisDet": 1,
+      "sourceLines": "L630–660",
+      "reason": "实际位置函数以负sin局部Z、abs周期和proper母基组合，有向r×v倾角吻合给定参考面，周期闭合；海卫一156.9°体现真实逆行，按实效满分。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生自包含WebGL2。逐条对照任务原文，JPL世纪率/J2000、归一化开普勒与行星/哈雷定向有效；行星288、哈雷720等E轨道采样，压缩及线性比例下最大弦距为实体半径的0.225倍。8颗卫星周期闭合，月球实际有向倾角5.145°、海卫一156.9°，母基det+1，不存在额外黄道变换或双重逆行。17900颗主带/希尔达/特洛伊/柯伊伯粒子、双向环影、六级Bloom后全画面ACES、视线密度大气实际draw有效。球网格16128个非退化三角全朝外，HDR/4×MSAA/depth24及RGBA8回退无错；近日点实体彗核和双尾可运行。暂停冻结JD/位置/实体自转，倒放、此刻、比例往返及开关有效；缩放下限6.21大于太阳半径4.6，0.954天每秒Io跟随20次均居中无滞后。信息卡正确区分母星日心距离并单列月地距离和光行时。JS/GL/外网错误均0，390px布局正常，无fatal。8颗卫星无超额奖励，未实现其他彗星。",
+  "reviewedAt": "2026-11-10",
+  "reviewVersion": "V3-20261110"
+},
+
 "Hy4(high)V1":{
   "reference": false,
   "featureMap": {

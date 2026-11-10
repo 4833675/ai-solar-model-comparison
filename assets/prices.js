@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   const sources = {
+    fable52: "https://platform.claude.com/docs/en/models/fable-5-2/overview",
     terra61: "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
     kimi31pro: "https://platform.kimi.ai/",
     minimax31flash: "https://platform.minimax.io/docs/pricing/overview",
@@ -25,6 +26,7 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Claude Fable 5.2",8,40,0.2,"fable52",null,"2026-11-10"],
     ["Hy 4",0.834,2.501,0.042,"hy",null,"2026-11-04"],
     ["GPT-6.1 Terra",2,7.5,0.1,"terra61",null,"2026-10-27"],
     ["Kimi K3.1 Pro",2,10,0.2,"kimi31pro",null,"2026-10-24"],
