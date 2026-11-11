@@ -108,6 +108,54 @@ export const BLACKHOLE_WORKS = [{
     note: '纵坐标根因的联动失分为18.79分，按6分封顶返还12.79分；范围含H3c人工前后量测，接口64条限制不借此次返还恢复。附加项：EHT4、落体4、微透镜1、引力波2；EHT角分辨率响应未标定，落体潮汐与奇点后计时另有错误。默认场景运行超过12分钟无非有限数或GL错误；后台采用276.1秒等效rAF暂停，实际标签隐藏未验证。',
     noteEn: 'The vertical-axis cause produces 18.79 cascading points of loss, capped at six with a 12.79 refund. This includes manual H3c measurements; the 64-ray limit is retained separately. Extensions: EHT 4, radial fall 4, microlensing 1, chirp 2. EHT angular response is uncalibrated, and fall tidal/post-singularity readouts have errors. The default scene ran for over 12 minutes without non-finite pixels or GL errors. Recovery used an equivalent 276.1-second rAF suspension; literal tab hiding was not verified.'
   }
+}, {
+  id: 'GPT6.1Sol(Max)(Codex)V1', model: 'GPT-6.1 Sol (Max)',
+  file: 'blackhole/GPT6.1Sol(Max)(Codex)V1.html',
+  shot: 'assets/shots/blackhole/GPT6.1Sol(Max)(Codex)V1.jpg',
+  date: '261111', tier: 1, environment: 'Codex', logo: 'openai',
+  recommendation: '△△△', reason: '按要求完成度非常高，不会多想',
+  reasonEn: 'Follows the requirements very thoroughly; does not overthink',
+  tech: 'WebGL2', lines: 211, bytes: 93445, priceModel: 'GPT-6.1 Sol',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-11',
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:59.6,renderScale:1325/1920,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:2,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [{name:'热斑与GPU采样光变',usable:1,number:1,computed:1,integrated:1}],
+    rootCauses:[],fatal:null,deductions:[],
+    note: '自动项68.5/68.5、六项画面一致性及51项自检通过。规定动作100分；热斑使用主场景GPU光线交点采样，半径10/12 M的坐标及固有时周期均正确，加4分。默认场景有效运行650秒，25次HDR采样均为有限数、GL无错误。后台采用65秒等效rAF暂停，实际标签隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 51 self-checks pass. Required work earns 100 points. The hotspot samples the main GPU ray intersections, with correct coordinate and proper periods at radii 10 and 12 M (+4). The default scene ran for 650 active seconds; all 25 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
+  }
+}, {
+  id: 'Hy4(High)(WorkBuddy)V1', model: 'Hy 4 (high)',
+  file: 'blackhole/Hy4(High)(WorkBuddy)V1.html',
+  shot: 'assets/shots/blackhole/Hy4(High)(WorkBuddy)V1.jpg',
+  date: '261111', tier: 2, environment: 'WorkBuddy', logo: 'hy',
+  recommendation: '△△', reason: '细节把控不足', reasonEn: 'Insufficient attention to detail',
+  tech: 'WebGL2', lines: 2156, bytes: 105233, priceModel: 'Hy 4',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-11',
+    base: { A1:4,A2:3,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:.4,aces:1},F2a:1.5,F2b:1.5,F3:{fps:10,renderScale:1115/1920,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:8,score:16/9},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:1.5,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:'盘上热斑与光变',usable:1,number:1,computed:1,integrated:1},
+      {name:'EHT角尺度观察与后处理',usable:1,number:1,computed:1,integrated:1},
+      {name:'GW150914啁啾与音频',usable:1,number:1,computed:0,integrated:1}
+    ],rootCauses:[],fatal:null,
+    performanceDeduction: {source:'author',points:3,reason:'站点作者指定：性能扣3分。'},
+    deductions: [
+      {points:1,zh:'visibilitychange回调写入未定义的lastFrame变量，分派同名事件实测触发ReferenceError；主渲染不受阻，未判致命。',en:'The visibilitychange handler writes to an undefined lastFrame variable. Dispatching that event reproduces a ReferenceError; the main rendering continues, so no fatal classification applies.'},
+      {points:.6,zh:'泛光只有单一分辨率的双向高斯模糊，没有多级降采样与升采样，按部分有效给分。',en:'Bloom uses a single-resolution separable Gaussian blur rather than a multilevel downsample/upsample chain, earning partial credit.'},
+      {points:2/9,zh:'倒放时盘的坐标时回退，但测试粒子仅在正时间差下推进，粒子半径和时钟冻结；九个控件中八项有效。',en:'During reverse playback, disk coordinate time decreases but test particles advance only for positive time steps, leaving their radii and clocks frozen. Eight of nine controls work.'},
+      {points:.5,zh:'累计进动角实际显示当前轨道相位phi模360°，没有测量每个径向周期的超额转角。',en:'The cumulative-precession readout is the current orbital phase modulo 360 degrees, rather than the excess angle measured across radial periods.'},
+      {points:3,zh:'站点作者指定：性能扣3分。',en:'The site author explicitly requested a three-point performance deduction.'}
+    ],
+    note: '自动项68.5/68.5、六项画面一致性及105项自检通过。附加项热斑4、EHT4、啁啾3；EHT两组角径正确并与主管线联动，但波束sigma多乘1e-6，20微角秒响应不正确；模态内图表遮挡部分控件，键盘可操作。啁啾数值及共享单位有效，缺少可调参数。默认场景有效运行631秒，25次HDR采样均为有限数、GL无错误；65秒等效rAF暂停，实际标签隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 105 self-checks pass. Extensions: hotspot 4, EHT 4, chirp 3. EHT has correct angular diameters for two presets and shares the main pipeline, but its beam sigma has an extra factor of 1e-6, so the 20-microarcsecond response is incorrect. Modal charts overlap some controls, which remain keyboard-operable. The chirp has correct values and shared units but no adjustable parameters. The default scene ran for 631 active seconds; all 25 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

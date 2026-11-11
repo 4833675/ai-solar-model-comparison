@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,4,'One pinned example and three published submissions');
+assert.equal(BLACKHOLE_WORKS.length,6,'One pinned example and five published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -50,8 +50,19 @@ const ms=blackholeScore(m);close(ms.base,18637/450);close(ms.advanced,8851/300);
 assert.equal(hash(await readFile(m.file)),'66664f026d03a53a8616b8e022d4b322af460e83d5d90bb15e7c408f48f32698');
 assert.equal(hash(await readFile(m.shot)),'6fd2b878136b5e98052168dabf0e50e08192a117ea3c9925af2e1a14cf395c7b');
 assert.equal((await readFile(m.file)).length,m.bytes);assert.equal((await readFile(m.file,'utf8')).split('\n').length-1,m.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,d.id,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,o.id]);
+const sol=BLACKHOLE_WORKS[4];assert.equal(sol.id,'GPT6.1Sol(Max)(Codex)V1');assert.equal(sol.model,'GPT-6.1 Sol (Max)');assert.equal(sol.tier,1);assert.equal(sol.recommendation,'△△△');assert.equal(sol.reason,'按要求完成度非常高，不会多想');assert.equal(sol.environment,'Codex');assert.equal(sol.date,'261111');assert.equal(sol.priceModel,'GPT-6.1 Sol');
+const ss=blackholeScore(sol);close(ss.base,60);close(ss.advanced,40);close(ss.required,100);assert.equal(ss.free,4);assert.equal(ss.adjustment,0);assert.equal(ss.performanceDeduction,0);close(ss.exact,104);assert.equal(ss.total,104);
+assert.equal(hash(await readFile(sol.file)),'7284ea166772c21d36f3db968af52b4c726edeb11bcd0f8341a320466ec2ccb9');
+assert.equal(hash(await readFile(sol.shot)),'705ccb8b166ebb7e9ee5687eaa0e43f49542687f90c8aae54603c06a087ac2dd');
+assert.equal((await readFile(sol.file)).length,sol.bytes);assert.equal((await readFile(sol.file,'utf8')).split('\n').length-1,sol.lines);
+const hy=BLACKHOLE_WORKS[5];assert.equal(hy.id,'Hy4(High)(WorkBuddy)V1');assert.equal(hy.model,'Hy 4 (high)');assert.equal(hy.tier,2);assert.equal(hy.recommendation,'△△');assert.equal(hy.reason,'细节把控不足');assert.equal(hy.environment,'WorkBuddy');assert.equal(hy.date,'261111');assert.equal(hy.priceModel,'Hy 4');
+assert.deepEqual(hy.score.performanceDeduction,{source:'author',points:3,reason:'站点作者指定：性能扣3分。'});
+const hs=blackholeScore(hy);close(hs.base,2483/45);close(hs.advanced,79/2);close(hs.required,8521/90);assert.equal(hs.free,11);assert.equal(hs.adjustment,-3);assert.equal(hs.performanceDeduction,3);close(hs.exact,9241/90);assert.equal(hs.total,103);assert.equal(hy.score.base.F3.score,4,'Keep the original measurement; apply the authorized deduction through the policy field');
+assert.equal(hash(await readFile(hy.file)),'0298cffb704e56e745f3b49ce4c8ef07a273bd6bb9c3bb7fcf6f8da6a2d68360');
+assert.equal(hash(await readFile(hy.shot)),'f8cb7eec72cb3c705fa6d78b5aa132d1298a47f516f972651ffbb5d4a91969b4');
+assert.equal((await readFile(hy.file)).length,hy.bytes);assert.equal((await readFile(hy.file,'utf8')).split('\n').length-1,hy.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sol.id,hy.id,d.id,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,hy.id,sol.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
