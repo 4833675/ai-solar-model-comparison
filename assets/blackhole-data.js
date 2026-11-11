@@ -70,6 +70,44 @@ export const BLACKHOLE_WORKS = [{
     note: '自动项 68.5/68.5，六项画面一致性检查及61项自检通过。五项自由发挥各4分。微透镜在 Rc=50000、u=2 时放大率误差约71%，u=1时约4%；该项仍满足至少两个关键值误差≤3%的加分条件，问题单独保留。后台恢复采用145.7秒等效 rAF 暂停，实际隐藏未验证。',
     noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 61 self-checks pass. Five extensions earn four points each. Microlensing magnification errors are about 71% at Rc=50000, u=2 and 4% at u=1; the extension still meets the criterion of at least two key values within 3%, and these issues remain recorded. Recovery used an equivalent 145.7-second rAF suspension; literal tab hiding was not verified.'
   }
+}, {
+  id: 'MiniMaxM3.1Flash(Max)(MiniMax Code)V1', model: 'MiniMax M3.1 Flash (Max)',
+  file: 'blackhole/MiniMaxM3.1Flash(Max)(MiniMax Code)V1.html',
+  shot: 'assets/shots/blackhole/MiniMaxM3.1Flash(Max)(MiniMax Code)V1.jpg',
+  date: '261110', tier: 2, environment: 'MiniMax Code', logo: 'minimax',
+  recommendation: '△', reason: '', reasonEn: '',
+  tech: 'WebGL2', lines: 3156, bytes: 134967, priceModel: 'MiniMax M3.1 Flash',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-11',
+    base: { A1:4,A2:3,A3:3,B1:6,B2:6,C1:.16,C2:.55,C3a:.5,C3b:1,C3c:1,C4:0,
+      F1:{hdr:1,bloom:.4,aces:1},F2a:1.5,F2b:1.5,F3:{fps:53.2,renderScale:1229/1920,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:7,score:14/9},G3:.75,G4a:2,G4b:.5 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:0,I1:0,I2:19/75,I3:2,J1:3,J2:3,J3:2,J4:2,J5:.5,R1a:.75,R1b:.5,R2a:1,R2b:.5,R3:1,V1:1,V2:1 },
+    free: [
+      {name:'EHT有限分辨率观察',usable:1,number:1,computed:1,integrated:1},
+      {name:'史瓦西径向自由落体',usable:1,number:1,computed:1,integrated:1},
+      {name:'微引力透镜',usable:1,number:0,computed:0,integrated:0},
+      {name:'GW150914啁啾',usable:1,number:1,computed:0,integrated:0}
+    ],
+    rootCauses: [{autoBefore:14239/300,autoAfter:265/4,cap:6}],fatal:null,
+    performanceDeduction: {source:'author',points:2,reason:'站点作者指定：性能扣2分。'},
+    deductions: [
+      {points:6,zh:'主画面纵坐标与接口反向；单点副本验证后，相关诊断及前方盘纹理的连带失分净计6分。',en:'The rendered vertical axis is reversed relative to the interface. A single-change diagnostic copy confirms the shared cause; its cascading loss is capped at six points.'},
+      {points:2,zh:'接口请求301条光线只返回64条，ISCO细扫未完成；分批诊断证明物理内缘本身正确，原接口限制的失分保留。',en:'A request for 301 rays returns only 64, leaving the ISCO scan incomplete. Batched diagnostics confirm the physical inner edge; the original interface limitation retains its deduction.'},
+      {points:1,zh:'高自转 a=0.998 时，阴影边缘反复出现局部非有限 HDR 像素；默认场景正常，未判致命。',en:'At spin a=0.998, localized non-finite HDR pixels recur near the shadow edge. The default scene remains stable; no fatal classification applies.'},
+      {points:.6,zh:'泛光缓冲与程序存在，但各 pass 的实际视口为0×0，只有名义效果；HDR及ACES各保留满分。',en:'Bloom buffers and programs exist, but every bloom pass uses a zero-sized viewport. Bloom receives nominal credit; HDR and ACES retain full credit.'},
+      {points:4/9,zh:'九个控件中七项有效：泛光无实际效果，时间速度只能为正，不能倒放。',en:'Seven of nine controls work: bloom has no effect and the time-speed control cannot run in reverse.'},
+      {points:.5,zh:'信息卡有量纲字段未全部给出物理单位，当前ISCO周期漏项，S2距离读数也有偏差。',en:'Some dimensional readouts omit physical units; the current ISCO period is incomplete and S2 distance readouts are incorrect.'},
+      {points:1.5,zh:'能放粒子并画轨迹；有效势位置标记与当前状态不符，时间及圈数是预计算常数，牛顿对照路径未绘制。',en:'Particle placement and trajectories work. The potential marker and current-state readouts are incorrect or static, and the Newtonian comparison is not drawn.'},
+      {points:.25,zh:'四个S2位置时刻中，2030年东向偏移误差超过0.5 mas；其余三个通过。',en:'The eastward S2 offset for 2030 exceeds the 0.5 mas tolerance; the other three epochs pass.'},
+      {points:.5,zh:'S2全轨道可显示和缩放，但标准相机下远心点朝向反了；叠加层另有纵坐标反向，单改主渲染不能修复。',en:'The full S2 orbit is visible and zoomable, but its apocenter points the wrong way. A separate overlay-axis error remains after fixing the main rendering line.'},
+      {points:1,zh:'实际S2轨道积分每圈进动11.1928′，参考12.167′，落在半分容差内。',en:'The integrated S2 precession is 11.1928 arcminutes per orbit versus 12.167, earning half credit.'},
+      {points:.5,zh:'主面板12.17′为固定参考文字，自检另算参考值，未展示实际轨道积分的进动结果。',en:'The main panel shows a fixed 12.17 arcminute reference; self-checks use a separate reference calculation rather than displaying the actual orbital integration result.'},
+      {points:2,zh:'站点作者指定：性能扣2分。',en:'The site author explicitly requested a two-point performance deduction.'}
+    ],
+    note: '纵坐标根因的联动失分为18.79分，按6分封顶返还12.79分；范围含H3c人工前后量测，接口64条限制不借此次返还恢复。附加项：EHT4、落体4、微透镜1、引力波2；EHT角分辨率响应未标定，落体潮汐与奇点后计时另有错误。默认场景运行超过12分钟无非有限数或GL错误；后台采用276.1秒等效rAF暂停，实际标签隐藏未验证。',
+    noteEn: 'The vertical-axis cause produces 18.79 cascading points of loss, capped at six with a 12.79 refund. This includes manual H3c measurements; the 64-ray limit is retained separately. Extensions: EHT 4, radial fall 4, microlensing 1, chirp 2. EHT angular response is uncalibrated, and fall tidal/post-singularity readouts have errors. The default scene ran for over 12 minutes without non-finite pixels or GL errors. Recovery used an equivalent 276.1-second rAF suspension; literal tab hiding was not verified.'
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

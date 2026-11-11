@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,3,'One pinned example and two published submissions');
+assert.equal(BLACKHOLE_WORKS.length,4,'One pinned example and three published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -44,8 +44,14 @@ const os=blackholeScore(o);close(os.base,60);close(os.advanced,40);close(os.free
 assert.equal(hash(await readFile(o.file)),'010483fcdffce12064060d4ab9c36bf7d646b43be30212058e06539c8a9539da');
 assert.equal(hash(await readFile(o.shot)),'6b4ee139291eeee244de3093a9a8e6a8e32ea419ca3ce1cca9ab2189516b4790');
 assert.equal((await readFile(o.file)).length,o.bytes);assert.equal((await readFile(o.file,'utf8')).split('\n').length-1,o.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,d.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,d.id,o.id]);
+const m=BLACKHOLE_WORKS[3];assert.equal(m.id,'MiniMaxM3.1Flash(Max)(MiniMax Code)V1');assert.equal(m.tier,2);assert.equal(m.recommendation,'△');assert.equal(m.reason,'');assert.equal(m.environment,'MiniMax Code');assert.equal(m.date,'261110');
+assert.deepEqual(m.score.performanceDeduction,{source:'author',points:2,reason:'站点作者指定：性能扣2分。'});
+const ms=blackholeScore(m);close(ms.base,18637/450);close(ms.advanced,8851/300);close(ms.refund,959/75);close(ms.required,15067/180);assert.equal(ms.free,11);assert.equal(ms.adjustment,-3);assert.equal(ms.performanceDeduction,2);close(ms.exact,16507/180);assert.equal(ms.total,92);
+assert.equal(hash(await readFile(m.file)),'66664f026d03a53a8616b8e022d4b322af460e83d5d90bb15e7c408f48f32698');
+assert.equal(hash(await readFile(m.shot)),'6fd2b878136b5e98052168dabf0e50e08192a117ea3c9925af2e1a14cf395c7b');
+assert.equal((await readFile(m.file)).length,m.bytes);assert.equal((await readFile(m.file,'utf8')).split('\n').length-1,m.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,d.id,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
