@@ -156,6 +156,61 @@ export const BLACKHOLE_WORKS = [{
     note: '自动项68.5/68.5、六项画面一致性及105项自检通过。附加项热斑4、EHT4、啁啾3；EHT两组角径正确并与主管线联动，但波束sigma多乘1e-6，20微角秒响应不正确；模态内图表遮挡部分控件，键盘可操作。啁啾数值及共享单位有效，缺少可调参数。默认场景有效运行631秒，25次HDR采样均为有限数、GL无错误；65秒等效rAF暂停，实际标签隐藏未验证。',
     noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 105 self-checks pass. Extensions: hotspot 4, EHT 4, chirp 3. EHT has correct angular diameters for two presets and shares the main pipeline, but its beam sigma has an extra factor of 1e-6, so the 20-microarcsecond response is incorrect. Modal charts overlap some controls, which remain keyboard-operable. The chirp has correct values and shared units but no adjustable parameters. The default scene ran for 631 active seconds; all 25 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
   }
+}, {
+  id: 'Sonnet5.5(Max)(Claude Code)V1', model: 'Claude Sonnet 5.5 (Max)',
+  file: 'blackhole/Sonnet5.5(Max)(Claude Code)V1.html',
+  shot: 'assets/shots/blackhole/Sonnet5.5(Max)(Claude Code)V1.jpg',
+  date: '261112', tier: 0, environment: 'Claude Code', logo: 'anthropic',
+  recommendation: '△△△△△', reason: '', reasonEn: '',
+  tech: 'WebGL2', lines: 4135, bytes: 225455, priceModel: 'Claude Sonnet 5.5',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-12',
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:18.4,renderScale:.5,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:1.5,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:'第一人称径向下落',usable:1,number:1,computed:1,integrated:1},
+      {name:'引力波旋近与铃宕',usable:1,number:1,computed:1,integrated:1},
+      {name:'热斑与GPU光变测量',usable:1,number:1,computed:1,integrated:1},
+      {name:'光线Jacobian微引力透镜',usable:1,number:1,computed:1,integrated:1},
+      {name:'潮汐瓦解碎片流',usable:1,number:1,computed:1,integrated:1}
+    ],rootCauses:[],fatal:null,
+    deductions: [
+      {points:.5,zh:'牛顿对照没有沿用相同初始径向运动：p=10、e=0.5、r₀=10时，向外运动的相对论粒子被换成牛顿径向速度0，且不再满足其声明的能量。',en:'The Newtonian comparison changes the initial radial motion: at p=10, e=0.5, r₀=10, an outward-moving relativistic particle is replaced by zero Newtonian radial velocity, which also violates its stated energy.'}
+    ],
+    note: '自动项68.5/68.5、六项画面一致性及146项自检通过。五项发挥各4分；附加数字独立抽核35/35通过。倒放能回退粒子状态，但进动计数保留向前经过近心点的历史。默认场景有效运行607秒，24次HDR采样均有限、GL无错误；65秒等效rAF暂停，实际标签隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 146 self-checks pass. Five extensions earn four points each; all 35 independently sampled extension values pass. Reverse playback rewinds particle state, while precession counters retain the history of forward pericenter passages. The default scene ran for 607 active seconds; all 24 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
+  }
+}, {
+  id: 'Hauku5.5(Max)(Claude Code)V3', model: 'Claude Haiku 5.5 (Max)',
+  file: 'blackhole/Hauku5.5(Max)(Claude Code)V3.html',
+  shot: 'assets/shots/blackhole/Hauku5.5(Max)(Claude Code)V3.jpg',
+  date: '261112', tier: 1, environment: 'Claude Code', logo: 'anthropic',
+  recommendation: '△△△△△', reason: '需要向我确认才做了额外的功能',
+  reasonEn: 'Only implemented the extra features after asking me for confirmation',
+  tech: 'WebGL2', lines: 3274, bytes: 155659, priceModel: 'Claude Haiku 5.5',
+  score: {
+    task: 'blackhole-v1', reviewedAt: '2026-11-12',
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:24,renderScale:.5,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:8,score:16/9},G3:3,G4a:2,G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,J5:1,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:'径向下落与潮汐',usable:1,number:1,computed:1,integrated:1},
+      {name:'微引力透镜',usable:1,number:1,computed:1,integrated:1},
+      {name:'恒星潮汐瓦解',usable:1,number:1,computed:1,integrated:1},
+      {name:'盘面热斑与光变曲线',usable:1,number:1,computed:1,integrated:1},
+      {name:'银心S星团与相对论红移',usable:1,number:1,computed:1,integrated:1}
+    ],rootCauses:[],fatal:null,
+    deductions: [
+      {points:2/9,zh:'倒放时盘的坐标时回退，但测试粒子只在正速度下推进，半径和时钟冻结；九个控件中八项有效。',en:'During reverse playback, disk coordinate time decreases but test particles advance only at positive speed, leaving their radii and clocks frozen. Eight of nine controls work.'},
+      {points:.5,zh:'有效势曲线读取缺失的粒子参数，所有曲线点变成NaN；能量线和位置标记仍在，势曲线没有画出。',en:'The effective-potential plot reads a missing particle parameter, making every curve point NaN. The energy line and position marker remain, but the potential curve is absent.'},
+      {points:.5,zh:'牛顿对照初始位置不匹配：p=10、e=0.5时，粒子从r₀=20出发，对照却画成半径14.8148M的圆。',en:'The Newtonian comparison does not share the initial position: at p=10, e=0.5, the particle starts at r₀=20, while the comparison is a circle of radius 14.8148 M.'}
+    ],
+    note: '自动项68.5/68.5、六项画面一致性及27项自检通过；接口明示JS后端，一致性通过，不因后端单独扣分。五项发挥各4分。下落r₀=20的辅助数值为空；潮汐面板km/M换算错误，10⁶太阳质量组回落斜率偏差4.70%，但两组关键潮汐半径正确，仍满足加分条件。默认场景有效运行965秒，36次HDR采样均有限、GL无错误；65秒等效rAF暂停，实际标签隐藏未验证。',
+    noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 27 self-checks pass. The disclosed JS backend passes consistency checks and incurs no backend-only deduction. Five extensions earn four points each. The auxiliary fall result at r₀=20 is missing; tidal km/M conversions are wrong, and the fallback slope at 10⁶ solar masses differs by 4.70%. Two correct tidal-radius parameter groups still meet the extension criteria. The default scene ran for 965 active seconds; all 36 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

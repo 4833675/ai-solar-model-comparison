@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,6,'One pinned example and five published submissions');
+assert.equal(BLACKHOLE_WORKS.length,8,'One pinned example and seven published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -61,8 +61,18 @@ const hs=blackholeScore(hy);close(hs.base,2483/45);close(hs.advanced,79/2);close
 assert.equal(hash(await readFile(hy.file)),'0298cffb704e56e745f3b49ce4c8ef07a273bd6bb9c3bb7fcf6f8da6a2d68360');
 assert.equal(hash(await readFile(hy.shot)),'f8cb7eec72cb3c705fa6d78b5aa132d1298a47f516f972651ffbb5d4a91969b4');
 assert.equal((await readFile(hy.file)).length,hy.bytes);assert.equal((await readFile(hy.file,'utf8')).split('\n').length-1,hy.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sol.id,hy.id,d.id,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,hy.id,sol.id,o.id]);
+const sonnet=BLACKHOLE_WORKS[6];assert.equal(sonnet.id,'Sonnet5.5(Max)(Claude Code)V1');assert.equal(sonnet.model,'Claude Sonnet 5.5 (Max)');assert.equal(sonnet.tier,0);assert.equal(sonnet.recommendation,'△△△△△');assert.equal(sonnet.reason,'');assert.equal(sonnet.environment,'Claude Code');assert.equal(sonnet.date,'261112');assert.equal(sonnet.priceModel,'Claude Sonnet 5.5');
+const sns=blackholeScore(sonnet);close(sns.base,60);close(sns.advanced,79/2);close(sns.required,199/2);assert.equal(sns.free,20);assert.equal(sns.adjustment,3);assert.equal(sns.performanceDeduction,0);close(sns.exact,245/2);assert.equal(sns.total,123);assert.equal(sonnet.score.performanceDeduction,undefined);
+assert.equal(hash(await readFile(sonnet.file)),'01b7192f2fc12df14f05e54d1b783a0fcc0eabb6059e0f6e733993262b5a6b0b');
+assert.equal(hash(await readFile(sonnet.shot)),'cec6042dec865ff44da1fce2ee71c7cc0c2f0398e5ecf6b31cb1c31acf252303');
+assert.equal((await readFile(sonnet.file)).length,sonnet.bytes);assert.equal((await readFile(sonnet.file,'utf8')).split('\n').length-1,sonnet.lines);
+const haiku=BLACKHOLE_WORKS[7];assert.equal(haiku.id,'Hauku5.5(Max)(Claude Code)V3');assert.equal(haiku.model,'Claude Haiku 5.5 (Max)');assert.equal(haiku.tier,1);assert.equal(haiku.recommendation,'△△△△△');assert.equal(haiku.reason,'需要向我确认才做了额外的功能');assert.equal(haiku.environment,'Claude Code');assert.equal(haiku.date,'261112');assert.equal(haiku.priceModel,'Claude Haiku 5.5');
+const hks=blackholeScore(haiku);close(hks.base,538/9);close(hks.advanced,39);close(hks.required,889/9);assert.equal(hks.free,20);assert.equal(hks.adjustment,0);assert.equal(hks.performanceDeduction,0);close(hks.exact,1069/9);assert.equal(hks.total,119);assert.equal(haiku.score.performanceDeduction,undefined);
+assert.equal(hash(await readFile(haiku.file)),'dddc5d8784cac43b3ef85e305d724340aa401d796ba32d7400a3d24a503d23f3');
+assert.equal(hash(await readFile(haiku.shot)),'3cb08f74dfeb6f4013d032ae6fee4d2eb5954681a7a26028ebcaa1610f819dd6');
+assert.equal((await readFile(haiku.file)).length,haiku.bytes);assert.equal((await readFile(haiku.file,'utf8')).split('\n').length-1,haiku.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,haiku.id,sol.id,hy.id,d.id,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,hy.id,sol.id,haiku.id,sonnet.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
