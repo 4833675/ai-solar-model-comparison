@@ -26,6 +26,9 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Hy 4 Flash",0.07,0.281,0.003,"hy",null,"2026-11-16"],
+    ["Qwen 4 Max",1.5,4.5,0.075,"qwen",null,"2026-11-16"],
+
     ["Claude Fable 5.2",8,40,0.2,"fable52",null,"2026-11-10"],
     ["Hy 4",0.834,2.501,0.042,"hy",null,"2026-11-04"],
     ["GPT-6.1 Terra",2,7.5,0.1,"terra61",null,"2026-10-27"],

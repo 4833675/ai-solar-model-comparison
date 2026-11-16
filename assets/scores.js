@@ -3,6 +3,503 @@
   'use strict';
 
   window.SCORES = {
+"Hy4flash(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 0.5
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": false,
+  "moonEvidence": [
+    {
+      "id": "月球",
+      "parent": "地球",
+      "quality": 0,
+      "periodDays": 27.32,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "木卫一",
+      "parent": "木星",
+      "quality": 0,
+      "periodDays": 1.769,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "木卫二",
+      "parent": "木星",
+      "quality": 0,
+      "periodDays": 3.551,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "木卫三",
+      "parent": "木星",
+      "quality": 0,
+      "periodDays": 7.155,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "木卫四",
+      "parent": "木星",
+      "quality": 0,
+      "periodDays": 16.689,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "土卫六",
+      "parent": "土星",
+      "quality": 0,
+      "periodDays": 15.945,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "火卫一",
+      "parent": "火星",
+      "quality": 0,
+      "periodDays": 0.319,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    },
+    {
+      "id": "火卫二",
+      "parent": "火星",
+      "quality": 0,
+      "periodDays": 1.263,
+      "worldNormal": [
+        0,
+        -1,
+        0
+      ],
+      "actualEclipticInclinationDeg": 180,
+      "sourceLines": "L662–689/L1005–1009",
+      "reason": "真实周期且绕正确母体，但八颗全部直接挂在平移anchor并使用正Z正相位，实际h=−Y；月球对黄道180°且缺5.145°，其他普通卫星也逆行并未使用母赤道面，一句话版无任务公式免责。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-16",
+  "reviewVersion": "V3-20261116",
+  "note": "Three.js r160运行需CDN；环及大气部分，Bloom后OutputPass实际ACES、运动双带和同源行星线有效。JPL L误当M0使历元部分分。八颗正Z相位卫星实际均向黄南逆行，无有效卫星；不在data复扣。哈雷功能保留3，但ω误用、自转双反和向日尾合并data4。桌面比例开关被面板挡住，比例切换未同步环/卫星，integrity4.5。安全缩放、聚焦及默认地球跟随20/20有效；物理暂停和倒放正常，A仅重置时间，pauseReset部分。无fatal。"
+},
+"Hy4flash(high)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "月球",
+      "parent": "地球",
+      "quality": 1,
+      "periodDays": 27.32166,
+      "actualInclinationDeg": 174.85499999999382,
+      "expectedInclinationDeg": 5.145,
+      "worldNormal": [
+        1.0554537759667118e-13,
+        -0.9959709407963555,
+        -0.08967655819233096
+      ],
+      "reference": "ecl",
+      "parentBasisDet": 0.999999972321377,
+      "sourceLines": "L1328–1344",
+      "reason": "Moon严格采用任务§3.7正Z/Rx公式，物理有向174.855°属于任务内生矛盾，保留任务依从1颗，不能称物理已修正。"
+    },
+    {
+      "id": "木卫一 Io",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 1.769138,
+      "actualInclinationDeg": 176.8378737519931,
+      "expectedInclinationDeg": 0.05,
+      "worldNormal": [
+        0.03548140765270139,
+        -0.9992603766645126,
+        0.014824619363717794
+      ],
+      "reference": "eq",
+      "parentBasisDet": 0.9999999685756505,
+      "sourceLines": "L1328–1344",
+      "reason": "母体和周期正确；额外把列主序母基按行乘成转置，扣除任务内生方向矛盾后仍有约3–5°额外偏差，近似赤道关系部分成立计.5，不一刀切全抹除。"
+    },
+    {
+      "id": "木卫二 Europa",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 3.551181,
+      "actualInclinationDeg": 176.96964846545737,
+      "expectedInclinationDeg": 0.47,
+      "worldNormal": [
+        0.028154752893843744,
+        -0.9994935907527172,
+        0.014828079232545727
+      ],
+      "reference": "eq",
+      "parentBasisDet": 0.9999999685756505,
+      "sourceLines": "L1328–1344",
+      "reason": "母体和周期正确；额外把列主序母基按行乘成转置，扣除任务内生方向矛盾后仍有约3–5°额外偏差，近似赤道关系部分成立计.5，不一刀切全抹除。"
+    },
+    {
+      "id": "木卫三 Ganymede",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 7.154553,
+      "actualInclinationDeg": 176.89079673485676,
+      "expectedInclinationDeg": 0.2,
+      "worldNormal": [
+        0.03286494366148844,
+        -0.9993498320352588,
+        0.014825946486719161
+      ],
+      "reference": "eq",
+      "parentBasisDet": 0.9999999685756505,
+      "sourceLines": "L1328–1344",
+      "reason": "母体和周期正确；额外把列主序母基按行乘成转置，扣除任务内生方向矛盾后仍有约3–5°额外偏差，近似赤道关系部分成立计.5，不一刀切全抹除。"
+    },
+    {
+      "id": "木卫四 Callisto",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 16.689,
+      "actualInclinationDeg": 176.88746523473782,
+      "expectedInclinationDeg": 0.19,
+      "worldNormal": [
+        0.033039381800535554,
+        -0.9993440814307699,
+        0.014825861173271232
+      ],
+      "reference": "eq",
+      "parentBasisDet": 0.9999999685756505,
+      "sourceLines": "L1328–1344",
+      "reason": "母体和周期正确；额外把列主序母基按行乘成转置，扣除任务内生方向矛盾后仍有约3–5°额外偏差，近似赤道关系部分成立计.5，不一刀切全抹除。"
+    },
+    {
+      "id": "土卫六 Titan",
+      "parent": "土星",
+      "quality": 0.5,
+      "periodDays": 15.945,
+      "actualInclinationDeg": 174.96352314618295,
+      "expectedInclinationDeg": 0.35,
+      "worldNormal": [
+        0.0011132030847511559,
+        -0.8796136655747084,
+        0.47568746053802713
+      ],
+      "reference": "eq",
+      "parentBasisDet": 1.0000000108655167,
+      "sourceLines": "L1328–1344",
+      "reason": "母体和周期正确；额外把列主序母基按行乘成转置，扣除任务内生方向矛盾后仍有约3–5°额外偏差，近似赤道关系部分成立计.5，不一刀切全抹除。"
+    },
+    {
+      "id": "海卫一 Triton",
+      "parent": "海王星",
+      "quality": 0,
+      "periodDays": -5.876854,
+      "actualInclinationDeg": 121.00381862825127,
+      "expectedInclinationDeg": 156.9,
+      "worldNormal": [
+        -0.29744423000080844,
+        -0.6918138239652125,
+        0.6579669923406919
+      ],
+      "reference": "eq",
+      "parentBasisDet": 1.0000000284811335,
+      "sourceLines": "L1328–1344",
+      "reason": "额外转置产生严重参考面错误：实际有向倾角不符任务正常列基的值，非给定公式内生问题，质量0。"
+    },
+    {
+      "id": "冥卫一 Charon",
+      "parent": "冥王星",
+      "quality": 0,
+      "periodDays": 6.3872,
+      "actualInclinationDeg": 136.45303759708005,
+      "expectedInclinationDeg": 0.08,
+      "worldNormal": [
+        -0.0010277825335575884,
+        0.3883864542790499,
+        0.9214960150731045
+      ],
+      "reference": "eq",
+      "parentBasisDet": 0.9999999626032767,
+      "sourceLines": "L1328–1344",
+      "reason": "额外转置产生严重参考面错误：实际有向倾角不符任务正常列基的值，非给定公式内生问题，质量0。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 0,
+    "data": 4,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 0.5
+  },
+  "fatal": "L1",
+  "reviewedAt": "2026-11-16",
+  "reviewVersion": "V3-20261116",
+  "fatalReason": "默认浮点HDR路径的大气pass产生NaN，六级Bloom扩散并使主视图大片黑区；原字节1440×900与1920×1080均复现。关闭辉光可绕过，GL0/JS0不免除L1；按规则T4未完成且分数不封顶。",
+  "note": "逐条参考实际任务。原生离线WebGL2，JPL/开普勒、实体定向/历元和运动带有效；行星线因返回对象缺I/peri/node而全NaN，pathFit0。Moon严格给定公式获1颗任务信用；额外转置母基令五颗普通卫星各.5、Triton/Charon0，有效3.5。默认HDR大气产生NaN并经Bloom扩散，原件两分辨率复现大片黑区，runtime0/L1/T4，不封顶；Bloom/ACES不因上游同因再扣，非性能扣分。环单向影/大气名义各.4，哈雷近日点双尾与彗发实际draw。压缩坐标冒充AU、速度标签单位及卫星自转合并data4；已勾选卫星列表隐藏，integrity4.5。Sun近缩进入内部，Io在1.053天/秒跟随13/20在屏内，speed0标实时却停走，三交互部分。给定自转符号、Moon方向与Halley日期内生冲突不归责，不要求额外全状态reset。"
+},
+"Qwen4Max(xhigh)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 7,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "月球",
+      "parent": "地球",
+      "quality": 1,
+      "periodDays": 27.3217,
+      "actualInclinationDeg": 5.388603018854631,
+      "expectedInclinationDeg": 5.145,
+      "worldNormal": [
+        -0.05515399058713579,
+        0.9955806644478287,
+        0.07600774894663222
+      ],
+      "reference": "ecliptic",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "独立截断Meeus月球，黄道有向约5.3886°为扰动模型，真实周期/地心距离与母关联有效。"
+    },
+    {
+      "id": "木卫一",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 1.7691,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.05,
+      "worldNormal": [
+        -1.0530881316184405e-13,
+        0.9985082178499933,
+        0.054601638125887045
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "正确母赤道、顺行、周期，实际倾角严格0且没有任何真实倾角参数，为理想共面近似各计.5；和已有省略inc的记录口径一致。"
+    },
+    {
+      "id": "木卫二",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 3.5512,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.47,
+      "worldNormal": [
+        -1.035033055594255e-15,
+        0.9985082178499933,
+        0.05460163812588643
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "正确母赤道、顺行、周期，实际倾角严格0且没有任何真实倾角参数，为理想共面近似各计.5；和已有省略inc的记录口径一致。"
+    },
+    {
+      "id": "木卫三",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 7.1546,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.2,
+      "worldNormal": [
+        1.9230516786011804e-14,
+        0.9985082178499972,
+        0.054601638125819606
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "正确母赤道、顺行、周期，实际倾角严格0且没有任何真实倾角参数，为理想共面近似各计.5；和已有省略inc的记录口径一致。"
+    },
+    {
+      "id": "木卫四",
+      "parent": "木星",
+      "quality": 0.5,
+      "periodDays": 16.689,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.19,
+      "worldNormal": [
+        -3.1298104407278896e-15,
+        0.998508217849994,
+        0.054601638125872494
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "正确母赤道、顺行、周期，实际倾角严格0且没有任何真实倾角参数，为理想共面近似各计.5；和已有省略inc的记录口径一致。"
+    },
+    {
+      "id": "土卫六",
+      "parent": "土星",
+      "quality": 0.5,
+      "periodDays": 15.945,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.35,
+      "worldNormal": [
+        2.4268422259858775e-13,
+        0.8931360029996042,
+        0.44978670516800634
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "正确母赤道、顺行、周期，实际倾角严格0且没有任何真实倾角参数，为理想共面近似各计.5；和已有省略inc的记录口径一致。"
+    },
+    {
+      "id": "海卫一",
+      "parent": "海王星",
+      "quality": 0,
+      "periodDays": -5.8769,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 156.9,
+      "worldNormal": [
+        -3.41302360907971e-15,
+        -0.8803118118669139,
+        -0.47439552473394114
+      ],
+      "reference": "drawn parent equator",
+      "sourceLines": "L373–383/L1081–1106",
+      "reason": "仅负周期在母赤道给实际180°，未实现真实156.9°倾角，硬性参考面错误为0；不在data重复罚这个轨道问题。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4.5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-16",
+  "reviewVersion": "V3-20261116",
+  "note": "离线原生WebGL2，JPL世纪根数/J2000/Kepler、动态双带、双层Bloom和最终ACES有效，环单向影/大气rim各.4。Moon独立Meeus有效；五颗普通卫星理想共面缺真实inc各.5，Triton实际180°而非156.9°无效，共3.5有效。观赏模式同源线贴合，真实比例Moon简化线和稀疏彗星引导线明显偏离实体，pathFit部分。彗星的实际黄道角动量为正，与行星同向，且a3.6AU/e.86/I12°/P6.8年不符合哈雷逆行轨道及根数；按作者指出的哈雷错误实现验收，哈雷0、不转计其他彗星奖励，不在定向或data重复扣同一问题。Moon信息卡正确用distKm，不误扣未使用rAU=0；Titan锁定姿态用世界Y使母向在体固系摆动51.876°，data4.5。安全性缺陷为Sun缩放可进入内部；暂停/Today/聚焦和默认月球跟随20/20有效，总览非完整reset，pauseReset部分。所有实际程序/几何/draw及RGBA8回退正常，无fatal。"
+},
+
 "Fable5.2(Max)V1": { "unrated": true },
 
 "Fable5.2(Low)V1-TasksAssignedByOpus5":{

@@ -37,6 +37,25 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Hy4flash(high)V1":{
+  "direction": "down",
+  "count": 3,
+  "zh": "弱智一个",
+  "en": "An idiot"
+},
+"Hy4flash(high)V1-TasksAssignedByOpus5":{
+  "direction": "down",
+  "count": 3,
+  "zh": "这东西放出来毫无意义",
+  "en": "There is no point releasing this"
+},
+"Qwen4Max(xhigh)V1":{
+  "direction": "up",
+  "count": 1,
+  "zh": "阿里云计费有问题，千万别用",
+  "en": "Alibaba Cloud billing has problems. Do not use it"
+},
+
 "Claude Fable 5.2 (Max)":{
   "direction": "up",
   "count": 5,

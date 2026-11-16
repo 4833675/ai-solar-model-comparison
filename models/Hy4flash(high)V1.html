@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>太阳系 · Solar System —— 实时轨道模拟</title>
+<style>
+  :root{
+    --accent:#6ec7ff;
+    --accent2:#ffb35c;
+    --text:#dbe8ff;
+    --muted:#8ba3c9;
+    --panel:rgba(9,15,30,0.66);
+    --border:rgba(120,180,255,0.18);
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#01030a;}
+  body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);user-select:none;-webkit-user-select:none;}
+  #app{position:fixed;inset:0;}
+  canvas{display:block;}
+
+  /* ---------- 顶部标题 ---------- */
+  #topbar{
+    position:absolute;top:0;left:0;right:0;padding:18px 26px;
+    display:flex;align-items:flex-start;justify-content:space-between;
+    pointer-events:none;z-index:10;
+    background:linear-gradient(180deg,rgba(2,6,18,0.75),rgba(2,6,18,0));
+  }
+  #topbar h1{
+    margin:0;font-size:20px;font-weight:600;letter-spacing:3px;
+    color:#eaf3ff;text-shadow:0 0 18px rgba(110,199,255,0.45);
+  }
+  #topbar h1 small{display:block;font-size:10px;letter-spacing:5px;color:var(--muted);font-weight:400;margin-top:5px;}
+  #clock{
+    text-align:right;font-family:var(--mono);pointer-events:auto;
+  }
+  #clock .date{font-size:17px;color:var(--accent2);letter-spacing:1px;text-shadow:0 0 14px rgba(255,179,92,0.5);}
+  #clock .sub{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+
+  /* ---------- 通用面板 ---------- */
+  .panel{
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    box-shadow:0 10px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .panel h2{
+    margin:0 0 12px;font-size:11px;letter-spacing:2px;color:var(--accent);
+    font-weight:600;text-transform:uppercase;
+  }
+
+  /* ---------- 左侧控制 ---------- */
+  #controls{
+    position:absolute;left:22px;top:96px;width:238px;padding:18px;
+    z-index:10;pointer-events:auto;
+  }
+  .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:8px;}
+  .row:last-child{margin-bottom:0;}
+  .lbl{font-size:12px;color:var(--muted);}
+  .val{font-family:var(--mono);font-size:12px;color:var(--text);}
+  button{
+    font-family:inherit;color:var(--text);cursor:pointer;
+    background:rgba(110,199,255,0.09);border:1px solid var(--border);
+    border-radius:8px;padding:7px 10px;font-size:12px;transition:.18s;
+  }
+  button:hover{background:rgba(110,199,255,0.2);border-color:rgba(110,199,255,0.5);}
+  button.active{background:rgba(110,199,255,0.28);border-color:var(--accent);color:#fff;}
+  .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .btn-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;
+    background:linear-gradient(90deg,var(--accent),rgba(110,199,255,0.15));outline:none;margin:2px 0;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:#eaf6ff;box-shadow:0 0 10px var(--accent);cursor:pointer;
+  }
+  .divider{height:1px;background:var(--border);margin:14px 0;}
+  .toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:12px;color:var(--muted);margin-bottom:10px;cursor:pointer;
+  }
+  .toggle:last-child{margin-bottom:0;}
+  .sw{width:32px;height:18px;border-radius:10px;background:rgba(255,255,255,0.12);position:relative;transition:.2s;}
+  .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#8fa6c8;transition:.2s;}
+  .toggle.on .sw{background:rgba(110,199,255,0.45);}
+  .toggle.on .sw::after{left:16px;background:#eaf6ff;box-shadow:0 0 8px var(--accent);}
+
+  /* ---------- 行星列表 ---------- */
+  #bodies{
+    position:absolute;left:22px;top:520px;width:238px;max-height:calc(100vh - 560px);
+    padding:14px 12px;z-index:10;pointer-events:auto;overflow-y:auto;
+  }
+  #bodies::-webkit-scrollbar{width:5px;}
+  #bodies::-webkit-scrollbar-thumb{background:rgba(120,180,255,0.25);border-radius:5px;}
+  .body-item{
+    display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;
+    cursor:pointer;transition:.15s;font-size:12px;
+  }
+  .body-item:hover{background:rgba(110,199,255,0.1);}
+  .body-item.sel{background:rgba(110,199,255,0.2);}
+  .dot{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor;}
+
+  /* ---------- 信息卡 ---------- */
+  #info{
+    position:absolute;right:22px;bottom:22px;width:300px;padding:20px;
+    z-index:10;pointer-events:auto;transition:.3s;
+  }
+  #info.hidden{opacity:0;transform:translateY(20px);pointer-events:none;}
+  #info .name{font-size:22px;font-weight:600;color:#fff;letter-spacing:1px;}
+  #info .en{font-size:11px;color:var(--muted);letter-spacing:3px;margin-top:2px;text-transform:uppercase;}
+  #info .desc{font-size:12px;line-height:1.7;color:#b9cae6;margin:14px 0;}
+  #info .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+  #info .cell{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;}
+  #info .cell .k{font-size:10px;color:var(--muted);}
+  #info .cell .v{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:3px;}
+  #info .close{position:absolute;top:14px;right:14px;font-size:16px;color:var(--muted);cursor:pointer;line-height:1;}
+  #info .close:hover{color:#fff;}
+
+  /* ---------- 底部提示 ---------- */
+  #hint{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    font-size:11px;color:rgba(180,200,235,0.55);letter-spacing:1px;z-index:10;
+    pointer-events:none;text-align:center;
+  }
+  #hint b{color:rgba(200,225,255,0.85);font-weight:500;}
+
+  /* ---------- 标签 ---------- */
+  .label{
+    position:absolute;transform:translate(-50%,-50%);font-size:11px;color:#cfe2ff;
+    letter-spacing:1px;pointer-events:none;text-shadow:0 0 6px #000,0 0 3px #000;
+    z-index:5;white-space:nowrap;transition:opacity .2s;
+  }
+  .label::before{content:"";position:absolute;left:-9px;top:50%;width:5px;height:1px;background:rgba(160,200,255,0.6);}
+
+  /* ---------- 加载 ---------- */
+  #loading{
+    position:absolute;inset:0;z-index:100;background:#01030a;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+    transition:opacity .8s;
+  }
+  #loading .ring{
+    width:54px;height:54px;border-radius:50%;
+    border:2px solid rgba(110,199,255,0.15);border-top-color:var(--accent);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #loading .t{font-size:12px;letter-spacing:3px;color:var(--muted);}
+  #loading.done{opacity:0;pointer-events:none;}
+
+  @media (max-width:820px){
+    #controls{top:80px;width:200px;padding:14px;}
+    #bodies{display:none;}
+    #info{width:250px;right:12px;bottom:12px;}
+    #topbar h1{font-size:15px;}
+    #hint{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="topbar">
+  <h1>太阳系 · SOLAR SYSTEM<small>REAL-TIME ORBITAL SIMULATION · J2000 EPOCH</small></h1>
+  <div id="clock">
+    <div class="date" id="dateText">2000-01-01</div>
+    <div class="sub" id="speedText">流速 20 天 / 秒</div>
+  </div>
+</div>
+
+<div id="controls" class="panel">
+  <h2>时间控制 · Time</h2>
+  <div class="btn-grid three">
+    <button id="btnReverse">◀◀</button>
+    <button id="btnPlay" class="active">⏸ 暂停</button>
+    <button id="btnForward">▶▶</button>
+  </div>
+  <div class="divider"></div>
+  <div class="row"><span class="lbl">模拟流速</span><span class="val" id="speedVal">20 天/秒</span></div>
+  <input type="range" id="speed" min="0" max="100" value="55" />
+  <div class="divider"></div>
+  <h2>视图 · View</h2>
+  <div class="btn-grid">
+    <button id="btnOverview">全景</button>
+    <button id="btnInner">内行星</button>
+    <button id="btnFollow">跟随天体</button>
+    <button id="btnReset">重置时间</button>
+  </div>
+  <div class="divider"></div>
+  <div class="toggle on" id="tgOrbit"><span>显示轨道</span><span class="sw"></span></div>
+  <div class="toggle on" id="tgLabel"><span>天体标签</span><span class="sw"></span></div>
+  <div class="toggle on" id="tgStars"><span>星空背景</span><span class="sw"></span></div>
+  <div class="toggle on" id="tgBelt"><span>小行星带</span><span class="sw"></span></div>
+  <div class="toggle" id="tgReal"><span>科学比例（真实大小）</span><span class="sw"></span></div>
+</div>
+
+<div id="bodies" class="panel">
+  <h2>天体 · Celestial Bodies</h2>
+  <div id="bodyList"></div>
+</div>
+
+<div id="info" class="panel hidden">
+  <div class="close" id="infoClose">×</div>
+  <div class="name" id="infoName">地球</div>
+  <div class="en" id="infoEn">Earth</div>
+  <div class="desc" id="infoDesc"></div>
+  <div class="grid" id="infoGrid"></div>
+</div>
+
+<div id="hint"><b>拖拽</b> 旋转视角 &nbsp;·&nbsp; <b>滚轮</b> 缩放 &nbsp;·&nbsp; <b>点击天体</b> 查看资料并聚焦</div>
+
+<div id="loading"><div class="ring"></div><div class="t">正在构建太阳系 · 生成天体纹理…</div></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ============================================================
+   0. 常量与工具
+   ============================================================ */
+const AU = 20;                       // 1 天文单位对应的场景长度
+const DEG = Math.PI / 180;
+const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+const lerp = (a,b,t)=>a+(b-a)*t;
+
+/* ============================================================
+   1. 真实轨道要素 (J2000) + 物理参数
+   a:半长轴(AU) e:偏心率 i:倾角(°) Ω:升交点黄经(°) varpi:近日点黄经(°)
+   M0:J2000平近点角(°) period:恒星轨道周期(年)
+   radius:赤道半径(km) rot:自转周期(小时,负=逆行) tilt:轴倾角(°)
+   ============================================================ */
+const PLANETS = [
+  { name:'水星', en:'Mercury', color:'#9c9186',
+    a:0.38709927,e:0.20563593,i:7.00497902,Om:48.33076593,varpi:77.45779628,M0:252.25032350,period:0.2408467,
+    radius:2439.7,rot:1407.6,tilt:0.034,vr:0.55,
+    desc:'距太阳最近、体积最小的行星。轨道偏心率在八大行星中最大，昼夜温差极端，表面布满陨石坑。' },
+
+  { name:'金星', en:'Venus', color:'#d9b26f',
+    a:0.72333566,e:0.00677672,i:3.39467605,Om:76.67984255,varpi:131.60246718,M0:181.97909950,period:0.61519726,
+    radius:6051.8,rot:-5832.5,tilt:177.36,vr:0.95,
+    desc:'被浓密二氧化碳大气与硫酸云包裹的炽热世界，温室效应使地表温度高达约465°C，是太阳系最热的行星。' },
+
+  { name:'地球', en:'Earth', color:'#4a90d9',
+    a:1.00000261,e:0.01671123,i:-0.00001531,Om:-11.26064,varpi:102.93768193,M0:100.46457166,period:1.0000174,
+    radius:6371.0,rot:23.9345,tilt:23.4393,vr:1.0,
+    desc:'我们共同的家园。目前已知唯一存在生命的天体，表面约71%被液态水覆盖，磁场与大气层 Shield 着生命。' },
+
+  { name:'火星', en:'Mars', color:'#c1502e',
+    a:1.52371034,e:0.09339410,i:1.84969142,Om:49.55953891,varpi:-23.94362959,M0:-4.55343205,period:1.8808158,
+    radius:3389.5,rot:24.6229,tilt:25.19,vr:0.72,
+    desc:'红色星球。表面富含氧化铁，拥有太阳系最高的火山奥林帕斯山和巨大的水手号峡谷，是人类探测的热点。' },
+
+  { name:'木星', en:'Jupiter', color:'#d3a373',
+    a:5.20288700,e:0.04838624,i:1.30439695,Om:100.47390909,varpi:14.72847983,M0:34.39644051,period:11.862615,
+    radius:69911,rot:9.925,tilt:3.13,vr:3.3,
+    desc:'太阳系最大的行星，质量超过其余行星总和的2.5倍。大红斑是一场持续数百年的巨型反气旋风暴。' },
+
+  { name:'土星', en:'Saturn', color:'#e0c185',
+    a:9.53667594,e:0.05386179,i:2.48599187,Om:113.66242448,varpi:92.59887831,M0:49.95424423,period:29.447498,
+    radius:58232,rot:10.656,tilt:26.73,vr:2.8,
+    desc:'以壮观的行星环闻名。环主要由无数冰粒与岩屑组成，厚度却往往不足百米，是太阳系最轻盈的行星。' },
+
+  { name:'天王星', en:'Uranus', color:'#a7d8e0',
+    a:19.18916464,e:0.04725744,i:0.77263783,Om:74.01692503,varpi:170.95427630,M0:313.23810451,period:84.016846,
+    radius:25362,rot:-17.24,tilt:97.77,vr:1.9,
+    desc:'一颗"躺着自转"的冰巨星，轴倾角高达98°，因此拥有长达42年的极昼与极夜。大气中的甲烷赋予它青蓝色泽。' },
+
+  { name:'海王星', en:'Neptune', color:'#3f66c9',
+    a:30.06992276,e:0.00859048,i:1.77004347,Om:131.78422574,varpi:44.96476227,M0:-55.12002969,period:164.79132,
+    radius:24622,rot:16.11,tilt:28.32,vr:1.85,
+    desc:'最遥远的行星。深邃的蓝色源自大气中的甲烷，拥有太阳系最猛烈的风暴，风速可超过2000公里/小时。' },
+];
+
+/* ============================================================
+   2. 程序化噪声 (3D value noise + fbm)
+   ============================================================ */
+function hash3(x,y,z){
+  let h = (x*374761393 + y*668265263 + z*1274126177) | 0;
+  h = (h ^ (h>>13)) * 1274126177 | 0;
+  return ((h ^ (h>>16)) >>> 0) / 4294967295;
+}
+function vnoise3(x,y,z){
+  const X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);
+  const xf=x-X,yf=y-Y,zf=z-Z;
+  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+  const c000=hash3(X,Y,Z),c100=hash3(X+1,Y,Z),c010=hash3(X,Y+1,Z),c110=hash3(X+1,Y+1,Z);
+  const c001=hash3(X,Y,Z+1),c101=hash3(X+1,Y,Z+1),c011=hash3(X,Y+1,Z+1),c111=hash3(X+1,Y+1,Z+1);
+  const x00=lerp(c000,c100,u),x10=lerp(c010,c110,u),x01=lerp(c001,c101,u),x11=lerp(c011,c111,u);
+  return lerp(lerp(x00,x10,v),lerp(x01,x11,v),w);
+}
+function fbm(x,y,z,oct=5){
+  let a=0.5,f=1,s=0,n=0;
+  for(let i=0;i<oct;i++){ s+=a*vnoise3(x*f,y*f,z*f); n+=a; a*=0.5; f*=2; }
+  return s/n;
+}
+function mix(c1,c2,t){ return [lerp(c1[0],c2[0],t),lerp(c1[1],c2[1],t),lerp(c1[2],c2[2],t)]; }
+function smoothstep(e0,e1,x){ const t=clamp((x-e0)/(e1-e0),0,1); return t*t*(3-2*t); }
+
+/* 由等距柱状投影的像素坐标返回球面方向 */
+function sphereDir(u,v){
+  const phi=v*Math.PI, theta=u*2*Math.PI;
+  return [Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta)];
+}
+
+/* ============================================================
+   3. 行星纹理生成
+   ============================================================ */
+function makeTexture(type,W,H){
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  const img=ctx.createImageData(W,H), d=img.data;
+
+  for(let py=0;py<H;py++){
+    const v=(py+0.5)/H;
+    for(let px=0;px<W;px++){
+      const u=(px+0.5)/W;
+      const [sx,sy,sz]=sphereDir(u,v);
+      let c=[0.5,0.5,0.5], alpha=255;
+
+      if(type==='rocky' || type==='moon'){
+        const n=fbm(sx*3+5,sy*3+9,sz*3+2,6);
+        const fine=fbm(sx*14,sy*14,sz*14,3);
+        c=mix([0.30,0.28,0.26],[0.62,0.58,0.53],clamp(n*0.85+fine*0.25,0,1));
+      }
+      else if(type==='mercury'){
+        const n=fbm(sx*3+1,sy*3+3,sz*3+7,6);
+        const fine=fbm(sx*18,sy*18,sz*18,3);
+        c=mix([0.32,0.30,0.28],[0.60,0.57,0.52],clamp(n+fine*0.18,0,1));
+      }
+      else if(type==='venus'){
+        const n=fbm(sx*2.2+4,sy*2.2+8,sz*2.2+1,6);
+        const sw=fbm(sx*5+sy*2,sy*5,sz*5,4);
+        c=mix([0.72,0.55,0.30],[0.93,0.82,0.55],clamp(n*0.8+sw*0.35,0,1));
+      }
+      else if(type==='earth'){
+        const base=fbm(sx*2.1+3,sy*2.1+7,sz*2.1+1,6);
+        const detail=fbm(sx*8,sy*8,sz*8,4);
+        const land=base+detail*0.12;
+        if(land>0.515){
+          const h=(land-0.515)/0.485;
+          c=mix([0.16,0.36,0.14],[0.42,0.36,0.20],clamp(h*1.6,0,1));
+          if(h>0.62) c=mix(c,[0.78,0.78,0.80],(h-0.62)/0.38);
+        }else{
+          const dep=land/0.515;
+          c=mix([0.02,0.09,0.28],[0.06,0.32,0.52],clamp(dep,0,1));
+        }
+        const ice=smoothstep(0.80,0.93,Math.abs(sy));
+        c=mix(c,[0.92,0.95,0.98],ice);
+      }
+      else if(type==='mars'){
+        const n=fbm(sx*3+2,sy*3+6,sz*3+4,6);
+        const fine=fbm(sx*12,sy*12,sz*12,3);
+        c=mix([0.42,0.16,0.08],[0.78,0.40,0.22],clamp(n+fine*0.15,0,1));
+        const dark=fbm(sx*2+9,sy*2+2,sz*2+5,3);
+        c=mix(c,[0.30,0.13,0.09],smoothstep(0.55,0.75,dark)*0.45);
+        const ice=smoothstep(0.88,0.97,Math.abs(sy));
+        c=mix(c,[0.92,0.90,0.86],ice);
+      }
+      else if(type==='gas'){
+        const lat=sy;
+        const turb=fbm(sx*2.5+1,sy*1.2+3,sz*2.5+2,5);
+        const bands=Math.sin(lat*34 + turb*3.5)*0.5+0.5;
+        const fine=fbm(sx*9,sy*3,sz*9,3);
+        const t=clamp(bands*0.7+fine*0.3,0,1);
+        const pal=[
+          [0.55,0.35,0.22],[0.78,0.60,0.40],[0.90,0.80,0.62],
+          [0.70,0.48,0.30],[0.85,0.72,0.52]
+        ];
+        c=mix(pal[0],pal[2],t);
+        c=mix(c,pal[3],smoothstep(0.3,0.6,fine)*0.5);
+        // 大红斑
+        const redCenter=[Math.cos(-0.6),Math.sin(-0.38),Math.sin(-0.6)];
+        const dot=sx*redCenter[0]+sy*redCenter[1]+sz*redCenter[2];
+        if(dot>0.965){
+          const e=smoothstep(0.965,0.99,dot);
+          c=mix(c,[0.72,0.24,0.13],e*0.9);
+        }
+      }
+      else if(type==='saturn'){
+        const lat=sy;
+        const turb=fbm(sx*2+1,sy*1.5+3,sz*2+2,5);
+        const bands=Math.sin(lat*26+turb*2.2)*0.5+0.5;
+        const t=clamp(bands*0.6+turb*0.4,0,1);
+        c=mix([0.66,0.54,0.34],[0.93,0.85,0.62],t);
+      }
+      else if(type==='icegiant'){
+        const lat=Math.abs(sy);
+        const turb=fbm(sx*2+4,sy*2+1,sz*2+6,4);
+        const bands=Math.sin(lat*18+turb*2)*0.5+0.5;
+        c=mix([0.42,0.70,0.78],[0.68,0.87,0.90],clamp(bands*0.5+turb*0.5,0,1));
+      }
+      else if(type==='neptune'){
+        const lat=Math.abs(sy);
+        const turb=fbm(sx*2+3,sy*2+5,sz*2+1,5);
+        const bands=Math.sin(lat*16+turb*2)*0.5+0.5;
+        c=mix([0.10,0.22,0.62],[0.28,0.46,0.86],clamp(bands*0.45+turb*0.55,0,1));
+        const spot=fbm(sx*4+8,sy*4,sz*4,3);
+        if(spot>0.68) c=mix(c,[0.05,0.12,0.40],(spot-0.68)*2.5);
+      }
+      else if(type==='cloud'){
+        const n=fbm(sx*3.2+7,sy*3.2+2,sz*3.2+9,6);
+        const a=smoothstep(0.48,0.68,n);
+        c=[1,1,1]; alpha=a*235;
+      }
+
+      const idx=(py*W+px)*4;
+      d[idx]=clamp(c[0]*255,0,255);
+      d[idx+1]=clamp(c[1]*255,0,255);
+      d[idx+2]=clamp(c[2]*255,0,255);
+      d[idx+3]=alpha;
+    }
+  }
+  ctx.putImageData(img,0,0);
+
+  // 陨石坑叠加
+  if(type==='rocky'||type==='mercury'||type==='moon'){
+    const count=type==='moon'?260:170;
+    for(let i=0;i<count;i++){
+      const x=Math.random()*W, y=Math.random()*H;
+      const r=2+Math.random()*Math.random()*W*0.022;
+      const g=ctx.createRadialGradient(x-r*0.25,y-r*0.25,r*0.1,x,y,r);
+      g.addColorStop(0,'rgba(255,250,240,0.20)');
+      g.addColorStop(0.65,'rgba(90,80,72,0.18)');
+      g.addColorStop(1,'rgba(255,245,230,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    }
+  }
+  const tex=new THREE.CanvasTexture(cv);
+  tex.colorSpace=THREE.SRGBColorSpace;
+  tex.anisotropy=8;
+  return tex;
+}
+
+/* ============================================================
+   4. 场景 / 相机 / 渲染器
+   ============================================================ */
+const app=document.getElementById('app');
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,0.1,12000);
+camera.position.set(0,190,300);
+
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+app.appendChild(renderer.domElement);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=0.06;
+controls.minDistance=8;
+controls.maxDistance=4000;
+controls.rotateSpeed=0.55;
+controls.zoomSpeed=1.1;
+
+// 光照：太阳点光源（无衰减，保证远处行星可见）+ 极弱环境光
+scene.add(new THREE.AmbientLight(0x334466,0.22));
+const sunLight=new THREE.PointLight(0xfff2dd,3.2,0,0);
+scene.add(sunLight);
+
+/* ============================================================
+   5. 太阳（自定义 shader + 光晕 + 星芒）
+   ============================================================ */
+const sunGroup=new THREE.Group(); scene.add(sunGroup);
+const SUN_VS=`
+  varying vec3 vPos; varying vec3 vNormal; varying vec3 vView;
+  void main(){
+    vPos=position; vNormal=normalize(normalMatrix*normal);
+    vec4 mv=modelViewMatrix*vec4(position,1.0);
+    vView=normalize(-mv.xyz);
+    gl_Position=projectionMatrix*mv;
+  }`;
+const SUN_FS=`
+  uniform float uTime; varying vec3 vPos; varying vec3 vNormal; varying vec3 vView;
+  float h(vec3 p){ p=fract(p*0.3183099+vec3(0.1,0.2,0.3)); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+  float n3(vec3 x){ vec3 i=floor(x),f=fract(x); f=f*f*(3.0-2.0*f);
+    return mix(mix(mix(h(i+vec3(0,0,0)),h(i+vec3(1,0,0)),f.x),
+                   mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),
+               mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),
+                   mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z); }
+  float fbm(vec3 p){ float a=0.5,s=0.0; for(int i=0;i<5;i++){ s+=a*n3(p); p*=2.02; a*=0.5;} return s; }
+  void main(){
+    vec3 p=normalize(vPos)*3.0;
+    float t=uTime*0.06;
+    float n=fbm(p+vec3(0.0,t,0.0));
+    float n2=fbm(p*2.3-vec3(t*0.8,0.0,t*0.5));
+    float v=n*0.62+n2*0.38;
+    vec3 col=mix(vec3(1.0,0.30,0.03),vec3(1.0,0.75,0.20),smoothstep(0.30,0.62,v));
+    col=mix(col,vec3(1.0,0.98,0.85),smoothstep(0.60,0.88,v));
+    float fres=pow(1.0-max(dot(vNormal,vView),0.0),2.2);
+    col+=vec3(1.0,0.45,0.10)*fres*1.8;
+    gl_FragColor=vec4(col,1.0);
+  }`;
+const sunMat=new THREE.ShaderMaterial({
+  uniforms:{uTime:{value:0}}, vertexShader:SUN_VS, fragmentShader:SUN_FS
+});
+const sunMesh=new THREE.Mesh(new THREE.SphereGeometry(6,64,48),sunMat);
+sunGroup.add(sunMesh);
+
+function glowTexture(){
+  const c=document.createElement('canvas'); c.width=c.height=256;
+  const x=c.getContext('2d');
+  const g=x.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(255,245,200,1)');
+  g.addColorStop(0.12,'rgba(255,196,90,0.85)');
+  g.addColorStop(0.35,'rgba(255,120,30,0.30)');
+  g.addColorStop(0.65,'rgba(255,80,10,0.07)');
+  g.addColorStop(1,'rgba(255,60,0,0)');
+  x.fillStyle=g; x.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(c);
+}
+const glowTex=glowTexture();
+const sunGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffd9a0,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}));
+sunGlow.scale.set(26,26,1); sunGroup.add(sunGlow);
+
+function raysTexture(){
+  const c=document.createElement('canvas'); c.width=c.height=512;
+  const x=c.getContext('2d'); x.translate(256,256);
+  const g=x.createRadialGradient(0,0,10,0,0,250);
+  g.addColorStop(0,'rgba(255,180,80,0.55)'); g.addColorStop(1,'rgba(255,120,20,0)');
+  x.fillStyle=g; x.beginPath(); x.arc(0,0,250,0,Math.PI*2); x.fill();
+  for(let i=0;i<24;i++){
+    x.save(); x.rotate(i/24*Math.PI*2);
+    const len=120+Math.random()*130;
+    const rg=x.createLinearGradient(0,0,len,0);
+    rg.addColorStop(0,'rgba(255,220,150,0.5)'); rg.addColorStop(1,'rgba(255,150,50,0)');
+    x.fillStyle=rg; x.beginPath(); x.moveTo(0,-3); x.lineTo(len,-1); x.lineTo(len,1); x.lineTo(0,3); x.fill();
+    x.restore();
+  }
+  return new THREE.CanvasTexture(c);
+}
+const sunRays=new THREE.Sprite(new THREE.SpriteMaterial({map:raysTexture(),color:0xffe0a0,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.45}));
+sunRays.scale.set(90,90,1); sunGroup.add(sunRays);
+
+/* ============================================================
+   6. 开普勒轨道求解
+   ============================================================ */
+function solveKepler(M,e){
+  M=M%(2*Math.PI); if(M<0)M+=2*Math.PI;
+  let E=M;
+  for(let k=0;k<8;k++){ E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E)); }
+  return E;
+}
+const _pos=new THREE.Vector3();
+function orbitalPosition(p, days, out){
+  const n=2*Math.PI/(p.period*365.25);
+  const M=p.M0*DEG + n*days;
+  const E=solveKepler(M,p.e);
+  const nu=2*Math.atan2(Math.sqrt(1+p.e)*Math.sin(E/2),Math.sqrt(1-p.e)*Math.cos(E/2));
+  const r=p.a*(1-p.e*Math.cos(E));
+  const xp=r*Math.cos(nu), yp=r*Math.sin(nu);
+  const Om=p.Om*DEG, w=(p.varpi-p.Om)*DEG, inc=p.i*DEG;
+  const cO=Math.cos(Om),sO=Math.sin(Om),cw=Math.cos(w),sw=Math.sin(w),ci=Math.cos(inc),si=Math.sin(inc);
+  const X=(cO*cw-sO*sw*ci)*xp+(-cO*sw-sO*cw*ci)*yp;
+  const Y=(sO*cw+cO*sw*ci)*xp+(-sO*sw+cO*cw*ci)*yp;
+  const Z=(sw*si)*xp+(cw*si)*yp;
+  out.set(X*AU, Z*AU, -Y*AU); // 黄道法线→场景Y轴
+  return out;
+}
+
+function orbitLine(p,color){
+  const pts=[], N=512;
+  for(let k=0;k<=N;k++){
+    const E=k/N*2*Math.PI;
+    const nu=2*Math.atan2(Math.sqrt(1+p.e)*Math.sin(E/2),Math.sqrt(1-p.e)*Math.cos(E/2));
+    const r=p.a*(1-p.e*Math.cos(E));
+    const xp=r*Math.cos(nu),yp=r*Math.sin(nu);
+    const Om=p.Om*DEG,w=(p.varpi-p.Om)*DEG,inc=p.i*DEG;
+    const cO=Math.cos(Om),sO=Math.sin(Om),cw=Math.cos(w),sw=Math.sin(w),ci=Math.cos(inc),si=Math.sin(inc);
+    const X=(cO*cw-sO*sw*ci)*xp+(-cO*sw-sO*cw*ci)*yp;
+    const Y=(sO*cw+cO*sw*ci)*xp+(-sO*sw+cO*cw*ci)*yp;
+    const Z=(sw*si)*xp+(cw*si)*yp;
+    pts.push(new THREE.Vector3(X*AU,Z*AU,-Y*AU));
+  }
+  const g=new THREE.BufferGeometry().setFromPoints(pts);
+  const m=new THREE.LineBasicMaterial({color:color,transparent:true,opacity:0.28,depthWrite:false});
+  return new THREE.Line(g,m);
+}
+
+/* ============================================================
+   7. 大气辉光 shader
+   ============================================================ */
+function atmosphere(color,power=3.0){
+  return new THREE.ShaderMaterial({
+    uniforms:{uColor:{value:new THREE.Color(color)},uPower:{value:power}},
+    vertexShader:`varying vec3 vN; varying vec3 vV;
+      void main(){ vN=normalize(normalMatrix*normal); vec4 mv=modelViewMatrix*vec4(position,1.0); vV=normalize(-mv.xyz);
+      gl_Position=projectionMatrix*mv; }`,
+    fragmentShader:`uniform vec3 uColor; uniform float uPower; varying vec3 vN; varying vec3 vV;
+      void main(){ float f=pow(1.0-max(dot(vN,vV),0.0),uPower); gl_FragColor=vec4(uColor,f*0.9); }`,
+    blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,side:THREE.BackSide
+  });
+}
+
+/* ============================================================
+   8. 构建行星
+   ============================================================ */
+const texTypes=['mercury','venus','earth','mars','gas','saturn','icegiant','neptune'];
+const planetObjs=[];
+const labels=[];
+const labelLayer=document.body;
+
+function makeLabel(text,color){
+  const el=document.createElement('div'); el.className='label'; el.textContent=text;
+  el.style.color=color; labelLayer.appendChild(el); return el;
+}
+
+PLANETS.forEach((p,idx)=>{
+  const anchor=new THREE.Group(); scene.add(anchor);
+  const tilt=new THREE.Group(); tilt.rotation.z=p.tilt*DEG; anchor.add(tilt);
+
+  const hi=(idx===2||idx===4);
+  const tex=makeTexture(texTypes[idx],hi?768:512,hi?384:256);
+  const mat=new THREE.MeshStandardMaterial({map:tex,roughness:0.92,metalness:0.0});
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),mat);
+  mesh.scale.setScalar(p.vr);
+  mesh.rotation.y=Math.random()*Math.PI*2;
+  mesh.userData.planet=p; mesh.userData.idx=idx;
+  tilt.add(mesh);
+
+  // 大气
+  const atmoColor=p.en==='Earth'?'#5aa0ff':p.en==='Venus'?'#e8c98a':p.en==='Neptune'?'#5a7fe0':p.color;
+  const atmo=new THREE.Mesh(new THREE.SphereGeometry(p.vr*1.06,48,32),atmosphere(atmoColor,3.2));
+  tilt.add(atmo);
+
+  // 云层（地球）
+  if(idx===2){
+    const cloudTex=makeTexture('cloud',768,384);
+    const clouds=new THREE.Mesh(new THREE.SphereGeometry(p.vr*1.015,48,32),
+      new THREE.MeshStandardMaterial({map:cloudTex,transparent:true,opacity:0.85,depthWrite:false,roughness:1}));
+    tilt.add(clouds); p._clouds=clouds;
+  }
+
+  // 土星环
+  if(idx===5){
+    const ring=makeRing(p.vr*1.25,p.vr*2.35);
+    ring.rotation.x=-Math.PI/2; tilt.add(ring);
+  }
+  // 木星暗环
+  if(idx===4){
+    const ring=makeRing(p.vr*1.4,p.vr*1.8,true);
+    ring.rotation.x=-Math.PI/2; tilt.add(ring);
+  }
+
+  // 卫星
+  const moons=[];
+  if(idx===2) moons.push(makeMoon(0.27,2.6,'#cfcfcf',27.32,'月球'));
+  if(idx===4){
+    moons.push(makeMoon(0.14,4.0,'#d9c9a3',1.769,'木卫一'));
+    moons.push(makeMoon(0.13,5.2,'#e6dcc0',3.551,'木卫二'));
+    moons.push(makeMoon(0.20,6.7,'#c4b49a',7.155,'木卫三'));
+    moons.push(makeMoon(0.18,8.6,'#b9a98f',16.689,'木卫四'));
+  }
+  if(idx===5){ moons.push(makeMoon(0.20,7.0,'#d9b98a',15.945,'土卫六')); }
+  if(idx===3){
+    moons.push(makeMoon(0.07,2.0,'#9a8f80',0.319,'火卫一'));
+    moons.push(makeMoon(0.05,3.0,'#8a8278',1.263,'火卫二'));
+  }
+  moons.forEach(m=>anchor.add(m.group));
+
+  const line=orbitLine(p,p.color); scene.add(line);
+  const label=makeLabel(p.name,p.color);
+  labels.push({el:label,anchor:mesh,radius:p.vr});
+
+  planetObjs.push({data:p,anchor,tilt,mesh,atmo,line,moons});
+});
+
+function makeMoon(radius,dist,color,period,name){
+  const g=new THREE.Group();
+  const m=new THREE.Mesh(new THREE.SphereGeometry(radius,20,14),
+    new THREE.MeshStandardMaterial({color:color,roughness:1}));
+  g.add(m);
+  return {group:g,mesh:m,dist,period,name,angle:Math.random()*Math.PI*2};
+}
+
+function makeRing(inner,outer,faint=false){
+  const geo=new THREE.RingGeometry(inner,outer,128,1);
+  const pos=geo.attributes.position; const uv=geo.attributes.uv;
+  const vR=new Float32Array(pos.count);
+  for(let i=0;i<pos.count;i++){
+    vR[i]=(Math.hypot(pos.getX(i),pos.getY(i))-inner)/(outer-inner);
+    uv.setXY(i,vR[i],0.5);
+  }
+  geo.setAttribute('aR',new THREE.BufferAttribute(vR,1));
+  const mat=new THREE.ShaderMaterial({
+    uniforms:{uFaint:{value:faint?0.35:1.0}},
+    vertexShader:`attribute float aR; varying float vR; varying vec2 vUv;
+      void main(){ vR=aR; vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} `,
+    fragmentShader:`varying float vR; uniform float uFaint;
+      float h(float x){return fract(sin(x*127.1)*43758.5453);}
+      void main(){
+        float r=vR;
+        float gaps=1.0;
+        if(r>0.60&&r<0.66) gaps=0.05;      // 卡西尼缝
+        if(r>0.30&&r<0.34) gaps*=0.35;
+        float bands=0.55+0.45*sin(r*90.0+h(floor(r*140.0))*3.0);
+        float edge=smoothstep(0.0,0.05,r)*smoothstep(1.0,0.93,r);
+        vec3 col=mix(vec3(0.62,0.52,0.36),vec3(0.92,0.84,0.64),bands);
+        float a=gaps*edge*(0.55+0.45*bands)*uFaint;
+        gl_FragColor=vec4(col,a);
+      }`,
+    transparent:true,side:THREE.DoubleSide,depthWrite:false
+  });
+  return new THREE.Mesh(geo,mat);
+}
+
+/* ============================================================
+   9. 小行星带 + 柯伊伯带 (开普勒第三定律旋转)
+   ============================================================ */
+function makeBelt(count,rMin,rMax,ySpread,color,size){
+  const geo=new THREE.BufferGeometry();
+  const pos=new Float32Array(count*3), rad=new Float32Array(count), ang=new Float32Array(count), sz=new Float32Array(count);
+  for(let i=0;i<count;i++){
+    const r=rMin+Math.random()*(rMax-rMin);
+    rad[i]=r; ang[i]=Math.random()*Math.PI*2;
+    pos[i*3]=0; pos[i*3+1]=(Math.random()-0.5)*ySpread; pos[i*3+2]=0;
+    sz[i]=size*(0.5+Math.random());
+  }
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('aRad',new THREE.BufferAttribute(rad,1));
+  geo.setAttribute('aAng',new THREE.BufferAttribute(ang,1));
+  geo.setAttribute('aSize',new THREE.BufferAttribute(sz,1));
+  const mat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0},uColor:{value:new THREE.Color(color)}},
+    vertexShader:`attribute float aRad; attribute float aAng; attribute float aSize;
+      uniform float uTime; varying float vA;
+      void main(){
+        float T=pow(aRad,1.5);
+        float a=aAng+6.2831853*uTime/T;
+        vec3 p=vec3(cos(a)*aRad*20.0,position.y,sin(a)*aRad*20.0);
+        vec4 mv=modelViewMatrix*vec4(p,1.0);
+        gl_PointSize=aSize*(320.0/-mv.z);
+        gl_Position=projectionMatrix*mv;
+        vA=0.5+0.5*sin(aAng*13.0);
+      }`,
+    fragmentShader:`uniform vec3 uColor; varying float vA;
+      void main(){ vec2 d=gl_PointCoord-0.5; float r=length(d); if(r>0.5)discard;
+        float a=smoothstep(0.5,0.0,r); gl_FragColor=vec4(uColor*(0.6+vA*0.6),a*0.85); }`,
+    transparent:true,depthWrite:false,blending:THREE.AdditiveBlending
+  });
+  return new THREE.Points(geo,mat);
+}
+const asteroidBelt=makeBelt(4200,2.1,3.3,2.2,'#9a8b76',1.6);
+const kuiperBelt=makeBelt(1800,42,52,4,'#6f86a8',1.3);
+scene.add(asteroidBelt,kuiperBelt);
+
+/* ============================================================
+   10. 星空 + 银河 + 星云
+   ============================================================ */
+const starGroup=new THREE.Group(); scene.add(starGroup);
+function makeStars(count,galaxy=false){
+  const geo=new THREE.BufferGeometry();
+  const pos=new Float32Array(count*3),col=new Float32Array(count*3),size=new Float32Array(count),phase=new Float32Array(count);
+  for(let i=0;i<count;i++){
+    let x,y,z;
+    if(galaxy){
+      // 沿倾斜带的密集星
+      const a=Math.random()*Math.PI*2, spread=(Math.random()-0.5)*0.45;
+      const R=1200;
+      x=Math.cos(a)*R; z=Math.sin(a)*R; y=spread*R;
+      // 绕X轴倾斜
+      const t=0.5; const yy=y*Math.cos(t)-z*Math.sin(t), zz=y*Math.sin(t)+z*Math.cos(t);
+      y=yy;z=zz;
+    }else{
+      const u=Math.random()*2-1, th=Math.random()*Math.PI*2, s=Math.sqrt(1-u*u), R=1300+Math.random()*400;
+      x=R*s*Math.cos(th); y=R*u; z=R*s*Math.sin(th);
+    }
+    pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;
+    const temp=Math.random();
+    const c = temp<0.15?[0.65,0.78,1.0]: temp<0.4?[0.85,0.90,1.0]: temp<0.72?[1.0,0.97,0.90]:[1.0,0.82,0.62];
+    col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];
+    size[i]=(galaxy?0.7:0.8)+Math.random()*Math.random()*2.4;
+    phase[i]=Math.random();
+  }
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  geo.setAttribute('aSize',new THREE.BufferAttribute(size,1));
+  geo.setAttribute('aPhase',new THREE.BufferAttribute(phase,1));
+  const mat=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0}},
+    vertexShader:`attribute float aSize; attribute float aPhase; varying vec3 vC; varying float vP;
+      uniform float uTime;
+      void main(){ vC=color; vP=aPhase; vec4 mv=modelViewMatrix*vec4(position,1.0);
+        gl_PointSize=aSize*(900.0/-mv.z)*(1.0+0.15*sin(uTime*2.0+aPhase*30.0));
+        gl_Position=projectionMatrix*mv; }`,
+    fragmentShader:`varying vec3 vC; varying float vP; uniform float uTime;
+      void main(){ vec2 d=gl_PointCoord-0.5; float r=length(d); if(r>0.5)discard;
+        float core=smoothstep(0.5,0.0,r); float glow=pow(core,3.0);
+        float tw=0.78+0.22*sin(uTime*2.5+vP*20.0);
+        gl_FragColor=vec4(vC*(glow*1.8+core*0.5)*tw, core); }`,
+    transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true
+  });
+  return new THREE.Points(geo,mat);
+}
+const stars=makeStars(9000,false), galaxy=makeStars(3500,true);
+starGroup.add(stars,galaxy);
+
+function nebulaTexture(){
+  const c=document.createElement('canvas'); c.width=c.height=256;
+  const x=c.getContext('2d');
+  for(let i=0;i<70;i++){
+    const px=128+(Math.random()-0.5)*120, py=128+(Math.random()-0.5)*120;
+    const r=20+Math.random()*70;
+    const g=x.createRadialGradient(px,py,0,px,py,r);
+    const hue=Math.random()<0.5?'120,90,220':'40,120,200';
+    g.addColorStop(0,`rgba(${hue},0.05)`); g.addColorStop(1,`rgba(${hue},0)`);
+    x.fillStyle=g; x.fillRect(0,0,256,256);
+  }
+  return new THREE.CanvasTexture(c);
+}
+const nebulaTex=nebulaTexture();
+[[1400,500,-1600,0x6a4fd0,1200],[ -1700,-350,1200,0x3a7fd0,1400],[300,900,-2000,0xa04f90,1000]].forEach(n=>{
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:nebulaTex,color:n[3],blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.5}));
+  s.position.set(n[0],n[1],n[2]); s.scale.set(n[4],n[4],1); starGroup.add(s);
+});
+
+/* ============================================================
+   11. 哈雷彗星
+   ============================================================ */
+const comet={a:17.8,e:0.967,i:162.26,Om:58.42,varpi:111.33,M0:38.38,period:75.3};
+const cometGroup=new THREE.Group(); scene.add(cometGroup);
+const cometHead=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xaee6ff,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}));
+cometHead.scale.set(3.2,3.2,1); cometGroup.add(cometHead);
+const tailTex=(()=>{const c=document.createElement('canvas');c.width=256;c.height=32;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,256,0);g.addColorStop(0,'rgba(190,235,255,0.75)');g.addColorStop(1,'rgba(120,190,255,0)');
+  x.fillStyle=g;x.fillRect(0,0,256,32);return new THREE.CanvasTexture(c);})();
+const cometTail=new THREE.Sprite(new THREE.SpriteMaterial({map:tailTex,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0.8}));
+cometTail.scale.set(30,1.4,1); scene.add(cometTail);
+
+/* ============================================================
+   12. 后期处理 (Bloom)
+   ============================================================ */
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.95,0.62,0.62);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ============================================================
+   13. 时间 / 交互状态
+   ============================================================ */
+let simDays=0;
+let speed=20;            // 天/秒
+let direction=1;         // 1播放 / -1倒放
+let playing=true;
+let showLabels=true, follow=false, selected=null;
+let scientificScale=false;
+const clock=new THREE.Clock();
+
+const dateText=document.getElementById('dateText');
+const speedText=document.getElementById('speedText');
+const speedVal=document.getElementById('speedVal');
+function updateDate(){
+  const dt=new Date(J2000+simDays*86400000);
+  dateText.textContent=dt.toISOString().slice(0,10);
+}
+function setSpeed(v){
+  speed=v;
+  const label=v<1?v.toFixed(2):v<10?v.toFixed(1):Math.round(v);
+  speedVal.textContent=label+' 天/秒';
+  speedText.textContent='流速 '+label+' 天 / 秒';
+}
+document.getElementById('speed').addEventListener('input',e=>{
+  const t=e.target.value/100;
+  setSpeed(0.1*Math.pow(10000,t)); // 0.1 ~ 1000
+});
+setSpeed(0.1*Math.pow(10000,0.55));
+
+const btnPlay=document.getElementById('btnPlay');
+btnPlay.addEventListener('click',()=>{
+  playing=!playing;
+  btnPlay.textContent=playing?'⏸ 暂停':'▶ 播放';
+  btnPlay.classList.toggle('active',playing);
+  if(playing) direction=1;
+});
+document.getElementById('btnReverse').addEventListener('click',()=>{direction=-1;playing=true;btnPlay.textContent='▶ 播放';btnPlay.classList.remove('active');});
+document.getElementById('btnForward').addEventListener('click',()=>{direction=1;playing=true;btnPlay.textContent='⏸ 暂停';btnPlay.classList.add('active');});
+document.getElementById('btnReset').addEventListener('click',()=>{simDays=0;updateDate();});
+
+function flyTo(pos,dist){
+  const dir=camera.position.clone().sub(controls.target).normalize();
+  controls.target.copy(pos);
+  camera.position.copy(pos.clone().add(dir.multiplyScalar(dist)));
+}
+document.getElementById('btnOverview').addEventListener('click',()=>{follow=false;flyTo(new THREE.Vector3(),620);});
+document.getElementById('btnInner').addEventListener('click',()=>{follow=false;flyTo(new THREE.Vector3(),95);});
+const btnFollow=document.getElementById('btnFollow');
+btnFollow.addEventListener('click',()=>{
+  follow=!follow; btnFollow.classList.toggle('active',follow);
+  if(follow&&selected) flyTo(planetObjs[selected].anchor.position,planetObjs[selected].data.vr*8+6);
+});
+
+function bindToggle(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('click',()=>{ el.classList.toggle('on'); fn(el.classList.contains('on')); });
+}
+bindToggle('tgOrbit',v=>planetObjs.forEach(p=>p.line.visible=v));
+bindToggle('tgLabel',v=>{showLabels=v;labels.forEach(l=>l.el.style.display=v?'':'none');});
+bindToggle('tgStars',v=>starGroup.visible=v);
+bindToggle('tgBelt',v=>{asteroidBelt.visible=v;kuiperBelt.visible=v;cometGroup.visible=v;cometTail.visible=v;});
+bindToggle('tgReal',v=>{
+  scientificScale=v;
+  planetObjs.forEach(p=>{
+    const r=v? (p.data.radius/696000*6)*3 : p.data.vr;
+    p.mesh.scale.setScalar(r);
+    p.atmo.scale.setScalar(r/p.data.vr);
+    if(p.data._clouds) p.data._clouds.scale.setScalar(r/p.data.vr);
+  });
+  if(v) document.getElementById('hint').innerHTML='<b>科学比例</b>已开启：天体按真实相对大小缩放，因此会显得非常微小';
+  else document.getElementById('hint').innerHTML='<b>拖拽</b> 旋转视角 &nbsp;·&nbsp; <b>滚轮</b> 缩放 &nbsp;·&nbsp; <b>点击天体</b> 查看资料并聚焦';
+});
+
+/* 天体列表 */
+const bodyList=document.getElementById('bodyList');
+PLANETS.forEach((p,i)=>{
+  const it=document.createElement('div'); it.className='body-item'; it.dataset.i=i;
+  it.innerHTML=`<span class="dot" style="background:${p.color};color:${p.color}"></span><span>${p.name}</span><span style="margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:10px">${p.en}</span>`;
+  it.addEventListener('click',()=>selectPlanet(i,true));
+  bodyList.appendChild(it);
+});
+
+/* 信息卡 */
+const info=document.getElementById('info');
+function fmt(n){return n>=1e4?n.toLocaleString('en-US'):n.toFixed(n<10?2:1);}
+function selectPlanet(i,focus){
+  selected=i;
+  document.querySelectorAll('.body-item').forEach(e=>e.classList.toggle('sel',+e.dataset.i===i));
+  const p=PLANETS[i];
+  document.getElementById('infoName').textContent=p.name;
+  document.getElementById('infoEn').textContent=p.en;
+  document.getElementById('infoDesc').textContent=p.desc;
+  const dayAbs=Math.abs(p.rot);
+  const dayTxt=dayAbs>=48?(dayAbs/24).toFixed(1)+' 天':dayAbs.toFixed(1)+' 小时';
+  document.getElementById('infoGrid').innerHTML=`
+    <div class="cell"><div class="k">赤道半径</div><div class="v">${fmt(p.radius)} km</div></div>
+    <div class="cell"><div class="k">公转周期</div><div class="v">${p.period<2?(p.period*365.25).toFixed(0)+' 天':p.period.toFixed(1)+' 年'}</div></div>
+    <div class="cell"><div class="k">日距 (半长轴)</div><div class="v">${p.a.toFixed(2)} AU</div></div>
+    <div class="cell"><div class="k">自转周期</div><div class="v">${dayTxt}${p.rot<0?' ↺':''}</div></div>
+    <div class="cell"><div class="k">轨道偏心率</div><div class="v">${p.e.toFixed(4)}</div></div>
+    <div class="cell"><div class="k">轨道倾角</div><div class="v">${p.i.toFixed(2)}°</div></div>
+    <div class="cell"><div class="k">轴倾角</div><div class="v">${p.tilt.toFixed(2)}°</div></div>
+    <div class="cell"><div class="k">平均轨道速度</div><div class="v">${(29.78/Math.sqrt(p.a)).toFixed(1)} km/s</div></div>`;
+  info.classList.remove('hidden');
+  if(focus) flyTo(planetObjs[i].anchor.position,p.vr*8+8);
+}
+document.getElementById('infoClose').addEventListener('click',()=>{
+  info.classList.add('hidden'); selected=null; follow=false;
+  btnFollow.classList.remove('active');
+  document.querySelectorAll('.body-item').forEach(e=>e.classList.remove('sel'));
+});
+
+/* 点击拾取 */
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2(); let downXY=null;
+renderer.domElement.addEventListener('pointerdown',e=>downXY=[e.clientX,e.clientY]);
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!downXY) return;
+  if(Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1])>5) return;
+  pointer.x=(e.clientX/innerWidth)*2-1;
+  pointer.y=-(e.clientY/innerHeight)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  const meshes=planetObjs.map(p=>p.mesh);
+  const hits=raycaster.intersectObjects(meshes,false);
+  if(hits.length){ selectPlanet(hits[0].object.userData.idx,true); }
+});
+
+/* ============================================================
+   14. 动画循环
+   ============================================================ */
+const tmpV=new THREE.Vector3();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=Math.min(clock.getDelta(),0.05);
+  if(playing) simDays+=dt*speed*direction;
+  const years=simDays/365.25;
+
+  sunMat.uniforms.uTime.value+=dt;
+  sunRays.material.rotation+=dt*0.03;
+  stars.material.uniforms.uTime.value+=dt;
+  galaxy.material.uniforms.uTime.value+=dt;
+  asteroidBelt.material.uniforms.uTime.value=years;
+  kuiperBelt.material.uniforms.uTime.value=years;
+
+  planetObjs.forEach(p=>{
+    orbitalPosition(p.data,simDays,p.anchor.position);
+    // 自转
+    const spin=2*Math.PI*(simDays*24/p.data.rot);
+    p.mesh.rotation.y=spin;
+    if(p.data._clouds) p.data._clouds.rotation.y=spin*1.15;
+    // 卫星（周期真实比例）
+    p.moons.forEach(m=>{
+      const a=2*Math.PI*(simDays/m.period)+m._off;
+      m.group.position.set(Math.cos(a)*m.dist,0,Math.sin(a)*m.dist);
+    });
+  });
+
+  // 彗星
+  orbitalPosition(comet,simDays,tmpV);
+  cometGroup.position.copy(tmpV);
+  cometTail.position.copy(tmpV.clone().multiplyScalar(0.94));
+  const dir=tmpV.clone().normalize();
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1,0,0),dir);
+  cometTail.quaternion.copy(q);
+
+  if(follow&&selected!==null){ controls.target.lerp(planetObjs[selected].anchor.position,0.15); }
+
+  // 标签投影
+  if(showLabels){
+    scene.updateMatrixWorld(true);
+    labels.forEach(l=>{
+      tmpV.setFromMatrixPosition(l.anchor.matrixWorld);
+      tmpV.y+=l.radius+1.4;
+      tmpV.project(camera);
+      const vis=tmpV.z<1;
+      l.el.style.opacity=vis?'0.9':'0';
+      l.el.style.left=((tmpV.x*0.5+0.5)*innerWidth)+'px';
+      l.el.style.top=((-tmpV.y*0.5+0.5)*innerHeight)+'px';
+    });
+  }
+
+  updateDate();
+  controls.update();
+  composer.render();
+}
+
+window.addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight); composer.setSize(innerWidth,innerHeight);
+});
+
+/* 初始化卫星随机相位 */
+planetObjs.forEach(p=>p.moons.forEach(m=>{m._off=Math.random()*Math.PI*2;}));
+
+/* 启动 */
+updateDate();
+animate();
+setTimeout(()=>document.getElementById('loading').classList.add('done'),300);
+</script>
+</body>
+</html>
