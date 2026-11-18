@@ -211,6 +211,69 @@ export const BLACKHOLE_WORKS = [{
     note: '自动项68.5/68.5、六项画面一致性及27项自检通过；接口明示JS后端，一致性通过，不因后端单独扣分。五项发挥各4分。下落r₀=20的辅助数值为空；潮汐面板km/M换算错误，10⁶太阳质量组回落斜率偏差4.70%，但两组关键潮汐半径正确，仍满足加分条件。默认场景有效运行965秒，36次HDR采样均有限、GL无错误；65秒等效rAF暂停，实际标签隐藏未验证。',
     noteEn: 'Automated checks: 68.5/68.5; all six image-consistency checks and 27 self-checks pass. The disclosed JS backend passes consistency checks and incurs no backend-only deduction. Five extensions earn four points each. The auxiliary fall result at r₀=20 is missing; tidal km/M conversions are wrong, and the fallback slope at 10⁶ solar masses differs by 4.70%. Two correct tidal-radius parameter groups still meet the extension criteria. The default scene ran for 965 active seconds; all 36 HDR samples were finite with no GL errors. Recovery used an equivalent 65-second rAF suspension; literal tab hiding was not verified.'
   }
+}, {
+  id: "GPT6.2Astra(Ultra·Max)(Codex)V1", model: "GPT-6.2 Astra (Ultra·Max)",
+  file: "blackhole/GPT6.2Astra(Ultra·Max)(Codex)V1.html",
+  shot: "assets/shots/blackhole/GPT6.2Astra(Ultra·Max)(Codex)V1.jpg",
+  date: "261118", tier: 1, environment: "Codex", logo: "openai",
+  recommendation: "▽▽▽▽▽", reason: "不要跟他讨论问题，因为他不会替你多想",
+  reasonEn: "Don't bounce ideas off it. It won't think things through for you",
+  tech: "WebGL2", lines: 1545, bytes: 123943, priceModel: "GPT-6.2 Astra",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-18",
+    base: { A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C4:2,F2a:1.5,G3:3,G4a:2,A1:4,A2:4,C3c:1,F1:{"hdr":1,"bloom":1,"aces":1},F2b:1.5,F3:{"fps":60.1,"renderScale":0.7734375,"adaptive":true,"score":4},F4:2,G1:2,G2:{"working":9,"score":2},G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,R1a:1,R2a:2,R3:1,H3c:1,J5:1.5,R1b:1,R2b:1,V1:1,V2:1 },
+    free: [
+      {name:"双时钟与时间膨胀",usable:1,number:1,computed:1,integrated:1},
+      {name:"GW150914 旋近啁啾",usable:1,number:1,computed:1,integrated:1},
+      {name:"银心星团与 S2 相对论红移",usable:1,number:1,computed:1,integrated:1}
+    ], rootCauses: [], fatal: null,
+    deductions: [
+      {points:0.5,zh:"轨道实验室倒放回同一时刻，位置和时钟已还原，累计进动仍残留216.12°。",en:"Rewinding the orbit laboratory to the same instant restores position and clocks, but cumulative precession retains 216.12°."}
+    ],
+    note: "自动项68.5/68.5，六项画面一致性与31项自检通过。双时钟、GW150914旋近啁啾、银心星团与S2红移各加4分。默认场景运行13分钟，HDR采样、尺寸变化和实际切换标签页63.7秒均通过。",
+    noteEn: "All 68.5 automated points, six image consistency checks and 31 self-checks pass. The twin clocks, GW150914 inspiral chirp, and Galactic Center star cluster with S2 redshift each earn 4 points. The default scene passed a 13-minute stability test, HDR sampling, resizing and a 63.7-second tab switch."
+  }
+}, {
+  id: "GPT6.2Sol(Ultra·Max)(Codex)V1", model: "GPT-6.2 Sol (Ultra·Max)",
+  file: "blackhole/GPT6.2Sol(Ultra·Max)(Codex)V1.html",
+  shot: "assets/shots/blackhole/GPT6.2Sol(Ultra·Max)(Codex)V1.jpg",
+  date: "261118", tier: 1, environment: "Codex", logo: "openai",
+  recommendation: "▽▽▽▽▽", reason: "无话可说、无法形容",
+  reasonEn: "I'm speechless. I can't even describe it",
+  tech: "WebGL2", lines: 3037, bytes: 133138, priceModel: "GPT-6.2 Sol",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-18",
+    base: { A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C4:2,F2a:1.5,G3:3,G4a:2,A1:4,A2:4,C3c:1,F1:{"hdr":1,"bloom":1,"aces":1},F2b:1.5,F3:{"fps":60.2,"renderScale":0.7052083333333333,"adaptive":true,"score":4},F4:2,G1:2,G2:{"working":9,"score":2},G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,R1a:1,R2a:2,R3:1,H3c:1,J5:2,R1b:1,R2b:1,V1:1,V2:1 },
+    free: [
+      {name:"双时钟与时间膨胀",usable:1,number:1,computed:1,integrated:1}
+    ], rootCauses: [], fatal: null,
+    deductions: [],
+    note: "自动项68.5/68.5，六项画面一致性与110项自检通过。双时钟加4分。束缚粒子播放到预计算的第五个径向周期后停在末帧。默认场景运行13分钟，HDR采样、尺寸变化和实际切换标签页63秒均通过。",
+    noteEn: "All 68.5 automated points, six image consistency checks and 110 self-checks pass. The twin clocks earn 4 points. A bound particle holds its last sample after five precomputed radial periods. The default scene passed a 13-minute stability test, HDR sampling, resizing and a 63-second tab switch."
+  }
+}, {
+  id: "KimiK3.1Pro(Max)(ZCode)V1", model: "Kimi K3.1 Pro (Max)",
+  file: "blackhole/KimiK3.1Pro(Max)(ZCode)V1.html",
+  shot: "assets/shots/blackhole/KimiK3.1Pro(Max)(ZCode)V1.jpg",
+  date: "261118", tier: 2, environment: "ZCode", logo: "kimi",
+  recommendation: "▽▽▽▽▽", reason: "如此狼狈",
+  reasonEn: "What a sorry showing",
+  tech: "WebGL2", lines: 314, bytes: 83724, priceModel: "Kimi K3.1 Pro",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-18",
+    base: { A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C4:2,F2a:1.5,G3:3,G4a:2,A1:4,A2:4,C3c:1,F1:{"hdr":1,"bloom":1,"aces":1},F2b:1.5,F3:{"fps":13.1,"renderScale":0.7,"adaptive":true,"score":4},F4:2,G1:2,G2:{"working":9,"score":2},G4b:1 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,I1:2,I2:4,I3:2,J1:3,J2:3,J3:2,J4:2,R1a:1,R2a:2,R3:1,H3c:1,J5:0.5,R1b:1,R2b:1,V1:1,V2:1 },
+    free: [], rootCauses: [], fatal: null,
+    deductions: [
+      {points:0.5,zh:"偏心轨道走完一个径向周期，应累计进动216.12°，界面显示345.86°。一般克尔轨道输入10 M时，粒子首帧在远心点14.56 M。",en:"After one radial period, the eccentric orbit reports 345.86° of accumulated precession, with an expected 216.12°. A general Kerr orbit entered at 10 M instead starts at its 14.56 M apocenter."},
+      {points:0.5,zh:"高自转下，半径1.6 M的顺行圆轨道在有效势图上的当前位置标记落到画布外。",en:"At high spin, the current-position marker for a prograde circular orbit at 1.6 M falls outside the effective-potential canvas."},
+      {points:0.5,zh:"偏心轨道的牛顿对照在同一方位从6.67 M起步，相对论粒子从20 M起步。",en:"At the same initial azimuth, the Newtonian comparison starts at 6.67 M and the relativistic particle starts at 20 M."}
+    ],
+    note: "自动项68.5/68.5，六项画面一致性与15项自检通过。滚轮拉远后可通过环绕看全S2轨道。默认场景运行超过10分钟，HDR采样、尺寸变化和实际切换标签页62.9秒均通过。",
+    noteEn: "All 68.5 automated points, six image consistency checks and 15 self-checks pass. Zooming out and rotating the camera reveals the complete S2 orbit. The default scene passed over 10 minutes of stability testing, HDR sampling, resizing and a 62.9-second tab switch."
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

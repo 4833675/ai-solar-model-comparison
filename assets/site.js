@@ -37,6 +37,18 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"GPT6.2Astra(Max)V1":{
+  "direction": "down",
+  "count": 5,
+  "zh": "憋了好久，以为会憋个大招，结果拉了一大坨。不要跟他讨论问题，因为他不会替你多想。",
+  "en": "It took forever. I figured it was cooking up something big, and it turned out to be a pile of crap. Don't bounce ideas off it. It won't think things through for you."
+},
+"GPT6.2Sol(Max)V1":{
+  "direction": "down",
+  "count": 5,
+  "zh": "这到底是个什么东西啊",
+  "en": "What even is this?"
+},
 "Hy4flash(high)V1":{
   "direction": "down",
   "count": 3,

@@ -31,6 +31,8 @@ const RETIRED_SOLAR_261118_IDS = new Set([
   "Gemini3.8Flash(high)V2-TasksAssignedByOpus5"
 ]);
 const RETIRED_KIMIK3_IDS = new Set(["KimiK3Max-TasksAssignedByOpus5","KimiK3Max","KimiK3(Max)V2-TasksAssignedByOpus5","KimiK3(Max)V2","KimiK3(Max)V3"]);
+const GPT62_PRICE_FAMILIES = new Set(["GPT-6.2 Astra","GPT-6.2 Sol"]);
+const GPT62_SOLAR_IDS = new Set(["GPT6.2Astra(Max)V1","GPT6.2Sol(Max)V1"]);
 const SOLAR261116_IDS = new Set(["Hy4flash(high)V1","Hy4flash(high)V1-TasksAssignedByOpus5","Qwen4Max(xhigh)V1"]);
 const UNRATED_IDS = new Set(["Fable5.2(Max)V1"]);
 const FABLE52_IDS = new Set(["Fable5.2(Low)V1-TasksAssignedByOpus5"]);
@@ -59,6 +61,8 @@ const canonical = value => Array.isArray(value) ? value.map(canonical)
 const digest = value => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 
 const CANONICAL_NAMES = {
+  "GPT6.2Astra(Max)V1": "GPT-6.2 Astra (Max)",
+  "GPT6.2Sol(Max)V1": "GPT-6.2 Sol (Max)",
 "Hy4flash(high)V1":"Hy 4 Flash (high)",
 "Hy4flash(high)V1-TasksAssignedByOpus5":"Hy 4 Flash (high)",
 "Qwen4Max(xhigh)V1":"Qwen 4 Max (xHigh)",
@@ -225,6 +229,8 @@ const CANONICAL_NAMES = {
 };
 
 const EXPECTED_EXACT = {
+  "GPT6.2Astra(Max)V1": 4013 / 50,
+  "GPT6.2Sol(Max)V1": 5332 / 75,
 "Hy4flash(high)V1":74.82,
 "Hy4flash(high)V1-TasksAssignedByOpus5":72.65333333333334,
 "Qwen4Max(xhigh)V1":79.35333333333334,
@@ -395,6 +401,8 @@ const EXPECTED_EXACT = {
 // correctness(3) | legacy visualBase (not scored) | interaction(5) | fatal | fatalReason.
 // This is deliberately independent of the score formula: compensated field drift must still fail.
 const EXPECTED_AUDIT_FINGERPRINT = {
+  "GPT6.2Astra(Max)V1": "0|1|1|0|0|0.4|1|1|1|1|1|0.5|1|5|1|0|0|5|5|5|-|1|1|1|1|0.5|-|-|moonEvidence:d6d08bd090205f199036fa1d92a69c06ff096a240cea568420b758cd5c4920fe",
+  "GPT6.2Sol(Max)V1": "0|1|0|0|0|0.4|1|1|1|1|1|0.5|1|1|1|0|0|5|5|4.5|-|1|1|1|1|0.5|-|-|moonEvidence:f3a7dad5793269ecc972b6e2e46d5ff3cdfa377ff5e5b157709124933d7091e2",
 "Hy4flash(high)V1":"0|0.4|1|1|1|0.4|1|1|1|1|0.5|1|1|8|1|1|0|5|4|4.5|-|1|1|1|1|0.5|-|-|moonEvidence:82482b3e9b39cdb880826947262d79d65474a7863ee78fa3b5cc90b8b49fe0a6",
 "Hy4flash(high)V1-TasksAssignedByOpus5":"0|0.4|1|1|1|0.4|1|1|1|1|1|0|1|8|1|1|0|0|4|4.5|-|1|0.5|1|0.5|0.5|L1|默认浮点HDR路径的大气pass产生NaN，六级Bloom扩散并使主视图大片黑区；原字节1440×900与1920×1080均复现。关闭辉光可绕过，GL0/JS0不免除L1；按规则T4未完成且分数不封顶。|moonEvidence:362590cc7a61afe31bc60ece2cf75ccb3bd77db728cea46cf982f1c297b09185",
 "Qwen4Max(xhigh)V1":"0|0.4|1|1|1|0.4|1|1|1|1|1|0.5|1|7|1|0|0|5|4.5|5|-|1|0.5|1|1|0.5|-|-|moonEvidence:384a89c698d90d51df5dea931c9628f259412b078e15f0d4501551343ad00844",
@@ -572,10 +580,10 @@ const auditFingerprint = score => [
   score.fatal ?? '-', score.fatalReason ?? '-',
 ].join('|') + (Array.isArray(score.moonEvidence) ? '|moonEvidence:' + digest(score.moonEvidence) : '');
 
-check(Array.isArray(WORKS) && WORKS.length === 156, `WORKS count must be 156, got ${WORKS?.length}`);
-check(Object.keys(SCORES).length === 156, `SCORES count must be 156, got ${Object.keys(SCORES).length}`);
-check(new Set(WORKS.map(w => w.id)).size === 156, 'WORKS IDs must be unique');
-check(new Set(Object.keys(SCORES)).size === 156, 'SCORES IDs must be unique');
+check(Array.isArray(WORKS) && WORKS.length === 158, `WORKS count must be 158, got ${WORKS?.length}`);
+check(Object.keys(SCORES).length === 158, `SCORES count must be 158, got ${Object.keys(SCORES).length}`);
+check(new Set(WORKS.map(w => w.id)).size === 158, 'WORKS IDs must be unique');
+check(new Set(Object.keys(SCORES)).size === 158, 'SCORES IDs must be unique');
 const workIds = [...WORKS.map(w => w.id)].sort();
 const scoreIds = Object.keys(SCORES).sort();
 check(JSON.stringify(workIds) === JSON.stringify(scoreIds), 'WORKS/SCORES IDs have missing or extra entries');
@@ -606,7 +614,7 @@ for (const [family, ids] of Object.entries(renamedUltraIds)) {
 }
 check(JSON.stringify(WORKS.filter(work => /^Claude Haiku 5\.5 \(Ultracode·xhigh\)/.test(work.model)).map(work => work.id).sort()) === JSON.stringify([...renamedHaikuIds].sort()), 'The two existing Haiku records must use Ultracode·xhigh while preserving their original IDs');
 check(WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2'] === '260814' && WORK_CREATION_DATES['DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5'] === '260814', 'DeepSeek V4 Pro 0813 #2 must use its actual 260814 filesystem creation date');
-check(WORKS.filter(w => w.group === 'A').length === 87, 'Group A count must be 87 including two new one-line works and unrated Fable5.2 Max');
+check(WORKS.filter(w => w.group === 'A').length === 89, 'Group A must contain 89 entries including GPT-6.2 Astra and Sol');
 check(WORKS.filter(w => w.group === 'B').length === 69, 'Group B count must be 69 after adding Hy4 Flash task');
 const newlyArchivedIds = ['Opus5(Max)V1', 'MiniMax_M3_thinking-1', 'MiniMaxM3-TasksAssignedByOpus5', 'MiniMaxM3(high)V2-TasksAssignedByOpus5'];
 const newlyArchivedDocIds = ['Opus5Ultra-TasksAssignedByOpus5', 'Opus5(Low)V1-TasksAssignedByOpus5', 'Gemini3.1Pro-TasksAssignedByOpus5'];
@@ -696,6 +704,7 @@ for (const [id, expected] of Object.entries(protectedScoreDigests))
 for (const id of restoredIds) check(archiveBaselineIds.includes(id), id + ': retain the historical restoration ledger before the later explicit retirement');
 // Completed source, task-attribution and runtime reviews; each record retains its own review date.
 const currentReviewIds = new Set([
+  ...GPT62_SOLAR_IDS,
 "Hy4flash(high)V1",
 "Hy4flash(high)V1-TasksAssignedByOpus5",
 "Qwen4Max(xhigh)V1",
@@ -785,11 +794,11 @@ const currentSpecReviewIds = new Set([
   "GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5",
   "DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5"
 ]);
-const originalWorks = WORKS.filter(work => !UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
+const originalWorks = WORKS.filter(work => !UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id));
 const originalAssets = originalWorks.flatMap(work => [work.file, work.shot]).sort()
   .map(path => ({path, sha256: createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(originalAssets.length === 278 && digest(originalAssets) === '65c0d06a691930614fb636b9737294a20a13a6ff8cd2eb9a6c3fc7f481fb1e8a', 'All 278 existing model originals and saved screenshots must remain unchanged');
-check(currentReviewIds.size === 59 && currentSpecReviewIds.size === 27 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the newly reviewed Kimi K3.1 Pro records');
+check(currentReviewIds.size === 61 && currentSpecReviewIds.size === 27 && originalWorks.length === 139, 'Completed review provenance must cover every non-protected current record, including the newly reviewed Kimi K3.1 Pro records');
 check(JSON.stringify([...currentReviewIds].sort()) === JSON.stringify(visibleWorks.filter(w=>!UNRATED_IDS.has(w.id)&&!Object.hasOwn(protectedScoreDigests,w.id)).map(w=>w.id).sort()), 'Current source review must cover exactly all eligible current records, including folded runs');
 for (const id of currentSpecReviewIds) check(SITE.isVisibleWork(SITE.byId(id)) && SITE.byId(id).group === 'B', id + ': task-attribution scope must contain only current detailed-spec works');
 // The 2026-10-15 independent archive review covers 65 records; the manually scored Opus 5 Max remains protected.
@@ -805,8 +814,8 @@ for (const group of ['A','B']) {
   const sol=SITE.tableDisplayRows(archivedWorks.filter(w=>w.group===group),'tier',1,'zh').find(w=>w.tableVariantBase==='GPT-5.6 Sol');
   check(sol?.id === (group==='A'?'GPT5.6SolUltra-WebGL2':'GPT5.6SolUltra-TasksAssignedByOpus5') && sol.tableAlternates.length === (group==='A'?6:5) && stripCreationDate(sol.model) === 'GPT-5.6 Sol (Ultra·Max)', `${group}: archived Sol must retain Ultra·Max as primary and all other efforts/runs`);
 }
-check(visibleWorks.length === 62, 'Active WORKS count must be 62');
-check(visibleWorks.filter(w => w.group === 'A').length === 35, 'Active Group A count must be 35');
+check(visibleWorks.length === 64, 'Active WORKS count must be 64');
+check(visibleWorks.filter(w => w.group === 'A').length === 37, 'Active Group A count must be 37');
 check(visibleWorks.filter(w => w.group === 'B').length === 27, 'Active Group B count must be 27');
 check(JSON.stringify(WORKS.filter(work => /^(?:Claude Opus 5 \(Max\)|MiniMax M3 \(high\))/.test(stripCreationDate(work.model))).map(work => work.id).sort()) === JSON.stringify([...newlyArchivedIds].sort()), 'Archiving must cover exactly the requested Opus 5 Max and MiniMax M3 high families');
 for (const id of [...newlyArchivedIds, ...newlyArchivedDocIds]) {
@@ -862,7 +871,7 @@ for(const original of [{"path":"models/DeepSeekV4.1Flash1017(Max)V1.html","sha25
 
 // The V2 addition preserves all 139 published scores, source files, screenshots,
 // creation dates and measurement-day recommendations from b1222b2.
-const preV2Ids = WORKS.filter(work => !UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
+const preV2Ids = WORKS.filter(work => !UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id) && !["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(work.id)).map(work=>work.id).sort();
 check(preV2Ids.length===139 && digest(preV2Ids.map(id=>[id,SCORES[id]]))==='99965896b1d51278bb63f8538abadbfb5b50cc5add57dd3ce788144daaea04ec', 'V2 addition must preserve all139 prior score records, including notes and provenance');
 check(digest(preV2Ids.map(id=>SITE.byId(id)))==='a4f7be77d7f4b9d63afe3944eec550b430b390d1156e336b3bb834647fe9585f', 'V2 addition may only add#1 to the two V1 display names among old work metadata');
 check(digest(preV2Ids.map(id=>[id,WORK_CREATION_DATES[id]]))==='8a2bad264090fde23437ac9fba946e31ddbdcbf2d0ad0ecdad8699e109c57ee6', 'V2 addition must preserve old139 filesystem dates');
@@ -922,11 +931,11 @@ for(const id of retiredDeepSeek0910Ids){
  check(SITE.isArchivedWork(work)&&!SITE.isVisibleWork(work)&&SCORES[id].reviewedAt==='2026-10-17'&&SCORES[id].reviewVersion==='V3-20261017',id+': archive existing review provenance without re-auditing');
  check(rec?.symbols==='-'&&rec.direction==='legacy'&&rec.count===0&&rec.sortValue===0&&rec.reason==='梁子继续加油啊'&&rec.tooltip==='老模型都不推荐使用',id+': retired recommendation must use the standard gray dash and retain the measurement-day reason');
 }
-const unchangedRecommendationIds = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)&&!RETIRED_HY4_PREVIEW_IDS.has(work.id)&&!RETIRED_KIMIK3_IDS.has(work.id)).map(work=>work.id).sort();
+const unchangedRecommendationIds = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)&&!retiredDeepSeek0910Ids.has(work.id)&&!RETIRED_MINIMAX_PREVIEW_IDS.has(work.id)&&!RETIRED_HY4_PREVIEW_IDS.has(work.id)&&!RETIRED_KIMIK3_IDS.has(work.id)).map(work=>work.id).sort();
 check(unchangedRecommendationIds.length===128 && digest(unchangedRecommendationIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="b2c92f24abcbbd2ca9161cc291f79677dcb43a072b7a0f43d0d0e6dfc4bff128", 'MiniMax publication must preserve all other128 prior recommendations including both1017V2 overrides');
-check(digest(WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>key!=='Hy 4 Flash'&&key!=='Qwen 4 Max'&&key!=='Claude Fable 5.2'&&key!=='Hy 4'&&key!=='GPT-6.1 Terra'&&key!=='Kimi K3.1 Pro'&&key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
-const allOriginalAssets = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(digest(WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)))==='603d4ed9ecd4b271f3b9e4af7f119842f6c802f87c095c2984be2696a1ca54d2'&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='47bded5aca8a89f22078b4c8e2a3b24d0ee906a8836bbfdf5e8dfa6ff8c19e4c'&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id) && !MINIMAX_FLASH_IDS.has(id))))==='64d27945be98fe25ebfb7fb3eecbb80dee872f7f2d6e03a270aa624a1b74f304', 'MiniMax publication must preserve all141 prior metadata, scores and creation dates');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([key])=>!GPT62_PRICE_FAMILIES.has(key)&&key!=='Hy 4 Flash'&&key!=='Qwen 4 Max'&&key!=='Claude Fable 5.2'&&key!=='Hy 4'&&key!=='GPT-6.1 Terra'&&key!=='Kimi K3.1 Pro'&&key!=='MiniMax M3.1 Flash')))==='8bd609af2699446fdde5b1ab106d871804fd3345c21eb198a45db77750d8fefb'&&digest(context.window.MODEL_CONTEXT_PRICES)==='0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8', 'MiniMax publication must preserve every prior saved price');
+const allOriginalAssets = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id) && !MINIMAX_FLASH_IDS.has(work.id)).flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(allOriginalAssets.length===282&&digest(allOriginalAssets)==='34698bb11b74da1f1154b475ea1f670cac13089328118ce2bd9456ce5ef09748', 'MiniMax publication must preserve all282 prior model originals and saved screenshots');
 
 
@@ -1037,13 +1046,13 @@ for(const expected of [
 
 
 // Kimi K3.1 Pro publication: reuse the completed review and saved screenshots.
-const kimi31PreviousWorks = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id));
+const kimi31PreviousWorks = WORKS.filter(work=>!UNRATED_IDS.has(work.id) && !GPT62_SOLAR_IDS.has(work.id) && !SOLAR261116_IDS.has(work.id) && !FABLE52_IDS.has(work.id) && !HY4_IDS.has(work.id) && !TERRA61_IDS.has(work.id) && !KIMI31_PRO_IDS.has(work.id));
 const kimi31PreviousIds = kimi31PreviousWorks.filter(work=>!RETIRED_HY4_PREVIEW_IDS.has(work.id)&&!RETIRED_KIMIK3_IDS.has(work.id)).map(work=>work.id).sort();
-check(kimi31PreviousWorks.length===144&&digest(kimi31PreviousWorks)==="e9eea112015acb53b422fb17210095269cd1dd46730fbf738374c2f1fd26c871"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="15d1a64efa556204bcdc9b41b0c16b90a15a69ac1426149264cf4704a6841e47"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="4c85ae581ce7e9fbe99b7d0b72de8b5a97325b504fd86ec823db33a6eb8bdcdd", 'Kimi K3.1 publication must preserve all144 prior metadata, full scores and dates');
+check(kimi31PreviousWorks.length===144&&digest(kimi31PreviousWorks)==="e9eea112015acb53b422fb17210095269cd1dd46730fbf738374c2f1fd26c871"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="15d1a64efa556204bcdc9b41b0c16b90a15a69ac1426149264cf4704a6841e47"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id) && !KIMI31_PRO_IDS.has(id))))==="4c85ae581ce7e9fbe99b7d0b72de8b5a97325b504fd86ec823db33a6eb8bdcdd", 'Kimi K3.1 publication must preserve all144 prior metadata, full scores and dates');
 check(digest(kimi31PreviousIds.map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="f5e77b2339a447c92ee668656aacbb63cdefc415af1512dcf7d86c92009cf1c0", 'Preserve135 pre-Kimi recommendations outside authorized archives');
 const kimi31PreviousAssets=kimi31PreviousWorks.flatMap(work=>[work.file,work.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(kimi31PreviousAssets.length===288&&digest(kimi31PreviousAssets)==="0d1e2a88463a7dcb279f09386ded9462e08ef065aea668024a631f9914eafea4", 'Kimi K3.1 publication must preserve all288 previous originals and screenshots');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2'&&family!=='Hy 4'&&family!=='GPT-6.1 Terra'&&family!=='Kimi K3.1 Pro')))==="a71a1e3e629144c47664f22e6971b6e6b24e0b2f51a058f11df3995dac5ed414"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8", 'Kimi K3.1 publication must preserve every previously saved price');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>!GPT62_PRICE_FAMILIES.has(family)&&family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2'&&family!=='Hy 4'&&family!=='GPT-6.1 Terra'&&family!=='Kimi K3.1 Pro')))==="a71a1e3e629144c47664f22e6971b6e6b24e0b2f51a058f11df3995dac5ed414"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8", 'Kimi K3.1 publication must preserve every previously saved price');
 check(PAIR_ORDER[6]==='kimik31pro'&&context.window.PAIR_TITLES.kimik31pro==='Kimi K3.1 Pro (Max)', 'Kimi K3.1 Pro pair must follow Kimi K3 #2 without renaming older pairs');
 const kimi31Pair=SITE.pairs().find(pair=>pair.a.pair==='kimik31pro');
 check(kimi31Pair?.a.id==="KimiK3.1Pro(Max)V1"&&kimi31Pair?.b.id==="KimiK3.1Pro(Max)V1-TasksAssignedByOpus5", 'Kimi K3.1 Pro comparison must use its matching A/B originals');
@@ -1109,12 +1118,12 @@ for(const expected of [
 
 
 // GPT6.1Terra: immutable reviewed inputs, user metadata and previous publication.
-const terra61PreviousWorks=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id) && !HY4_IDS.has(w.id) && !TERRA61_IDS.has(w.id));
-check(terra61PreviousWorks.length===146&&digest(terra61PreviousWorks)==="5e49dcdd9ce8f16125afac2cd9379822a52763c68d3ae4898cd11da5cd0fb3df"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id))))==="dbe953d6eead65276710a9058a94257958bf541ef0a04e39f04f89bc169ab5bf"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id))))==="dc55ab1ed9f09ad8649294c1f9dbf26e29d9b448a0d93132d602680f24d2ab60",'Terra publication must preserve146 prior metadata, scores and dates');
+const terra61PreviousWorks=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id) && !HY4_IDS.has(w.id) && !TERRA61_IDS.has(w.id));
+check(terra61PreviousWorks.length===146&&digest(terra61PreviousWorks)==="5e49dcdd9ce8f16125afac2cd9379822a52763c68d3ae4898cd11da5cd0fb3df"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id))))==="dbe953d6eead65276710a9058a94257958bf541ef0a04e39f04f89bc169ab5bf"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id) && !TERRA61_IDS.has(id))))==="dc55ab1ed9f09ad8649294c1f9dbf26e29d9b448a0d93132d602680f24d2ab60",'Terra publication must preserve146 prior metadata, scores and dates');
 check(digest(terra61PreviousWorks.filter(w=>!RETIRED_HY4_PREVIEW_IDS.has(w.id)&&!RETIRED_KIMIK3_IDS.has(w.id)).map(w=>w.id).sort().map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="e7067a4451ef9f14b5c6a13384bfcd640fe94983f9de5fade009f5aaf769800e",'Preserve137 pre-Terra recommendations outside authorized archives');
 const terra61PreviousAssets=terra61PreviousWorks.flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(terra61PreviousAssets.length===292&&digest(terra61PreviousAssets)==="69566cfb290a649c8e3b9614d1aeeffeb34fba95da4d57c46713529871e2a9a8",'Terra publication must preserve292 previous original files/screenshots');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([k])=>k!=='Hy 4 Flash'&&k!=='Qwen 4 Max'&&k!=='Claude Fable 5.2'&&k!=='Hy 4'&&k!=='GPT-6.1 Terra')))==="5fda08e4222ca6eda065ea103ddff539412538d68d18367d6926ff04929f20a8"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'Terra publication must preserve all previously saved prices');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([k])=>!GPT62_PRICE_FAMILIES.has(k)&&k!=='Hy 4 Flash'&&k!=='Qwen 4 Max'&&k!=='Claude Fable 5.2'&&k!=='Hy 4'&&k!=='GPT-6.1 Terra')))==="5fda08e4222ca6eda065ea103ddff539412538d68d18367d6926ff04929f20a8"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'Terra publication must preserve all previously saved prices');
 check(PAIR_ORDER.indexOf('gpt61terra')===PAIR_ORDER.indexOf('hy4')-1&&context.window.PAIR_TITLES.gpt61terra==='GPT-6.1 Terra (Ultra·Max) #1','New Terra pair follows Sol and uses explicit V1 title');
 const terra61Pair=SITE.pairs().find(p=>p.a.pair==='gpt61terra');
 check(terra61Pair?.a.id==="GPT6.1Terra(Ultra)V1"&&terra61Pair?.b.id==="GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5"&&SITE.byId("GPT6.1Terra(Ultra)V2").pair===null,'Terra pair must compare matching V1 originals only');
@@ -1203,12 +1212,12 @@ for(const expected of [
 
 
 // Hy4: completed reviews and saved screenshots, with exactly four Preview retirements.
-const hy4PreviousWorks=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id) && !HY4_IDS.has(w.id));
-check(hy4PreviousWorks.length===149&&digest(hy4PreviousWorks)==="e6e6ab1350535495ee6197920e56a623db4a349d064c82c86a0337529be8c8ff"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id))))==="a2a2a4005ef22e036a546aafa53678ef42687ab7f3097a2bc518b15b95453d42"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id))))==="7e0daea2f7525957f4cc206170a6443bcdf1e1504ac7f6399c1ee29fb93ea637",'Hy4 publication preserves149 previous work records, scientific scores, notes and dates');
+const hy4PreviousWorks=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id) && !HY4_IDS.has(w.id));
+check(hy4PreviousWorks.length===149&&digest(hy4PreviousWorks)==="e6e6ab1350535495ee6197920e56a623db4a349d064c82c86a0337529be8c8ff"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id))))==="a2a2a4005ef22e036a546aafa53678ef42687ab7f3097a2bc518b15b95453d42"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id) && !HY4_IDS.has(id))))==="7e0daea2f7525957f4cc206170a6443bcdf1e1504ac7f6399c1ee29fb93ea637",'Hy4 publication preserves149 previous work records, scientific scores, notes and dates');
 const hy4PreviousAssets=hy4PreviousWorks.flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(hy4PreviousAssets.length===298&&digest(hy4PreviousAssets)==="44e2699eb7cb5677eb319d982554b44e8d75a4359b4b0d4ce91860e427cd9fae",'Hy4 publication preserves all298 previous source files and saved screenshots');
 check(digest(["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","DeepSeek-V4-Pro-0813-V1","DeepSeekProMax-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V1","DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V2","DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","DoubaoSeedEvolving0827(Max)V1","DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5","Fable5.1(Max)V1","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","GLM5.3(Max)V1","GLM5.3(Max)V1-TasksAssignedByOpus5","GLM5.3(Max)V2","GLM5.3(Max)V2-TasksAssignedByOpus5","GLM5.3(Max)V3","GLM5.3Flash(Max)V1","GLM5.3Flash(Max)V1-TasksAssignedByOpus5","GLM5.3Flash(Max)V2","GLM5.3Flash(Max)V2-TasksAssignedByOpus5","GLM_5_1_high-1","GPT5.5xHigh-TasksAssignedByOpus5","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6SolUltra","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6TerraUltra-TasksAssignedByOpus5","GPT5.6TerraUltra-Three","GPT6.1Sol(Ultra)V1","GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5","GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V1","GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V2","GPT6Astra(Light)V1","GPT6Astra(Light)V1-TasksAssignedByOpus5","GPT6Astra(Max)V1","GPT6Astra(Medium)V1-TasksAssignedByOpus5","GPT6Astra(Ultra)V1","GPT6Astra(xhigh)V1","GPT6Luna(Max)V1","GPT6Luna(Max)V1-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.1Pro-TasksAssignedByOpus5","Gemini3.5Flash-TasksAssignedByOpus5","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V1","Gemini3.8Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V2","Gemini3.8Flash(high)V2-TasksAssignedByOpus5","Gemini_3_5_flash_high","Grok4.5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","Grok4.7(xhigh)V1","Grok4.7(xhigh)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode)V1","Haiku5.5(Ultracode)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode·Max)V1","Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5","Hy3","Hy3-TasksAssignedByOpus5","KimiK3(Max)V2","KimiK3(Max)V2-TasksAssignedByOpus5","KimiK3(Max)V3","KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5","KimiK3Max","KimiK3Max-TasksAssignedByOpus5","LongCat2.0","LongCat2.0-TasksAssignedByOpus5","MiMo2.6Flash(Unknown)V1","MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5","MiMo2.6Pro(Unknown)V1","MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5","MiMoXProPreview(Unknown)V1","MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5","Mimo_2_5_Pro_high-1","MiniMaxM3(high)V2-TasksAssignedByOpus5","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V1","MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V2","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5","MiniMax_M3_thinking-1","MuseSpark1.3Contributor(xhigh)V1","MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5","MuseSpark1.3Contributor(xhigh)V2","MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","Opus4.8Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Opus5(Max)V1","Opus5.5(Max)V1","Opus5Ultra-TasksAssignedByOpus5","Opus5Ultra-WebGL2","Opus_4_8_Max","Qwen3.7Max","Qwen3.8Flash(xhigh)V1","Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V1","Qwen3.8Max(Max)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V2","Qwen3.8Max(Max)V3","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","Qwen3.8MaxV2","Qwen3.8MaxV2-TasksAssignedByOpus5","Sonnet5.5(Max)V1","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Step5Preview(high)V1","Step5Preview(high)V1-TasksAssignedByOpus5"].filter(id=>!RETIRED_KIMIK3_IDS.has(id)).map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="4e786d2873d0cc5b087a53b3da7948cb2143c4321ee812e2a002d94860e57440",'Preserve140 pre-Hy4 recommendations outside authorized archives');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2'&&family!=='Hy 4')))==="fb76642592e89b4482ab0b9aecbf531f5aaca5ea5c52f54af08dfba0e20ab773"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'All previously saved prices remain unchanged');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>!GPT62_PRICE_FAMILIES.has(family)&&family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2'&&family!=='Hy 4')))==="fb76642592e89b4482ab0b9aecbf531f5aaca5ea5c52f54af08dfba0e20ab773"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'All previously saved prices remain unchanged');
 for(const expected of [{"id":"Hy4Preview(high)V1","reason":"绝版测试。已经降智。"},{"id":"Hy4Preview(high)V2","reason":"绝版测试。已经降智。"},{"id":"Hy4Preview(high)V1-TasksAssignedByOpus5","reason":"绝版测试。已经降智。"},{"id":"Hy4Preview(high)V2-TasksAssignedByOpus5","reason":"绝版测试。已经降智。"}]){const w=SITE.byId(expected.id),r=SITE.personalRecommendationFor(w);check(SITE.isArchivedWork(w)&&!SITE.isVisibleWork(w)&&r.direction==='legacy'&&r.symbols==='-'&&r.count===0&&r.sortValue===0&&r.reason===expected.reason&&r.tooltip==='老模型都不推荐使用',expected.id+': archive Preview, retain author reason and use dash recommendation');}
 check(!SITE.pairs().some(p=>['hy4v1','hy4v2'].includes(p.a.pair))&&SITE.pairs(archivedWorks).filter(p=>['hy4v1','hy4v2'].includes(p.a.pair)).length===2,'Only historical Hy4 Preview pairs move to archived comparisons');
 check(PAIR_ORDER[49]==='hy4'&&context.window.PAIR_TITLES.hy4==='Hy 4 (high)','New Hy4 pair uses a separate canonical key and title');
@@ -1275,10 +1284,10 @@ for(const expected of [
 
 
 // Kimi K3 retirement changes membership and dash recommendations only.
-const kimik3AllAssets=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id)).flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
-check(digest(WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id)))==="98346ea46eb490a7c0dc667013c11d7ac614c8d3017fc0a9df9dccdab4a904e4"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id))))==="5a22b4b4b38d0322a164d4092dde5ee7e2eddadce1bbd2712ad7bfc612186eb7"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id))))==="bcddc338dcaa22cb65be25d9195bc62854d84f6795c7d8524a928e8cc80d3868",'Kimi K3 retirement preserves all151 work records, complete scientific scores, notes and filesystem dates');
+const kimik3AllAssets=WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id)).flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
+check(digest(WORKS.filter(w=>!UNRATED_IDS.has(w.id) && !GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id) && !FABLE52_IDS.has(w.id)))==="98346ea46eb490a7c0dc667013c11d7ac614c8d3017fc0a9df9dccdab4a904e4"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id))))==="5a22b4b4b38d0322a164d4092dde5ee7e2eddadce1bbd2712ad7bfc612186eb7"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!UNRATED_IDS.has(id) && !GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id) && !FABLE52_IDS.has(id))))==="bcddc338dcaa22cb65be25d9195bc62854d84f6795c7d8524a928e8cc80d3868",'Kimi K3 retirement preserves all151 work records, complete scientific scores, notes and filesystem dates');
 check(kimik3AllAssets.length===302&&digest(kimik3AllAssets)==="709439b731bce10d4c4d238b9ff6552c553f73a2fba45c26cd8e7d741e516795",'Kimi K3 retirement preserves every302 original model/screenshot file');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2')))==="315cf9c5fc060758a38fe4835258899b4efd9df95cfa669be8d71b47ef6a21c4"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8"&&digest(PAIR_ORDER.filter(key=>key!=='hy4flash'))==="d5f2b1ad51a878eef95845f407890ca2a8b4f7bf4dd071ab4c6a978db1c0f540"&&digest(Object.fromEntries(Object.entries(context.window.PAIR_TITLES).filter(([key])=>key!=='hy4flash')))==="7e2216715a18a9eec2fd02d5a4a3a8236ba0f6ff37440b89643ecfa6b2869faf",'Kimi K3 retirement preserves all saved prices and historical pair definitions');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>!GPT62_PRICE_FAMILIES.has(family)&&family!=='Hy 4 Flash'&&family!=='Qwen 4 Max'&&family!=='Claude Fable 5.2')))==="315cf9c5fc060758a38fe4835258899b4efd9df95cfa669be8d71b47ef6a21c4"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8"&&digest(PAIR_ORDER.filter(key=>key!=='hy4flash'))==="d5f2b1ad51a878eef95845f407890ca2a8b4f7bf4dd071ab4c6a978db1c0f540"&&digest(Object.fromEntries(Object.entries(context.window.PAIR_TITLES).filter(([key])=>key!=='hy4flash')))==="7e2216715a18a9eec2fd02d5a4a3a8236ba0f6ff37440b89643ecfa6b2869faf",'Kimi K3 retirement preserves all saved prices and historical pair definitions');
 check(digest(["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","DeepSeek-V4-Pro-0813-V1","DeepSeekProMax-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V1","DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V2","DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","DoubaoSeedEvolving0827(Max)V1","DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5","Fable5.1(Max)V1","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","GLM5.3(Max)V1","GLM5.3(Max)V1-TasksAssignedByOpus5","GLM5.3(Max)V2","GLM5.3(Max)V2-TasksAssignedByOpus5","GLM5.3(Max)V3","GLM5.3Flash(Max)V1","GLM5.3Flash(Max)V1-TasksAssignedByOpus5","GLM5.3Flash(Max)V2","GLM5.3Flash(Max)V2-TasksAssignedByOpus5","GLM_5_1_high-1","GPT5.5xHigh-TasksAssignedByOpus5","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6SolUltra","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6TerraUltra-TasksAssignedByOpus5","GPT5.6TerraUltra-Three","GPT6.1Sol(Ultra)V1","GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5","GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V1","GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V2","GPT6Astra(Light)V1","GPT6Astra(Light)V1-TasksAssignedByOpus5","GPT6Astra(Max)V1","GPT6Astra(Medium)V1-TasksAssignedByOpus5","GPT6Astra(Ultra)V1","GPT6Astra(xhigh)V1","GPT6Luna(Max)V1","GPT6Luna(Max)V1-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.1Pro-TasksAssignedByOpus5","Gemini3.5Flash-TasksAssignedByOpus5","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V1","Gemini3.8Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V2","Gemini3.8Flash(high)V2-TasksAssignedByOpus5","Gemini_3_5_flash_high","Grok4.5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","Grok4.7(xhigh)V1","Grok4.7(xhigh)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode)V1","Haiku5.5(Ultracode)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode·Max)V1","Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5","Hy3","Hy3-TasksAssignedByOpus5","Hy4(high)V1","Hy4(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V1","Hy4Preview(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V2","Hy4Preview(high)V2-TasksAssignedByOpus5","KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5","LongCat2.0","LongCat2.0-TasksAssignedByOpus5","MiMo2.6Flash(Unknown)V1","MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5","MiMo2.6Pro(Unknown)V1","MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5","MiMoXProPreview(Unknown)V1","MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5","Mimo_2_5_Pro_high-1","MiniMaxM3(high)V2-TasksAssignedByOpus5","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V1","MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V2","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5","MiniMax_M3_thinking-1","MuseSpark1.3Contributor(xhigh)V1","MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5","MuseSpark1.3Contributor(xhigh)V2","MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","Opus4.8Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Opus5(Max)V1","Opus5.5(Max)V1","Opus5Ultra-TasksAssignedByOpus5","Opus5Ultra-WebGL2","Opus_4_8_Max","Qwen3.7Max","Qwen3.8Flash(xhigh)V1","Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V1","Qwen3.8Max(Max)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V2","Qwen3.8Max(Max)V3","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","Qwen3.8MaxV2","Qwen3.8MaxV2-TasksAssignedByOpus5","Sonnet5.5(Max)V1","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Step5Preview(high)V1","Step5Preview(high)V1-TasksAssignedByOpus5"].map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="fd2a80a6abb2053baa25b1d5ed978bfbea3d1608d4d001efd47d0557aa875e8b",'Preserve the 146 recommendation records outside old K3 with the authorized archive dashes');
 for(const id of RETIRED_KIMIK3_IDS){const w=SITE.byId(id),r=SITE.personalRecommendationFor(w);check(SITE.isArchivedWork(w)&&!SITE.isVisibleWork(w)&&r.symbols==='-'&&r.direction==='legacy'&&r.count===0&&r.sortValue===0&&r.reason==='性价比不够'&&r.tooltip==='老模型都不推荐使用',id+': archive all old K3 runs with dash recommendation and original reason');check(SCORES[id].reviewedAt==='2026-10-17'&&SCORES[id].reviewVersion==='V3-20261017',id+': completed review provenance stays unchanged');}
 check(!SITE.pairs().some(p=>['kimik3','kimik3v2'].includes(p.a.pair))&&SITE.pairs(archivedWorks).filter(p=>['kimik3','kimik3v2'].includes(p.a.pair)).length===2,'Both old K3 comparison pairs move to the archive');
@@ -1299,9 +1308,9 @@ for(const id of ["KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5"]
 }
 
 // Screenshot-only Fable5.2 Max: preserve every prior scientific record and statistic.
-const ratedPreviousWorks=WORKS.filter(w=>!SOLAR261116_IDS.has(w.id)&&!UNRATED_IDS.has(w.id));
-check(ratedPreviousWorks.length===152&&digest(ratedPreviousWorks)==="ca2ae0ba4504bc427edaf4af7ec56f3ec65c3543292b2b6124ac97631b4dc06e"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!SOLAR261116_IDS.has(id)&&!UNRATED_IDS.has(id))))==="9b6c236a9027ff0cdb21aa3f103ac5058e7a1ea6e9cd00ff813d9327faab85f9"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!SOLAR261116_IDS.has(id)&&!UNRATED_IDS.has(id))))==="4e318f1b4fb66812d066825a0fa5897f5d4191ad7505473a1a214dcf70d571d4",'Unrated addition preserves all152 prior metadata, scores and dates');
-check(digest(JSON.parse(JSON.stringify(SITE.scoreStats(),(_,v)=>typeof v==='number'?Math.round(v*1e9)/1e9:v)))==="a23a63a87c5b5d6f108085b8adb1e9965da3167cc490fab23e0049bd3242c129",'Unrated works must be excluded from every score mean, outcome and sensitivity group');
+const ratedPreviousWorks=WORKS.filter(w=>!GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id)&&!UNRATED_IDS.has(w.id));
+check(ratedPreviousWorks.length===152&&digest(ratedPreviousWorks)==="ca2ae0ba4504bc427edaf4af7ec56f3ec65c3543292b2b6124ac97631b4dc06e"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id)&&!UNRATED_IDS.has(id))))==="9b6c236a9027ff0cdb21aa3f103ac5058e7a1ea6e9cd00ff813d9327faab85f9"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id)&&!UNRATED_IDS.has(id))))==="4e318f1b4fb66812d066825a0fa5897f5d4191ad7505473a1a214dcf70d571d4",'Unrated addition preserves all152 prior metadata, scores and dates');
+check(digest(JSON.parse(JSON.stringify(SITE.scoreStats(),(_,v)=>typeof v==='number'?Math.round(v*1e9)/1e9:v)))==="1ee6a4a5435974dc2b37ab0b05ace4df2d41eabddb732cc45b023c311ce756ee",'Unrated works must be excluded from every score mean, outcome and sensitivity group');
 {const w=SITE.byId("Fable5.2(Max)V1"),rec=SITE.personalRecommendationFor(w);
  check(w&&w.group==='A'&&w.tier===0&&w.rank===-2&&w.pair===null&&SITE.isVisibleWork(w)&&WORK_CREATION_DATES[w.id]==='261110'&&stripCreationDate(w.model)==='Claude Fable 5.2 (Max)','Fable5.2 Max canonical current unpaired T0 metadata');
  check(w.bytes===5644721&&w.lines===5044&&w.tech==='WebGL2'&&w.net.length===0&&w.note===null&&SITE.environmentName(w)==='Claude Code','Fable5.2 Max supplied file and screenshot-only metadata');
@@ -1313,13 +1322,13 @@ check(digest(JSON.parse(JSON.stringify(SITE.scoreStats(),(_,v)=>typeof v==='numb
 
 
 // 2026-11-16 solar additions: frozen originals, reused screenshots and literal author metadata.
-const solar261116PreviousWorks=WORKS.filter(w=>!SOLAR261116_IDS.has(w.id));
-check(solar261116PreviousWorks.length===153&&digest(solar261116PreviousWorks)==="ae1cc8e6c628044eaa994bba2448e34e1454c9d02054e6e103e0c84a2bbf398d"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!SOLAR261116_IDS.has(id))))==="0a55ca43808c18b31bd43b24a926de8da276caca49cfbf6681eb5e923bf7eeed"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!SOLAR261116_IDS.has(id))))==="54639e0c5033feff0af363276df3c15a4d11a20272e2ab4698ca648dc0bc0f8f",'Preserve all153 prior metadata, score evidence and filesystem dates');
+const solar261116PreviousWorks=WORKS.filter(w=>!GPT62_SOLAR_IDS.has(w.id) && !SOLAR261116_IDS.has(w.id));
+check(solar261116PreviousWorks.length===153&&digest(solar261116PreviousWorks)==="ae1cc8e6c628044eaa994bba2448e34e1454c9d02054e6e103e0c84a2bbf398d"&&digest(Object.fromEntries(Object.entries(SCORES).filter(([id])=>!GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id))))==="0a55ca43808c18b31bd43b24a926de8da276caca49cfbf6681eb5e923bf7eeed"&&digest(Object.fromEntries(Object.entries(WORK_CREATION_DATES).filter(([id])=>!GPT62_SOLAR_IDS.has(id) && !SOLAR261116_IDS.has(id))))==="54639e0c5033feff0af363276df3c15a4d11a20272e2ab4698ca648dc0bc0f8f",'Preserve all153 prior metadata, score evidence and filesystem dates');
 check(digest(["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","DeepSeek-V4-Pro-0813-V1","DeepSeekProMax-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V1","DeepSeekV4.1Flash1017(Max)V1-TasksAssignedByOpus5","DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V1-TasksAssignedByOpus5","DeepSeekV4Pro0813(Max)V2","DeepSeekV4Pro0813(Max)V2-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","DoubaoSeedEvolving0827(Max)V1","DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5","Fable5.1(Max)V1","Fable5.2(Low)V1-TasksAssignedByOpus5","Fable5.2(Max)V1","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","GLM5.3(Max)V1","GLM5.3(Max)V1-TasksAssignedByOpus5","GLM5.3(Max)V2","GLM5.3(Max)V2-TasksAssignedByOpus5","GLM5.3(Max)V3","GLM5.3Flash(Max)V1","GLM5.3Flash(Max)V1-TasksAssignedByOpus5","GLM5.3Flash(Max)V2","GLM5.3Flash(Max)V2-TasksAssignedByOpus5","GLM_5_1_high-1","GPT5.5xHigh-TasksAssignedByOpus5","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6SolUltra","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6TerraUltra-TasksAssignedByOpus5","GPT5.6TerraUltra-Three","GPT6.1Sol(Ultra)V1","GPT6.1Sol(Ultra·Max)V1-TasksAssignedByOpus5","GPT6.1Sol(xhigh)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V1","GPT6.1Terra(Ultra)V1-TasksAssignedByOpus5","GPT6.1Terra(Ultra)V2","GPT6Astra(Light)V1","GPT6Astra(Light)V1-TasksAssignedByOpus5","GPT6Astra(Max)V1","GPT6Astra(Medium)V1-TasksAssignedByOpus5","GPT6Astra(Ultra)V1","GPT6Astra(xhigh)V1","GPT6Luna(Max)V1","GPT6Luna(Max)V1-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.1Pro-TasksAssignedByOpus5","Gemini3.5Flash-TasksAssignedByOpus5","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V1","Gemini3.8Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V2","Gemini3.8Flash(high)V2-TasksAssignedByOpus5","Gemini_3_5_flash_high","Grok4.5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","Grok4.7(xhigh)V1","Grok4.7(xhigh)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode)V1","Haiku5.5(Ultracode)V1-TasksAssignedByOpus5","Haiku5.5(Ultracode·Max)V1","Haiku5.5(Ultracode·Max)V1-TasksAssignedByOpus5","Hy3","Hy3-TasksAssignedByOpus5","Hy4(high)V1","Hy4(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V1","Hy4Preview(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V2","Hy4Preview(high)V2-TasksAssignedByOpus5","KimiK3(Max)V2","KimiK3(Max)V2-TasksAssignedByOpus5","KimiK3(Max)V3","KimiK3.1Pro(Max)V1","KimiK3.1Pro(Max)V1-TasksAssignedByOpus5","KimiK3Max","KimiK3Max-TasksAssignedByOpus5","LongCat2.0","LongCat2.0-TasksAssignedByOpus5","MiMo2.6Flash(Unknown)V1","MiMo2.6Flash(Unknown)V1-TasksAssignedByOpus5","MiMo2.6Pro(Unknown)V1","MiMo2.6Pro(Unknown)V1-TasksAssignedByOpus5","MiMoXProPreview(Unknown)V1","MiMoXProPreview(Unknown)V1-TasksAssignedByOpus5","Mimo_2_5_Pro_high-1","MiniMaxM3(high)V2-TasksAssignedByOpus5","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V1","MiniMaxM3.1Flash(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1Flash(Max)V2","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5","MiniMax_M3_thinking-1","MuseSpark1.3Contributor(xhigh)V1","MuseSpark1.3Contributor(xhigh)V1-TasksAssignedByOpus5","MuseSpark1.3Contributor(xhigh)V2","MuseSpark1.3Contributor(xhigh)V2-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","Opus4.8Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Opus5(Max)V1","Opus5.5(Max)V1","Opus5Ultra-TasksAssignedByOpus5","Opus5Ultra-WebGL2","Opus_4_8_Max","Qwen3.7Max","Qwen3.8Flash(xhigh)V1","Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V1","Qwen3.8Max(Max)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V2","Qwen3.8Max(Max)V3","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","Qwen3.8MaxV2","Qwen3.8MaxV2-TasksAssignedByOpus5","Sonnet5.5(Max)V1","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Step5Preview(high)V1","Step5Preview(high)V1-TasksAssignedByOpus5"].map(id=>[id,SITE.personalRecommendationFor(SITE.byId(id))]))==="c1dc98eba1da52a0dd1415408e5b5d4a3b0e16c302ca4be6fa16bb7818953c64",'Preserve the 153 prior author reasons and current archive dashes');
 const solar261116PreviousAssets=solar261116PreviousWorks.flatMap(w=>[w.file,w.shot]).sort().map(path=>({path,sha256:createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex')}));
 check(solar261116PreviousAssets.length===306&&digest(solar261116PreviousAssets)==="4f7c871a04a85f848f370549392cb7a9ed70700c0d93ceddfdc112db2ef7e084",'Preserve all306 prior source files and reused screenshots');
 check(digest(HIDDEN_WORK_IDS.filter(id=>!RETIRED_SOLAR_261118_IDS.has(id)))==="5a6df8d3d422ac699a684fd3ead2a647057029e3645c3c912ef856a361136ca9"&&digest(PAIR_ORDER.slice(0,-1))==="d5f2b1ad51a878eef95845f407890ca2a8b4f7bf4dd071ab4c6a978db1c0f540"&&PAIR_ORDER.at(-1)==='hy4flash'&&context.window.PAIR_TITLES.hy4flash==='Hy 4 Flash (high)','Retain prior offline membership and the Hy4 Flash pair position');
-check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>!['Hy 4 Flash','Qwen 4 Max'].includes(family))))==="d35e8b36be37981b93be8354293eddb9d6ae29fade5565f7c870a2a761ab7d3d"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'Preserve every saved historical price and context band');
+check(digest(Object.fromEntries(Object.entries(context.window.MODEL_PRICES).filter(([family])=>!GPT62_PRICE_FAMILIES.has(family)&&!['Hy 4 Flash','Qwen 4 Max'].includes(family))))==="d35e8b36be37981b93be8354293eddb9d6ae29fade5565f7c870a2a761ab7d3d"&&digest(context.window.MODEL_CONTEXT_PRICES)==="0265511afa5ff143446f074803e0b96c25048a92e108af8a1ab004341e23bad8",'Preserve every saved historical price and context band');
 for(const expected of [
   {
     "id": "Hy4flash(high)V1",
@@ -1577,7 +1586,32 @@ for (const [part, maximum] of Object.entries({features:12, orbit:30, moons:12, m
   close(opusMaxScore.parts[part], maximum, 'Opus 5 (Max) full ' + part);
 check(!/97\.98|作者修订|作者人工|原始审查|审查原始|†/.test(SITE.scoreTipHtml(opusMax, opusMaxScore)), 'Opus 5 (Max) tooltip must contain only the current scoring treatment');
 
+// Reviewed GPT-6.2 works retain their original HTML and saved images.
+const gpt62SolarFixtures = [
+  {id:"GPT6.2Astra(Max)V1", group:"A", bytes:5314874, lines:1775, tech:"WebGL", msaa:false, total:80,
+    sourceSHA:"50178b518303224df5277f856ddbc2b45c240a780362e4ea1eaf9ecf50d39f0f", shotSHA:"bc1b40d050a8bf126e8f6e31007559908c036db81df4fe86c721ea5654ba662d",
+    zh:"憋了好久，以为会憋个大招，结果拉了一大坨。不要跟他讨论问题，因为他不会替你多想。", en:"It took forever. I figured it was cooking up something big, and it turned out to be a pile of crap. Don't bounce ideas off it. It won't think things through for you."},
+  {id:"GPT6.2Sol(Max)V1", group:"A", bytes:15451006, lines:2254, tech:"WebGL2", msaa:true, total:71,
+    sourceSHA:"99be54868e02c67fe78e476e066c92d6bfac1c8a9c9c53e1e60722787154211b", shotSHA:"630b5b1fde24a5c580fc26c70eb323e54b5f66ee6385721abd79f3963f33f774",
+    zh:"这到底是个什么东西啊", en:"What even is this?"},
+];
+for (const expected of gpt62SolarFixtures) {
+  const w = SITE.byId(expected.id), score = SITE.scoreFor(w), rec = SITE.personalRecommendationFor(w);
+  check(SITE.isVisibleWork(w) && w.group === expected.group && w.pair === null && w.tier === 2, w.id + ': T2 current one-line entry');
+  check(WORK_CREATION_DATES[w.id] === '261118' && SITE.environmentName(w) === 'Codex', w.id + ': creation date and environment');
+  for (const key of ['bytes','lines','tech','msaa']) check(w[key] === expected[key], w.id + ': reviewed ' + key);
+  for (const [path,sha] of [[w.file,expected.sourceSHA],[w.shot,expected.shotSHA]]) {
+    check(createHash('sha256').update(fs.readFileSync(asset(path))).digest('hex') === sha, path + ': preserve the reviewed bytes');
+  }
+  check(rec.reason === expected.zh && rec.symbols === '▽▽▽▽▽' && SITE.modelLogoFor(w) === 'assets/logos/openai.png', w.id + ': recommendation and logo');
+  check(score.manualAdjustment === -3 && score.total === expected.total && score.fatal === null, w.id + ': published T2 score');
+  const price = SITE.priceFor(w);
+  check(price.source === 'https://developers.openai.com/api/docs/pricing' && price.date === '2026-11-18', w.id + ': official Standard pricing source');
+}
+
 const expectedPrices = {
+  "GPT-6.2 Astra": [16,60,0.8],
+  "GPT-6.2 Sol": [4,15,0.2],
 "Hy 4 Flash":[0.07,0.281,0.003],
 "Qwen 4 Max":[1.5,4.5,0.075],
 
@@ -1925,7 +1959,7 @@ for (const key of ['priceInput','priceOutput','priceCache']) for (const directio
 check(SITE.priceCell(opusMax).includes('5 / 25 / 0.5'), 'Price cells must use input/output/cache order');
 check(SITE.priceCell(SITE.byId('DoubaoSeedEvolving0827(Max)V1')).includes('≈0.9 / ≈4.47 / ≈0.18'), 'Doubao 0827 prices must remain explicitly approximate');
 check(SITE.priceCell(SITE.byId('GPT5.6Sol(Max)V1')).includes('10 / 45 / 1*'), 'Sol must retain its pre-promotion reference marker');
-for (const [group, expectedCount] of [['A', 24], ['B', 20]]) {
+for (const [group, expectedCount] of [['A', 26], ['B', 20]]) {
   const groupWorks = visibleWorks.filter(work => work.group === group);
   const displayRows = SITE.tableDisplayRows(groupWorks, 'tier', 1, 'zh');
   for (const row of displayRows) {
@@ -2750,7 +2784,7 @@ for (const work of WORKS) {
   const inArchiveReview = SITE.isArchivedWork(work) && !isProtected;
   const inCurrentReview = SITE.isVisibleWork(work) && !isProtected;
   if (inCurrentReview || inArchiveReview) {
-    const reviewDate = SOLAR261116_IDS.has(id) ? '2026-11-16' : FABLE52_IDS.has(id) ? '2026-11-10' : HY4_IDS.has(id) ? '2026-11-04' : TERRA61_IDS.has(id) ? '2026-10-27' : KIMI31_PRO_IDS.has(id) ? '2026-10-24' : MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) || RETIRED_HY4_PREVIEW_IDS.has(id) || RETIRED_KIMIK3_IDS.has(id) || RETIRED_SOLAR_261118_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
+    const reviewDate = GPT62_SOLAR_IDS.has(id) ? '2026-11-18' : SOLAR261116_IDS.has(id) ? '2026-11-16' : FABLE52_IDS.has(id) ? '2026-11-10' : HY4_IDS.has(id) ? '2026-11-04' : TERRA61_IDS.has(id) ? '2026-10-27' : KIMI31_PRO_IDS.has(id) ? '2026-10-24' : MINIMAX_FLASH_IDS.has(id) ? '2026-10-20' : retiredDeepSeek0910Ids.has(id) || RETIRED_MINIMAX_PREVIEW_IDS.has(id) || RETIRED_HY4_PREVIEW_IDS.has(id) || RETIRED_KIMIK3_IDS.has(id) || RETIRED_SOLAR_261118_IDS.has(id) ? '2026-10-17' : inCurrentReview ? (["DeepSeekV4.1Flash1017(Max)V2","DeepSeekV4.1Flash1017(Max)V2-TasksAssignedByOpus5"].includes(id) ? '2026-10-18' : '2026-10-17') : '2026-10-15';
     check(score.reviewedAt === reviewDate && score.reviewVersion === 'V3-' + reviewDate.replaceAll('-', ''), `${id}: every reviewed work must retain its own completed V3 provenance`);
     check(score.visualBase === null, `${id}: reviewed works must not retain legacy visual scoring inputs`);
     if (inArchiveReview) check(Array.isArray(score.moonEvidence), `${id}: the archive review requires individual moon evidence`);
@@ -3357,7 +3391,7 @@ for (const lang of ['zh', 'en']) {
     else check(html === '' && pricing === '', lang + ': unrelated searches must clear both hidden comparison containers');
   };
   checkLunaHaikuHome(true);
-  check(countRows() === 24 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 24 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
+  check(countRows() === 26 && !body().includes('Claude Opus 5 (Max)') && body().includes('GPT-6 Astra (Ultra·Max)') && !body().includes('DeepSeek V4.1 Flash 0910 (Max)') && body().includes('DeepSeek V4.1 Flash 1017 (Max)') && body().includes('Claude Haiku 5.5 (Ultracode·Max)') && body().includes('Claude cli') && !body().includes('Claude Fable 5 (Max)'), lang + ': table must default to 24 active one-line model rows including DeepSeek 1017 and Haiku Ultracode·Max without Claude Fable 5');
   const defaultRows = body().match(/<tr\b[\s\S]*?<\/tr>/g) || [];
   const firstDefaultRow = defaultRows[0] || '', opusDefaultRow = defaultRows.find(row => row.includes('Opus5.5(Max)V1')) || '';
   check(firstDefaultRow.includes("Fable5.2(Max)V1") && (defaultRows[1] || '').includes('Opus5.5(Max)V1') && !body().includes('Fable5.1(Max)V1'), lang + ': the default one-line table must place unrated Fable5.2 Max first, with Opus5.5 second and Fable5.1 in the offline tab');
@@ -3403,7 +3437,7 @@ for (const lang of ['zh', 'en']) {
   one('#modelSearchInput').listeners.input();
   checkLunaHaikuHome(false);
   check(countRows() === 2 && !body().includes('Opus5(Max)V1'), lang + ': model search must filter the active one-line tab and exclude archived Opus Max');
-  check(one('#tableCountA').textContent === '2 / 24' && one('#tableCountB').textContent === '0 / 20', lang + ': both tabs must show filtered and collapsed model-row counts');
+  check(one('#tableCountA').textContent === '2 / 26' && one('#tableCountB').textContent === '0 / 20', lang + ': both tabs must show filtered and collapsed model-row counts');
   check(buttons[2].attributes['aria-pressed'] === 'true', lang + ': search must retain selected price field');
   tabs[2].listeners.click();
   check(countRows() === 1 && body().includes('Opus5(Max)V1') && !body().includes('recommend-symbol-up') && !body().includes('recommend-symbol-down'), lang + ': Opus 5 Max search must open its retained source only in the offline tab with a dash recommendation');
@@ -3430,7 +3464,7 @@ for (const lang of ['zh', 'en']) {
   checkLunaHaikuHome(true);
   check(countRows() === 20, lang + ': clearing search must preserve the selected detailed-spec tab');
   tabs[0].listeners.click();
-  check(countRows() === 24, lang + ': one-line tab must restore its 24 primary model rows');
+  check(countRows() === 26, lang + ': one-line tab must restore its 26 primary model rows');
   for (const query of ['Luna', 'Haiku']) {
     one('#modelSearchInput').value = query;
     one('#modelSearchInput').listeners.input();
@@ -3557,6 +3591,15 @@ for (const lang of ['zh', 'en']) {
    check(html.includes(price)&&html.includes('assets/logos/'+logo+'.png')&&!html.includes('score-pill is-high'),lang+': official price/logo and ordinary numeric badge '+id);
    for(const index of[2,3]){tabs[index].listeners.click();check(countRows()===0,lang+': new solar model stays out of archive '+id);}
   }
+  for (const expected of gpt62SolarFixtures) {
+    one('#modelSearchInput').value = SITE.byId(expected.id).model;
+    one('#modelSearchInput').listeners.input();
+    tabs[0].listeners.click();
+    const html = body();
+    check(countRows() === 1 && html.includes('data-tier="2"') && html.includes('>' + expected.total + '<') && html.includes('261118') && html.includes('Codex') && html.includes(lang === 'zh' ? expected.zh : expected.en), lang + ': GPT-6.2 visible metadata ' + expected.id);
+    check((html.match(/recommend-symbol-down/g)||[]).length === 5 && html.includes('view' + (lang === 'en' ? '.en' : '') + '.html?w=' + encodeURIComponent(expected.id)), lang + ': GPT-6.2 five negative symbols and model link');
+    for (const tab of tabs.slice(1)) { tab.listeners.click(); check(countRows() === 0, lang + ': GPT-6.2 belongs only to current one-line tab'); }
+  }
   one('#modelSearchInput').value='';one('#modelSearchInput').listeners.input();tabs[0].listeners.click();
 
   one('#modelSearchInput').value = 'DeepSeek V4.1 Flash 0910';
@@ -3669,6 +3712,7 @@ for (const [model, logo] of Object.entries(expectedModelLogos)) {
 }
 check(SITE.modelLogoFor({ model: 'MiMo 2.5 Pro (high)' }) === 'assets/logos/mi.png', 'MiMo must use the supplied Xiaomi logo');
 const expectedRecommendations = {
+  ...Object.fromEntries(gpt62SolarFixtures.map(work => [work.id, ['down', 5, work.zh]])),
 "Hy4flash(high)V1":["down",3,"弱智一个"],
 "Hy4flash(high)V1-TasksAssignedByOpus5":["down",3,"这东西放出来毫无意义"],
 "Qwen4Max(xhigh)V1":["up",1,"阿里云计费有问题，千万别用"],
@@ -4079,8 +4123,8 @@ check(zhHome.includes('第二梯队扣 3 分，第三梯队扣 6 分') && enHome
 check(zhHome.includes('基础 100 分 + 超额卫星 3 分 + 其他彗星 3 分') && zhHome.includes('理论最高分为 106') && zhHome.includes('哈雷彗星仍单独计 3 分'), 'Chinese scoring rules must explain the 100+3+3 structure and separate Halley score');
 check(enHome.includes('100 Base + 3 Extra Moons + 3 Other Comets') && enHome.includes('the theoretical maximum is 106') && enHome.includes('Halley’s Comet remains a separate 3-point item'), 'English scoring rules must explain the 100+3+3 structure and separate Halley score');
 for(const [page,label]of[[zhHome,'回到首页 cognitiveboundary.cc'],[enHome,'Back to homepage: cognitiveboundary.cc']])check(page.includes('<a href="https://cognitiveboundary.cc/">'+label+'</a>')&&page.includes('mailto:4833675@gmail.com')&&(page.match(/class="footer-egg"/g)||[]).length===2,'Footer adds the parent homepage while retaining email and both pendulum links');
-check(zhHome.includes('id="aAll">35') && enHome.includes('id="aAll">35') && zhHome.includes('id="bAll">27') && enHome.includes('id="bAll">27') && zhHome.includes('id="tAll">156') && enHome.includes('id="tAll">156'), 'Both home pages must publish 35/27 active counts and 156 retained entries before JavaScript runs');
-check(zhHome.includes('一句话组 34 件和文档组 27 件') && enHome.includes('prefer the 23 paired results over treating the 34 rated one-line and 27 rated detailed-spec works'), 'Both full summaries must use the current paired and group counts');
+check(zhHome.includes('id="aAll">37') && enHome.includes('id="aAll">37') && zhHome.includes('id="bAll">27') && enHome.includes('id="bAll">27') && zhHome.includes('id="tAll">158') && enHome.includes('id="tAll">158'), 'Both home pages must publish 37/27 active counts and 158 retained entries before JavaScript runs');
+check(zhHome.includes('一句话组 36 件和文档组 27 件') && enHome.includes('prefer the 23 paired results over treating the 36 rated one-line and 27 rated detailed-spec works'), 'Both full summaries must use the current paired and group counts');
 check(zhHome.includes('23 组同模型') && enHome.includes('23 same-model') && ["48.85 / 70","60.87 / 70","31.62 / 36","32.03 / 36"].every(value => zhHome.includes(value) && enHome.includes(value)), 'Both home pages must publish all four independently calculated V3 23-pair statistics');
 check(zhHome.includes('详细文档版以实际任务原文为验收依据') && zhHome.includes('任务依从与物理正确性的区别') && enHome.includes('Detailed-spec entries are assessed against the actual task.') && enHome.includes('distinguishes task compliance from physical correctness'), 'Both home pages must preserve the task-attribution rule and distinguish credited task compliance from physical correctness');
 check(!zhHome.includes('没有显示稳定提升') && !zhHome.includes('没有显示出稳定提升') && !enHome.includes('no stable lift'), 'The revised sample summaries must not retain a stale claim that execution failed to improve after the corrected task-attribution review');
@@ -4163,10 +4207,10 @@ check(JSON.stringify(stats.pairedSummary.exact.outcomes) === JSON.stringify({"im
 const EXPECTED_WHOLE_GROUP = {
   "all": {
     "a": [
-      34,
-      50.58705882352939,
-      31.98676470588235,
-      80.01499999999999
+      36,
+      50.22444444444443,
+      32.13287037037037,
+      79.77398148148147
     ],
     "b": [
       27,
@@ -4177,10 +4221,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferences": {
     "a": [
-      33,
-      50.18060606060604,
-      31.865151515151513,
-      79.40939393939392
+      35,
+      49.83085714285713,
+      32.02238095238095,
+      79.19609523809522
     ],
     "b": [
       27,
@@ -4191,10 +4235,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutTier4": {
     "a": [
-      34,
-      50.58705882352939,
-      31.98676470588235,
-      80.01499999999999
+      36,
+      50.22444444444443,
+      32.13287037037037,
+      79.77398148148147
     ],
     "b": [
       25,
@@ -4205,10 +4249,10 @@ const EXPECTED_WHOLE_GROUP = {
   },
   "withoutReferencesOrTier4": {
     "a": [
-      33,
-      50.18060606060604,
-      31.865151515151513,
-      79.40939393939392
+      35,
+      49.83085714285713,
+      32.02238095238095,
+      79.19609523809522
     ],
     "b": [
       25,

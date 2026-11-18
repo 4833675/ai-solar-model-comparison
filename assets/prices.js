@@ -26,6 +26,8 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["GPT-6.2 Astra",16,60,0.8,"openai",null,"2026-11-18"],
+    ["GPT-6.2 Sol",4,15,0.2,"openai",null,"2026-11-18"],
     ["Hy 4 Flash",0.07,0.281,0.003,"hy",null,"2026-11-16"],
     ["Qwen 4 Max",1.5,4.5,0.075,"qwen",null,"2026-11-16"],
 

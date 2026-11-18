@@ -3,6 +3,156 @@
   'use strict';
 
   window.SCORES = {
+"GPT6.2Astra(Max)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 0,
+    "aces": 0,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 5,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "Moon",
+      "parent": "Earth",
+      "quality": 1,
+      "periodDays": 27.32,
+      "actualInclinationDeg": 5.039383905817747,
+      "reference": "J2000 ecliptic",
+      "sourceLines": "L757–763/L815–825/L1123–1132",
+      "reason": "实际相对母体星历和有向轨道正确。典型时刻相对母体距离为实体半径的 227.2 倍。"
+    },
+    {
+      "id": "Io",
+      "parent": "Jupiter",
+      "quality": 1,
+      "periodDays": 1.769,
+      "actualInclinationDeg": 0.028054844181235303,
+      "reference": "Jupiter north pole",
+      "sourceLines": "L757–763/L815–825/L1123–1132",
+      "reason": "实际相对母体星历和有向轨道正确。典型时刻相对母体距离为实体半径的 232.5 倍。"
+    },
+    {
+      "id": "Europa",
+      "parent": "Jupiter",
+      "quality": 1,
+      "periodDays": 3.551,
+      "actualInclinationDeg": 0.44930984199563334,
+      "reference": "Jupiter north pole",
+      "sourceLines": "L757–763/L815–825/L1123–1132",
+      "reason": "实际相对母体星历和有向轨道正确。典型时刻相对母体距离为实体半径的 430.6 倍。"
+    },
+    {
+      "id": "Ganymede",
+      "parent": "Jupiter",
+      "quality": 1,
+      "periodDays": 7.155,
+      "actualInclinationDeg": 0.13395242125179602,
+      "reference": "Jupiter north pole",
+      "sourceLines": "L757–763/L815–825/L1123–1132",
+      "reason": "实际相对母体星历和有向轨道正确。典型时刻相对母体距离为实体半径的 405.7 倍。"
+    },
+    {
+      "id": "Callisto",
+      "parent": "Jupiter",
+      "quality": 1,
+      "periodDays": 16.689,
+      "actualInclinationDeg": 0.2643220254870509,
+      "reference": "Jupiter north pole",
+      "sourceLines": "L757–763/L815–825/L1123–1132",
+      "reason": "实际相对母体星历和有向轨道正确。典型时刻相对母体距离为实体半径的 786.5 倍。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-18",
+  "reviewVersion": "V3-20261118",
+  "note": "原生 WebGL 1 离线运行。八颗行星使用 Astronomy Engine 星历，轨道、方向与当前时刻经 JPL DE442s 抽样校验。地月和木星近景展示月球、Io、Europa、Ganymede、Callisto 五颗有效卫星。土星双向环影、1366 颗模拟小行星和北美日食回放实际绘制。日冕是渐变与贴图合成，Bloom 和 ACES 缺项。大气为简化边缘辉光。未实现哈雷或其他彗星。192 段密切椭圆在真实比例下会偏离实体，样本最大为海王星约 23.5 个半径。拖拽、正交缩放、聚焦、快进跟随、物理暂停和倒放均有效，复位视角保留日期及近景。无致命错误。"
+},
+"GPT6.2Sol(Max)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 0,
+    "bloom": 0,
+    "aces": 0,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 1,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "Moon",
+      "parent": "Earth",
+      "quality": 1,
+      "periodDays": 27.32166,
+      "actualInclinationDeg": 5.039425064443819,
+      "reference": "J2000 ecliptic",
+      "sourceLines": "L650–652/L792–817/L825–830",
+      "reason": "月球相对地球中心，数值月地距离约394769 km、实际有向倾角5.039°，地心位置与原始DE442s在抽样中相差不到10 m。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-18",
+  "reviewVersion": "V3-20261118",
+  "note": "原生 WebGL 2 离线运行，内置 JPL DE442s 星历和 IAU 自转模型。在 10 个时刻对 110 个位置样本独立复算，相对官方原始系数最大位置差约 18.2 m。月球为唯一卫星。土星双向环影、日食和月食预设有效。没有小行星带、哈雷或其他彗星、Bloom 和 ACES，大气为简化边缘辉光。真实比例下外行星轨道线因采样疏而与星体有偏差，1986-02-09 冥王星距离轨道折线最近点约 211 个半径。日常拖拽缩放、聚焦跟随、暂停与倒放有效；在时间范围两端切向域内后按播放会立即停住，手动选到范围内的日期可继续。日期与全景分开恢复。无致命错误。"
+},
 "Hy4flash(high)V1":{
   "reference": false,
   "featureMap": {

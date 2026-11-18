@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,8,'One pinned example and seven published submissions');
+assert.equal(BLACKHOLE_WORKS.length,11,'One pinned example and ten published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -71,8 +71,41 @@ const hks=blackholeScore(haiku);close(hks.base,538/9);close(hks.advanced,39);clo
 assert.equal(hash(await readFile(haiku.file)),'dddc5d8784cac43b3ef85e305d724340aa401d796ba32d7400a3d24a503d23f3');
 assert.equal(hash(await readFile(haiku.shot)),'3cb08f74dfeb6f4013d032ae6fee4d2eb5954681a7a26028ebcaa1610f819dd6');
 assert.equal((await readFile(haiku.file)).length,haiku.bytes);assert.equal((await readFile(haiku.file,'utf8')).split('\n').length-1,haiku.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,haiku.id,sol.id,hy.id,d.id,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,d.id,hy.id,sol.id,haiku.id,sonnet.id,o.id]);
+const latest = [
+  {id:"GPT6.2Astra(Ultra·Max)(Codex)V1", tier:1, environment:"Codex", reason:"不要跟他讨论问题，因为他不会替你多想",
+    reasonEn:"Don't bounce ideas off it. It won't think things through for you", logo:"openai", priceModel:"GPT-6.2 Astra",
+    advanced:39.5, free:12, exact:111.5, total:112,
+    sourceSHA:"09afafc398e2fc066e4c0e6f5246f0cb43feba0b183819938f8f5085b4dce5da", shotSHA:"d8b22c563fde6f19b07860fc41b1d385a36286cdd24c1f97f98f78a93f900129"},
+  {id:"GPT6.2Sol(Ultra·Max)(Codex)V1", tier:1, environment:"Codex", reason:"无话可说、无法形容",
+    reasonEn:"I'm speechless. I can't even describe it", logo:"openai", priceModel:"GPT-6.2 Sol",
+    advanced:40, free:4, exact:104, total:104,
+    sourceSHA:"df5741cba51d7b992da206f71ce3ee823e0e02e33a67e36cd668562d222eed9d", shotSHA:"48caee1153c80408e50e9f4d3fe0f3fe4912741bb006d2545148efa25bfec13c"},
+  {id:"KimiK3.1Pro(Max)(ZCode)V1", tier:2, environment:"ZCode", reason:"如此狼狈",
+    reasonEn:"What a sorry showing", logo:"kimi", priceModel:"Kimi K3.1 Pro",
+    advanced:38.5, free:0, exact:95.5, total:96,
+    sourceSHA:"37e050e4ec81102f3812483b2390e003cf42a85b9c29101bc4f30b74c9418ad6", shotSHA:"8757bc6795edcc55739f614593996673b14abb36685964ea1fb99a1d732f55f0"},
+];
+for (const expected of latest) {
+  const work = BLACKHOLE_WORKS.find(w => w.id === expected.id);
+  assert.ok(work, expected.id);
+  for (const key of ['tier','environment','reason','reasonEn','logo','priceModel']) assert.equal(work[key], expected[key], expected.id + ' ' + key);
+  assert.equal(work.date, '261118');
+  assert.equal(work.recommendation, '▽▽▽▽▽');
+  assert.equal(work.score.reviewedAt, '2026-11-18');
+  assert.equal(work.score.performanceDeduction, undefined);
+  assert.equal(work.score.fatal, null);
+  const score = blackholeScore(work);
+  assert.equal(score.base, 60);
+  for (const key of ['advanced','free','exact','total']) assert.equal(score[key], expected[key], expected.id + ' ' + key);
+  assert.equal(score.adjustment, expected.tier === 2 ? -3 : 0);
+  assert.equal(hash(await readFile(work.file)), expected.sourceSHA);
+  assert.equal(hash(await readFile(work.shot)), expected.shotSHA);
+  assert.equal((await readFile(work.file)).length, work.bytes);
+  assert.equal((await readFile(work.file,'utf8')).split('\n').length-1, work.lines);
+}
+const [astraId,sol62Id,kimiId] = latest.map(e => e.id);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,haiku.id,astraId,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,astraId,haiku.id,sonnet.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
