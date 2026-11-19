@@ -3,6 +3,224 @@
   'use strict';
 
   window.SCORES = {
+"GPT6.2Astra(light)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145,
+      "expectedInclinationDeg": 5.145,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用黄道面。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19,
+      "expectedInclinationDeg": 0.19,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.9,
+      "expectedInclinationDeg": 156.9,
+      "reason": "实际相对母体圆轨道按任务周期闭合，有向角动量相对海王星赤道法向为156.9°，折叠倾角再用负周期，只反向一次。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 4.5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生离线 WebGL2。行星和哈雷使用任务给定的 J2000 世纪根数及开普勒求解；压缩和线性比例的轨道线均贴合。八颗卫星都通过了周期、母星和参考面核查，海卫一 156.9° 逆行。双向环影、运动小天体带、六级泛光、全画面 ACES 和视线密度大气有效。卫星信息卡省略轨道速度等实时读数，哈雷有双彗尾但没有独立绘制彗发，实现完整性 4.5/5。拖拽、滚轮、双指、聚焦跟随、暂停、正倒放和此刻可用。没有观察到致命错误。八颗卫星及一颗哈雷，无额外奖励。",
+  "reviewedAt": "2026-11-19",
+  "reviewVersion": "V3-20261119"
+},
+"GPT6.2Sol(Max)V1-TasksAssignedByOpus5":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145,
+      "expectedInclinationDeg": 5.145,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用黄道面。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19,
+      "expectedInclinationDeg": 0.19,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.9,
+      "expectedInclinationDeg": 156.9,
+      "reason": "实际相对母体圆轨道按任务周期闭合，有向角动量相对海王星赤道法向为156.9°，折叠倾角再用负周期，只反向一次。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "实际相对母体圆轨道按任务周期闭合，采用母行星赤道面。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "原生离线 WebGL2。J2000 世纪根数、开普勒和缩放下同源轨道线吻合；八颗卫星周期闭合、母星与参考面正确，海卫一 156.9° 逆行。双向环影、运动小天体带、六级泛光后全画面 ACES、视线密度大气、哈雷彗发与双彗尾均有效。卫星卡区分日心轨道速度和绕母行星近远拱点。拖拽、滚轮、双指、平滑聚焦跟随、暂停、正倒放和此刻通过运行检查。没有观察到致命错误。任务覆盖满分，八颗卫星及一颗哈雷，无额外奖励。",
+  "reviewedAt": "2026-11-19",
+  "reviewVersion": "V3-20261119"
+},
 "GPT6.2Astra(Max)V1":{
   "reference": false,
   "featureMap": {

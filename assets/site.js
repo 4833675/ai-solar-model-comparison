@@ -37,6 +37,18 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"GPT6.2Astra(light)V1-TasksAssignedByOpus5":{
+  "direction": "down",
+  "count": 5,
+  "zh": "沦落到只能按规定动作执行了吗？",
+  "en": "Is it down to just following the prescribed steps now?"
+},
+"GPT6.2Sol(Max)V1-TasksAssignedByOpus5":{
+  "direction": "down",
+  "count": 5,
+  "zh": "沦落到只能按规定动作执行了吗？",
+  "en": "Is it down to just following the prescribed steps now?"
+},
 "GPT6.2Astra(Max)V1":{
   "direction": "down",
   "count": 5,
