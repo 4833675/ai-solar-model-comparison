@@ -339,6 +339,37 @@ export const BLACKHOLE_WORKS = [{
     note: "自动项 68.125/68.5，六项画布一致性与 14 项自检通过。热斑、引力波、潮汐瓦解各 4 分，微透镜放大率与 S 星团各 3 分。视界坠落演示到视界外即重置，EHT 滤波使用固定模糊。实际运行超过 10 分钟，场景通过尺寸变化和 62.5 秒标签页切换检查。",
     noteEn: "The automated checks earn 68.125/68.5. All six canvas consistency checks and 14 self-checks pass. The hotspot, gravitational-wave chirp, and tidal disruption earn four points each. Microlensing magnification and the S-star cluster earn three each. The plunge demo resets outside the horizon, and the EHT filter uses a fixed blur. The main scene passed over ten minutes of offline operation, resizing, and a 62.5-second background tab switch."
   }
+}, {
+  id: "Gemini4Hydrogen(xhigh)(Antigravity)V1", model: "Gemini 4 Hydrogen (xhigh)",
+  file: "blackhole/Gemini4Hydrogen(xhigh)(Antigravity)V1.html",
+  shot: "assets/shots/blackhole/Gemini4Hydrogen(xhigh)(Antigravity)V1.jpg",
+  date: "261122", tier: 2, environment: "Antigravity", logo: "gemini",
+  recommendation: "△△", reason: "Antigravity太他妈烂了",
+  reasonEn: "Antigravity is fucking awful",
+  tech: "WebGL2", lines: 4327, bytes: 180929, priceModel: "Gemini 4 Hydrogen",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-22",
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:54.9,renderScale:.5,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:8,score:16/9},G3:3,G4a:2,G4b:.5 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,
+      J1:3,J2:3,J3:2,J4:2,J5:1,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:"第一人称跳进视界",usable:1,number:1,computed:1,integrated:1},
+      {name:"吸积盘热斑与光变曲线",usable:1,number:1,computed:1,integrated:1},
+      {name:"GW150914 啁啾声化",usable:1,number:1,computed:1,integrated:1},
+      {name:"银心 S 星团与相对论红移",usable:1,number:1,computed:1,integrated:1},
+      {name:"EHT 成像模拟",usable:1,number:0,computed:0,integrated:1}
+    ], rootCauses: [], fatal: null,
+    deductions: [
+      {points:2/9,zh:"倒放时主时钟从 138.33 M 回到 76.09 M，粒子的坐标时仍停在 138.27 M，轨迹冻结。九个控件中八个有效。",en:"During reverse playback, the main clock goes from 138.33 M to 76.09 M while the particle's coordinate time stays at 138.27 M. Eight of the nine controls work fully."},
+      {points:.5,zh:"六个预设都能切换。顺行半径有物理单位，逆行光子轨道和逆行 ISCO 半径只列 M。",en:"All six presets switch correctly. The retrograde photon-orbit and ISCO radii are shown only in M."},
+      {points:.5,zh:"质量壳条件把 pᵣ² 的负舍入误差判成禁区，误拒三组稳定圆轨道（a=0、r₀=20 M，a=0.9、r₀=2.5 M，a=0.998、r₀=1.6 M）。",en:"The mass-shell check treats tiny negative roundoff in pᵣ² as a forbidden orbit and rejects three stable circular launches: (a, r₀) = (0, 20 M), (0.9, 2.5 M), and (0.998, 1.6 M)."},
+      {points:.5,zh:"a=0.998、r₀=3 M 时，牛顿对照与相对论粒子采用不同坐标转换，画面起点分别为 3 M 与 3.16165 M，切向速度也不同。",en:"At a=0.998 and r₀=3 M, the Newtonian comparison starts at 3 M and the relativistic particle starts at 3.16165 M. Their tangential speeds also differ because the two paths use different coordinate conversions."}
+    ],
+    note: "自动项 68.5/68.5，六项画布一致性与 17 项自检均通过。自由落体、热斑、引力波和 S 星团各 4 分。EHT 成像得 2 分，Sgr A* 与 M87* 实测亮环直径超出参考值约 18% 和 21%。默认画面通过超过 10 分钟离线运行、尺寸变化和实际隐藏标签页 63 秒检查。",
+    noteEn: "All 68.5 automated points, six canvas consistency checks, and 17 self-checks pass. Free fall, the hotspot, gravitational waves, and the S-star cluster earn four points each. EHT imaging earns two points. Its measured ring diameters for Sgr A* and M87* exceed the reference by about 18% and 21%. The default scene passed over ten minutes of offline operation, resizing, and 63 seconds in a hidden tab."
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

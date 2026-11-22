@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,13,'One pinned example and twelve published submissions');
+assert.equal(BLACKHOLE_WORKS.length,14,'One pinned example and thirteen published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -158,8 +158,32 @@ assert.equal(hash(await readFile(argon.file)), 'b0b38dc0109de04bb0cc1d14ad577ea4
 assert.equal(hash(await readFile(argon.shot)), '296580f30a3fdac2766964e90fb5665d41f45bbf2d10e370b637e0a0194a2a72');
 assert.equal((await readFile(argon.file)).length, argon.bytes);
 assert.equal((await readFile(argon.file, 'utf8')).split('\n').length - 1, argon.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,neon.id,haiku.id,astraId,argon.id,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,argon.id,astraId,neon.id,haiku.id,sonnet.id,o.id]);
+const hydrogen = BLACKHOLE_WORKS.find(work => work.id === 'Gemini4Hydrogen(xhigh)(Antigravity)V1');
+assert.ok(hydrogen);
+assert.deepEqual(
+  [hydrogen.model, hydrogen.date, hydrogen.tier, hydrogen.environment, hydrogen.recommendation, hydrogen.reason, hydrogen.reasonEn],
+  ['Gemini 4 Hydrogen (xhigh)', '261122', 2, 'Antigravity', '△△', 'Antigravity太他妈烂了', 'Antigravity is fucking awful'],
+);
+assert.equal(hydrogen.logo, 'gemini');
+assert.equal(hydrogen.tech, 'WebGL2');
+assert.equal(hydrogen.priceModel, 'Gemini 4 Hydrogen');
+assert.equal(hydrogen.score.reviewedAt, '2026-11-22');
+assert.equal(hydrogen.score.fatal, null);
+assert.equal(hydrogen.score.base.F3.score, 4);
+const hydrogenScore = blackholeScore(hydrogen);
+close(hydrogenScore.base, 1067/18);
+close(hydrogenScore.advanced, 39);
+close(hydrogenScore.exact, 2039/18);
+assert.equal(hydrogenScore.free, 18);
+assert.equal(hydrogenScore.adjustment, -3);
+assert.equal(hydrogenScore.performanceDeduction, 0);
+assert.equal(hydrogenScore.total, 113);
+assert.equal(hash(await readFile(hydrogen.file)), 'b739d151712e41be6fe6d004210068566717b8da309956877bfc0ed05659d2b0');
+assert.equal(hash(await readFile(hydrogen.shot)), '5435421e6e9e1cf860dd6cda2f36884aeaa93995d318de70b47b36f3dd2ad505');
+assert.equal((await readFile(hydrogen.file)).length, hydrogen.bytes);
+assert.equal((await readFile(hydrogen.file, 'utf8')).split('\n').length - 1, hydrogen.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,neon.id,haiku.id,hydrogen.id,astraId,argon.id,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,argon.id,astraId,hydrogen.id,neon.id,haiku.id,sonnet.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
