@@ -49,6 +49,7 @@ if(viewer){
     button.addEventListener('click',()=>{if(sortKey===th.dataset.k)sortDirection*=-1;else{sortKey=th.dataset.k;sortDirection=sortKey==='score'||sortKey==='recommendation'?-1:1;}if(pop.matches(':popover-open'))pop.hidePopover();render();});
   });
   const pop=document.getElementById('bh-score-detail');let active=null,pinned=false;
+  let closing=false;
   function place(){
     if(!active||!pop.matches(':popover-open'))return;
     const r=active.getBoundingClientRect(),above=Math.max(0,r.top-22),below=Math.max(0,innerHeight-r.bottom-22),useAbove=above>=below;
@@ -65,10 +66,12 @@ if(viewer){
     pop.querySelector('.bh-dismiss').onclick=()=>{pinned=false;pop.hidePopover();};
   }
   tbody.addEventListener('pointerover',e=>{const b=e.target.closest('[data-score-id]');if(b&&b!==active&&!pinned)show(b);});
-  tbody.addEventListener('focusin',e=>{const b=e.target.closest('[data-score-id]');if(b&&!pinned)show(b);});
+  tbody.addEventListener('focusin',e=>{const b=e.target.closest('[data-score-id]');if(b&&!pinned&&!closing)show(b);});
   tbody.addEventListener('click',e=>{const b=e.target.closest('[data-score-id]');if(!b)return;if(pinned&&active===b){pinned=false;pop.hidePopover();}else{show(b);pinned=true;}});
   tbody.addEventListener('pointerout',e=>{const b=e.target.closest('[data-score-id]');if(b&&!b.contains(e.relatedTarget))setTimeout(()=>{if(!pinned&&!pop.matches(':hover')&&document.activeElement!==b&&pop.matches(':popover-open'))pop.hidePopover();},150);});
   pop.addEventListener('pointerleave',()=>{if(!pinned&&document.activeElement!==active&&pop.matches(':popover-open'))pop.hidePopover();});
-  pop.addEventListener('toggle',e=>{if(e.newState==='closed'){pinned=false;active?.setAttribute('aria-expanded','false');active=null;}});
+  // The browser can restore focus to a score button while the popover is closing.
+  pop.addEventListener('beforetoggle',e=>{closing=e.newState==='closed';});
+  pop.addEventListener('toggle',e=>{if(e.newState==='closed'){closing=false;pinned=false;active?.setAttribute('aria-expanded','false');active=null;}});
   addEventListener('resize',place);addEventListener('scroll',place,{passive:true});
 }
