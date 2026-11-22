@@ -4,6 +4,9 @@
 (function () {
   'use strict';
   const sources = {
+    gemini4neon: "https://aistudio.google.com/docs/pricing#gemini-4-neon",
+    gemini4hydrogen: "https://aistudio.google.com/docs/pricing#gemini-4-hydrogen",
+    gemini4argon: "https://aistudio.google.com/docs/pricing#gemini-4-argon",
     fable52: "https://platform.claude.com/docs/en/models/fable-5-2/overview",
     terra61: "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
     kimi31pro: "https://platform.kimi.ai/",
@@ -26,6 +29,9 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Gemini 4 Neon",3,15,0.15,"gemini4neon",null,"2026-11-22"],
+    ["Gemini 4 Hydrogen",1.5,7.5,0.075,"gemini4hydrogen",null,"2026-11-22"],
+    ["Gemini 4 Argon",4,20,0.2,"gemini4argon","gemini4ArgonList","2026-11-22"],
     ["GPT-6.2 Astra",16,60,0.8,"openai",null,"2026-11-18"],
     ["GPT-6.2 Sol",4,15,0.2,"openai",null,"2026-11-18"],
     ["Hy 4 Flash",0.07,0.281,0.003,"hy",null,"2026-11-16"],

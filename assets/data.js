@@ -6,6 +6,9 @@ window.PAIR_NOTES={};
 window.PAIR_TITLES={"gpt62sol":"GPT-6.2 Sol (Max)","hy4flash":"Hy 4 Flash (high)","hy4":"Hy 4 (high)","gpt61terra":"GPT-6.1 Terra (Ultra·Max) #1","kimik31pro":"Kimi K3.1 Pro (Max)","minimax31flashv1":"MiniMax M3.1 Flash (Max) #1","deepseekv41flash1017v2":"DeepSeek V4.1 Flash 1017 (Max) #2","deepseekv41flash1017":"DeepSeek V4.1 Flash 1017 (Max) #1","opus5":"Claude Opus 5 (Ultracode·xhigh)","gpt56sol":"GPT-5.6 Sol (Ultra·Max)","opus48":"Claude Opus 4.8 (Max → Ultracode·xhigh)","gpt56terra":"GPT-5.6 Terra (Ultra·Max)","kimik3":"Kimi K3 (Max) #1","kimik3v2":"Kimi K3 (Max) #2","sonnet5":"Claude Sonnet 5 (Ultracode·xhigh)","deepseekv4pro0813":"DeepSeek V4 Pro 0813 (Max) #1","deepseekv4pro0813v2":"DeepSeek V4 Pro 0813 (Max) #2","glm53v1":"GLM 5.3 (Max) #1","glm53v2":"GLM 5.3 (Max) #2","glm52":"GLM 5.2 (Max)","qwen38max":"Qwen 3.8 Max (Max)","grok46":"Grok 4.6 (xHigh)","gpt55":"GPT-5.5 (xHigh)","gemini35":"Gemini 3.5 Flash (high)","gemini36flash":"Gemini 3.6 Flash (high)","deepseekv4flash0731":"DeepSeek V4 Flash 0731 (Max)","gemini37flash":"Gemini 3.7 Flash (high)","longcat":"LongCat 2.0 (high)","hy3":"Hy 3 (high)","doubao":"Doubao Seed Evolving 0827 (Max)","hy4v1":"Hy 4 Preview (high) #1","hy4v2":"Hy 4 Preview (high) #2","glm53flashv2":"GLM 5.3 Flash (Max) #2","minimax":"MiniMax M3 (high)","qwen38flash":"Qwen 3.8 Flash (xHigh)","musespark13":"MuseSpark 1.3 Contributor (xHigh) #1","gemini38flashv1":"Gemini 3.8 Flash (high) #1","gemini38flashv2":"Gemini 3.8 Flash (high) #2","musespark13v2":"MuseSpark 1.3 Contributor (xHigh) #2","omenalpha":"Omen Alpha (Max)","deepseekv41flash0910":"DeepSeek V4.1 Flash 0910 (Max)","mimoxpropreview":"MiMo X Pro Preview (Unknown)","step5preview":"Step 5 Preview (high)","mimo26flash":"MiMo 2.6 Flash (Unknown)","mimo26pro":"MiMo 2.6 Pro (Unknown)","grok47":"Grok 4.7 (xHigh)","minimax31flash":"MiniMax M3.1 Flash Preview (Max)","gpt6astralight":"GPT-6 Astra (Light)","gpt6luna":"GPT-6 Luna (Max)","haiku55":"Claude Haiku 5.5 (Ultracode·xhigh)","haiku55max":"Claude Haiku 5.5 (Ultracode·Max)","gpt61sol":"GPT-6.1 Sol (Ultra·Max)"};
 window.HIDDEN_WORK_IDS=["DeepSeek-V4-Flash-0731","DeepSeek-V4-Flash-0731-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V2-TasksAssignedByOpus5","DeepSeek-V4-Flash-0731-V3-TasksAssignedByOpus5","Qwen3.8Max-TasksAssignedByOpus5","Qwen3.8MaxV2-TasksAssignedByOpus5","Qwen3.8MaxV2","Qwen3.8Max-inQoder","Qwen3.8MaxV1-inQoder","DeepSeekProMax-TasksAssignedByOpus5","DeepSeek_V4_Pro_high-1","DeepSeek_V4_Pro_high-2","DeepSeek_V4_Pro_high-3","GPT5.6SolUltra","GLM_5_1_high-1","Grok4.5","Hy3","Hy3-TasksAssignedByOpus5","GLM5.2Max","GLM5.2Max-TasksAssignedByOpus5","Qwen3.7Max","Gemini_3_5_flash_high","Gemini3.5Flash-TasksAssignedByOpus5","OmenAlpha(Max)V1","OmenAlpha(Max)V1-TasksAssignedByOpus5","GPT5.5xHigh-TasksAssignedByOpus5","GPT_5_5_xhigh","Gemini3.6Flash(high)V0","Gemini3.6Flash-TasksAssignedByOpus5","Gemini3.7Flash(high)V1","Gemini3.7Flash(high)V1-TasksAssignedByOpus5","Grok4.6(xhigh)V1","Grok4.6(xhigh)V1-TasksAssignedByOpus5","LongCat2.0-TasksAssignedByOpus5","LongCat2.0","Mimo_2_5_Pro_high-1","Opus_4_8_Max","Opus4.8Ultra-TasksAssignedByOpus5","GPT5.6Sol(high)V1","GPT5.6Luna(Max)V1","GPT5.6Luna(Max)V2","GPT5.6LunaMax-TasksAssignedByOpus5","GPT5.6Sol(Max)V1","GPT5.6SolUltra-TasksAssignedByOpus5","GPT5.6Sol(Max)V1-TasksAssignedByOpus5","GPT5.6Sol(xhigh)V1-TasksAssignedByOpus5","GPT5.6Sol(high)V1-TasksAssignedByOpus5","GPT5.6Sol(Medium)V1","GPT5.6Sol(Medium)V1-TasksAssignedByOpus5","GPT5.6Sol(Light)V1","GPT5.6Sol(Light)V1-TasksAssignedByOpus5","GPT5.6SolUltra-WebGL2","GPT5.6Sol(xhigh)V1","GPT5.6Sol(xhigh)V2","GPT5.6Sol(xhigh)V3","GPT5.6TerraUltra-Three","GPT5.6TerraUltra-TasksAssignedByOpus5","Sonnet5Ultra","Sonnet5Ultra-TasksAssignedByOpus5","Opus5(Max)V1","MiniMax_M3_thinking-1","MiniMaxM3-TasksAssignedByOpus5","MiniMaxM3(high)V2-TasksAssignedByOpus5","Opus5Ultra-TasksAssignedByOpus5","Opus5(Low)V1-TasksAssignedByOpus5","Gemini3.1Pro-TasksAssignedByOpus5","DeepSeekV4.1Flash0910(Max)V1","DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5","MiniMaxM3.1FlashPreview(Max)V1","MiniMaxM3.1FlashPreview(Max)V1-TasksAssignedByOpus5","Hy4Preview(high)V1","Hy4Preview(high)V2","Hy4Preview(high)V1-TasksAssignedByOpus5","Hy4Preview(high)V2-TasksAssignedByOpus5","KimiK3Max-TasksAssignedByOpus5","KimiK3Max","KimiK3(Max)V2-TasksAssignedByOpus5","KimiK3(Max)V2","KimiK3(Max)V3","Fable5.1(Max)V1","DoubaoSeedEvolving0827(Max)V1","DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5","Qwen3.8Flash(xhigh)V1","Qwen3.8Flash(xhigh)V1-TasksAssignedByOpus5","Qwen3.8Max(Max)V1","Qwen3.8Max(Max)V2","Qwen3.8Max(Max)V3","Qwen3.8Max(Max)V1-TasksAssignedByOpus5","Step5Preview(high)V1","Step5Preview(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V1","Gemini3.8Flash(high)V1-TasksAssignedByOpus5","Gemini3.8Flash(high)V2","Gemini3.8Flash(high)V2-TasksAssignedByOpus5"];
 window.WORK_CREATION_DATES={
+ "Gemini4Neon(xhigh)V1":"261122",
+ "Gemini4Hydrogen(xhigh)V1":"261122",
+ "Gemini4Argon(high)V1":"261122",
  "GPT6.2Astra(light)V1-TasksAssignedByOpus5":"261119",
  "GPT6.2Sol(Max)V1-TasksAssignedByOpus5":"261119",
  "GPT6.2Astra(Max)V1":"261118",
@@ -184,6 +187,118 @@ window.WORK_CREATION_DATES={
  "DeepSeekV4.1Flash0910(Max)V1-TasksAssignedByOpus5":"260908"
 };
 window.WORKS=[
+{
+  "id": "Gemini4Neon(xhigh)V1",
+  "file": "models/Gemini4Neon(xhigh)V1.html",
+  "model": "Gemini 4 Neon (xhigh)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 254220,
+  "lines": 6276,
+  "title": "SOLARIS · 太阳系精密天体运行模型",
+  "needsFloat": false,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "comet",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Gemini4Neon(xhigh)V1.jpg",
+  "jsErrors": 0,
+  "note": "原生离线 WebGL2，双向土星环影、运动小天体带、HDR 泛光后的全画面 ACES 均有效。大气壳层使用依视角的边缘散射近似，按部分实现。15 颗卫星达到基础门槛，海卫一相对海王星赤道约 157° 逆行；哈雷有效。与 Hydrogen 同样混用了 JPL 长短期系数，外行星黄经对 DE442s 抽样最大差约 1.09°。真实物理尺度下哈雷轨道折线和核位置分离。冥王星绕 IAU 正极的自转方向反了。顺倒放的快进近景均准确追踪，暂停冻结物理位置和自转，当前时刻与全景为两个入口。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Antigravity"
+  ],
+  "tier": 1,
+  "rank": 0
+},
+
+{
+  "id": "Gemini4Hydrogen(xhigh)V1",
+  "file": "models/Gemini4Hydrogen(xhigh)V1.html",
+  "model": "Gemini 4 Hydrogen (xhigh)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "WebGL2",
+  "bytes": 192229,
+  "lines": 4634,
+  "title": "Solar System — Astrophysical Ephemeris & N-Body Simulation",
+  "needsFloat": false,
+  "msaa": true,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "comet",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Gemini4Hydrogen(xhigh)V1.jpg",
+  "jsErrors": 0,
+  "note": "原生离线 WebGL2，双向土星环影、小天体带、HDR 泛光后全画面 ACES 和光线积分大气均有效。12 颗卫星的母体、周期和有向参考面成立，海卫一约 156.885° 逆行；哈雷实际有效。把长周期修正项加到 JPL 短期根数上，外行星黄经相对 DE442s 抽样最大误差约 1.09°。真实尺度下高偏心轨道的分段折线与微小彗核明显错开。冥王星在 IAU 正极上采用负周期，自转符号反向。近景快进时相机对地球位置的平滑有滞后，目标中心偏向画面边缘；其余交互主路径可用。暂停冻结物理运动，此刻与全景单独复位。额外 N-Body 模式约五年模拟推进抽样有限、没有 GL 错。",
+  "issue": null,
+  "net": [],
+  "fix": null,
+  "tags": [
+    "in Antigravity"
+  ],
+  "tier": 2,
+  "rank": 0
+},
+
+{
+  "id": "Gemini4Argon(high)V1",
+  "file": "models/Gemini4Argon(high)V1.html",
+  "model": "Gemini 4 Argon (high)",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 136313,
+  "lines": 3730,
+  "title": "HELIOS // J2000 高精度太阳系天体力学与视觉仿真系统",
+  "needsFloat": true,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Gemini4Argon(high)V1.jpg",
+  "jsErrors": 0,
+  "note": "八大行星用 JPL 短期根数，默认轨道线贴合。切换真实距离后天体已经改用新尺度，轨道线却沿用旧比例；点击此刻并重建才恢复。14 颗卫星中，只有地球月球的参考面和方向成立，其余没有使用各自的母星赤道，海卫一还因负周期叠加高倾角而变成顺行。哈雷的近日点幅角成了 52.91°，并且高偏心率求解器反复不收敛，现行日期前后可在一天内跳过约 35 AU。哈雷 0 分，异常不在通用行星开普勒项重复扣除。金星、天王星、冥王星的自转方向也反了。土星只有单向环影，大气是简化辉光，Three r160 的默认泛光组合只部分做 ACES。滚轮可把相机推进太阳内。默认主视图和八大行星均可运行。",
+  "issue": null,
+  "net": [
+    "cdn.jsdelivr.net"
+  ],
+  "fix": null,
+  "tags": [
+    "in Antigravity"
+  ],
+  "tier": 3,
+  "rank": 0
+},
+
 {
   "id": "GPT6.2Astra(light)V1-TasksAssignedByOpus5",
   "file": "models/GPT6.2Astra(light)V1-TasksAssignedByOpus5.html",

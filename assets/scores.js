@@ -3,6 +3,469 @@
   'use strict';
 
   window.SCORES = {
+"Gemini4Neon(xhigh)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 0.5
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 15,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.257679,
+      "expectedInclinationDeg": 5.145,
+      "reason": "母星、周期量级与黄道有向轨道正确。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.09,
+      "expectedInclinationDeg": 1.09,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 0.93,
+      "expectedInclinationDeg": 0.93,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19,
+      "expectedInclinationDeg": 0.19,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.02,
+      "expectedInclinationDeg": 0.02,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "rhea",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "iapetus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 15.47,
+      "expectedInclinationDeg": 15.47,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.34,
+      "expectedInclinationDeg": 0.34,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "oberon",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.06,
+      "expectedInclinationDeg": 0.06,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 157,
+      "expectedInclinationDeg": 156.885,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4.5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线 WebGL2，双向土星环影、运动小天体带、HDR 泛光后的全画面 ACES 均有效。大气壳层使用依视角的边缘散射近似，按部分实现。15 颗卫星达到基础门槛，海卫一相对海王星赤道约 157° 逆行；哈雷有效。与 Hydrogen 同样混用了 JPL 长短期系数，外行星黄经对 DE442s 抽样最大差约 1.09°。真实物理尺度下哈雷轨道折线和核位置分离。冥王星绕 IAU 正极的自转方向反了。顺倒放的快进近景均准确追踪，暂停冻结物理位置和自转，当前时刻与全景为两个入口。",
+  "reviewedAt": "2026-11-22",
+  "reviewVersion": "V3-20261122"
+},
+"Gemini4Hydrogen(xhigh)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 1
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 0.5
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 12,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145116,
+      "expectedInclinationDeg": 5.145,
+      "reason": "母星、周期量级与黄道有向轨道正确。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.09,
+      "expectedInclinationDeg": 1.09,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 0.93,
+      "expectedInclinationDeg": 0.93,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19,
+      "expectedInclinationDeg": 0.19,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.02,
+      "expectedInclinationDeg": 0.02,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.34,
+      "expectedInclinationDeg": 0.34,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.885,
+      "expectedInclinationDeg": 156.885,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "母体赤道下的轨道周期与有向倾角成立。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4.5,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "原生离线 WebGL2，双向土星环影、小天体带、HDR 泛光后全画面 ACES 和光线积分大气均有效。12 颗卫星的母体、周期和有向参考面成立，海卫一约 156.885° 逆行；哈雷实际有效。把长周期修正项加到 JPL 短期根数上，外行星黄经相对 DE442s 抽样最大误差约 1.09°。真实尺度下高偏心轨道的分段折线与微小彗核明显错开。冥王星在 IAU 正极上采用负周期，自转符号反向。近景快进时相机对地球位置的平滑有滞后，目标中心偏向画面边缘；其余交互主路径可用。暂停冻结物理运动，此刻与全景单独复位。额外 N-Body 模式约五年模拟推进抽样有限、没有 GL 错。",
+  "reviewedAt": "2026-11-22",
+  "reviewVersion": "V3-20261122"
+},
+"Gemini4Argon(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 0.4,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 14,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145,
+      "expectedInclinationDeg": 5.145,
+      "reason": "母星、周期量级与黄道有向轨道正确。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 0,
+      "actualInclinationDeg": 26.604611,
+      "expectedInclinationDeg": 1.08,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 0,
+      "actualInclinationDeg": 26.552046,
+      "expectedInclinationDeg": 1.79,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 2.170283,
+      "expectedInclinationDeg": 0.05,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 1.790099,
+      "expectedInclinationDeg": 0.47,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 2.032705,
+      "expectedInclinationDeg": 0.2,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 0,
+      "actualInclinationDeg": 2.041822,
+      "expectedInclinationDeg": 0.19,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 28.062007,
+      "expectedInclinationDeg": 0.01,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "rhea",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 28.396409,
+      "expectedInclinationDeg": 0.35,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 0,
+      "actualInclinationDeg": 28.386572,
+      "expectedInclinationDeg": 0.34,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 81.94608,
+      "expectedInclinationDeg": 0.34,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "oberon",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 82.209823,
+      "expectedInclinationDeg": 0.07,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 46.331559,
+      "expectedInclinationDeg": 156.885,
+      "reason": "负周期与大于90°的倾角叠加，海卫一变成顺行，未使用海王星赤道参考面。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 0,
+      "actualInclinationDeg": 112.869742,
+      "expectedInclinationDeg": 0.08,
+      "reason": "相对母体运动时直接用世界黄道系，未使用对应的母星赤道。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "八大行星用 JPL 短期根数，默认轨道线贴合。切换真实距离后天体已经改用新尺度，轨道线却沿用旧比例；点击此刻并重建才恢复。14 颗卫星中，只有地球月球的参考面和方向成立，其余没有使用各自的母星赤道，海卫一还因负周期叠加高倾角而变成顺行。哈雷的近日点幅角成了 52.91°，并且高偏心率求解器反复不收敛，现行日期前后可在一天内跳过约 35 AU。哈雷 0 分，异常不在通用行星开普勒项重复扣除。金星、天王星、冥王星的自转方向也反了。土星只有单向环影，大气是简化辉光，Three r160 的默认泛光组合只部分做 ACES。滚轮可把相机推进太阳内。默认主视图和八大行星均可运行。",
+  "reviewedAt": "2026-11-22",
+  "reviewVersion": "V3-20261122"
+},
 "GPT6.2Astra(light)V1-TasksAssignedByOpus5":{
   "reference": false,
   "featureMap": {

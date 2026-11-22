@@ -37,6 +37,24 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Gemini4Neon(xhigh)V1":{
+  "direction": "up",
+  "count": 3,
+  "zh": "Antigravity太他妈烂了",
+  "en": "Antigravity is fucking awful"
+},
+"Gemini4Hydrogen(xhigh)V1":{
+  "direction": "up",
+  "count": 2,
+  "zh": "Antigravity太他妈烂了",
+  "en": "Antigravity is fucking awful"
+},
+"Gemini4Argon(high)V1":{
+  "direction": "up",
+  "count": 2,
+  "zh": "Antigravity太他妈烂了",
+  "en": "Antigravity is fucking awful"
+},
 "GPT6.2Astra(light)V1-TasksAssignedByOpus5":{
   "direction": "down",
   "count": 5,
@@ -303,6 +321,7 @@
       estimated: 'Approximate reference selected by the site author, not a verified official USD quote.',
       minimaxList: 'Crossed-out list price above 512K, before the advertised permanent 50% discount.',
       qwenCache: 'Implicit cache hit: $0.25/M. Explicit cache read is separately priced at $0.17/M.',
+      gemini4ArgonList: 'Standard API rates take effect on December 1, 2026. Promotional input, output and cache-read rates through November 30 are $2 / $10 / $0.10 per million tokens.',
       haiku55Context: 'Standard rates for prompts over 100K tokens. At up to 100K tokens, input/output/cache read are $0.10/$0.50/$0.01 per million tokens.',
     } : {
       openrouter: '站点作者提供的 OpenRouter 参考价，非 Meta 直连 API 官方报价。',
@@ -310,13 +329,14 @@
       estimated: '站点作者采用的估算参考，非已核实的官方美元报价。',
       minimaxList: '超过 512K 的划线原价，未计官网标注的永久五折。',
       qwenCache: '隐式缓存命中 $0.25/M；显式缓存读取另为 $0.17/M。',
+      gemini4ArgonList: '表中为 2026 年 12 月 1 日起的标准 API 价。截至 11 月 30 日，促销读 / 写 / 缓存读为 $2 / $10 / $0.10 每百万 Token。',
       haiku55Context: '采用超过 100K 提示 Token 的标准价；不超过 100K 时，读/写/缓存读为 $0.10/$0.50/$0.01 每百万 Token。',
     };
     const title = (I18N.en ? 'USD / 1M tokens · Input / Output / Cache read · ' : '美元 / 百万 Token · 读 / 写 / 缓存读 · ') +
       (value.date || window.MODEL_PRICE_DATE) + (value.note ? '\n' + notes[value.note] : '');
     const text = [value.input, value.output, value.cache].map(number =>
       (value.note === 'estimated' ? '≈' : '') + number).join(' / ') +
-      (value.note === 'solReference' || value.note === 'minimaxList' ? '*' : '');
+      (value.note === 'solReference' || value.note === 'minimaxList' || value.note === 'gemini4ArgonList' ? '*' : '');
     return value.source
       ? `<a class="table-price" href="${esc(value.source)}" target="_blank" rel="noopener noreferrer" title="${esc(title)}" aria-label="${esc(work.model + ': ' + text + '. ' + title)}">${text}</a>`
       : `<span class="table-price" title="${esc(title)}">${text}</span>`;

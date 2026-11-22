@@ -1,0 +1,4634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Solar System — Astrophysical Ephemeris &amp; N-Body Simulation</title>
+<style>
+  :root {
+    --bg: #02040a;
+    --glass: rgba(8, 13, 26, 0.72);
+    --glass-strong: rgba(10, 16, 32, 0.88);
+    --border: rgba(140, 195, 255, 0.16);
+    --border-bright: rgba(140, 195, 255, 0.36);
+    --text: #eaf2ff;
+    --muted: #8ea4c8;
+    --accent: #56c2ff;
+    --accent-soft: rgba(86, 194, 255, 0.14);
+    --gold: #f6c46d;
+    --danger: #ff6b6b;
+    --emerald: #4de2a8;
+    --panel-top: 68px;
+    --dock-bottom: 74px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "PingFang SC", "Segoe UI", sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); font-size: 12.5px;
+    user-select: none; -webkit-user-select: none;
+  }
+
+  canvas {
+    position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+  }
+  #glCanvas { z-index: 1; cursor: grab; }
+  #glCanvas:active { cursor: grabbing; }
+  #hudCanvas { z-index: 2; pointer-events: none; }
+
+  .ui-layer {
+    position: fixed; inset: 0; z-index: 10; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 12px; gap: 10px;
+    transition: opacity 0.35s ease;
+  }
+  .ui-layer.hud-hidden > *:not(#restoreHudBtn):not(#midArea),
+  .ui-layer.hud-hidden #midArea > *:not(#tourBanner) {
+    opacity: 0; pointer-events: none !important;
+  }
+
+  .panel {
+    background: var(--glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    pointer-events: auto;
+  }
+
+  button, select, input {
+    font-family: inherit; color: inherit; outline: none;
+  }
+
+  .btn {
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(160, 205, 255, 0.14);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    display: inline-flex; align-items: center; gap: 5px;
+    white-space: nowrap;
+  }
+  .btn:hover {
+    background: rgba(110, 185, 255, 0.14);
+    border-color: var(--border-bright);
+  }
+  .btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(86, 194, 255, 0.22);
+  }
+  .btn.gold.active {
+    background: rgba(246, 196, 109, 0.16);
+    border-color: var(--gold);
+    color: #ffe3a8;
+    box-shadow: 0 0 14px rgba(246, 196, 109, 0.2);
+  }
+  .btn.danger {
+    border-color: rgba(255, 107, 107, 0.35);
+    color: #ffb3b3;
+  }
+  .btn.danger:hover {
+    background: rgba(255, 107, 107, 0.18);
+    border-color: var(--danger);
+  }
+
+  /* Top Bar (Flex Row 1) */
+  #topBar {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 8px; flex-wrap: wrap; pointer-events: none; flex-shrink: 0;
+  }
+
+  /* Middle Workspace (Flex Row 2 — guaranteed never to overlap topBar or bottomDock) */
+  #midArea {
+    position: relative; flex: 1; min-height: 0; pointer-events: none;
+  }
+
+  .top-group {
+    display: flex; align-items: center; gap: 8px; padding: 7px 11px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex; align-items: center; gap: 8px; padding-right: 10px;
+    border-right: 1px solid var(--border);
+  }
+  .brand-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: radial-gradient(circle, #fff3c4 10%, #ffaa33 55%, #ff5500 100%);
+    box-shadow: 0 0 12px #ffaa33;
+  }
+  .brand-title {
+    font-weight: 700; letter-spacing: 0.08em; font-size: 11.5px; text-transform: uppercase;
+  }
+  .brand-sub {
+    font-size: 10px; color: var(--muted); letter-spacing: 0.04em;
+  }
+
+  .epoch-readout {
+    display: flex; flex-direction: column; cursor: pointer;
+    padding: 2px 7px; border-radius: 7px; transition: background 0.15s;
+  }
+  .epoch-readout:hover { background: rgba(255, 255, 255, 0.06); }
+  #dateDisplay {
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 13px; font-weight: 600; color: #fff; letter-spacing: 0.02em;
+  }
+  #jdDisplay {
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 10px; color: var(--muted);
+  }
+
+  .divider {
+    width: 1px; height: 22px; background: var(--border); margin: 0 2px;
+  }
+
+  .warp-badge {
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 11px; color: var(--accent); min-width: 74px; text-align: center;
+    padding: 3px 7px; border-radius: 6px; background: rgba(86, 194, 255, 0.08);
+    border: 1px solid rgba(86, 194, 255, 0.2);
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    height: 4px; border-radius: 4px; background: rgba(160, 200, 255, 0.18);
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent); border: 2px solid #fff;
+    box-shadow: 0 0 8px rgba(86, 194, 255, 0.65);
+  }
+
+  /* Popovers inside #midArea */
+  .popover {
+    position: absolute; top: 0; width: 295px; padding: 13px;
+    display: none; flex-direction: column; gap: 10px; z-index: 40;
+    background: var(--glass-strong);
+    max-height: 100%; max-width: 100%; overflow-y: auto;
+  }
+  .popover.open { display: flex; }
+  #epochPopover { left: 0; width: 310px; }
+  #layersPopover { right: 0; width: 295px; transition: right 0.2s ease; }
+  @media (min-width: 920px) {
+    #midArea.insp-open #layersPopover { right: 304px; }
+  }
+  #nbodyPanel {
+    position: absolute; top: 0; left: 0; width: 280px; padding: 12px;
+    max-height: 100%; max-width: 100%; overflow-y: auto;
+    display: none; flex-direction: column; gap: 9px; z-index: 25;
+  }
+  #nbodyPanel.open { display: flex; }
+
+  .pop-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 2px; cursor: pointer; font-size: 12px;
+  }
+  .toggle-row:hover { color: #fff; }
+  .toggle-row input[type="checkbox"] {
+    accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer;
+  }
+
+  .preset-grid {
+    display: grid; grid-template-columns: 1fr; gap: 5px;
+  }
+  .preset-btn {
+    text-align: left; padding: 7px 9px; border-radius: 8px;
+    background: rgba(255,255,255,0.035); border: 1px solid rgba(160,205,255,0.12);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .preset-btn:hover { background: rgba(86, 194, 255, 0.12); border-color: var(--border-bright); }
+  .preset-btn strong { display: block; font-size: 12px; color: #fff; }
+  .preset-btn span { font-size: 10.5px; color: var(--muted); }
+
+  /* Right Telemetry Inspector inside #midArea */
+  #inspector {
+    position: absolute; top: 0; right: 0; width: 292px;
+    max-height: 100%; max-width: 100%; overflow-y: auto;
+    padding: 13px 14px; display: flex; flex-direction: column; gap: 10px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    z-index: 20;
+  }
+  #inspector.collapsed {
+    transform: translateX(340px); opacity: 0; pointer-events: none;
+  }
+  #inspector::-webkit-scrollbar, .popover::-webkit-scrollbar, #nbodyPanel::-webkit-scrollbar { width: 4px; }
+  #inspector::-webkit-scrollbar-thumb, .popover::-webkit-scrollbar-thumb, #nbodyPanel::-webkit-scrollbar-thumb {
+    background: rgba(140, 195, 255, 0.25); border-radius: 4px;
+  }
+
+  .insp-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+    border-bottom: 1px solid var(--border); padding-bottom: 9px;
+  }
+  .insp-name { font-size: 17px; font-weight: 700; letter-spacing: 0.01em; }
+  .insp-class {
+    font-size: 10.5px; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px;
+  }
+  .insp-desc {
+    font-size: 11.5px; line-height: 1.5; color: #c7d7f0;
+  }
+
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 7px;
+  }
+  .stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(160, 205, 255, 0.09);
+    border-radius: 8px; padding: 6px 8px;
+  }
+  .stat-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+  .stat-val {
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 12px; font-weight: 600; color: #f4f8ff;
+  }
+  .stat-sub {
+    font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  }
+
+  .peri-bar-wrap {
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(160, 205, 255, 0.09);
+    border-radius: 8px; padding: 7px 9px;
+  }
+  .peri-track {
+    position: relative; height: 5px; border-radius: 4px;
+    background: linear-gradient(90deg, rgba(246,196,109,0.5), rgba(86,194,255,0.25));
+  }
+  .peri-dot {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .cam-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
+  }
+  .cam-actions .btn { justify-content: center; font-size: 11px; padding: 5px 6px; }
+
+  #showInspectorBtn {
+    position: absolute; top: 0; right: 0; display: none; z-index: 20;
+  }
+  #showInspectorBtn.visible { display: inline-flex; }
+
+  /* Bottom Navigation Dock (Flex Row 3) */
+  #bottomDock {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    width: 100%; pointer-events: none; z-index: 15; flex-shrink: 0;
+  }
+  .dock-row {
+    display: flex; align-items: center; gap: 4px; padding: 5px 7px;
+    overflow-x: auto; max-width: 100%;
+  }
+  .dock-row::-webkit-scrollbar { height: 0; }
+  .body-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 8px; cursor: pointer;
+    border: 1px solid transparent; background: transparent;
+    font-size: 11.5px; font-weight: 500; color: #cfe0fa;
+    transition: all 0.15s ease; white-space: nowrap;
+  }
+  .body-pill:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+  .body-pill.active {
+    background: var(--accent-soft); border-color: var(--accent); color: #fff;
+  }
+  .swatch {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  #moonDock { display: none; padding: 4px 7px; }
+  #moonDock.visible { display: flex; }
+
+  /* Photon pulse & Tour banner inside #midArea */
+  #photonBanner {
+    position: absolute; bottom: 0; left: 0; padding: 8px 12px;
+    display: none; flex-direction: column; gap: 3px; min-width: 220px; z-index: 16;
+  }
+  #photonBanner.visible { display: flex; }
+
+  #tourBanner {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    padding: 10px 18px; text-align: center; max-width: min(520px, 100%);
+    display: none; flex-direction: column; gap: 4px; pointer-events: auto; z-index: 16;
+  }
+  #tourBanner.visible { display: flex; }
+  #tourTitle { font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; }
+  #tourCaption { font-size: 12px; color: #e2eeff; line-height: 1.45; }
+
+  #restoreHudBtn {
+    position: absolute; top: 12px; right: 12px; display: none; pointer-events: auto; z-index: 50;
+  }
+  .ui-layer.hud-hidden #restoreHudBtn { display: inline-flex; }
+
+  #hintBar {
+    position: absolute; bottom: 14px; left: 14px; font-size: 10.5px; color: var(--muted);
+    background: rgba(6, 10, 20, 0.55); padding: 5px 9px; border-radius: 8px;
+    border: 1px solid rgba(140, 195, 255, 0.1); pointer-events: none;
+  }
+  @media (max-width: 1560px) { #hintBar { display: none; } }
+  @media (max-width: 720px) {
+    .ui-layer { padding: 8px; gap: 6px; }
+    .top-group { padding: 5px 8px; gap: 5px; }
+    .brand { display: none; }
+    .btn { padding: 4px 7px; font-size: 11px; }
+    .body-pill { padding: 4px 7px; font-size: 11px; gap: 4px; }
+    #inspector, #layersPopover, #epochPopover, #nbodyPanel { right: 0; left: 0; width: auto; }
+  }
+
+  .date-input {
+    width: 100%; padding: 6px 8px; border-radius: 7px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 12px; color: #fff;
+  }
+  .scale-row {
+    display: flex; align-items: center; gap: 6px;
+  }
+</style>
+</head>
+<body>
+<canvas id="glCanvas"></canvas>
+<canvas id="hudCanvas"></canvas>
+
+<div class="ui-layer" id="uiLayer">
+  <div id="topBar">
+    <!-- Left: Brand + Epoch + Time Control -->
+    <div class="panel top-group">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <div>
+          <div class="brand-title">Solaris Ephemeris</div>
+          <div class="brand-sub">J2000 JPL · WebGL2 HDR</div>
+        </div>
+      </div>
+
+      <div class="epoch-readout" id="epochBtn" title="点击切换天文历元与历史事件预设">
+        <div id="dateDisplay">2026-11-22 05:32:17 UTC</div>
+        <div id="jdDisplay">JD 2461366.7308 · T +0.2689 cy</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="btn" id="revBtn" title="倒流时间">◀◀</button>
+      <button class="btn active" id="playBtn" title="播放 / 暂停 (Space)">⏸ 暂停</button>
+      <button class="btn" id="nowBtn" title="回到当前实时 UTC">NOW</button>
+
+      <input type="range" id="speedSlider" min="0" max="8" step="0.05" value="3.5" style="width:92px" title="时间流速" />
+      <div class="warp-badge" id="warpBadge">1.0 d/s</div>
+    </div>
+
+    <!-- Right: Mode & Visual Controls -->
+    <div class="panel top-group">
+      <button class="btn active" id="modeKeplerBtn" title="NASA JPL J2000 精确解析星历">JPL 星历</button>
+      <button class="btn gold" id="modeNbodyBtn" title="实时 Velocity-Verlet N体引力积分器">N-Body 引力</button>
+
+      <div class="divider"></div>
+
+      <button class="btn active" id="scaleObsBtn" title="真实轨道比例 + 清晰可辨天体尺度">观测尺度</button>
+      <button class="btn" id="scaleTrueBtn" title="1:1 真实宇宙物理尺度（太阳与行星半径完全按真实比例）">1:1 真实尺度</button>
+      <button class="btn" id="scaleLogBtn" title="对数全景距离，同屏清晰纵览内外太阳系">全景对数</button>
+
+      <div class="divider"></div>
+
+      <button class="btn" id="photonBtn" title="从太阳发射以真实光速 c = 299,792.458 km/s 扩散的光子波前">⚡ 光速脉冲</button>
+      <button class="btn gold" id="tourBtn" title="自动电影级宇宙巡游 (C)">✦ 巡游</button>
+      <button class="btn" id="layersBtn" title="图层、物理可视化与渲染设置">⚙ 图层</button>
+      <button class="btn" id="hideHudBtn" title="隐藏界面 (H)">✕ 极简</button>
+    </div>
+  </div>
+
+  <div id="midArea">
+  <!-- Epoch Preset Popover -->
+  <div class="panel popover" id="epochPopover">
+    <div class="pop-title">
+      <span>天文历元与历史天象</span>
+      <button class="btn" id="closeEpochBtn" style="padding:2px 7px">✕</button>
+    </div>
+    <div style="display:flex;gap:6px">
+      <input type="datetime-local" id="customDateInput" class="date-input" />
+      <button class="btn active" id="applyDateBtn">跳转</button>
+    </div>
+    <div class="preset-grid">
+      <button class="preset-btn" data-epoch="now">
+        <strong>当前实时 UTC 时刻</strong>
+        <span>同步系统时钟，显示此时此刻真实的八大行星空间排布</span>
+      </button>
+      <button class="preset-btn" data-epoch="1977-08-20T14:29:00Z">
+        <strong>1977 旅行者二号 "大巡游" 窗口</strong>
+        <span>每 176 年一遇的木星-土星-天王星-海王星几何连珠弧</span>
+      </button>
+      <button class="preset-btn" data-epoch="1986-02-09T11:00:00Z">
+        <strong>1986 哈雷彗星近日点</strong>
+        <span>1P/Halley 逆行冲入内太阳系，离子尾与尘埃尾全力绽放</span>
+      </button>
+      <button class="preset-btn" data-epoch="2020-12-21T18:22:00Z">
+        <strong>2020 冬至木土大合相</strong>
+        <span>木星与土星在地球视线上相距仅 0.1°（近四百年最近）</span>
+      </button>
+      <button class="preset-btn" data-epoch="2026-03-03T11:34:00Z">
+        <strong>2026-03-03 月全食时刻</strong>
+        <span>聚焦月球可观察地球本影投射出的红铜色月食阴影</span>
+      </button>
+      <button class="preset-btn" data-epoch="2061-07-28T12:00:00Z">
+        <strong>2061 哈雷彗星下一次回归</strong>
+        <span>见证 75.3 年周期彗星再次掠过地球轨道附近</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Layers & Settings Popover -->
+  <div class="panel popover" id="layersPopover">
+    <div class="pop-title">
+      <span>可视化图层与物理设置</span>
+      <button class="btn" id="closeLayersBtn" style="padding:2px 7px">✕</button>
+    </div>
+
+    <div class="scale-row" id="bodyScaleWrap">
+      <span style="font-size:11.5px;color:var(--muted);min-width:74px">天体放大</span>
+      <input type="range" id="bodyScaleSlider" min="0.4" max="2.6" step="0.05" value="1.0" style="flex:1" />
+      <span id="bodyScaleVal" style="font-family:var(--font-mono);font-size:11px;min-width:34px;text-align:right">1.0×</span>
+    </div>
+
+    <div class="scale-row">
+      <span style="font-size:11.5px;color:var(--muted);min-width:74px">曝光增益</span>
+      <input type="range" id="exposureSlider" min="0.5" max="2.4" step="0.05" value="1.15" style="flex:1" />
+      <span id="exposureVal" style="font-family:var(--font-mono);font-size:11px;min-width:34px;text-align:right">1.15</span>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:6px;display:flex;flex-direction:column;gap:2px">
+      <label class="toggle-row"><span>行星与卫星轨道线</span><input type="checkbox" id="chkOrbits" checked /></label>
+      <label class="toggle-row"><span>天体标识与遥测标签</span><input type="checkbox" id="chkLabels" checked /></label>
+      <label class="toggle-row"><span>小行星带 (含柯克伍德缝) &amp; 柯伊伯带</span><input type="checkbox" id="chkBelts" checked /></label>
+      <label class="toggle-row"><span>周期彗星 (1P/Halley 双彗尾)</span><input type="checkbox" id="chkComet" checked /></label>
+      <label class="toggle-row"><span>3D 时空引力势阱网格 (Gravity Well)</span><input type="checkbox" id="chkGravity" /></label>
+      <label class="toggle-row"><span>宜居带 (0.95–1.67 AU) &amp; 霜线</span><input type="checkbox" id="chkHZ" /></label>
+      <label class="toggle-row"><span>开普勒第二定律 (等面积扫掠)</span><input type="checkbox" id="chkKepler2" /></label>
+      <label class="toggle-row"><span>日地拉格朗日点 (L1–L5) &amp; JWST</span><input type="checkbox" id="chkLagrange" /></label>
+      <label class="toggle-row"><span>真实银河倾角 (60.2°) &amp; 黄道星座</span><input type="checkbox" id="chkConstellations" checked /></label>
+      <label class="toggle-row"><span>黄道参考极坐标网格</span><input type="checkbox" id="chkEclipticGrid" /></label>
+      <label class="toggle-row"><span>真实平方反比辐照 (1/r² 光照衰减)</span><input type="checkbox" id="chkTrueLight" /></label>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:7px;font-size:10.5px;color:var(--muted);line-height:1.5">
+      快捷键: <code style="color:#fff">Space</code> 播放 · <code style="color:#fff">S</code> 切换尺度 · <code style="color:#fff">G</code> 引力势阱 · <code style="color:#fff">C</code> 巡游 · <code style="color:#fff">H</code> 极简模式 · <code style="color:#fff">0-9</code> 跳转天体
+    </div>
+  </div>
+
+  <!-- N-Body Gravity Lab Panel -->
+  <div class="panel" id="nbodyPanel">
+    <div class="pop-title">
+      <span>N-Body 引力沙盒 (Velocity-Verlet)</span>
+      <button class="btn" id="resetNbodyBtn" style="padding:2px 8px">重置星历</button>
+    </div>
+    <div class="scale-row">
+      <span style="font-size:11.5px;color:var(--muted);min-width:74px">太阳质量</span>
+      <input type="range" id="solarMassSlider" min="0.25" max="2.5" step="0.05" value="1.0" style="flex:1" />
+      <span id="solarMassVal" style="font-family:var(--font-mono);font-size:11px;min-width:44px;text-align:right">1.00 M☉</span>
+    </div>
+    <label class="toggle-row"><span>显示瞬时速度矢量</span><input type="checkbox" id="chkVelVec" checked /></label>
+    <div style="font-size:11px;color:var(--muted);line-height:1.4">
+      在当前视场内发射高能天体，观察真实牛顿万有引力如何摄动甚至弹射各大行星：
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button class="btn gold" id="spawnRoguePlanetBtn">+ 流浪巨行星 (3 M♃)</button>
+      <button class="btn danger" id="spawnRogueStarBtn">+ 闯入褐矮星 (0.08 M☉)</button>
+    </div>
+    <div id="nbodyStatus" style="font-family:var(--font-mono);font-size:10.5px;color:var(--emerald)">
+      积分步长 Δt ≤ 0.15 d · 辛算法能量守恒
+    </div>
+  </div>
+
+  <!-- Right Telemetry Inspector -->
+  <div class="panel" id="inspector">
+    <div class="insp-head">
+      <div>
+        <div class="insp-name" id="inspName">Earth · 地球</div>
+        <div class="insp-class" id="inspClass">类地行星 · Terrestrial</div>
+      </div>
+      <button class="btn" id="collapseInspBtn" style="padding:3px 7px" title="收起遥测面板">»</button>
+    </div>
+
+    <div class="insp-desc" id="inspDesc"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">日心距离 r</div>
+        <div class="stat-val" id="statDist">1.0000 AU</div>
+        <div class="stat-sub" id="statDistKm">149.6 × 10⁶ km</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">轨道瞬时速度 v</div>
+        <div class="stat-val" id="statVel">29.78 km/s</div>
+        <div class="stat-sub" id="statLight">光行时 08m 19s</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">太阳辐照度</div>
+        <div class="stat-val" id="statIrr">1361 W/m²</div>
+        <div class="stat-sub" id="statTemp">平衡温度 255 K</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">真近点角 ν / 偏心率</div>
+        <div class="stat-val" id="statNu">0.0°</div>
+        <div class="stat-sub" id="statEcc">e = 0.0167</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">轨道周期 / 倾角</div>
+        <div class="stat-val" id="statPeriod">365.25 d</div>
+        <div class="stat-sub" id="statInc">i = 0.00°</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">自转周期 / 轴倾角</div>
+        <div class="stat-val" id="statRot">23.93 h</div>
+        <div class="stat-sub" id="statTilt">ε = 23.44°</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均半径 / 表面重力</div>
+        <div class="stat-val" id="statRad">6,371 km</div>
+        <div class="stat-sub" id="statGrav">g = 9.81 m/s²</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">质量 / 逃逸速度</div>
+        <div class="stat-val" id="statMass">1.00 M⊕</div>
+        <div class="stat-sub" id="statEsc">v_esc = 11.19 km/s</div>
+      </div>
+    </div>
+
+    <div class="peri-bar-wrap" id="periWrap">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)">
+        <span id="periLabel">近日点 q</span>
+        <span id="aphLabel">远日点 Q</span>
+      </div>
+      <div class="peri-track">
+        <div class="peri-dot" id="periDot" style="left:50%"></div>
+      </div>
+    </div>
+
+    <div class="cam-actions">
+      <button class="btn" id="camCloseBtn">近距离飞掠</button>
+      <button class="btn" id="camPoleBtn">北极俯瞰</button>
+      <button class="btn" id="camCrescentBtn">晨昏线新月角</button>
+      <button class="btn" id="camSystemBtn">轨道全景</button>
+    </div>
+  </div>
+
+  <button class="btn panel" id="showInspectorBtn">« 遥测数据</button>
+
+  <!-- Photon Light Pulse Telemetry -->
+  <div class="panel" id="photonBanner">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;font-weight:700;color:var(--accent)">⚡ 真空光速波前 (c)</span>
+      <span id="photonTime" style="font-family:var(--font-mono);font-size:11px;color:#fff">00m 00s</span>
+    </div>
+    <div id="photonInfo" style="font-family:var(--font-mono);font-size:10.5px;color:var(--muted)">
+      r = 0.000 AU · 刚刚离开太阳光球层
+    </div>
+  </div>
+
+  <!-- Cinema Tour Banner -->
+  <div class="panel" id="tourBanner">
+    <div id="tourTitle">CINEMA TOUR</div>
+    <div id="tourCaption">...</div>
+  </div>
+  </div><!-- /#midArea -->
+
+  <!-- Bottom Navigation Dock -->
+  <div id="bottomDock">
+    <div class="panel dock-row" id="moonDock"></div>
+    <div class="panel dock-row" id="planetDock"></div>
+  </div>
+
+  <div id="hintBar">
+    拖拽旋转视角 · 滚轮缩放 · 点击天体/标签聚焦 · 快捷键: Space 播放 · S 切换尺度 · C 巡游 · H 极简模式
+  </div>
+
+  <button class="btn panel" id="restoreHudBtn">显示界面 (H)</button>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+// ============================================================================
+// 1. ASTROPHYSICAL CONSTANTS & JPL J2000 EPHEMERIS DATA
+// ============================================================================
+const AU_KM = 149597870.7;
+const C_KM_S = 299792.458;
+const C_AU_DAY = (C_KM_S * 86400) / AU_KM; // 173.144632674 AU/day
+const K_GAUSS = 0.01720209895; // rad/day
+const GM_SUN = K_GAUSS * K_GAUSS; // AU^3 / day^2
+const J2000_JD = 2451545.0;
+const DEG = Math.PI / 180;
+const RAD = 180 / Math.PI;
+const OBLIQUITY_J2000 = 23.4392911 * DEG;
+
+function dateToJD(ms) {
+  return ms / 86400000 + 2440587.5;
+}
+function jdToDate(jd) {
+  return new Date((jd - 2440587.5) * 86400000);
+}
+function fmtUTC(jd) {
+  const d = jdToDate(jd);
+  if (isNaN(d.getTime())) return 'Invalid Epoch';
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  const ss = String(d.getUTCSeconds()).padStart(2, '0');
+  return `${y}-${m}-${day} ${hh}:${mm}:${ss} UTC`;
+}
+
+// Convert IAU J2000 Equatorial North Pole (raDeg, decDeg) to WebGL World Unit Vector
+// Ecliptic (X_ecl, Y_ecl, Z_ecl) -> World (X_ecl, Z_ecl, -Y_ecl)
+function iauPoleToWorld(raDeg, decDeg) {
+  const ra = raDeg * DEG, dec = decDeg * DEG;
+  const xEq = Math.cos(dec) * Math.cos(ra);
+  const yEq = Math.cos(dec) * Math.sin(ra);
+  const zEq = Math.sin(dec);
+  const cosE = Math.cos(OBLIQUITY_J2000), sinE = Math.sin(OBLIQUITY_J2000);
+  const xEcl = xEq;
+  const yEcl = yEq * cosE + zEq * sinE;
+  const zEcl = -yEq * sinE + zEq * cosE;
+  return norm3([xEcl, zEcl, -yEcl]);
+}
+
+function eclDirToWorld(lonDeg, latDeg) {
+  const lon = lonDeg * DEG, lat = latDeg * DEG;
+  const x = Math.cos(lat) * Math.cos(lon);
+  const y = Math.cos(lat) * Math.sin(lon);
+  const z = Math.sin(lat);
+  return [x, z, -y];
+}
+
+function equDirToWorld(raDeg, decDeg) {
+  return iauPoleToWorld(raDeg, decDeg);
+}
+
+// Vector Math Helpers
+function add3(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+function sub3(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+function mul3(a, s) { return [a[0] * s, a[1] * s, a[2] * s]; }
+function dot3(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+function cross3(a, b) {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0]
+  ];
+}
+function len3(a) { return Math.hypot(a[0], a[1], a[2]); }
+function norm3(a) {
+  const l = len3(a) || 1;
+  return [a[0] / l, a[1] / l, a[2] / l];
+}
+
+// Build 3x3 rotation matrix (column-major Float32 or array) aligning local +Y to `pole` with spin angle `spinRad`
+function buildSpinBasis(pole, spinRad) {
+  const up = norm3(pole);
+  const ref = Math.abs(up[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+  const right0 = norm3(cross3(ref, up));
+  const fwd0 = cross3(up, right0);
+  const c = Math.cos(spinRad), s = Math.sin(spinRad);
+  // Counterclockwise around +up (right-hand rule): right' = right0*c - fwd0*s? Wait:
+  // In right-handed (right0, up, fwd0) where up x right0 = fwd0:
+  // Rotating +X toward -Z (counterclockwise looking from +Y) => x' = cos*X - sin*Z (Wait: right0 x fwd0 = -up! Let's check!)
+  // Wait: ref=(0,1,0), up=(0,1,0)? Suppose up=(0,1,0), ref=(1,0,0) -> right0 = ref x up = (1,0,0)x(0,1,0) = (0,0,1). fwd0 = up x right0 = (0,1,0)x(0,0,1) = (1,0,0).
+  // Check right-handedness of (right0, up, fwd0): right0 x up = (0,0,1)x(0,1,0) = (-1,0,0) = -fwd0. Wait: (fwd0, up, right0) has fwd0 x up = right0!
+  // Let's make X, Y, Z explicitly right-handed: X = norm(cross(up, ref)), Y = up, Z = cross(X, Y).
+  // Then X x Y = Z! Rotating CCW around +Y maps +X toward -Z: X' = X*c - Z*s, Z' = X*s + Z*c!
+  const X0 = norm3(cross3(up, ref));
+  const Z0 = cross3(X0, up);
+  const X = add3(mul3(X0, c), mul3(Z0, -s));
+  const Z = add3(mul3(X0, s), mul3(Z0, c));
+  return { X, Y: up, Z };
+}
+
+// JPL Standish Keplerian Elements (3000BC-3000AD / J2000.0) & Physical Parameters
+const BODIES = [
+  {
+    id: 'sun', name: 'Sun', cn: '太阳', typeLabel: 'G2V 黄矮星 · 主序星',
+    shaderType: -1, color: '#ffbd4a',
+    desc: '占据太阳系 99.86% 总质量的等离子体恒星。核心聚变每秒将 6 亿吨氢转化为氦，以 5778 K 黑体辐射照亮整个太阳系。',
+    radiusKm: 696340, obsRadius: 0.064, oblateness: 0.00005,
+    massSolar: 1.0, massEarth: 332946, rotDays: 25.05, tiltDeg: 7.25,
+    poleRA: 286.13, poleDec: 63.87, gravity: 274.0, escVel: 617.7, tempK: 5778, albedo: 0,
+    isSun: true
+  },
+  {
+    id: 'mercury', name: 'Mercury', cn: '水星', typeLabel: '类地行星 · 岩石内核',
+    shaderType: 0, color: '#a89f96',
+    desc: '距离太阳最近的行星，拥有太阳系八大行星中最高的轨道偏心率 (0.2056) 与独特的 3:2 自转轨道共振。',
+    radiusKm: 2439.7, obsRadius: 0.0033, oblateness: 0.0,
+    massSolar: 1 / 6023600, massEarth: 0.0553, rotDays: 58.6462, tiltDeg: 0.034,
+    poleRA: 281.01, poleDec: 61.45, gravity: 3.70, escVel: 4.25, tempK: 440, albedo: 0.088,
+    jpl: { a: 0.38709927, da: 0.00000037, e: 0.20563593, de: 0.00001906, I: 7.00497902, dI: -0.00594749, L: 252.25032350, dL: 149472.67411175, wBar: 77.45779628, dWBar: 0.16047689, node: 48.33076593, dNode: -0.12534081 },
+    periodDays: 87.969, key: '1'
+  },
+  {
+    id: 'venus', name: 'Venus', cn: '金星', typeLabel: '类地行星 · 浓密硫酸云层',
+    shaderType: 1, color: '#e6c58b',
+    desc: '拥有 177.36° 倾角的逆向自转行星。92 倍地球大气压的二氧化碳与硫酸云形成强烈温室效应，表面炽热达 737 K。',
+    radiusKm: 6051.8, obsRadius: 0.0055, oblateness: 0.0,
+    massSolar: 1 / 408523.71, massEarth: 0.815, rotDays: -243.025, tiltDeg: 177.36,
+    poleRA: 272.76, poleDec: 67.16, gravity: 8.87, escVel: 10.36, tempK: 737, albedo: 0.76,
+    jpl: { a: 0.72333566, da: 0.00000390, e: 0.00677672, de: -0.00004107, I: 3.39467605, dI: -0.00078890, L: 181.97909950, dL: 58517.81538729, wBar: 131.60246718, dWBar: 0.00268329, node: 76.67984255, dNode: -0.27769418 },
+    periodDays: 224.701, key: '2'
+  },
+  {
+    id: 'earth', name: 'Earth', cn: '地球', typeLabel: '类地行星 · 液态海洋与生物圈',
+    shaderType: 2, color: '#4da6ff',
+    desc: '23.44° 黄赤交角赋予其四季更替，瑞利散射氮氧大气、动态气旋云系、夜面极光与人类文明灯火在此交织。',
+    radiusKm: 6371.0, obsRadius: 0.0058, oblateness: 0.00335,
+    massSolar: 1 / 328900.56, massEarth: 1.0, rotDays: 0.9972697, tiltDeg: 23.439,
+    poleRA: 0.0, poleDec: 90.0, gravity: 9.807, escVel: 11.186, tempK: 288, albedo: 0.306,
+    atmColor: [0.32, 0.64, 1.0], atmScale: 1.045, atmDensity: 1.0,
+    jpl: { a: 1.00000261, da: 0.00000562, e: 0.01671123, de: -0.00004392, I: -0.00001531, dI: -0.01294668, L: 100.46457166, dL: 35999.37244981, wBar: 102.93768193, dWBar: 0.32327364, node: 0.0, dNode: 0.0 },
+    periodDays: 365.256, key: '3'
+  },
+  {
+    id: 'mars', name: 'Mars', cn: '火星', typeLabel: '类地行星 · 氧化铁荒漠',
+    shaderType: 3, color: '#d96b43',
+    desc: '拥有 25.19° 轴倾角与四季消长的干冰极冠，稀薄二氧化碳大气散射出独特的奶油铁锈色黄昏边缘。',
+    radiusKm: 3389.5, obsRadius: 0.0040, oblateness: 0.00589,
+    massSolar: 1 / 3098708, massEarth: 0.107, rotDays: 1.025957, tiltDeg: 25.19,
+    poleRA: 317.681, poleDec: 52.887, gravity: 3.721, escVel: 5.027, tempK: 210, albedo: 0.25,
+    atmColor: [0.95, 0.56, 0.36], atmScale: 1.026, atmDensity: 0.36,
+    jpl: { a: 1.52371034, da: 0.00001847, e: 0.09339410, de: 0.00007882, I: 1.84969142, dI: -0.00813131, L: -4.55343205, dL: 19140.30268499, wBar: -23.94362959, dWBar: 0.44441088, node: 49.55953891, dNode: -0.29257343 },
+    periodDays: 686.980, key: '4'
+  },
+  {
+    id: 'ceres', name: 'Ceres', cn: '谷神星', typeLabel: '矮行星 · 主小行星带',
+    shaderType: 12, color: '#9c9790',
+    desc: '主小行星带中质量最大的天体，占小行星带总质量近三分之一，轨道倾角达 10.59°。',
+    radiusKm: 469.7, obsRadius: 0.0022, oblateness: 0.07,
+    massSolar: 4.72e-10, massEarth: 0.000157, rotDays: 0.3781, tiltDeg: 4.0,
+    poleRA: 291.42, poleDec: 66.76, gravity: 0.28, escVel: 0.51, tempK: 168, albedo: 0.09,
+    keplerFixed: { a: 2.7675059, e: 0.0758228, I: 10.59339, node: 80.30553, argPeri: 73.59769, M0: 77.3721, epochJD: J2000_JD },
+    periodDays: 1681.63
+  },
+  {
+    id: 'jupiter', name: 'Jupiter', cn: '木星', typeLabel: '气态巨行星 · 太阳系引力之锚',
+    shaderType: 4, color: '#e0b384',
+    desc: '9.9 小时极速自转将其塑造成显著的扁球体 (扁率 0.065)，反方向切变风带与持续数世纪的大红斑在其大气中翻涌。',
+    radiusKm: 69911, obsRadius: 0.020, oblateness: 0.06487,
+    massSolar: 1 / 1047.3486, massEarth: 317.83, rotDays: 0.41354, tiltDeg: 3.13,
+    poleRA: 268.057, poleDec: 64.495, gravity: 24.79, escVel: 59.5, tempK: 165, albedo: 0.343,
+    atmColor: [0.88, 0.74, 0.56], atmScale: 1.022, atmDensity: 0.45,
+    jpl: { a: 5.20288700, da: -0.00011607, e: 0.04838624, de: -0.00013253, I: 1.30439695, dI: -0.00183714, L: 34.39644051, dL: 3034.74612775, wBar: 14.72847983, dWBar: 0.21252668, node: 100.47390909, dNode: 0.20469106, b: -0.00012452, c: 0.06064060, s: -0.35635438, f: 38.35125000 },
+    periodDays: 4332.59, key: '5'
+  },
+  {
+    id: 'saturn', name: 'Saturn', cn: '土星', typeLabel: '气态巨行星 · 冰晶光环系统',
+    shaderType: 5, color: '#edd49f',
+    desc: '太阳系最壮丽的环系主宰。26.73° 倾角使其光环与本星体在漫长的 29.45 年公转中相互投射出纤细而逼真的季节性阴影。',
+    radiusKm: 58232, obsRadius: 0.017, oblateness: 0.09796,
+    massSolar: 1 / 3497.898, massEarth: 95.16, rotDays: 0.44401, tiltDeg: 26.73,
+    poleRA: 40.589, poleDec: 83.537, gravity: 10.44, escVel: 35.5, tempK: 134, albedo: 0.342,
+    atmColor: [0.92, 0.84, 0.62], atmScale: 1.024, atmDensity: 0.42,
+    hasRings: 'saturn', ringInner: 1.22, ringOuter: 2.34,
+    jpl: { a: 9.53667594, da: -0.00125060, e: 0.05386179, de: -0.00050991, I: 2.48599187, dI: 0.00193609, L: 49.95424423, dL: 1222.49362201, wBar: 92.59887831, dWBar: -0.41897216, node: 113.66242448, dNode: -0.28867794, b: 0.00025899, c: -0.13434469, s: 0.87320147, f: 38.35125000 },
+    periodDays: 10759.22, key: '6'
+  },
+  {
+    id: 'uranus', name: 'Uranus', cn: '天王星', typeLabel: '冰巨行星 · 97.77° 躺倒自转',
+    shaderType: 6, color: '#7ee0e6',
+    desc: '几乎完全"躺"在黄道面上滚动的冰巨星，97.77° 极端轴倾角使其拥有纤细而垂直倾斜的暗色环系与长达 42 年的极昼。',
+    radiusKm: 25362, obsRadius: 0.0105, oblateness: 0.0229,
+    massSolar: 1 / 22902.98, massEarth: 14.54, rotDays: -0.71833, tiltDeg: 97.77,
+    poleRA: 257.311, poleDec: -15.175, gravity: 8.69, escVel: 21.3, tempK: 76, albedo: 0.30,
+    atmColor: [0.52, 0.90, 0.94], atmScale: 1.026, atmDensity: 0.45,
+    hasRings: 'uranus', ringInner: 1.56, ringOuter: 2.02,
+    jpl: { a: 19.18916464, da: -0.00196176, e: 0.04725744, de: -0.00004397, I: 0.77263783, dI: -0.00242939, L: 313.23810451, dL: 428.48202785, wBar: 170.95427630, dWBar: 0.40805281, node: 74.01692503, dNode: 0.04240589, b: 0.00058331, c: -0.97731848, s: 0.17689245, f: 7.67025000 },
+    periodDays: 30688.5, key: '7'
+  },
+  {
+    id: 'neptune', name: 'Neptune', cn: '海王星', typeLabel: '冰巨行星 · 超音速飓风',
+    shaderType: 7, color: '#4576ff',
+    desc: '八大行星最外侧的深蓝冰巨星，太阳风与微弱日照下仍吹拂着高达 2,100 km/h 的太阳系最强超音速甲烷飓风。',
+    radiusKm: 24622, obsRadius: 0.0102, oblateness: 0.0171,
+    massSolar: 1 / 19412.24, massEarth: 17.15, rotDays: 0.6713, tiltDeg: 28.32,
+    poleRA: 299.36, poleDec: 43.46, gravity: 11.15, escVel: 23.5, tempK: 72, albedo: 0.29,
+    atmColor: [0.25, 0.48, 1.0], atmScale: 1.028, atmDensity: 0.55,
+    jpl: { a: 30.06992276, da: 0.00026291, e: 0.00859048, de: 0.00005105, I: 1.77004347, dI: 0.00035372, L: -55.12002969, dL: 218.45945325, wBar: 44.96476227, dWBar: -0.32241464, node: 131.78422574, dNode: -0.00508664, b: -0.00041348, c: 0.68346318, s: -0.10162547, f: 7.67025000 },
+    periodDays: 60182, key: '8'
+  },
+  {
+    id: 'pluto', name: 'Pluto', cn: '冥王星', typeLabel: '柯伊伯带矮行星 · 双星共舞',
+    shaderType: 8, color: '#d4b89c',
+    desc: '高倾角 (17.14°)、高偏心率 (0.249) 轨道穿越海王星投影，与冥卫一卡戎相互潮汐锁定，表面分布着氮冰平原与托林红棕高地。',
+    radiusKm: 1188.3, obsRadius: 0.0031, oblateness: 0.0,
+    massSolar: 6.55e-9, massEarth: 0.00218, rotDays: -6.3872, tiltDeg: 122.53,
+    poleRA: 132.993, poleDec: -6.163, gravity: 0.62, escVel: 1.21, tempK: 44, albedo: 0.52,
+    atmColor: [0.55, 0.78, 1.0], atmScale: 1.04, atmDensity: 0.22,
+    jpl: { a: 39.48211675, da: -0.00031596, e: 0.24882730, de: 0.00005170, I: 17.14001206, dI: 0.00004818, L: 238.92903833, dL: 145.20780515, wBar: 224.06891629, dWBar: -0.04062942, node: 110.30393684, dNode: -0.01183482, b: -0.01262724 },
+    periodDays: 90560, key: '9'
+  },
+  {
+    id: 'halley', name: '1P/Halley', cn: '哈雷彗星', typeLabel: '短周期逆行彗星',
+    shaderType: 12, color: '#78e6ff',
+    desc: '最著名的周期彗星 (75.3年)，以 162.26° 逆行倾角穿梭于金星与海王星之外，靠近太阳时演化出背日蓝色离子尾与弯曲金色尘埃尾。',
+    radiusKm: 5.5, obsRadius: 0.0022, oblateness: 0.2,
+    massSolar: 1.1e-16, massEarth: 3.7e-11, rotDays: 2.2, tiltDeg: 40,
+    poleRA: 210, poleDec: 40, gravity: 0.0005, escVel: 0.002, tempK: 200, albedo: 0.04,
+    isComet: true,
+    keplerFixed: { a: 17.8574, e: 0.967128, I: 162.26269, node: 58.42008, argPeri: 111.33249, M0: 0.0, epochJD: 2446470.958 },
+    periodDays: 27563.0
+  }
+];
+
+// Major Natural Satellites (orbital radius in parent planetary radii Rp for clean scale parity!)
+const MOONS = [
+  {
+    id: 'moon', parent: 'earth', name: 'Moon', cn: '月球', typeLabel: '天然卫星 · 潮汐锁定',
+    shaderType: 12, color: '#d0d2d6',
+    desc: '以 5.145° 轨道倾角绕地球公转，交点以 18.6 年周期西退。当运行至交点并排成一线时，将触发真实的日食与红铜色月全食。',
+    radiusKm: 1737.4, ratioParent: 0.2727, aRp: 60.268, e: 0.0549, incDeg: 5.145,
+    periodDays: 27.321661, eclipticOrbit: true, tidallyLocked: true,
+    massEarth: 0.0123, gravity: 1.62, escVel: 2.38, tempK: 250
+  },
+  {
+    id: 'phobos', parent: 'mars', name: 'Phobos', cn: '火卫一', typeLabel: '不规则岩石卫星',
+    shaderType: 12, color: '#9c8c7e',
+    desc: '距火星中心仅 2.76 倍火星半径的超近距卫星，每 7.66 小时绕火星一圈，比火星自转还快。',
+    radiusKm: 11.27, ratioParent: 0.055, aRp: 2.76, e: 0.0151, incDeg: 1.09,
+    periodDays: 0.31891, tidallyLocked: true, massEarth: 1.8e-9, gravity: 0.0057, escVel: 0.011, tempK: 233
+  },
+  {
+    id: 'deimos', parent: 'mars', name: 'Deimos', cn: '火卫二', typeLabel: '不规则岩石卫星',
+    shaderType: 12, color: '#b0a294',
+    desc: '火星外侧卫星，轨道半径 6.92 倍火星半径，公转周期 30.3 小时。',
+    radiusKm: 6.2, ratioParent: 0.04, aRp: 6.92, e: 0.00033, incDeg: 0.93,
+    periodDays: 1.263, tidallyLocked: true, massEarth: 2.5e-10, gravity: 0.003, escVel: 0.0056, tempK: 233
+  },
+  {
+    id: 'io', parent: 'jupiter', name: 'Io', cn: '木卫一 (埃欧)', typeLabel: '伽利略卫星 · 剧烈火山世界',
+    shaderType: 9, color: '#ffd954',
+    desc: '太阳系地质活动最剧烈的天体，与木卫二、木卫三形成精确的 4:2:1 拉普拉斯轨道共振，潮汐加热使其遍布硫磺火山。',
+    radiusKm: 1821.6, ratioParent: 0.0261, aRp: 5.90, e: 0.0041, incDeg: 0.05,
+    periodDays: 1.769138, M0Deg: 20, tidallyLocked: true, massEarth: 0.015, gravity: 1.796, escVel: 2.558, tempK: 110
+  },
+  {
+    id: 'europa', parent: 'jupiter', name: 'Europa', cn: '木卫二 (欧罗巴)', typeLabel: '伽利略卫星 · 冰下海洋世界',
+    shaderType: 10, color: '#d8cfb8',
+    desc: '光滑水冰外壳下隐藏着深达百公里的全球性液态咸水海洋，被认为是地外生命最有希望的栖息地之一。',
+    radiusKm: 1560.8, ratioParent: 0.0223, aRp: 9.39, e: 0.009, incDeg: 0.47,
+    periodDays: 3.551181, M0Deg: 110, tidallyLocked: true, massEarth: 0.008, gravity: 1.315, escVel: 2.025, tempK: 102
+  },
+  {
+    id: 'ganymede', parent: 'jupiter', name: 'Ganymede', cn: '木卫三 (盖尼米德)', typeLabel: '太阳系最大卫星',
+    shaderType: 12, color: '#a89c8a',
+    desc: '体积甚至超越水星的太阳系第一大卫星，也是唯一已知拥有自身内禀磁场的卫星。',
+    radiusKm: 2634.1, ratioParent: 0.0377, aRp: 14.97, e: 0.0013, incDeg: 0.20,
+    periodDays: 7.154553, M0Deg: 245, tidallyLocked: true, massEarth: 0.0248, gravity: 1.428, escVel: 2.741, tempK: 110
+  },
+  {
+    id: 'callisto', parent: 'jupiter', name: 'Callisto', cn: '木卫四 (卡里斯托)', typeLabel: '伽利略卫星 · 古老陨击壳',
+    shaderType: 12, color: '#7c7469',
+    desc: '太阳系中陨石坑密度最高的天体之一，保存着超过 40 亿年前太阳系形成初期的撞击记忆。',
+    radiusKm: 2410.3, ratioParent: 0.0345, aRp: 26.33, e: 0.0074, incDeg: 0.19,
+    periodDays: 16.689018, M0Deg: 65, tidallyLocked: true, massEarth: 0.018, gravity: 1.235, escVel: 2.440, tempK: 134
+  },
+  {
+    id: 'enceladus', parent: 'saturn', name: 'Enceladus', cn: '土卫二 (恩克拉多斯)', typeLabel: '冰喷泉卫星 · E环之源',
+    shaderType: 10, color: '#eef7ff',
+    desc: '表面反照率极高的纯净冰球，南极虎斑裂隙持续向太空喷射水冰羽流，孕育了土星最外侧的 E 环。',
+    radiusKm: 252.1, ratioParent: 0.012, aRp: 3.95, e: 0.0047, incDeg: 0.02,
+    periodDays: 1.370218, M0Deg: 40, tidallyLocked: true, massEarth: 1.8e-5, gravity: 0.113, escVel: 0.239, tempK: 75
+  },
+  {
+    id: 'titan', parent: 'saturn', name: 'Titan', cn: '土卫六 (泰坦)', typeLabel: '浓厚氮-甲烷大气卫星',
+    shaderType: 11, color: '#e8a848',
+    desc: '太阳系唯一拥有浓密大气层与液态碳氢化合物湖泊的卫星，1.45 倍地球表面气压的橙色有机雾霾笼罩全球。',
+    radiusKm: 2574.7, ratioParent: 0.0442, aRp: 20.27, e: 0.0288, incDeg: 0.35,
+    periodDays: 15.945, M0Deg: 195, tidallyLocked: true, massEarth: 0.0225, gravity: 1.352, escVel: 2.639, tempK: 94,
+    atmColor: [0.95, 0.65, 0.24], atmScale: 1.07, atmDensity: 1.05
+  },
+  {
+    id: 'titania', parent: 'uranus', name: 'Titania', cn: '天卫三 (泰坦妮娅)', typeLabel: '天王星最大卫星',
+    shaderType: 12, color: '#b4afa8',
+    desc: '沿天王星 97.77° 躺倒赤道平面垂直公转的最大卫星，冰岩混杂且布满千米级断层峡谷。',
+    radiusKm: 788.4, ratioParent: 0.031, aRp: 17.19, e: 0.0011, incDeg: 0.34,
+    periodDays: 8.706, M0Deg: 130, tidallyLocked: true, massEarth: 0.00059, gravity: 0.379, escVel: 0.773, tempK: 70
+  },
+  {
+    id: 'triton', parent: 'neptune', name: 'Triton', cn: '海卫一 (崔顿)', typeLabel: '捕获矮行星 · 156.8° 逆行',
+    shaderType: 8, color: '#d9c6be',
+    desc: '大概率是被海王星捕获的柯伊伯带天体，拥有太阳系大卫星中罕见的 156.8° 逆行倾角轨道与氮冰喷流。',
+    radiusKm: 1353.4, ratioParent: 0.055, aRp: 14.39, e: 0.000016, incDeg: 156.885,
+    periodDays: 5.87685, M0Deg: 305, tidallyLocked: true, massEarth: 0.00359, gravity: 0.779, escVel: 1.455, tempK: 38
+  },
+  {
+    id: 'charon', parent: 'pluto', name: 'Charon', cn: '卡戎 (冥卫一)', typeLabel: '相互潮汐锁定双星伴侣',
+    shaderType: 12, color: '#9c9691',
+    desc: '直径达冥王星一半以上的巨大卫星，二者始终以同一面朝向彼此共舞，质心实际上位于冥王星实体之外。',
+    radiusKm: 606.0, ratioParent: 0.51, aRp: 16.49, e: 0.0002, incDeg: 0.08,
+    periodDays: 6.38723, M0Deg: 0, tidallyLocked: true, massEarth: 0.000266, gravity: 0.288, escVel: 0.59, tempK: 53
+  }
+];
+
+// Brightest Real Navigational Stars (J2000 RA deg, Dec deg, Vmag, RGB)
+const REAL_STARS = [
+  { name: 'Sirius', ra: 101.287, dec: -16.716, v: -1.46, col: [0.76, 0.85, 1.0] },
+  { name: 'Canopus', ra: 95.988, dec: -52.696, v: -0.74, col: [0.95, 0.96, 1.0] },
+  { name: 'Rigil Kent', ra: 219.902, dec: -60.834, v: -0.27, col: [1.0, 0.93, 0.78] },
+  { name: 'Arcturus', ra: 213.915, dec: 19.182, v: -0.05, col: [1.0, 0.78, 0.52] },
+  { name: 'Vega', ra: 279.235, dec: 38.784, v: 0.03, col: [0.78, 0.86, 1.0] },
+  { name: 'Capella', ra: 79.172, dec: 45.998, v: 0.08, col: [1.0, 0.91, 0.72] },
+  { name: 'Rigel', ra: 78.634, dec: -8.202, v: 0.13, col: [0.72, 0.83, 1.0] },
+  { name: 'Procyon', ra: 114.825, dec: 5.225, v: 0.34, col: [0.97, 0.95, 0.88] },
+  { name: 'Achernar', ra: 24.429, dec: -57.237, v: 0.46, col: [0.70, 0.82, 1.0] },
+  { name: 'Betelgeuse', ra: 88.793, dec: 7.407, v: 0.50, col: [1.0, 0.62, 0.38] },
+  { name: 'Altair', ra: 297.696, dec: 8.868, v: 0.76, col: [0.84, 0.90, 1.0] },
+  { name: 'Aldebaran', ra: 68.980, dec: 16.509, v: 0.86, col: [1.0, 0.70, 0.45] },
+  { name: 'Antares', ra: 247.352, dec: -26.432, v: 0.96, col: [1.0, 0.58, 0.36] },
+  { name: 'Spica', ra: 201.298, dec: -11.161, v: 0.97, col: [0.70, 0.81, 1.0] },
+  { name: 'Pollux', ra: 116.329, dec: 28.026, v: 1.14, col: [1.0, 0.82, 0.58] },
+  { name: 'Fomalhaut', ra: 344.413, dec: -29.622, v: 1.16, col: [0.84, 0.89, 1.0] },
+  { name: 'Deneb', ra: 310.358, dec: 45.280, v: 1.25, col: [0.82, 0.89, 1.0] },
+  { name: 'Regulus', ra: 152.093, dec: 11.967, v: 1.35, col: [0.74, 0.84, 1.0] },
+  { name: 'Castor', ra: 113.650, dec: 31.888, v: 1.58, col: [0.82, 0.88, 1.0] },
+  { name: 'Polaris', ra: 37.955, dec: 89.264, v: 1.98, col: [1.0, 0.92, 0.76] }
+];
+
+// Zodiac & Orion constellation stick lines in RA/Dec
+const CONSTELLATION_LINES = [
+  // Orion
+  [[88.79, 7.41], [81.28, 6.35], [78.63, -8.20], [86.94, -9.67], [88.79, 7.41]],
+  [[83.00, -0.30], [84.05, -1.20], [85.19, -1.94]],
+  // Taurus V + Pleiades
+  [[68.98, 16.51], [67.15, 15.96], [64.95, 15.63], [67.17, 19.18], [84.41, 21.14]],
+  // Leo
+  [[152.09, 11.97], [151.83, 16.76], [154.99, 19.84], [154.17, 23.42], [148.19, 26.00]],
+  [[152.09, 11.97], [168.53, 20.52], [177.26, 14.57], [168.56, 15.43], [154.99, 19.84]],
+  // Scorpius
+  [[240.08, -22.62], [241.36, -19.81], [239.71, -26.11], [247.35, -26.43], [252.54, -34.29], [263.40, -37.10], [264.33, -43.00]],
+  // Ursa Major (Big Dipper)
+  [[165.93, 61.75], [165.46, 56.38], [178.46, 53.69], [183.86, 57.03], [193.51, 55.96], [200.98, 54.93], [206.89, 49.31]]
+];
+
+const BODY_MAP = {};
+BODIES.forEach(b => {
+  b.poleWorld = iauPoleToWorld(b.poleRA, b.poleDec);
+  b.trueRadiusAU = b.radiusKm / AU_KM;
+  BODY_MAP[b.id] = b;
+});
+MOONS.forEach(m => {
+  m.trueRadiusAU = m.radiusKm / AU_KM;
+  BODY_MAP[m.id] = m;
+});
+
+// ============================================================================
+// 2. KEPLERIAN EPHEMERIS & VELOCITY-VERLET N-BODY PHYSICS
+// ============================================================================
+function solveKepler(M, e) {
+  // M is normalized in [-PI, PI]; f(E) = E - e*sin(E) - M is strictly increasing
+  let lo = M >= 0 ? M : Math.max(-Math.PI, M - e);
+  let hi = M >= 0 ? Math.min(Math.PI, M + e) : M;
+  let E = 0.5 * (lo + hi);
+  for (let i = 0; i < 24; i++) {
+    const f = E - e * Math.sin(E) - M;
+    if (Math.abs(f) < 1e-13) break;
+    if (f < 0) lo = E;
+    else hi = E;
+    const fp = 1 - e * Math.cos(E);
+    const next = E - f / fp;
+    E = (next > lo && next < hi) ? next : 0.5 * (lo + hi);
+  }
+  return E;
+}
+
+function elementsToState(a, e, Ideg, nodeDeg, argPeriDeg, Mdeg, mu = GM_SUN) {
+  let M = (Mdeg % 360) * DEG;
+  if (M < -Math.PI) M += Math.PI * 2;
+  if (M > Math.PI) M -= Math.PI * 2;
+
+  const E = solveKepler(M, e);
+  const cosE = Math.cos(E), sinE = Math.sin(E);
+  const sq = Math.sqrt(Math.max(0, 1 - e * e));
+  const xOrb = a * (cosE - e);
+  const yOrb = a * sq * sinE;
+  const r = a * (1 - e * cosE);
+
+  // Analytical perifocal velocity (AU / day)
+  const n = Math.sqrt(mu / (a * a * a));
+  const vFactor = (n * a) / (1 - e * cosE);
+  const vxOrb = -vFactor * sinE;
+  const vyOrb = vFactor * sq * cosE;
+
+  const w = argPeriDeg * DEG;
+  const O = nodeDeg * DEG;
+  const I = Ideg * DEG;
+  const cw = Math.cos(w), sw = Math.sin(w);
+  const cO = Math.cos(O), sO = Math.sin(O);
+  const cI = Math.cos(I), sI = Math.sin(I);
+
+  // Perifocal -> J2000 Ecliptic
+  const P1 = cw * cO - sw * sO * cI;
+  const P2 = cw * sO + sw * cO * cI;
+  const P3 = sw * sI;
+  const Q1 = -sw * cO - cw * sO * cI;
+  const Q2 = -sw * sO + cw * cO * cI;
+  const Q3 = cw * sI;
+
+  const xEcl = P1 * xOrb + Q1 * yOrb;
+  const yEcl = P2 * xOrb + Q2 * yOrb;
+  const zEcl = P3 * xOrb + Q3 * yOrb;
+
+  const vxEcl = P1 * vxOrb + Q1 * vyOrb;
+  const vyEcl = P2 * vxOrb + Q2 * vyOrb;
+  const vzEcl = P3 * vxOrb + Q3 * vyOrb;
+
+  const nu = Math.atan2(sq * sinE, cosE - e);
+
+  return {
+    pos: [xEcl, zEcl, -yEcl],
+    vel: [vxEcl, vzEcl, -vyEcl],
+    r,
+    speedKms: Math.hypot(vxEcl, vyEcl, vzEcl) * (AU_KM / 86400),
+    nu, E, M, a, e, inc: Ideg, node: nodeDeg, argPeri: argPeriDeg
+  };
+}
+
+function getKeplerState(body, jd) {
+  if (body.isSun) {
+    return { pos: [0, 0, 0], vel: [0, 0, 0], r: 0, speedKms: 0, nu: 0, a: 0, e: 0, inc: 0 };
+  }
+  if (body.jpl) {
+    const T = (jd - J2000_JD) / 36525.0;
+    const j = body.jpl;
+    const a = j.a + j.da * T;
+    const e = Math.max(0, Math.min(0.99, j.e + j.de * T));
+    const I = j.I + j.dI * T;
+    const L = j.L + j.dL * T;
+    const wBar = j.wBar + j.dWBar * T;
+    const node = j.node + j.dNode * T;
+    const argPeri = wBar - node;
+    let M = L - wBar;
+    if (j.b) M += j.b * T * T;
+    if (j.c) M += j.c * Math.cos(j.f * T * DEG) + j.s * Math.sin(j.f * T * DEG);
+    return elementsToState(a, e, I, node, argPeri, M, GM_SUN * (1 + body.massSolar));
+  }
+  if (body.keplerFixed) {
+    const k = body.keplerFixed;
+    const dt = jd - k.epochJD;
+    const nDeg = Math.sqrt(GM_SUN / (k.a * k.a * k.a)) * RAD;
+    const M = k.M0 + nDeg * dt;
+    return elementsToState(k.a, k.e, k.I, k.node, k.argPeri, M, GM_SUN);
+  }
+  return { pos: [0, 0, 0], vel: [0, 0, 0], r: 0, speedKms: 0, nu: 0 };
+}
+
+function getMoonLocalOffset(moon, parentBody, parentDispR, parentPosAU, jd) {
+  const d = jd - J2000_JD;
+  let a = moon.aRp * parentDispR;
+  // In True 1:1 Scale, Moon's physical semi-major axis is exact (384,400 km = 0.0025695 AU)
+  if (state.scaleMode === 'true') {
+    a = moon.aRp * parentBody.trueRadiusAU;
+  }
+
+  let localRelParent;
+  if (moon.eclipticOrbit) {
+    // Earth's Moon: accurate 18.6-yr nodal regression, 8.85-yr perigee precession + Evection/Variation/Annual eq
+    const nodeDeg = 125.04452 - 0.0529537648 * d;
+    const wBarDeg = 83.35324 + 0.11140352 * d;
+    const argPeriDeg = wBarDeg - nodeDeg;
+    const Mm = 134.96340 + 13.06499295 * d;
+    const Lmoon = wBarDeg + Mm;
+    const Lsun = 280.46646 + 0.98564736 * d;
+    const Msun = 357.52911 + 0.98560028 * d;
+    const D = (Lmoon - Lsun) * DEG;
+    const MmRad = Mm * DEG, MsRad = Msun * DEG;
+    // Perturbations in longitude -> effective M shift
+    const pertDeg = 1.274 * Math.sin(2 * D - MmRad) + 0.658 * Math.sin(2 * D) - 0.186 * Math.sin(MsRad);
+    const st = elementsToState(a, moon.e, moon.incDeg, nodeDeg, argPeriDeg, Mm + pertDeg, 1.0);
+    localRelParent = st.pos;
+  } else {
+    // Equatorial plane of parent planet
+    const M = (moon.M0Deg || 0) + (360 / moon.periodDays) * d;
+    const st = elementsToState(a, moon.e, moon.incDeg, 0, 0, M, 1.0);
+    // st.pos is in Y-up local equatorial frame (X, Y, Z) -> align +Y to parent.poleWorld
+    const basis = buildSpinBasis(parentBody.poleWorld, 0);
+    const p = st.pos;
+    localRelParent = add3(add3(mul3(basis.X, p[0]), mul3(basis.Y, p[1])), mul3(basis.Z, p[2]));
+  }
+  return localRelParent;
+}
+
+// ============================================================================
+// 3. STATE & N-BODY SIMULATOR
+// ============================================================================
+const PRESET_EPOCHS = {
+  'now': () => Date.now(),
+  '1977-08-20T14:29:00Z': () => Date.parse('1977-08-20T14:29:00Z'),
+  '1986-02-09T11:00:00Z': () => Date.parse('1986-02-09T11:00:00Z'),
+  '2020-12-21T18:22:00Z': () => Date.parse('2020-12-21T18:22:00Z'),
+  '2026-03-03T11:34:00Z': () => Date.parse('2026-03-03T11:34:00Z'),
+  '2061-07-28T12:00:00Z': () => Date.parse('2061-07-28T12:00:00Z')
+};
+
+const state = {
+  jd: dateToJD(Date.now()),
+  playing: true,
+  direction: 1,
+  daysPerSec: 1.0, // default 1 day/sec
+  physicsMode: 'kepler', // 'kepler' | 'nbody'
+  scaleMode: 'obs', // 'obs' | 'true' | 'log'
+  bodyScale: 1.0,
+  exposure: 1.15,
+  solarMassMul: 1.0,
+  focusedId: 'earth',
+  hudHidden: false,
+  tourActive: false,
+  tourTime: 0,
+  photonPulse: { active: false, rAU: 0, elapsedSec: 0 },
+  layers: {
+    orbits: true,
+    labels: true,
+    belts: true,
+    comet: true,
+    gravity: false,
+    hz: false,
+    kepler2: false,
+    lagrange: false,
+    constellations: true,
+    eclipticGrid: false,
+    trueLight: false,
+    velVec: true
+  },
+  nbodyBodies: [],
+  rogueCounter: 0,
+  keplerSweep: { bodyId: null, sectors: [], lastSampleJD: 0 },
+  runtimePositions: {}, // id -> { posWorld, posPhysAU, velKms, distAU, dispR, spinRad, state }
+  camera: {
+    yaw: 0.72,
+    pitch: 0.48,
+    dist: 2.8,
+    targetYaw: 0.72,
+    targetPitch: 0.48,
+    targetDist: 2.8,
+    focusWorld: [0, 0, 0],
+    smoothFocus: [0, 0, 0],
+    fovDeg: 45
+  }
+};
+
+function mapDistanceScale(posAU) {
+  if (state.scaleMode !== 'log') return posAU;
+  const r = len3(posAU);
+  if (r < 1e-8) return [0, 0, 0];
+  const rLog = Math.pow(r, 0.56) * 1.18;
+  const s = rLog / r;
+  return [posAU[0] * s, posAU[1] * s, posAU[2] * s];
+}
+
+function getBodyDisplayRadius(body) {
+  if (state.scaleMode === 'true') return body.trueRadiusAU;
+  if (body.isSun) return Math.min(0.22, body.obsRadius * (0.7 + 0.3 * state.bodyScale));
+  return body.obsRadius * state.bodyScale;
+}
+
+function initNBodyFromJD(jd) {
+  state.nbodyBodies = [];
+  for (const b of BODIES) {
+    const st = getKeplerState(b, jd);
+    state.nbodyBodies.push({
+      id: b.id,
+      body: b,
+      pos: [...st.pos],
+      vel: [...st.vel],
+      acc: [0, 0, 0],
+      mass: b.massSolar,
+      trail: [],
+      trailTimer: 0
+    });
+  }
+  // Subtract barycentric momentum so Sun remains anchored in center-of-momentum frame
+  let totMass = 0, px = 0, py = 0, pz = 0;
+  for (const nb of state.nbodyBodies) {
+    const m = nb.id === 'sun' ? nb.mass * state.solarMassMul : nb.mass;
+    totMass += m;
+    px += nb.vel[0] * m; py += nb.vel[1] * m; pz += nb.vel[2] * m;
+  }
+  for (const nb of state.nbodyBodies) {
+    nb.vel[0] -= px / totMass;
+    nb.vel[1] -= py / totMass;
+    nb.vel[2] -= pz / totMass;
+  }
+  computeNBodyAccelerations();
+}
+
+function computeNBodyAccelerations() {
+  const arr = state.nbodyBodies;
+  const n = arr.length;
+  for (let i = 0; i < n; i++) {
+    arr[i].acc[0] = 0; arr[i].acc[1] = 0; arr[i].acc[2] = 0;
+  }
+  const eps2 = 1e-8;
+  for (let i = 0; i < n; i++) {
+    const bi = arr[i];
+    const mi = bi.id === 'sun' ? bi.mass * state.solarMassMul : bi.mass;
+    for (let j = i + 1; j < n; j++) {
+      const bj = arr[j];
+      const mj = bj.id === 'sun' ? bj.mass * state.solarMassMul : bj.mass;
+      const dx = bj.pos[0] - bi.pos[0];
+      const dy = bj.pos[1] - bi.pos[1];
+      const dz = bj.pos[2] - bi.pos[2];
+      const r2 = dx * dx + dy * dy + dz * dz + eps2;
+      const invR3 = 1.0 / (r2 * Math.sqrt(r2));
+      const fi = GM_SUN * mj * invR3;
+      const fj = GM_SUN * mi * invR3;
+      bi.acc[0] += dx * fi; bi.acc[1] += dy * fi; bi.acc[2] += dz * fi;
+      bj.acc[0] -= dx * fj; bj.acc[1] -= dy * fj; bj.acc[2] -= dz * fj;
+    }
+  }
+}
+
+function stepNBody(dtDays) {
+  if (Math.abs(dtDays) < 1e-9) return;
+  const maxStep = 0.16;
+  const steps = Math.min(180, Math.max(1, Math.ceil(Math.abs(dtDays) / maxStep)));
+  const h = dtDays / steps;
+  const arr = state.nbodyBodies;
+
+  for (let s = 0; s < steps; s++) {
+    // Velocity-Verlet Kick-Drift-Kick
+    for (let i = 0; i < arr.length; i++) {
+      const b = arr[i];
+      b.vel[0] += 0.5 * h * b.acc[0];
+      b.vel[1] += 0.5 * h * b.acc[1];
+      b.vel[2] += 0.5 * h * b.acc[2];
+      b.pos[0] += h * b.vel[0];
+      b.pos[1] += h * b.vel[1];
+      b.pos[2] += h * b.vel[2];
+    }
+    computeNBodyAccelerations();
+    for (let i = 0; i < arr.length; i++) {
+      const b = arr[i];
+      b.vel[0] += 0.5 * h * b.acc[0];
+      b.vel[1] += 0.5 * h * b.acc[1];
+      b.vel[2] += 0.5 * h * b.acc[2];
+    }
+  }
+
+  for (const b of arr) {
+    b.trailTimer += Math.abs(dtDays);
+    const interval = b.body.jpl ? Math.max(0.4, (b.body.periodDays || 365) / 140) : 1.2;
+    if (b.trailTimer >= interval || b.trail.length === 0) {
+      b.trailTimer = 0;
+      b.trail.push([...b.pos]);
+      if (b.trail.length > 260) b.trail.shift();
+    }
+  }
+}
+
+function spawnRogueBody(isStar) {
+  if (state.physicsMode !== 'nbody') {
+    setPhysicsMode('nbody');
+  }
+  state.rogueCounter++;
+  const id = `rogue_${state.rogueCounter}`;
+  const angle = Math.random() * Math.PI * 2;
+  const startR = 6.5 + Math.random() * 2.5;
+  const px = Math.cos(angle) * startR;
+  const pz = Math.sin(angle) * startR;
+  const py = (Math.random() - 0.5) * 1.1;
+
+  // Aim slightly offset from Sun to create dramatic slingshot encounter
+  const aimOffset = 0.65 + Math.random() * 0.85;
+  const tx = -Math.sin(angle) * aimOffset;
+  const tz = Math.cos(angle) * aimOffset;
+  const dir = norm3([tx - px, -py * 0.6, tz - pz]);
+  const vMag = (isStar ? 38 : 31) * (86400 / AU_KM); // km/s -> AU/day
+
+  const bodyDef = {
+    id,
+    name: isStar ? `Rogue Brown Dwarf #${state.rogueCounter}` : `Rogue Giant #${state.rogueCounter}`,
+    cn: isStar ? `闯入褐矮星 #${state.rogueCounter}` : `流浪巨行星 #${state.rogueCounter}`,
+    typeLabel: isStar ? '闯入天体 · 0.08 M☉' : '闯入流浪巨行星 · 3 M♃',
+    shaderType: isStar ? 13 : 4,
+    color: isStar ? '#ff7744' : '#7ea8ff',
+    desc: '通过 N-Body 引力沙盒发射的星际闯入天体，当前受太阳及各大行星实时引力摄动。',
+    radiusKm: isStar ? 78000 : 75000,
+    trueRadiusAU: (isStar ? 78000 : 75000) / AU_KM,
+    obsRadius: isStar ? 0.024 : 0.019,
+    oblateness: 0.03,
+    massSolar: isStar ? 0.08 : 0.00286,
+    massEarth: isStar ? 26600 : 953,
+    rotDays: 0.45,
+    tiltDeg: 15,
+    poleWorld: norm3([0.1, 0.96, 0.25]),
+    gravity: isStar ? 150 : 65,
+    escVel: isStar ? 140 : 95,
+    tempK: isStar ? 1650 : 120,
+    isRogue: true
+  };
+  BODY_MAP[id] = bodyDef;
+  state.nbodyBodies.push({
+    id, body: bodyDef,
+    pos: [px, py, pz],
+    vel: mul3(dir, vMag),
+    acc: [0, 0, 0],
+    mass: bodyDef.massSolar,
+    trail: [[px, py, pz]],
+    trailTimer: 0
+  });
+  computeNBodyAccelerations();
+  focusBody(id, true);
+}
+
+// ============================================================================
+// 4. WEBGL2 ENGINE & PROCEDURAL GLSL SHADERS
+// ============================================================================
+const glCanvas = document.getElementById('glCanvas');
+const hudCanvas = document.getElementById('hudCanvas');
+const hudCtx = hudCanvas.getContext('2d');
+
+const gl = glCanvas.getContext('webgl2', {
+  antialias: false, alpha: false, depth: true, powerPreference: 'high-performance'
+});
+
+if (!gl) {
+  document.body.innerHTML = '<div style="color:#fff;padding:40px;font-family:sans-serif">您的浏览器不支持 WebGL 2.0，请使用最新版 Chrome / Safari / Firefox / Edge 打开此文件。</div>';
+  throw new Error('WebGL2 unsupported');
+}
+
+const LOG_C = 100000.0;
+const FAR_PLANE = 6000.0;
+const LOG_DEPTH_SCALE = 1.0 / Math.log2(1.0 + FAR_PLANE * LOG_C);
+
+// Shared GLSL Snippets
+const GLSL_LOG_DEPTH_VS = `
+  uniform float uLogC;
+  uniform float uLogDepthScale;
+  out float vLogW;
+  void writeLogPos(vec4 clip) {
+    gl_Position = clip;
+    vLogW = clip.w;
+    gl_Position.z = (log2(max(1e-6, 1.0 + clip.w * uLogC)) * uLogDepthScale * 2.0 - 1.0) * clip.w;
+  }
+`;
+
+const GLSL_LOG_DEPTH_FS = `
+  uniform float uLogC;
+  uniform float uLogDepthScale;
+  in float vLogW;
+  void writeLogDepth() {
+    gl_FragDepth = log2(max(1e-6, 1.0 + vLogW * uLogC)) * uLogDepthScale;
+  }
+`;
+
+// Fast Ashima 3D Simplex Noise
+const GLSL_NOISE = `
+  vec4 permute4(vec4 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
+  vec4 taylorInvSqrt4(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+  float snoise(vec3 v) {
+    const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+    vec3 i  = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min(g.xyz, l.zxy);
+    vec3 i2 = max(g.xyz, l.zxy);
+    vec3 x1 = x0 - i1 + C.xxx;
+    vec3 x2 = x0 - i2 + C.yyy;
+    vec3 x3 = x0 - D.yyy;
+    i = mod(i, 289.0);
+    vec4 p = permute4(permute4(permute4(
+              i.z + vec4(0.0, i1.z, i2.z, 1.0))
+            + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+            + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+    float n_ = 1.0 / 7.0;
+    vec3 ns = n_ * D.wyz - D.xzx;
+    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_);
+    vec4 x = x_ * ns.x + ns.yyyy;
+    vec4 y = y_ * ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    vec4 b0 = vec4(x.xy, y.xy);
+    vec4 b1 = vec4(x.zw, y.zw);
+    vec4 s0 = floor(b0) * 2.0 + 1.0;
+    vec4 s1 = floor(b1) * 2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+    vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+    vec3 p0 = vec3(a0.xy, h.x);
+    vec3 p1 = vec3(a0.zw, h.y);
+    vec3 p2 = vec3(a1.xy, h.z);
+    vec3 p3 = vec3(a1.zw, h.w);
+    vec4 norm = taylorInvSqrt4(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot(m * m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+  }
+
+  float fbm4(vec3 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 4; i++) {
+      v += a * snoise(p);
+      p = p * 2.03 + vec3(17.1, 31.7, 11.3);
+      a *= 0.5;
+    }
+    return v;
+  }
+
+  float fbm5(vec3 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++) {
+      v += a * snoise(p);
+      p = p * 2.04 + vec3(13.7, 29.3, 7.9);
+      a *= 0.5;
+    }
+    return v;
+  }
+
+  // Procedural spherical crater height field (returns height offset & rim glow)
+  float craterField(vec3 p, float scale) {
+    vec3 sp = p * scale;
+    vec3 ip = floor(sp);
+    vec3 fp = fract(sp);
+    float dMin = 10.0;
+    for (int z = -1; z <= 1; z++) {
+      for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+          vec3 n = vec3(float(x), float(y), float(z));
+          vec3 cell = ip + n;
+          vec3 h3 = fract(sin(vec3(
+            dot(cell, vec3(127.1, 311.7, 74.7)),
+            dot(cell, vec3(269.5, 183.3, 246.1)),
+            dot(cell, vec3(113.5, 271.9, 124.6))
+          )) * 43758.5453);
+          vec3 diff = n + h3 - fp;
+          dMin = min(dMin, dot(diff, diff));
+        }
+      }
+    }
+    float d = sqrt(dMin);
+    float bowl = smoothstep(0.0, 0.42, d) - 1.0;
+    float rim = exp(-pow((d - 0.44) * 9.0, 2.0)) * 0.48;
+    return bowl * 0.55 + rim;
+  }
+`;
+
+function compileShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(s);
+    console.error('Shader error:', log, src);
+    throw new Error('Shader compile failed: ' + log);
+  }
+  return s;
+}
+
+function createProgram(vsSrc, fsSrc) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compileShader(gl.VERTEX_SHADER, vsSrc));
+  gl.attachShader(p, compileShader(gl.FRAGMENT_SHADER, fsSrc));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    const log = gl.getProgramInfoLog(p);
+    console.error('Program link error:', log);
+    throw new Error('Program link failed: ' + log);
+  }
+  const uniforms = {};
+  const count = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < count; i++) {
+    const info = gl.getActiveUniform(p, i);
+    uniforms[info.name] = gl.getUniformLocation(p, info.name);
+    if (info.name.endsWith('[0]')) {
+      const base = info.name.slice(0, -3);
+      uniforms[base] = uniforms[info.name];
+    }
+  }
+  return { prog: p, u: uniforms };
+}
+
+// ----------------------------------------------------------------------------
+// SHADER 1: DEEP GALACTIC SKYBOX (Pre-baked 60.2 deg Milky Way Cubemap + Stars)
+// ----------------------------------------------------------------------------
+const skyBakeProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec2 aPos;
+out vec2 vUv;
+void main() {
+  vUv = aPos;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}`,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform int uFace;
+uniform vec3 uGalU;
+uniform vec3 uGalV;
+uniform vec3 uGalN;
+out vec4 fragColor;
+${GLSL_NOISE}
+
+float starHash(vec3 p) {
+  p = fract(p * vec3(443.897, 441.423, 437.195));
+  p += dot(p, p.yzx + 19.19);
+  return fract((p.x + p.y) * p.z);
+}
+
+vec3 starLayer(vec3 dir, float scale, float density) {
+  vec3 p = dir * scale;
+  vec3 id = floor(p);
+  vec3 fp = fract(p) - 0.5;
+  float h = starHash(id);
+  if (h < density) return vec3(0.0);
+  vec3 rnd = vec3(starHash(id + 1.3), starHash(id + 7.9), starHash(id + 19.7)) - 0.5;
+  float d = length(fp - rnd * 0.52);
+  float mag = pow((h - density) / (1.0 - density), 3.4);
+  float core = smoothstep(0.18, 0.0, d) * mag;
+  float temp = starHash(id + 43.1);
+  vec3 col = mix(vec3(0.68, 0.82, 1.0), vec3(1.0, 0.94, 0.84), smoothstep(0.15, 0.72, temp));
+  col = mix(col, vec3(1.0, 0.72, 0.45), smoothstep(0.72, 1.0, temp));
+  return col * core * 2.2;
+}
+
+vec3 cubeFaceDir(int face, float u, float v) {
+  if (face == 0) return normalize(vec3( 1.0, -v, -u));
+  if (face == 1) return normalize(vec3(-1.0, -v,  u));
+  if (face == 2) return normalize(vec3( u,  1.0,  v));
+  if (face == 3) return normalize(vec3( u, -1.0, -v));
+  if (face == 4) return normalize(vec3( u, -v,  1.0));
+  return normalize(vec3(-u, -v, -1.0));
+}
+
+void main() {
+  vec3 dir = cubeFaceDir(uFace, vUv.x, vUv.y);
+  float gx = dot(dir, uGalU);
+  float gy = dot(dir, uGalV);
+  float gz = dot(dir, uGalN);
+
+  float planeBand = exp(-pow(gz * 6.8, 2.0));
+  float bulge = exp(-pow(gz * 3.4, 2.0)) * smoothstep(-0.2, 0.95, gx);
+
+  vec3 gDir = vec3(gx, gy, gz);
+  float cloud = fbm4(gDir * 3.8) * 0.5 + 0.5;
+  float fineCloud = fbm4(gDir * 11.5 + vec3(2.4)) * 0.5 + 0.5;
+  float dustLane = smoothstep(0.32, 0.68, fbm4(gDir * 6.4 + vec3(9.2)) * 0.5 + 0.5);
+  float rift = exp(-pow((gz - (cloud - 0.5) * 0.08) * 18.0, 2.0)) * dustLane;
+
+  vec3 mwCold = vec3(0.08, 0.14, 0.28) * planeBand * (0.4 + 0.8 * cloud);
+  vec3 mwWarm = vec3(0.45, 0.34, 0.24) * bulge * (0.5 + 0.7 * fineCloud);
+  vec3 mwNebula = vec3(0.28, 0.08, 0.18) * planeBand * smoothstep(0.58, 0.86, fineCloud) * 0.45;
+  vec3 milkyWay = (mwCold + mwWarm + mwNebula) * (1.0 - rift * 0.78);
+
+  vec3 stars = vec3(0.0);
+  stars += starLayer(dir, 145.0, 0.915) * 1.15;
+  stars += starLayer(dir, 275.0, 0.885) * 0.65;
+  stars += starLayer(dir, 440.0, 0.855) * (0.30 + 0.95 * planeBand);
+
+  vec3 bg = vec3(0.004, 0.007, 0.016) + milkyWay * 0.58 + stars;
+  fragColor = vec4(bg, 1.0);
+}`
+);
+
+const skyProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec2 aPos;
+out vec2 vNdc;
+void main() {
+  vNdc = aPos;
+  gl_Position = vec4(aPos, 0.9999, 1.0);
+}`,
+`#version 300 es
+precision highp float;
+in vec2 vNdc;
+uniform samplerCube uSkyCube;
+uniform vec3 uCamRight;
+uniform vec3 uCamUp;
+uniform vec3 uViewDir;
+uniform float uTanHalfFov;
+uniform float uAspect;
+out vec4 fragColor;
+
+void main() {
+  vec3 dir = normalize(uViewDir + uCamRight * (vNdc.x * uTanHalfFov * uAspect) + uCamUp * (vNdc.y * uTanHalfFov));
+  fragColor = texture(uSkyCube, dir);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 2: SUN PHOTOSPHERE
+// ----------------------------------------------------------------------------
+const sunProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+uniform mat4 uViewProj;
+uniform vec3 uPosRelCam;
+uniform float uRadius;
+uniform vec3 uAxisX;
+uniform vec3 uAxisY;
+uniform vec3 uAxisZ;
+out vec3 vLocal;
+out vec3 vWorldNormal;
+out vec3 vWorldPosRel;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vLocal = normalize(aPos);
+  vec3 worldOff = (uAxisX * aPos.x + uAxisY * aPos.y + uAxisZ * aPos.z) * uRadius;
+  vWorldNormal = normalize(worldOff);
+  vWorldPosRel = uPosRelCam + worldOff;
+  writeLogPos(uViewProj * vec4(vWorldPosRel, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec3 vLocal;
+in vec3 vWorldNormal;
+in vec3 vWorldPosRel;
+uniform float uTime;
+uniform vec3 uTint;
+uniform float uRadiance;
+out vec4 fragColor;
+${GLSL_NOISE}
+${GLSL_LOG_DEPTH_FS}
+
+void main() {
+  writeLogDepth();
+  vec3 V = normalize(-vWorldPosRel);
+  float ndv = clamp(dot(normalize(vWorldNormal), V), 0.0, 1.0);
+
+  // Differential solar rotation + turbulent convective plasma granulation
+  float lat = asin(clamp(vLocal.y, -1.0, 1.0));
+  float diffPhase = uTime * 0.25 * cos(lat) * cos(lat);
+  float c = cos(diffPhase), s = sin(diffPhase);
+  vec3 p = vec3(vLocal.x * c - vLocal.z * s, vLocal.y, vLocal.x * s + vLocal.z * c);
+
+  float q = fbm4(p * 3.8 + vec3(uTime * 0.04, -uTime * 0.03, uTime * 0.02));
+  float granules = abs(snoise(p * 18.0 + q * 1.4 + vec3(uTime * 0.12)));
+  float superGran = fbm4(p * 6.5 - q * 0.9 - vec3(uTime * 0.05));
+
+  // Sunspot activity concentrated in +-30 deg active belts
+  float belt = exp(-pow((abs(lat) - 0.32) * 3.5, 2.0));
+  float spotField = snoise(p * 5.2 + vec3(1.7, uTime * 0.02, 4.1));
+  float spots = smoothstep(0.60, 0.78, spotField * belt + 0.12 * superGran);
+
+  // Physical limb darkening + chromosphere transition
+  float limb = pow(ndv, 0.42);
+  vec3 coreCol = mix(vec3(1.0, 0.56, 0.14), vec3(1.0, 0.96, 0.85), limb);
+  coreCol = mix(coreCol, vec3(1.0, 0.88, 0.60), smoothstep(-0.3, 0.6, superGran));
+  coreCol *= 0.82 + 0.36 * (1.0 - granules);
+  coreCol = mix(coreCol, vec3(0.28, 0.08, 0.02), spots * 0.78);
+  coreCol *= uTint;
+
+  // Blazing HDR emission driving bloom
+  float hdr = mix(1.8, 5.2, limb) * uRadiance;
+  // Bright faculae rim glow
+  float rim = pow(1.0 - ndv, 3.2) * 1.4;
+  fragColor = vec4(coreCol * hdr + uTint * rim * 1.6, 1.0);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 3: VOLUMETRIC SOLAR CORONA & COMA BILLBOARD
+// ----------------------------------------------------------------------------
+const coronaProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec2 aQuad;
+uniform mat4 uViewProj;
+uniform vec3 uCamRight;
+uniform vec3 uCamUp;
+uniform vec3 uPosRelCam;
+uniform float uSize;
+out vec2 vUv;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vUv = aQuad;
+  vec3 worldPos = uPosRelCam + (uCamRight * aQuad.x + uCamUp * aQuad.y) * uSize;
+  writeLogPos(uViewProj * vec4(worldPos, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform float uTime;
+uniform vec3 uColor;
+uniform float uIntensity;
+uniform float uIsComa;
+out vec4 fragColor;
+${GLSL_NOISE}
+${GLSL_LOG_DEPTH_FS}
+
+void main() {
+  writeLogDepth();
+  float r = length(vUv);
+  if (r > 1.0) discard;
+
+  float ang = atan(vUv.y, vUv.x);
+  if (uIsComa > 0.5) {
+    float g = exp(-r * 5.2) * (1.0 - smoothstep(0.65, 1.0, r));
+    fragColor = vec4(uColor * g * uIntensity, 1.0);
+    return;
+  }
+
+  // Animated radial coronal streamers
+  vec3 rayDir = vec3(cos(ang), sin(ang), 0.0);
+  float stream1 = fbm4(rayDir * 4.5 + vec3(uTime * 0.07, -uTime * 0.05, r * 1.1));
+  float stream2 = snoise(rayDir * 11.0 - vec3(uTime * 0.14));
+  float streamers = 0.65 + 0.55 * (stream1 * 0.7 + stream2 * 0.3);
+
+  float inner = exp(-max(0.0, r - 0.14) * 9.5);
+  float outer = exp(-max(0.0, r - 0.14) * 3.8) * streamers;
+  float falloff = (inner * 1.4 + outer * 0.45) * (1.0 - smoothstep(0.68, 1.0, r));
+
+  vec3 col = mix(uColor, vec3(1.0, 0.97, 0.90), inner * 0.7);
+  fragColor = vec4(col * falloff * uIntensity, 1.0);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 4: PROCEDURAL PLANETS & MOONS (With Analytical Ray-Sphere / Ring Shadows)
+// ----------------------------------------------------------------------------
+const planetProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+uniform mat4 uViewProj;
+uniform vec3 uPosRelCam;
+uniform float uRadius;
+uniform float uOblateness;
+uniform vec3 uAxisX;
+uniform vec3 uAxisY;
+uniform vec3 uAxisZ;
+out vec3 vLocal;
+out vec3 vWorldNormal;
+out vec3 vWorldPosRel;
+${GLSL_LOG_DEPTH_VS}
+
+void main() {
+  vLocal = normalize(aPos);
+  vec3 squashed = vec3(aPos.x, aPos.y * (1.0 - uOblateness), aPos.z);
+  vec3 worldOff = (uAxisX * squashed.x + uAxisY * squashed.y + uAxisZ * squashed.z) * uRadius;
+  vec3 nLocal = normalize(vec3(aPos.x, aPos.y / max(0.2, 1.0 - uOblateness), aPos.z));
+  vWorldNormal = normalize(uAxisX * nLocal.x + uAxisY * nLocal.y + uAxisZ * nLocal.z);
+  vWorldPosRel = uPosRelCam + worldOff;
+  writeLogPos(uViewProj * vec4(vWorldPosRel, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec3 vLocal;
+in vec3 vWorldNormal;
+in vec3 vWorldPosRel;
+
+uniform int uBodyType;
+uniform float uTime;
+uniform vec3 uSunPosRelCam;
+uniform float uSunDispRadius;
+uniform float uSunIrradiance; // normalized ~ 1.0 at 1 AU or perceptual
+uniform float uTrueLight;
+uniform vec3 uBodyPosRelCam;
+uniform float uRadius;
+uniform float uOblateness;
+uniform vec3 uAxisX;
+uniform vec3 uAxisY;
+uniform vec3 uAxisZ;
+uniform int uHasRings;
+uniform float uRingInner;
+uniform float uRingOuter;
+uniform int uNumCasters;
+uniform vec4 uShadowCasters[5]; // xyz posRelCam, w radius
+uniform int uRedUmbra; // 1 if Earth casting copper eclipse shadow on Moon
+uniform float uSeasonTime;
+
+out vec4 fragColor;
+${GLSL_NOISE}
+${GLSL_LOG_DEPTH_FS}
+
+float saturnRingDensity(float r) {
+  if (r < 1.22 || r > 2.34) return 0.0;
+  // D, C, B, Cassini Division, A, Encke Gap, F
+  float d = 0.0;
+  // C ring (1.24 - 1.53)
+  d += 0.22 * smoothstep(1.23, 1.26, r) * (1.0 - smoothstep(1.51, 1.53, r));
+  // B ring (1.53 - 1.95) dense!
+  float bMask = smoothstep(1.52, 1.545, r) * (1.0 - smoothstep(1.94, 1.955, r));
+  float ringlets = 0.78 + 0.22 * sin(r * 135.0) * cos(r * 47.0);
+  d += 0.88 * bMask * ringlets;
+  // Cassini Division (1.955 - 2.025)
+  float aMask = smoothstep(2.02, 2.035, r) * (1.0 - smoothstep(2.26, 2.275, r));
+  float encke = 1.0 - 0.92 * exp(-pow((r - 2.21) * 160.0, 2.0));
+  d += 0.62 * aMask * encke * (0.85 + 0.15 * sin(r * 190.0));
+  // F ring
+  d += 0.35 * exp(-pow((r - 2.32) * 140.0, 2.0));
+  return clamp(d, 0.0, 0.95);
+}
+
+// Analytical soft ray-sphere shadow factor (returns 1 = lit, 0 = umbra, tint for lunar eclipse)
+vec2 computeSphereShadow(vec3 fragPos, vec3 sunPos) {
+  vec3 toSun = sunPos - fragPos;
+  float distSun = length(toSun);
+  vec3 L = toSun / max(1e-7, distSun);
+  float sunAng = asin(clamp(uSunDispRadius / max(uSunDispRadius, distSun), 0.0, 0.99));
+  float minLit = 1.0;
+  float umbraDepth = 0.0;
+
+  for (int i = 0; i < 5; i++) {
+    if (i >= uNumCasters) break;
+    vec3 cPos = uShadowCasters[i].xyz;
+    float cRad = uShadowCasters[i].w;
+    vec3 toC = cPos - fragPos;
+    float tProj = dot(toC, L);
+    if (tProj <= 0.0 || tProj >= distSun) continue;
+    float dPerp = length(toC - L * tProj);
+    float cAng = atan(cRad, tProj);
+    float fragAng = atan(dPerp, tProj);
+    float lit = smoothstep(cAng - sunAng, cAng + sunAng, fragAng);
+    if (lit < minLit) {
+      minLit = lit;
+      umbraDepth = 1.0 - smoothstep(0.0, cAng, fragAng);
+    }
+  }
+  return vec2(minLit, umbraDepth);
+}
+
+// Surface height for rocky worlds (used for 3-tap normal relief)
+float rockyHeight(vec3 p, int bType) {
+  if (bType == 0 || bType == 12) {
+    // Mercury / Moon / Ceres: craters + mare basins
+    float base = fbm4(p * 3.0) * 0.35;
+    float c1 = craterField(p, 5.2) * 0.48;
+    float c2 = craterField(p + vec3(3.1), 13.5) * 0.22;
+    return base + c1 + c2;
+  }
+  if (bType == 2) {
+    // Earth continents & ridges
+    float cont = fbm5(p * 2.15 + vec3(1.3, 0.7, 2.4));
+    float ridge = 1.0 - abs(snoise(p * 7.5 + vec3(4.1)));
+    float land = smoothstep(0.03, 0.08, cont);
+    return land * (0.12 + 0.45 * smoothstep(0.03, 0.55, cont) + 0.25 * pow(ridge, 3.0));
+  }
+  if (bType == 3) {
+    // Mars canyons & shield highlands
+    float terrain = fbm5(p * 2.6 + vec3(2.2, 1.1, 0.5));
+    float canyon = exp(-pow(abs(p.y - 0.12 * snoise(p * 3.0)) * 22.0, 2.0)) * smoothstep(-0.2, 0.3, p.x);
+    float craters = craterField(p, 7.5) * 0.25;
+    return terrain * 0.45 - canyon * 0.55 + craters;
+  }
+  if (bType == 8) {
+    // Pluto highlands & Sputnik Planitia
+    float h = fbm4(p * 3.2);
+    float craters = craterField(p, 6.2) * 0.28;
+    float basin = smoothstep(0.45, 0.12, length(p - normalize(vec3(0.55, 0.12, 0.82))));
+    return h * 0.4 + craters * (1.0 - basin) - basin * 0.3;
+  }
+  return 0.0;
+}
+
+vec3 perturbNormal(vec3 p, vec3 N, int bType, float strength) {
+  vec3 upRef = abs(p.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+  vec3 T = normalize(cross(upRef, p));
+  vec3 B = cross(p, T);
+  float eps = 0.004;
+  float h0 = rockyHeight(p, bType);
+  float hx = rockyHeight(normalize(p + T * eps), bType);
+  float hy = rockyHeight(normalize(p + B * eps), bType);
+  vec3 surfGrad = T * ((hx - h0) / eps) + B * ((hy - h0) / eps);
+  vec3 gradWorld = uAxisX * surfGrad.x + uAxisY * surfGrad.y + uAxisZ * surfGrad.z;
+  return normalize(N - gradWorld * strength);
+}
+
+void main() {
+  writeLogDepth();
+  vec3 p = normalize(vLocal);
+  vec3 N = normalize(vWorldNormal);
+  vec3 V = normalize(-vWorldPosRel);
+  vec3 toSun = uSunPosRelCam - vWorldPosRel;
+  vec3 L = normalize(toSun);
+
+  float ndl = dot(N, L);
+  float ndv = clamp(dot(N, V), 0.0, 1.0);
+  float lat = asin(clamp(p.y, -1.0, 1.0));
+  float lon = atan(p.z, p.x);
+
+  vec3 albedo = vec3(0.5);
+  vec3 emissive = vec3(0.0);
+  float roughness = 0.85;
+  float specMask = 0.0;
+  vec3 bumpN = N;
+
+  if (uBodyType == 0 || uBodyType == 12) {
+    // Mercury / Moon / Ceres
+    bumpN = perturbNormal(p, N, uBodyType, 0.16);
+    float mare = smoothstep(-0.08, 0.25, fbm4(p * 2.1 + vec3(4.2, -1.3, 2.8)));
+    float regolith = fbm4(p * 14.0) * 0.5 + 0.5;
+    float craters = craterField(p, 6.0);
+    vec3 highland = uBodyType == 0 ? vec3(0.52, 0.49, 0.46) : vec3(0.64, 0.64, 0.66);
+    vec3 lowland = uBodyType == 0 ? vec3(0.32, 0.30, 0.28) : vec3(0.28, 0.29, 0.31);
+    albedo = mix(lowland, highland, mare) * (0.78 + 0.35 * regolith);
+    albedo += vec3(0.14) * clamp(craters, 0.0, 1.0);
+    roughness = 0.96;
+  } else if (uBodyType == 1) {
+    // Venus: super-rotating chevron sulfuric clouds
+    float chev = sin(lon * 2.0 + abs(lat) * 4.5 - uTime * 0.45);
+    float swirl = fbm4(vec3(p.x * 3.0, p.y * 6.5, p.z * 3.0) + vec3(uTime * 0.18, 0.0, 0.0));
+    float bands = 0.5 + 0.5 * sin(lat * 8.0 + swirl * 2.2 + chev * 0.6);
+    albedo = mix(vec3(0.82, 0.67, 0.42), vec3(0.98, 0.91, 0.74), bands);
+    roughness = 0.72;
+  } else if (uBodyType == 2) {
+    // Earth: oceans, continents, clouds, ice caps, city lights, aurora
+    float cont = fbm5(p * 2.15 + vec3(1.3, 0.7, 2.4));
+    float moisture = fbm4(p * 4.8 + vec3(7.1, 2.2, 5.4)) * 0.5 + 0.5;
+    float landMask = smoothstep(0.025, 0.045, cont);
+    float shelf = smoothstep(-0.08, 0.028, cont) * (1.0 - landMask);
+    bumpN = mix(N, perturbNormal(p, N, 2, 0.18), landMask);
+
+    vec3 deepSea = vec3(0.015, 0.08, 0.24);
+    vec3 shallowSea = vec3(0.03, 0.26, 0.42);
+    vec3 oceanCol = mix(deepSea, shallowSea, shelf);
+
+    float aridity = exp(-pow((abs(lat) - 0.42) * 3.2, 2.0)) * smoothstep(0.35, 0.72, 1.0 - moisture);
+    vec3 forest = mix(vec3(0.07, 0.24, 0.09), vec3(0.18, 0.34, 0.12), moisture);
+    vec3 desert = vec3(0.68, 0.56, 0.36);
+    vec3 landCol = mix(forest, desert, aridity);
+    float mountainSnow = smoothstep(0.38, 0.55, cont);
+    landCol = mix(landCol, vec3(0.90, 0.93, 0.96), mountainSnow);
+
+    float polarIce = smoothstep(1.12, 1.28, abs(lat) + cont * 0.14);
+    vec3 surfCol = mix(oceanCol, landCol, landMask);
+    surfCol = mix(surfCol, vec3(0.92, 0.96, 1.0), polarIce);
+
+    // Dynamic swirling cloud layer
+    vec3 cp = vec3(p.x * cos(uTime * 0.06) - p.z * sin(uTime * 0.06), p.y, p.x * sin(uTime * 0.06) + p.z * cos(uTime * 0.06));
+    float warp = fbm4(cp * 3.1 + vec3(uTime * 0.03));
+    float clouds = smoothstep(0.05, 0.52, fbm5(cp * 4.4 + vec3(warp * 1.3)));
+    // Coriolis cyclone bands
+    clouds *= 0.8 + 0.25 * cos(lat * 5.0);
+
+    albedo = mix(surfCol * (1.0 - clouds * 0.25), vec3(0.97, 0.98, 1.0), clouds * 0.86);
+    specMask = (1.0 - landMask) * (1.0 - polarIce) * (1.0 - clouds * 0.85);
+    roughness = mix(0.85, 0.18, specMask);
+
+    // Night-side city lights on coastal lowlands + auroral ovals
+    float night = smoothstep(0.06, -0.18, ndl);
+    float cityNoise = snoise(p * 26.0) * snoise(p * 62.0 + vec3(3.1));
+    float cities = landMask * (1.0 - polarIce) * (1.0 - mountainSnow) * smoothstep(0.28, 0.56, cityNoise) * smoothstep(1.05, 0.2, abs(lat));
+    float aurBand = exp(-pow((abs(lat) - 1.17 + 0.05 * sin(lon * 3.0 + uTime * 0.5)) * 11.0, 2.0));
+    float aurWave = 0.5 + 0.5 * snoise(vec3(lon * 4.0, lat * 8.0, uTime * 0.45));
+    vec3 aurora = mix(vec3(0.10, 0.95, 0.48), vec3(0.55, 0.25, 0.95), aurWave) * aurBand * aurWave * 0.55;
+    emissive += night * (vec3(1.0, 0.72, 0.32) * cities * (1.0 - clouds * 0.7) * 0.85) + aurora * (0.25 + 0.75 * night);
+  } else if (uBodyType == 3) {
+    // Mars: rust terrain, dark basalt, Valles Marineris, polar CO2 ice caps
+    bumpN = perturbNormal(p, N, 3, 0.20);
+    float terrain = fbm5(p * 2.8 + vec3(2.2, 1.1, 0.5));
+    float basalt = smoothstep(-0.15, 0.28, fbm4(p * 3.5 + vec3(5.4)));
+    vec3 rust = mix(vec3(0.45, 0.22, 0.13), vec3(0.82, 0.44, 0.24), smoothstep(-0.35, 0.45, terrain));
+    albedo = mix(vec3(0.32, 0.21, 0.16), rust, basalt);
+    float iceCap = smoothstep(1.32, 1.44, abs(lat) + 0.08 * snoise(p * 6.0));
+    albedo = mix(albedo, vec3(0.95, 0.92, 0.88), iceCap);
+    roughness = 0.92;
+  } else if (uBodyType == 4) {
+    // Jupiter: counter-flowing zonal belts, Kelvin-Helmholtz swirls & Great Red Spot
+    float turb = fbm4(vec3(p.x * 3.5, p.y * 12.0, p.z * 3.5) + vec3(uTime * 0.08, 0.0, 0.0));
+    float shear = sin(lat * 18.0 + turb * 1.4);
+    float latW = lat + 0.032 * fbm4(vec3(p.x * 5.0 + uTime * 0.1, lat * 16.0, p.z * 5.0));
+
+    vec3 zoneCream = vec3(0.92, 0.86, 0.76);
+    vec3 beltRust  = vec3(0.68, 0.41, 0.26);
+    vec3 beltOchre = vec3(0.79, 0.62, 0.42);
+    vec3 polarSlate = vec3(0.48, 0.48, 0.52);
+
+    float b1 = smoothstep(-0.4, 0.4, sin(latW * 13.0));
+    float b2 = smoothstep(-0.2, 0.6, cos(latW * 23.0 + turb * 1.2));
+    albedo = mix(beltRust, zoneCream, b1);
+    albedo = mix(albedo, beltOchre, b2 * 0.42);
+    albedo = mix(albedo, polarSlate, smoothstep(0.95, 1.45, abs(lat)));
+
+    // Great Red Spot near -22 deg lat
+    vec3 grsPos = normalize(vec3(0.75, -0.37, 0.55));
+    vec3 dGRS = p - grsPos;
+    float grsD = length(vec3(dGRS.x * 0.8, dGRS.y * 1.65, dGRS.z * 0.8));
+    float grsMask = 1.0 - smoothstep(0.11, 0.21, grsD);
+    float grsSpiral = 0.5 + 0.5 * sin(grsD * 55.0 + atan(dGRS.y, dGRS.x) * 2.0 - uTime * 0.6);
+    vec3 grsCol = mix(vec3(0.80, 0.30, 0.18), vec3(0.93, 0.54, 0.34), grsSpiral);
+    albedo = mix(albedo, grsCol, grsMask * 0.92);
+    roughness = 0.75;
+  } else if (uBodyType == 5) {
+    // Saturn: silky pale gold bands + North Polar Hexagon
+    float turb = fbm4(vec3(p.x * 2.5, p.y * 14.0, p.z * 2.5) + vec3(uTime * 0.05, 0.0, 0.0));
+    float band = 0.5 + 0.5 * sin(lat * 19.0 + turb * 0.65);
+    vec3 pale = vec3(0.92, 0.84, 0.66);
+    vec3 ochre = vec3(0.74, 0.63, 0.44);
+    albedo = mix(ochre, pale, band);
+    // North polar hexagon
+    float hexR = (1.5708 - lat) * (1.0 + 0.085 * cos(lon * 6.0));
+    float hexMask = smoothstep(1.18, 1.38, 1.5708 - hexR);
+    albedo = mix(albedo, vec3(0.45, 0.50, 0.52), hexMask * 0.65);
+    roughness = 0.76;
+  } else if (uBodyType == 6) {
+    // Uranus: serene cyan-aquamarine methane bands
+    float band = 0.5 + 0.5 * sin(lat * 9.0 + 0.3 * snoise(p * 4.0));
+    albedo = mix(vec3(0.48, 0.82, 0.87), vec3(0.66, 0.93, 0.96), band);
+    albedo = mix(albedo, vec3(0.78, 0.96, 0.98), smoothstep(0.9, 1.5, abs(lat)) * 0.35);
+    roughness = 0.7;
+  } else if (uBodyType == 7) {
+    // Neptune: vivid cobalt blue + high-altitude white methane cirrus + Dark Spot
+    float turb = fbm4(vec3(p.x * 4.0 + uTime * 0.12, p.y * 10.0, p.z * 4.0));
+    float band = 0.5 + 0.5 * sin(lat * 11.0 + turb * 1.1);
+    albedo = mix(vec3(0.14, 0.31, 0.78), vec3(0.24, 0.49, 0.94), band);
+    float cirrus = smoothstep(0.54, 0.76, snoise(vec3(p.x * 5.0 + uTime * 0.16, p.y * 22.0, p.z * 5.0)));
+    albedo = mix(albedo, vec3(0.84, 0.92, 1.0), cirrus * 0.65);
+    float spot = 1.0 - smoothstep(0.08, 0.18, length((p - normalize(vec3(0.7, -0.35, 0.6))) * vec3(1.0, 1.8, 1.0)));
+    albedo = mix(albedo, vec3(0.07, 0.14, 0.44), spot * 0.72);
+    roughness = 0.7;
+  } else if (uBodyType == 8) {
+    // Pluto / Triton: nitrogen ice basin + dark red-brown tholin plains
+    bumpN = perturbNormal(p, N, 8, 0.14);
+    float tholin = smoothstep(-0.15, 0.35, fbm4(p * 3.0 + vec3(1.7)));
+    float basin = smoothstep(0.48, 0.15, length(p - normalize(vec3(0.55, 0.12, 0.82))));
+    albedo = mix(vec3(0.40, 0.22, 0.18), vec3(0.82, 0.73, 0.64), tholin);
+    albedo = mix(albedo, vec3(0.93, 0.88, 0.81), basin * 0.9);
+    roughness = 0.85;
+  } else if (uBodyType == 9) {
+    // Io: sulfur yellow/orange/red + volcanic calderas
+    float s1 = fbm4(p * 4.2);
+    float cald = smoothstep(0.58, 0.74, snoise(p * 11.0 + vec3(2.5)));
+    albedo = mix(vec3(0.90, 0.78, 0.24), vec3(0.86, 0.42, 0.14), smoothstep(-0.2, 0.4, s1));
+    albedo = mix(albedo, vec3(0.14, 0.10, 0.08), cald);
+    emissive = vec3(1.0, 0.35, 0.05) * smoothstep(0.68, 0.82, snoise(p * 11.0 + vec3(2.5))) * 0.45;
+  } else if (uBodyType == 10) {
+    // Europa / Enceladus: bright water ice crisscrossed by lineae cracks
+    float cracks = pow(1.0 - abs(snoise(p * 9.5 + fbm4(p * 3.0) * 0.8)), 7.0);
+    float cracks2 = pow(1.0 - abs(snoise(p * 15.0 + vec3(4.2))), 8.0);
+    albedo = mix(vec3(0.86, 0.88, 0.90), vec3(0.58, 0.40, 0.30), clamp(cracks + cracks2 * 0.6, 0.0, 1.0) * 0.75);
+    roughness = 0.45;
+  } else if (uBodyType == 11) {
+    // Titan: thick golden-orange organic haze
+    float haze = 0.5 + 0.5 * fbm4(vec3(p.x * 2.5, p.y * 5.0, p.z * 2.5));
+    albedo = mix(vec3(0.76, 0.50, 0.20), vec3(0.92, 0.68, 0.32), haze);
+    roughness = 0.65;
+  } else if (uBodyType == 13) {
+    // Brown Dwarf (rogue star)
+    float bands = fbm4(vec3(p.x * 3.0, p.y * 9.0, p.z * 3.0) + vec3(uTime * 0.1));
+    albedo = vec3(0.28, 0.10, 0.06);
+    emissive = mix(vec3(0.95, 0.24, 0.04), vec3(1.0, 0.55, 0.14), smoothstep(-0.2, 0.5, bands)) * 2.1;
+  }
+
+  // Compute direct solar illumination + eclipses + Saturn ring shadow
+  float diff = max(dot(bumpN, L), 0.0);
+  // Subtle Lommel-Seeliger softening for airless dusty bodies
+  if (uBodyType == 0 || uBodyType == 12) {
+    float ndvB = max(dot(bumpN, V), 0.05);
+    diff = diff / (diff + ndvB * 0.55) * 1.25 * max(0.0, smoothstep(-0.04, 0.12, dot(N, L)));
+  }
+
+  vec2 sh = computeSphereShadow(vWorldPosRel, uSunPosRelCam);
+  float shadowLit = sh.x;
+  float umbraDepth = sh.y;
+
+  // Saturn casts ring shadow onto itself
+  if (uHasRings == 1 && diff > 0.0) {
+    float denom = dot(L, uAxisY);
+    if (abs(denom) > 1e-4) {
+      float tRing = dot(uBodyPosRelCam - vWorldPosRel, uAxisY) / denom;
+      if (tRing > 0.0) {
+        vec3 hit = vWorldPosRel + L * tRing - uBodyPosRelCam;
+        float rHit = length(hit) / uRadius;
+        float tau = saturnRingDensity(rHit);
+        shadowLit *= (1.0 - tau * 0.86);
+      }
+    }
+  }
+
+  // Specular highlight (primarily Earth oceans)
+  vec3 H = normalize(L + V);
+  float spec = 0.0;
+  if (specMask > 0.01 && ndl > 0.0) {
+    spec = pow(max(dot(bumpN, H), 0.0), 85.0) * specMask * 1.35;
+  }
+
+  // Subtle ambient starlight + Earthshine/planetshine so nightside isn't dead flat #000
+  vec3 ambient = albedo * vec3(0.018, 0.024, 0.038);
+  float irr = uTrueLight > 0.5 ? clamp(uSunIrradiance, 0.0005, 8.0) : mix(0.65, 1.55, clamp(log2(1.0 + uSunIrradiance) * 0.35, 0.0, 1.0));
+  vec3 litColor = (albedo * diff + vec3(1.0, 0.97, 0.90) * spec) * shadowLit * irr * 1.55;
+
+  // Real copper-red refracted umbra during Lunar Eclipse!
+  if (uRedUmbra == 1 && umbraDepth > 0.01 && ndl > 0.0) {
+    litColor += albedo * vec3(0.65, 0.14, 0.04) * umbraDepth * diff * 0.42;
+  }
+
+  // Subtle surface atmospheric Fresnel tint (reinforced by dedicated atmosphere shell)
+  if (uBodyType == 2 || uBodyType == 11) {
+    vec3 rimCol = uBodyType == 2 ? vec3(0.32, 0.65, 1.0) : vec3(0.95, 0.62, 0.25);
+    float fres = pow(1.0 - ndv, 3.6) * smoothstep(-0.2, 0.5, ndl);
+    litColor += rimCol * fres * 0.55 * irr;
+  }
+
+  fragColor = vec4(ambient + litColor + emissive, 1.0);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 5: ANALYTICAL RAY-MARCHED ATMOSPHERIC SCATTERING SHELL
+// ----------------------------------------------------------------------------
+const atmProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+uniform mat4 uViewProj;
+uniform vec3 uPosRelCam;
+uniform float uAtmRadius;
+uniform float uOblateness;
+uniform vec3 uAxisX;
+uniform vec3 uAxisY;
+uniform vec3 uAxisZ;
+out vec3 vWorldPosRel;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vec3 squashed = vec3(aPos.x, aPos.y * (1.0 - uOblateness), aPos.z);
+  vec3 worldOff = (uAxisX * squashed.x + uAxisY * squashed.y + uAxisZ * squashed.z) * uAtmRadius;
+  vWorldPosRel = uPosRelCam + worldOff;
+  writeLogPos(uViewProj * vec4(vWorldPosRel, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec3 vWorldPosRel;
+uniform vec3 uPosRelCam;
+uniform float uPlanetRadius;
+uniform float uAtmRadius;
+uniform vec3 uSunPosRelCam;
+uniform vec3 uAtmColor;
+uniform float uAtmDensity;
+uniform float uIrradiance;
+out vec4 fragColor;
+${GLSL_LOG_DEPTH_FS}
+
+vec2 raySphere(vec3 ro, vec3 rd, vec3 center, float r) {
+  vec3 oc = ro - center;
+  float b = dot(oc, rd);
+  float c = dot(oc, oc) - r * r;
+  float h = b * b - c;
+  if (h < 0.0) return vec2(-1.0);
+  h = sqrt(h);
+  return vec2(-b - h, -b + h);
+}
+
+void main() {
+  writeLogDepth();
+  vec3 rd = normalize(vWorldPosRel);
+  vec2 hitAtm = raySphere(vec3(0.0), rd, uPosRelCam, uAtmRadius);
+  if (hitAtm.y < 0.0) discard;
+
+  float tStart = max(0.0, hitAtm.x);
+  float tEnd = hitAtm.y;
+  vec2 hitPlanet = raySphere(vec3(0.0), rd, uPosRelCam, uPlanetRadius * 0.996);
+  if (hitPlanet.x > 0.0) tEnd = min(tEnd, hitPlanet.x);
+  if (tEnd <= tStart) discard;
+
+  vec3 sunDir = normalize(uSunPosRelCam - uPosRelCam);
+  float H = max(1e-6, (uAtmRadius - uPlanetRadius) * 0.28);
+  float segLen = (tEnd - tStart) / 5.0;
+  vec3 scatter = vec3(0.0);
+
+  float cosTheta = dot(rd, sunDir);
+  float rayleighPhase = 0.75 * (1.0 + cosTheta * cosTheta);
+  float miePhase = 0.35 * pow(max(0.0, cosTheta), 6.0);
+
+  for (int i = 0; i < 5; i++) {
+    vec3 sp = rd * (tStart + (float(i) + 0.5) * segLen);
+    vec3 rel = sp - uPosRelCam;
+    float alt = max(0.0, length(rel) - uPlanetRadius);
+    float dens = exp(-alt / H);
+    float sunDot = dot(normalize(rel), sunDir);
+    float day = smoothstep(-0.26, 0.32, sunDot);
+    // Fiery twilight sunset scatter right along the terminator!
+    float twilight = exp(-pow((sunDot + 0.04) * 5.2, 2.0));
+    vec3 col = mix(uAtmColor, vec3(1.0, 0.42, 0.16), twilight * 0.72);
+    scatter += col * dens * day * (rayleighPhase + miePhase);
+  }
+
+  float optical = (segLen * 5.0) / max(1e-6, uAtmRadius - uPlanetRadius);
+  float limbMask = 1.0 - exp(-optical * 0.45);
+  vec3 finalCol = scatter * limbMask * uAtmDensity * 0.24 * uIrradiance;
+  fragColor = vec4(finalCol, 1.0);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 6: SATURN & URANUS VOLUMETRIC MULTI-BAND RINGS (With Planet Shadow!)
+// ----------------------------------------------------------------------------
+const ringProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec2 aRing; // (cos, sin) * rNorm
+uniform mat4 uViewProj;
+uniform vec3 uPosRelCam;
+uniform float uRadius;
+uniform vec3 uAxisX;
+uniform vec3 uAxisZ;
+out vec2 vRingPos;
+out vec3 vWorldPosRel;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vRingPos = aRing;
+  vec3 worldOff = (uAxisX * aRing.x + uAxisZ * aRing.y) * uRadius;
+  vWorldPosRel = uPosRelCam + worldOff;
+  writeLogPos(uViewProj * vec4(vWorldPosRel, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec2 vRingPos;
+in vec3 vWorldPosRel;
+uniform vec3 uPosRelCam;
+uniform vec3 uSunPosRelCam;
+uniform float uSunDispRadius;
+uniform float uRadius;
+uniform float uOblateness;
+uniform vec3 uAxisX;
+uniform vec3 uAxisY;
+uniform vec3 uAxisZ;
+uniform int uIsUranus;
+uniform float uIrradiance;
+out vec4 fragColor;
+${GLSL_LOG_DEPTH_FS}
+
+void main() {
+  writeLogDepth();
+  float r = length(vRingPos);
+  float alpha = 0.0;
+  vec3 col = vec3(0.85, 0.78, 0.64);
+
+  if (uIsUranus == 1) {
+    // Narrow charcoal/ice-dust rings (6, 5, 4, alpha, beta, eta, gamma, delta, epsilon)
+    float eps = exp(-pow((r - 1.98) * 95.0, 2.0)) * 0.42;
+    float inner = exp(-pow((r - 1.72) * 80.0, 2.0)) * 0.18 + exp(-pow((r - 1.84) * 90.0, 2.0)) * 0.22;
+    alpha = clamp(eps + inner, 0.0, 0.55);
+    col = vec3(0.62, 0.76, 0.84);
+  } else {
+    // Saturn: D, C, B, Cassini Division, A, Encke Gap, F
+    float dRing = smoothstep(1.18, 1.22, r) * (1.0 - smoothstep(1.24, 1.26, r)) * 0.06;
+    float cRing = smoothstep(1.25, 1.28, r) * (1.0 - smoothstep(1.51, 1.53, r)) * (0.24 + 0.06 * sin(r * 170.0));
+    float bRing = smoothstep(1.525, 1.545, r) * (1.0 - smoothstep(1.94, 1.955, r)) * (0.86 + 0.14 * sin(r * 135.0) * cos(r * 47.0));
+    float aMask = smoothstep(2.02, 2.035, r) * (1.0 - smoothstep(2.26, 2.275, r));
+    float encke = 1.0 - 0.94 * exp(-pow((r - 2.21) * 165.0, 2.0));
+    float aRing = aMask * encke * (0.60 + 0.12 * sin(r * 210.0));
+    float fRing = exp(-pow((r - 2.32) * 140.0, 2.0)) * 0.35;
+
+    alpha = clamp(dRing + cRing + bRing + aRing + fRing, 0.0, 0.96);
+
+    vec3 cCol = vec3(0.46, 0.43, 0.40);
+    vec3 bCol = mix(vec3(0.84, 0.75, 0.58), vec3(0.95, 0.89, 0.75), 0.5 + 0.5 * sin(r * 85.0));
+    vec3 aCol = mix(vec3(0.70, 0.66, 0.58), vec3(0.82, 0.78, 0.70), 0.5 + 0.5 * cos(r * 110.0));
+    col = mix(cCol, bCol, smoothstep(1.48, 1.56, r));
+    col = mix(col, aCol, smoothstep(1.96, 2.05, r));
+  }
+
+  if (alpha < 0.01) discard;
+
+  // Oblate planet shadow cast onto rings
+  vec3 toSun = uSunPosRelCam - vWorldPosRel;
+  float distSun = length(toSun);
+  vec3 L = toSun / max(1e-7, distSun);
+
+  vec3 rel = vWorldPosRel - uPosRelCam;
+  // Convert to planet oblate local frame where planet is unit sphere
+  float invObs = 1.0 / max(0.2, 1.0 - uOblateness);
+  vec3 relU = vec3(dot(rel, uAxisX), dot(rel, uAxisY) * invObs, dot(rel, uAxisZ)) / uRadius;
+  vec3 LU   = normalize(vec3(dot(L, uAxisX), dot(L, uAxisY) * invObs, dot(L, uAxisZ)));
+
+  float proj = dot(-relU, LU);
+  float lit = 1.0;
+  if (proj > 0.0) {
+    float perp = length(relU + LU * proj);
+    float penumbra = clamp((uSunDispRadius / distSun) * (length(rel) / uRadius) * 2.5, 0.015, 0.12);
+    lit = smoothstep(1.0 - penumbra, 1.0 + penumbra, perp);
+  }
+
+  // Forward scattering vs backscatter phase function
+  vec3 V = normalize(-vWorldPosRel);
+  float cosPhase = dot(-V, L);
+  float forwardGlow = 1.0 + 0.85 * pow(max(0.0, cosPhase), 4.0);
+  float opposition = 1.0 + 0.35 * pow(max(0.0, -cosPhase), 8.0);
+
+  vec3 finalCol = col * (0.025 + 1.35 * lit * forwardGlow * opposition) * uIrradiance;
+  fragColor = vec4(finalCol, alpha);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 7: INSTANCED ASTEROID & KUIPER BELT (Kepler solved on GPU!)
+// ----------------------------------------------------------------------------
+const asteroidProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNormal;
+layout(location=2) in vec4 iOrb1; // a, e, incRad, nodeRad
+layout(location=3) in vec4 iOrb2; // argPeriRad, M0, nRadPerDay, size
+layout(location=4) in vec2 iMeta; // seed, tint
+
+uniform mat4 uViewProj;
+uniform vec3 uCamWorldPos;
+uniform float uDaysSinceJ2000;
+uniform float uMassScale;
+uniform float uLogScaleMode; // 0 or 1
+uniform float uSizeScale;
+out vec3 vNormal;
+out vec3 vWorldPosRel;
+out float vTint;
+${GLSL_LOG_DEPTH_VS}
+
+void main() {
+  float a = iOrb1.x;
+  float e = iOrb1.y;
+  float inc = iOrb1.z;
+  float node = iOrb1.w;
+  float argP = iOrb2.x;
+  float M = mod(iOrb2.y + iOrb2.z * sqrt(uMassScale) * uDaysSinceJ2000, 6.2831853);
+
+  // Solve Kepler M = E - e sin(E) in 4 fast iterations
+  float E = M + e * sin(M);
+  for (int k = 0; k < 4; k++) {
+    E -= (E - e * sin(E) - M) / (1.0 - e * cos(E));
+  }
+  float cE = cos(E), sE = sin(E);
+  float xOrb = a * (cE - e);
+  float yOrb = a * sqrt(1.0 - e * e) * sE;
+
+  float cw = cos(argP), sw = sin(argP);
+  float cO = cos(node), sO = sin(node);
+  float cI = cos(inc), sI = sin(inc);
+
+  float xEcl = (cw * cO - sw * sO * cI) * xOrb + (-sw * cO - cw * sO * cI) * yOrb;
+  float yEcl = (cw * sO + sw * cO * cI) * xOrb + (-sw * sO + cw * cO * cI) * yOrb;
+  float zEcl = (sw * sI) * xOrb + (cw * sI) * yOrb;
+
+  vec3 centerWorld = vec3(xEcl, zEcl, -yEcl);
+  if (uLogScaleMode > 0.5) {
+    float r = length(centerWorld);
+    if (r > 1e-5) {
+      centerWorld *= (pow(r, 0.56) * 1.18) / r;
+    }
+  }
+
+  // Jagged asteroid deformation from seed
+  float s = iMeta.x;
+  vec3 p = aPos * vec3(1.0 + 0.32 * sin(s * 13.7), 0.8 + 0.25 * cos(s * 7.3), 1.0 + 0.3 * sin(s * 21.1));
+  float rock = 1.0 + 0.22 * sin(aPos.x * 5.0 + s) * cos(aPos.y * 4.0 - s);
+  vec3 worldPos = centerWorld + p * rock * iOrb2.w * uSizeScale;
+  vWorldPosRel = worldPos - uCamWorldPos;
+  vNormal = normalize(aNormal);
+  vTint = iMeta.y;
+  writeLogPos(uViewProj * vec4(vWorldPosRel, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec3 vNormal;
+in vec3 vWorldPosRel;
+in float vTint;
+uniform vec3 uSunPosRelCam;
+out vec4 fragColor;
+${GLSL_LOG_DEPTH_FS}
+
+void main() {
+  writeLogDepth();
+  vec3 L = normalize(uSunPosRelCam - vWorldPosRel);
+  float diff = max(dot(normalize(vNormal), L), 0.0);
+  vec3 cRock = mix(vec3(0.42, 0.38, 0.35), vec3(0.58, 0.56, 0.62), vTint);
+  vec3 col = cRock * (0.08 + 1.15 * diff);
+  fragColor = vec4(col, 1.0);
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 8: LINES, ORBITS, GRAVITY WELL GRID, HABITABLE ZONE, COMET TAIL
+// ----------------------------------------------------------------------------
+const lineProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in float aProgress;
+uniform mat4 uViewProj;
+uniform vec3 uCamWorldPos;
+out float vProg;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vProg = aProgress;
+  writeLogPos(uViewProj * vec4(aPos - uCamWorldPos, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in float vProg;
+uniform vec4 uColor;
+uniform float uHeadProg;
+uniform float uIsTrail;
+out vec4 fragColor;
+${GLSL_LOG_DEPTH_FS}
+void main() {
+  writeLogDepth();
+  float a = uColor.a;
+  if (uIsTrail > 0.5) {
+    // Distance behind planet head along periodic [0..1] orbit
+    float behind = fract(uHeadProg - vProg);
+    float fade = pow(1.0 - behind, 1.8);
+    a *= 0.14 + 0.86 * fade;
+  }
+  fragColor = vec4(uColor.rgb * a, a);
+}`
+);
+
+// Spacetime Gravity Well Mesh (Deformed in GPU Vertex Shader)
+const gravityProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aGridPos; // xz grid around Sun
+uniform mat4 uViewProj;
+uniform vec3 uCamWorldPos;
+uniform vec4 uSources[10]; // xyz worldPos, w gravWeight
+uniform float uWellDepth;
+out float vPotential;
+out float vRadius;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vec3 p = aGridPos;
+  float phi = 0.0;
+  for (int i = 0; i < 10; i++) {
+    if (uSources[i].w <= 0.0) continue;
+    vec2 d = p.xz - uSources[i].xz;
+    float r = sqrt(dot(d, d) + 0.035);
+    phi += uSources[i].w / r;
+  }
+  p.y = -min(3.5, phi * uWellDepth);
+  vPotential = phi;
+  vRadius = length(aGridPos.xz);
+  writeLogPos(uViewProj * vec4(p - uCamWorldPos, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in float vPotential;
+in float vRadius;
+out vec4 fragColor;
+${GLSL_LOG_DEPTH_FS}
+void main() {
+  writeLogDepth();
+  float edgeFade = 1.0 - smoothstep(32.0, 46.0, vRadius);
+  vec3 cLow = vec3(0.10, 0.34, 0.65);
+  vec3 cHigh = vec3(1.0, 0.58, 0.18);
+  vec3 col = mix(cLow, cHigh, smoothstep(0.15, 2.2, vPotential));
+  float alpha = (0.16 + 0.45 * smoothstep(0.1, 1.8, vPotential)) * edgeFade;
+  fragColor = vec4(col * alpha, alpha);
+}`
+);
+
+// Translucent Disc / Zone / Kepler Wedge / Comet Tail Shader
+const zoneProg = createProgram(
+`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec2 aUv;
+uniform mat4 uViewProj;
+uniform vec3 uCamWorldPos;
+out vec2 vUv;
+out vec3 vWorldPos;
+${GLSL_LOG_DEPTH_VS}
+void main() {
+  vUv = aUv;
+  vWorldPos = aPos;
+  writeLogPos(uViewProj * vec4(aPos - uCamWorldPos, 1.0));
+}`,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+in vec3 vWorldPos;
+uniform int uMode; // 0 = HZ ring, 1 = solid translucent (Kepler wedge), 2 = comet tail, 3 = photon wave
+uniform vec4 uColor;
+uniform float uInnerR;
+uniform float uOuterR;
+uniform float uFrostR;
+uniform float uTime;
+out vec4 fragColor;
+${GLSL_NOISE}
+${GLSL_LOG_DEPTH_FS}
+
+void main() {
+  writeLogDepth();
+  if (uMode == 0) {
+    float r = length(vWorldPos.xz);
+    float hz = smoothstep(uInnerR - 0.08, uInnerR + 0.08, r) * (1.0 - smoothstep(uOuterR - 0.12, uOuterR + 0.12, r));
+    float frost = exp(-pow((r - uFrostR) * 18.0, 2.0));
+    vec3 col = vec3(0.15, 0.85, 0.52) * hz * 0.22 + vec3(0.35, 0.80, 1.0) * frost * 0.35;
+    float a = hz * 0.22 + frost * 0.35;
+    if (a < 0.005) discard;
+    fragColor = vec4(col, a);
+  } else if (uMode == 1) {
+    fragColor = vec4(uColor.rgb * uColor.a, uColor.a);
+  } else if (uMode == 2) {
+    // Comet tail: vUv.x across width [-1..1], vUv.y along tail [0..1]
+    float across = exp(-vUv.x * vUv.x * 3.8);
+    float along = pow(1.0 - vUv.y, 1.55) * smoothstep(0.0, 0.06, vUv.y);
+    float wisp = 0.65 + 0.35 * snoise(vec3(vUv.x * 3.0, vUv.y * 8.0 - uTime * 2.5, 1.0));
+    float intensity = across * along * wisp * uColor.a;
+    fragColor = vec4(uColor.rgb * intensity, 1.0);
+  } else {
+    // Expanding Photon Wavefront
+    float fres = 0.25 + 0.75 * abs(vUv.y);
+    float pulse = uColor.a * fres;
+    fragColor = vec4(uColor.rgb * pulse, pulse);
+  }
+}`
+);
+
+// ----------------------------------------------------------------------------
+// SHADER 9: HDR BLOOM & ACES FILMIC POST-PROCESSING
+// ----------------------------------------------------------------------------
+const quadVS = `#version 300 es
+precision highp float;
+layout(location=0) in vec2 aPos;
+out vec2 vUv;
+void main() {
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}`;
+
+const brightProg = createProgram(quadVS,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+uniform float uThreshold;
+out vec4 fragColor;
+void main() {
+  vec3 c = texture(uTex, vUv).rgb;
+  float lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  float soft = clamp((lum - uThreshold + 0.35) / 0.7, 0.0, 1.0);
+  float contrib = max(0.0, lum - uThreshold) + soft * soft * 0.15;
+  fragColor = vec4(c * (contrib / max(lum, 1e-4)), 1.0);
+}`
+);
+
+const blurProg = createProgram(quadVS,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+uniform vec2 uTexelSize;
+uniform float uRadius;
+out vec4 fragColor;
+void main() {
+  vec2 o = uTexelSize * uRadius;
+  vec3 s = texture(uTex, vUv).rgb * 4.0;
+  s += texture(uTex, vUv + vec2(-o.x, -o.y)).rgb;
+  s += texture(uTex, vUv + vec2( o.x, -o.y)).rgb;
+  s += texture(uTex, vUv + vec2(-o.x,  o.y)).rgb;
+  s += texture(uTex, vUv + vec2( o.x,  o.y)).rgb;
+  s += texture(uTex, vUv + vec2( o.x * 2.0, 0.0)).rgb * 0.5;
+  s += texture(uTex, vUv + vec2(-o.x * 2.0, 0.0)).rgb * 0.5;
+  s += texture(uTex, vUv + vec2(0.0,  o.y * 2.0)).rgb * 0.5;
+  s += texture(uTex, vUv + vec2(0.0, -o.y * 2.0)).rgb * 0.5;
+  fragColor = vec4(s / 10.0, 1.0);
+}`
+);
+
+const compositeProg = createProgram(quadVS,
+`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uScene;
+uniform sampler2D uBloom;
+uniform float uExposure;
+uniform vec2 uSunScreen; // [0..1]
+uniform float uSunVis;   // 0..1 visibility
+uniform float uAspect;
+out vec4 fragColor;
+
+vec3 acesFilm(vec3 x) {
+  float a = 2.51, b = 0.03, c = 2.43, d = 0.59, e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
+
+void main() {
+  vec3 hdr = texture(uScene, vUv).rgb;
+  vec3 bloom = texture(uBloom, vUv).rgb;
+  vec3 col = hdr + bloom * 0.55;
+
+  // Cinematic optical flare & subtle anamorphic horizontal streak when Sun is visible
+  if (uSunVis > 0.01) {
+    vec2 d = vUv - uSunScreen;
+    vec2 dAspect = vec2(d.x * uAspect, d.y);
+    float dist = length(dAspect);
+    float streak = exp(-abs(d.y) * 95.0) * exp(-abs(d.x) * 4.5);
+    float halo = exp(-abs(dist - 0.19) * 48.0) * 0.14;
+    float ghost = exp(-length(vec2((vUv.x - (1.0 - uSunScreen.x)) * uAspect, vUv.y - (1.0 - uSunScreen.y))) * 18.0) * 0.16;
+    vec3 flare = (vec3(0.45, 0.72, 1.0) * streak * 0.42 + vec3(1.0, 0.80, 0.55) * halo + vec3(0.4, 0.8, 1.0) * ghost) * uSunVis;
+    col += flare;
+  }
+
+  col *= uExposure;
+  vec3 mapped = acesFilm(col);
+  // Subtle filmic vignette
+  vec2 vig = vUv - 0.5;
+  mapped *= 1.0 - dot(vig, vig) * 0.24;
+  mapped = pow(max(mapped, 0.0), vec3(1.0 / 2.2));
+  fragColor = vec4(mapped, 1.0);
+}`
+);
+
+// ============================================================================
+// 5. GEOMETRY BUFFERS (SPHERE, RING, QUAD, GRID, ASTEROIDS)
+// ============================================================================
+function createSphereVAO(latBands = 56, lonBands = 84) {
+  const verts = [], idx = [];
+  for (let i = 0; i <= latBands; i++) {
+    const theta = (i * Math.PI) / latBands;
+    const sinT = Math.sin(theta), cosT = Math.cos(theta);
+    for (let j = 0; j <= lonBands; j++) {
+      const phi = (j * 2 * Math.PI) / lonBands;
+      verts.push(sinT * Math.cos(phi), cosT, sinT * Math.sin(phi));
+    }
+  }
+  for (let i = 0; i < latBands; i++) {
+    for (let j = 0; j < lonBands; j++) {
+      const a = i * (lonBands + 1) + j;
+      const b = a + lonBands + 1;
+      idx.push(a, b, a + 1, b, b + 1, a + 1);
+    }
+  }
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+  const ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return { vao, count: idx.length };
+}
+
+function createRingVAO(innerR = 1.15, outerR = 2.38, segs = 160) {
+  const verts = [], idx = [];
+  for (let i = 0; i <= segs; i++) {
+    const a = (i / segs) * Math.PI * 2;
+    const ca = Math.cos(a), sa = Math.sin(a);
+    verts.push(ca * innerR, sa * innerR, ca * outerR, sa * outerR);
+  }
+  for (let i = 0; i < segs; i++) {
+    const o = i * 2;
+    idx.push(o, o + 1, o + 2, o + 1, o + 3, o + 2);
+  }
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  const ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return { vao, count: idx.length };
+}
+
+function createQuadVAO() {
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  gl.bindVertexArray(null);
+  return vao;
+}
+
+function createGravityGridVAO() {
+  // Polar-warped grid around Sun so inner gravity funnel has super high vertex density
+  const radSteps = 64, angSteps = 128;
+  const verts = [], idx = [];
+  for (let ir = 0; ir <= radSteps; ir++) {
+    const t = ir / radSteps;
+    const r = 0.08 + Math.pow(t, 2.35) * 44.0;
+    for (let ia = 0; ia <= angSteps; ia++) {
+      const a = (ia / angSteps) * Math.PI * 2;
+      verts.push(r * Math.cos(a), 0, r * Math.sin(a));
+    }
+  }
+  for (let ir = 0; ir < radSteps; ir++) {
+    for (let ia = 0; ia < angSteps; ia++) {
+      const a = ir * (angSteps + 1) + ia;
+      const b = a + angSteps + 1;
+      idx.push(a, a + 1, a, b);
+    }
+  }
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+  const ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return { vao, count: idx.length };
+}
+
+function createInstancedBeltVAO(count, isKuiper) {
+  // Base low-poly octahedron/icosahedron rock
+  const phi = (1 + Math.sqrt(5)) / 2;
+  const raw = [
+    [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
+    [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
+    [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1]
+  ].map(norm3);
+  const faces = [
+    [0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],
+    [1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
+    [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],
+    [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]
+  ];
+  const basePos = [], baseNorm = [];
+  for (const f of faces) {
+    const p0 = raw[f[0]], p1 = raw[f[1]], p2 = raw[f[2]];
+    const n = norm3(cross3(sub3(p1, p0), sub3(p2, p0)));
+    basePos.push(...p0, ...p1, ...p2);
+    baseNorm.push(...n, ...n, ...n);
+  }
+
+  const orb1 = new Float32Array(count * 4);
+  const orb2 = new Float32Array(count * 4);
+  const meta = new Float32Array(count * 2);
+
+  // Deterministic PRNG for clean Kirkwood gaps & Trojan clusters
+  let seed = isKuiper ? 918273 : 133742;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+
+  for (let i = 0; i < count; i++) {
+    let a, e, inc, node, argP, M0, size, tint;
+    if (!isKuiper) {
+      // Main Asteroid Belt (2.08 - 3.28 AU) with real Kirkwood resonance gaps (3:1 at 2.50, 5:2 at 2.82)
+      // + 14% Jupiter Trojans at a ~ 5.20 AU, L4/L5 (+-60 deg from Jupiter's mean longitude)
+      if (i < count * 0.14) {
+        a = 5.05 + rand() * 0.30;
+        e = rand() * 0.08;
+        inc = (rand() - 0.5) * 18 * DEG;
+        node = rand() * Math.PI * 2;
+        argP = rand() * Math.PI * 2;
+        const jupL0 = 34.4 * DEG;
+        const lSign = (i % 2 === 0 ? 1 : -1) * (Math.PI / 3);
+        const targetL = jupL0 + lSign + (rand() - 0.5) * 0.38;
+        M0 = targetL - node - argP;
+        size = 0.0055 + Math.pow(rand(), 3.0) * 0.008;
+        tint = 0.25 + rand() * 0.3;
+      } else {
+        do {
+          a = 2.08 + rand() * 1.20;
+        } while (Math.abs(a - 2.501) < 0.045 || Math.abs(a - 2.825) < 0.038 || Math.abs(a - 2.957) < 0.025);
+        e = Math.pow(rand(), 1.4) * 0.22;
+        inc = (rand() - 0.5) * 20 * DEG;
+        node = rand() * Math.PI * 2;
+        argP = rand() * Math.PI * 2;
+        M0 = rand() * Math.PI * 2;
+        size = 0.0038 + Math.pow(rand(), 3.5) * 0.0065;
+        tint = rand() * 0.55;
+      }
+    } else {
+      // Kuiper Belt (30.5 - 48 AU)
+      a = 30.5 + rand() * 17.5;
+      e = rand() * 0.18;
+      inc = (rand() - 0.5) * 24 * DEG;
+      node = rand() * Math.PI * 2;
+      argP = rand() * Math.PI * 2;
+      M0 = rand() * Math.PI * 2;
+      size = 0.012 + Math.pow(rand(), 3.0) * 0.020;
+      tint = 0.45 + rand() * 0.55;
+    }
+
+    const nRad = K_GAUSS / Math.pow(a, 1.5);
+    orb1.set([a, e, inc, node], i * 4);
+    orb2.set([argP, M0, nRad, size], i * 4);
+    meta.set([rand() * 100.0, tint], i * 2);
+  }
+
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+
+  const bPos = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bPos);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(basePos), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+  const bNorm = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bNorm);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(baseNorm), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+
+  const bO1 = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bO1);
+  gl.bufferData(gl.ARRAY_BUFFER, orb1, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(2);
+  gl.vertexAttribPointer(2, 4, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(2, 1);
+
+  const bO2 = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bO2);
+  gl.bufferData(gl.ARRAY_BUFFER, orb2, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(3);
+  gl.vertexAttribPointer(3, 4, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(3, 1);
+
+  const bMeta = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bMeta);
+  gl.bufferData(gl.ARRAY_BUFFER, meta, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(4);
+  gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(4, 1);
+
+  gl.bindVertexArray(null);
+  return { vao, vertCount: basePos.length / 3, instCount: count };
+}
+
+const sphereGeo = createSphereVAO(56, 84);
+const ringGeo = createRingVAO(1.15, 2.38, 180);
+const quadVAO = createQuadVAO();
+const gravityGridGeo = createGravityGridVAO();
+const mainBeltGeo = createInstancedBeltVAO(4200, false);
+const kuiperBeltGeo = createInstancedBeltVAO(2400, true);
+
+// Dynamic VAO for lines & zone triangles
+const dynLineVAO = gl.createVertexArray();
+const dynLinePosVBO = gl.createBuffer();
+const dynLineProgVBO = gl.createBuffer();
+gl.bindVertexArray(dynLineVAO);
+gl.bindBuffer(gl.ARRAY_BUFFER, dynLinePosVBO);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+gl.bindBuffer(gl.ARRAY_BUFFER, dynLineProgVBO);
+gl.enableVertexAttribArray(1);
+gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0);
+gl.bindVertexArray(null);
+
+const dynZoneVAO = gl.createVertexArray();
+const dynZonePosVBO = gl.createBuffer();
+const dynZoneUvVBO = gl.createBuffer();
+gl.bindVertexArray(dynZoneVAO);
+gl.bindBuffer(gl.ARRAY_BUFFER, dynZonePosVBO);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+gl.bindBuffer(gl.ARRAY_BUFFER, dynZoneUvVBO);
+gl.enableVertexAttribArray(1);
+gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
+gl.bindVertexArray(null);
+
+// Precompute static Zodiac constellation & bright star directions + Ecliptic grid
+const CONSTELLATION_SEGMENTS = (() => {
+  const pos = [], prog = [];
+  const R = 3000;
+  for (const chain of CONSTELLATION_LINES) {
+    for (let i = 0; i < chain.length - 1; i++) {
+      const p0 = mul3(equDirToWorld(chain[i][0], chain[i][1]), R);
+      const p1 = mul3(equDirToWorld(chain[i + 1][0], chain[i + 1][1]), R);
+      pos.push(...p0, ...p1);
+      prog.push(0, 0);
+    }
+  }
+  return { pos: new Float32Array(pos), prog: new Float32Array(prog), count: pos.length / 3 };
+})();
+
+function buildEclipticGrid(isLog) {
+  const pos = [], prog = [];
+  const radii = [0.5, 1, 2, 5, 10, 20, 30, 40];
+  for (const rRaw of radii) {
+    const r = isLog ? Math.pow(rRaw, 0.56) * 1.18 : rRaw;
+    const segs = 128;
+    for (let i = 0; i < segs; i++) {
+      const a0 = (i / segs) * Math.PI * 2;
+      const a1 = ((i + 1) / segs) * Math.PI * 2;
+      pos.push(r * Math.cos(a0), 0, r * Math.sin(a0), r * Math.cos(a1), 0, r * Math.sin(a1));
+      prog.push(0, 0);
+    }
+  }
+  const rMax = isLog ? Math.pow(42, 0.56) * 1.18 : 42;
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    pos.push(0.2 * Math.cos(a), 0, 0.2 * Math.sin(a), rMax * Math.cos(a), 0, rMax * Math.sin(a));
+    prog.push(0, 0);
+  }
+  return { pos: new Float32Array(pos), prog: new Float32Array(prog), count: pos.length / 3 };
+}
+const ECLIPTIC_GRID = buildEclipticGrid(false);
+const ECLIPTIC_GRID_LOG = buildEclipticGrid(true);
+
+const HZ_DISC = (() => {
+  const pos = [], uv = [];
+  const segs = 140;
+  const rIn = 0.5, rOut = 4.2;
+  for (let i = 0; i < segs; i++) {
+    const a0 = (i / segs) * Math.PI * 2;
+    const a1 = ((i + 1) / segs) * Math.PI * 2;
+    const c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1);
+    pos.push(c0*rIn, 0, s0*rIn, c0*rOut, 0, s0*rOut, c1*rIn, 0, s1*rIn);
+    pos.push(c0*rOut, 0, s0*rOut, c1*rOut, 0, s1*rOut, c1*rIn, 0, s1*rIn);
+    uv.push(0,0, 1,0, 0,1, 1,0, 1,1, 0,1);
+  }
+  return { pos: new Float32Array(pos), uv: new Float32Array(uv), count: pos.length / 3 };
+})();
+
+// ============================================================================
+// 6. HDR MULTISAMPLE FRAMEBUFFER & KAWASE BLOOM TARGETS
+// ============================================================================
+const extFloat = gl.getExtension('EXT_color_buffer_float');
+const extHalfFloat = gl.getExtension('EXT_color_buffer_half_float');
+const hasHDR = !!(extFloat || extHalfFloat);
+const hdrInternalFmt = hasHDR ? gl.RGBA16F : gl.RGBA8;
+const hdrType = hasHDR ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE;
+
+let rt = null;
+
+function makeTexture(w, h, internalFmt, type) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFmt, w, h, 0, gl.RGBA, type, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return tex;
+}
+
+function makeFBO(tex) {
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  return fbo;
+}
+
+function rebuildRenderTargets(w, h) {
+  if (rt) {
+    gl.deleteFramebuffer(rt.msaaFbo);
+    gl.deleteRenderbuffer(rt.msaaColor);
+    gl.deleteRenderbuffer(rt.msaaDepth);
+    gl.deleteFramebuffer(rt.sceneFbo);
+    gl.deleteTexture(rt.sceneTex);
+    gl.deleteRenderbuffer(rt.sceneDepth);
+    rt.bloom.forEach(b => { gl.deleteFramebuffer(b.fbo); gl.deleteTexture(b.tex); });
+  }
+
+  const sceneTex = makeTexture(w, h, hdrInternalFmt, hdrType);
+  const sceneFbo = makeFBO(sceneTex);
+  const sceneDepth = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, sceneDepth);
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, w, h);
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, sceneDepth);
+
+  // Try MSAA HDR offscreen buffer
+  let msaaFbo = null, msaaColor = null, msaaDepth = null, useMsaa = false;
+  const maxSamples = Math.min(4, gl.getParameter(gl.MAX_SAMPLES) || 0);
+  if (maxSamples >= 2) {
+    msaaFbo = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, msaaFbo);
+    msaaColor = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, msaaColor);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, maxSamples, hdrInternalFmt, w, h);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, msaaColor);
+    msaaDepth = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, msaaDepth);
+    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, maxSamples, gl.DEPTH_COMPONENT24, w, h);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, msaaDepth);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) {
+      useMsaa = true;
+    }
+  }
+
+  // Fallback check on sceneFbo
+  gl.bindFramebuffer(gl.FRAMEBUFFER, sceneFbo);
+  if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+    // Ultimate RGBA8 fallback
+    gl.bindTexture(gl.TEXTURE_2D, sceneTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    useMsaa = false;
+  }
+
+  const bloom = [];
+  let bw = Math.max(2, w >> 1), bh = Math.max(2, h >> 1);
+  for (let i = 0; i < 5; i++) {
+    const tex = makeTexture(bw, bh, hdrInternalFmt, hdrType);
+    const fbo = makeFBO(tex);
+    bloom.push({ w: bw, h: bh, tex, fbo });
+    bw = Math.max(2, bw >> 1);
+    bh = Math.max(2, bh >> 1);
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  rt = { w, h, msaaFbo, msaaColor, msaaDepth, useMsaa, sceneFbo, sceneTex, sceneDepth, bloom };
+}
+
+// ============================================================================
+// 7. MATRIX MATH & GALACTIC BASIS
+// ============================================================================
+function mat4Perspective(fovRad, aspect, near, far) {
+  const f = 1.0 / Math.tan(fovRad * 0.5);
+  const nf = 1.0 / (near - far);
+  return new Float32Array([
+    f / aspect, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (far + near) * nf, -1,
+    0, 0, 2 * far * near * nf, 0
+  ]);
+}
+
+function mat4LookAtOrigin(eyeRelTarget, up) {
+  const z = norm3(eyeRelTarget); // camera looks toward origin from eyeRelTarget
+  const x = norm3(cross3(up, z));
+  const y = cross3(z, x);
+  return new Float32Array([
+    x[0], y[0], z[0], 0,
+    x[1], y[1], z[1], 0,
+    x[2], y[2], z[2], 0,
+    -dot3(x, eyeRelTarget), -dot3(y, eyeRelTarget), -dot3(z, eyeRelTarget), 1
+  ]);
+}
+
+function mat4Mul(a, b) {
+  const out = new Float32Array(16);
+  for (let c = 0; c < 4; c++) {
+    for (let r = 0; r < 4; r++) {
+      out[c * 4 + r] =
+        a[0 * 4 + r] * b[c * 4 + 0] +
+        a[1 * 4 + r] * b[c * 4 + 1] +
+        a[2 * 4 + r] * b[c * 4 + 2] +
+        a[3 * 4 + r] * b[c * 4 + 3];
+    }
+  }
+  return out;
+}
+
+function mat4Invert(m) {
+  const out = new Float32Array(16);
+  const a00 = m[0], a01 = m[1], a02 = m[2], a03 = m[3];
+  const a10 = m[4], a11 = m[5], a12 = m[6], a13 = m[7];
+  const a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11];
+  const a30 = m[12], a31 = m[13], a32 = m[14], a33 = m[15];
+  const b00 = a00*a11 - a01*a10, b01 = a00*a12 - a02*a10, b02 = a00*a13 - a03*a10;
+  const b03 = a01*a12 - a02*a11, b04 = a01*a13 - a03*a11, b05 = a02*a13 - a03*a12;
+  const b06 = a20*a31 - a21*a30, b07 = a20*a32 - a22*a30, b08 = a20*a33 - a23*a30;
+  const b09 = a21*a32 - a22*a31, b10 = a21*a33 - a23*a31, b11 = a22*a33 - a23*a32;
+  let det = b00*b11 - b01*b10 + b02*b09 + b03*b08 - b04*b07 + b05*b06;
+  if (!det) return out;
+  det = 1.0 / det;
+  out[0] = (a11*b11 - a12*b10 + a13*b09)*det;
+  out[1] = (a02*b10 - a01*b11 - a03*b09)*det;
+  out[2] = (a31*b05 - a32*b04 + a33*b03)*det;
+  out[3] = (a22*b04 - a21*b05 - a23*b03)*det;
+  out[4] = (a12*b08 - a10*b11 - a13*b07)*det;
+  out[5] = (a00*b11 - a02*b08 + a03*b07)*det;
+  out[6] = (a32*b02 - a30*b05 - a33*b01)*det;
+  out[7] = (a20*b05 - a22*b02 + a23*b01)*det;
+  out[8] = (a10*b10 - a11*b08 + a13*b06)*det;
+  out[9] = (a01*b08 - a00*b10 - a03*b06)*det;
+  out[10] = (a30*b04 - a31*b02 + a33*b00)*det;
+  out[11] = (a21*b02 - a20*b04 - a23*b00)*det;
+  out[12] = (a11*b07 - a10*b09 - a12*b06)*det;
+  out[13] = (a00*b09 - a01*b07 + a02*b06)*det;
+  out[14] = (a31*b01 - a30*b03 - a32*b00)*det;
+  out[15] = (a20*b03 - a21*b01 + a22*b00)*det;
+  return out;
+}
+
+function projectPoint(worldPos, camWorld, viewProj, width, height) {
+  const rx = worldPos[0] - camWorld[0];
+  const ry = worldPos[1] - camWorld[1];
+  const rz = worldPos[2] - camWorld[2];
+  const cx = viewProj[0]*rx + viewProj[4]*ry + viewProj[8]*rz + viewProj[12];
+  const cy = viewProj[1]*rx + viewProj[5]*ry + viewProj[9]*rz + viewProj[13];
+  const cw = viewProj[3]*rx + viewProj[7]*ry + viewProj[11]*rz + viewProj[15];
+  if (cw <= 1e-7) return null;
+  const nx = cx / cw, ny = cy / cw;
+  return {
+    x: (nx * 0.5 + 0.5) * width,
+    y: (0.5 - ny * 0.5) * height,
+    w: cw,
+    inView: nx >= -1.15 && nx <= 1.15 && ny >= -1.15 && ny <= 1.15
+  };
+}
+
+// True Galactic Plane Basis (Galactic North Pole RA=192.8595 Dec=+27.1283; Galactic Center RA=266.405 Dec=-28.936)
+const GAL_N = equDirToWorld(192.8595, 27.1283);
+const GAL_U = norm3(sub3(equDirToWorld(266.405, -28.936), mul3(GAL_N, dot3(equDirToWorld(266.405, -28.936), GAL_N))));
+const GAL_V = cross3(GAL_N, GAL_U);
+
+// ============================================================================
+// 8. ORBIT CACHE & PRECOMPUTED KEPLERIAN PATHS
+// ============================================================================
+const orbitCache = {};
+function getKeplerOrbitVertices(body, jd) {
+  // Rebuild slowly for secular drift or cache by body + rounded century
+  const key = body.id + '_' + state.scaleMode;
+  if (orbitCache[key] && Math.abs(orbitCache[key].jd - jd) < 3650) {
+    return orbitCache[key];
+  }
+  const segs = body.isComet ? 512 : 256;
+  const pos = new Float32Array((segs + 1) * 3);
+  const prog = new Float32Array(segs + 1);
+  let a, e, I, node, argPeri;
+  if (body.jpl) {
+    const T = (jd - J2000_JD) / 36525.0;
+    const j = body.jpl;
+    a = j.a + j.da * T;
+    e = Math.max(0, Math.min(0.99, j.e + j.de * T));
+    I = j.I + j.dI * T;
+    node = j.node + j.dNode * T;
+    argPeri = (j.wBar + j.dWBar * T) - node;
+  } else if (body.keplerFixed) {
+    const k = body.keplerFixed;
+    a = k.a; e = k.e; I = k.I; node = k.node; argPeri = k.argPeri;
+  }
+  for (let i = 0; i <= segs; i++) {
+    // Sample in Eccentric Anomaly E so high-e comets like Halley stay smooth around perihelion!
+    const E = (i / segs) * Math.PI * 2;
+    const Mdeg = ((E - e * Math.sin(E)) * RAD);
+    const st = elementsToState(a, e, I, node, argPeri, Mdeg);
+    const wp = mapDistanceScale(st.pos);
+    pos[i * 3] = wp[0];
+    pos[i * 3 + 1] = wp[1];
+    pos[i * 3 + 2] = wp[2];
+    prog[i] = ((Mdeg % 360) + 360) % 360 / 360;
+  }
+  orbitCache[key] = { jd, pos, prog, count: segs + 1 };
+  return orbitCache[key];
+}
+
+// ============================================================================
+// 9. CINEMA TOUR SCRIPT & CAMERA CONTROLLER
+// ============================================================================
+const TOUR_STOPS = [
+  { id: 'sun', yaw: 0.65, pitch: 0.35, distMul: 12, dur: 6.5, title: '太阳 · G2V 等离子体火球', caption: '表面翻滚着 5,778 K 的对流米粒组织与磁活动黑子群，太阳占据了整个太阳系 99.86% 的质量。' },
+  { id: 'mercury', yaw: 1.9, pitch: 0.2, distMul: 5.5, dur: 6.5, title: '水星 · 3:2 自转共振与高偏心轨道', caption: '作为太阳系内侧偏心率最高 (0.206) 的行星，水星每公转两周恰好自转三周，日照强度是地球的 6.7 倍。' },
+  { id: 'earth', yaw: 2.35, pitch: 0.18, distMul: 4.5, dur: 8.0, title: '地球与月球 · 蔚蓝瑞利大气与潮汐之舞', caption: '23.44° 倾角造就四季，晨昏线散射出琥珀红霞，夜面绽放文明灯火与极光，月球沿 5.15° 倾角轨道忠实伴随。' },
+  { id: 'jupiter', yaw: 1.25, pitch: 0.16, distMul: 6.0, dur: 8.0, title: '木星 · 9.9 小时极速自转与伽利略卫星', caption: '高速自转压扁了气态巨行星的极轴，四颗伽利略卫星将清晰的日食阴影直接投射在翻涌的氨冰云带与大红斑之上。' },
+  { id: 'saturn', yaw: 2.65, pitch: 0.24, distMul: 6.5, dur: 9.0, title: '土星 · 26.7° 倾角冰晶光环与逆光前向散射', caption: 'A、B、C 环与卡西尼环缝之间流转着真实的相互阴影。当太阳从背后照亮环面时，微米级水冰颗粒呈现出强烈的衍射辉光。' },
+  { id: 'uranus', yaw: 0.85, pitch: 0.28, distMul: 6.2, dur: 7.0, title: '天王星 · 97.77° 躺倒滚动的冰巨星', caption: '不知何时发生过的巨型天体碰撞使天王星几乎垂直横卧在黄道面上，其暗色环系与主要卫星均垂直于轨道平面运行。' },
+  { id: 'halley', yaw: 1.8, pitch: 0.35, distMul: 12.0, dur: 7.5, title: '1P/Halley · 逆行彗星与双尾物理', caption: '太阳风将蓝色的电离气体尾严格推向背离太阳的方向，而太阳辐射压则在轨道后方勾勒出弯曲的金色尘埃尾。' },
+  { id: 'sun', yaw: 0.72, pitch: 0.58, distMul: 90, dur: 8.0, title: '太阳系全景 · 真实的太空尺度与银河倾角', caption: '黄道平面与银河系银道面呈 60.2° 真实夹角斜切而过，柯伊伯带在 30 至 50 天文单位的冰冷深空静静环绕。' }
+];
+
+function focusBody(id, snapZoom = true) {
+  if (!BODY_MAP[id]) return;
+  state.focusedId = id;
+  state.keplerSweep = { bodyId: id, sectors: [], lastSampleJD: state.jd };
+  if (snapZoom) {
+    const b = BODY_MAP[id];
+    const r = getDisplayedRadiusById(id);
+    if (id === 'sun') {
+      state.camera.targetDist = state.scaleMode === 'true' ? 0.65 : 2.3;
+    } else {
+      state.camera.targetDist = Math.max(r * 4.8, state.scaleMode === 'true' ? r * 6.5 : r * 4.5);
+      if (b.hasRings === 'saturn') state.camera.targetDist = r * 6.4;
+      if (b.isComet) state.camera.targetDist = Math.max(r * 16, 0.25);
+    }
+  }
+  updateDockActive();
+  updateInspectorStatic();
+}
+
+function getDisplayedRadiusById(id) {
+  const b = BODY_MAP[id];
+  if (!b) return 0.005;
+  if (b.parent) {
+    const parent = BODY_MAP[b.parent];
+    const pR = getBodyDisplayRadius(parent);
+    if (state.scaleMode === 'true') return b.trueRadiusAU;
+    return Math.max(pR * Math.max(b.ratioParent, 0.14), 0.0012 * state.bodyScale);
+  }
+  return getBodyDisplayRadius(b);
+}
+
+// ============================================================================
+// 10. SIMULATION TICK & RENDER LOOP
+// ============================================================================
+let lastTime = performance.now();
+let simTimeSec = 0;
+
+function updateSimulation(dtReal) {
+  // Clamp frame delta for stability
+  const dt = Math.min(0.05, dtReal);
+  simTimeSec += dt;
+
+  // Update date/ephemeris
+  const dtDays = state.playing ? dt * state.daysPerSec * state.direction : 0;
+  if (state.physicsMode === 'kepler') {
+    state.jd += dtDays;
+  } else {
+    state.jd += dtDays;
+    stepNBody(dtDays);
+  }
+
+  // Photon Light Speed Pulse (1 AU / 499.0048 s = C_AU_DAY / 86400)
+  if (state.photonPulse.active) {
+    // Run at natural speed or visibly scaled when paused/slow
+    const warpDays = Math.abs(dtDays);
+    const pulseDtDays = warpDays > 1e-6 ? Math.min(warpDays, 0.04) : dt * 0.0011574; // ~100x real light speed when paused/real-time so user sees wave cross inner system in ~5s!
+    // Wait: if user is in 1x Real-Time, use exact 1x physical light speed (8m 19s to Earth)! Otherwise if paused or >1x, use readable light speed or exact simulation time!
+    let effDays = dt / 86400; // true 1x real time
+    if (!state.playing) effDays = dt * (80 / 86400); // 80x c preview when paused
+    else if (state.daysPerSec > 0.01) effDays = Math.min(Math.abs(dtDays), dt * 0.08);
+    else effDays = dt * Math.max(1 / 86400, state.daysPerSec);
+
+    state.photonPulse.rAU += effDays * C_AU_DAY;
+    state.photonPulse.elapsedSec += effDays * 86400;
+    if (state.photonPulse.rAU > 52) {
+      state.photonPulse.active = false;
+      document.getElementById('photonBanner').classList.remove('visible');
+    } else {
+      const m = Math.floor(state.photonPulse.elapsedSec / 60);
+      const s = Math.floor(state.photonPulse.elapsedSec % 60);
+      document.getElementById('photonTime').textContent = `${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+      const r = state.photonPulse.rAU;
+      let milestone = '星际辐射传播中...';
+      if (r < 0.387) milestone = '正向水星 (0.39 AU) 飞驰';
+      else if (r < 0.723) milestone = '已越过水星 · 前往金星 (0.72 AU)';
+      else if (r < 1.0) milestone = '已越过金星 · 前往地球 (1.00 AU)';
+      else if (r < 1.524) milestone = '已抵达地球 (8m 19s) · 前往火星';
+      else if (r < 5.203) milestone = '已越过火星 · 穿越小行星带飞向木星';
+      else if (r < 9.537) milestone = '已越过木星 (43m) · 飞向土星';
+      else if (r < 19.2) milestone = '已越过土星 (79m) · 飞向天王星';
+      else if (r < 30.1) milestone = '已越过天王星 · 飞向海王星';
+      else milestone = '进入柯伊伯带 (> 30 AU)';
+      document.getElementById('photonInfo').textContent = `r = ${r.toFixed(3)} AU · ${milestone}`;
+    }
+  }
+
+  // Update Cinema Tour
+  if (state.tourActive) {
+    state.tourTime += dt;
+    let accum = 0;
+    let stopIdx = 0;
+    const totalDur = TOUR_STOPS.reduce((s, x) => s + x.dur, 0);
+    const tMod = state.tourTime % totalDur;
+    for (let i = 0; i < TOUR_STOPS.length; i++) {
+      if (tMod >= accum && tMod < accum + TOUR_STOPS[i].dur) {
+        stopIdx = i; break;
+      }
+      accum += TOUR_STOPS[i].dur;
+    }
+    const stop = TOUR_STOPS[stopIdx];
+    if (state.focusedId !== stop.id) {
+      focusBody(stop.id, false);
+    }
+    const r = getDisplayedRadiusById(stop.id);
+    state.camera.targetYaw = stop.yaw + (tMod - accum) * 0.14;
+    state.camera.targetPitch = stop.pitch;
+    state.camera.targetDist = r * stop.distMul;
+    document.getElementById('tourTitle').textContent = stop.title;
+    document.getElementById('tourCaption').textContent = stop.caption;
+  }
+
+  // Compute all current planetary & lunar positions
+  const rp = {};
+  const dJ2000 = state.jd - J2000_JD;
+
+  if (state.physicsMode === 'kepler') {
+    for (const b of BODIES) {
+      const st = getKeplerState(b, state.jd);
+      const posWorld = mapDistanceScale(st.pos);
+      const dispR = getBodyDisplayRadius(b);
+      const spinRad = (dJ2000 / b.rotDays) * Math.PI * 2;
+      rp[b.id] = {
+        body: b, posWorld, posPhysAU: st.pos,
+        velKms: st.speedKms, distAU: st.r,
+        dispR, spinRad, state: st
+      };
+    }
+  } else {
+    for (const nb of state.nbodyBodies) {
+      const b = nb.body;
+      const posWorld = mapDistanceScale(nb.pos);
+      const dispR = getBodyDisplayRadius(b);
+      const spinRad = (dJ2000 / b.rotDays) * Math.PI * 2;
+      const sunPos = state.nbodyBodies[0]?.pos || [0,0,0];
+      const rSun = len3(sub3(nb.pos, sunPos));
+      const vKms = len3(nb.vel) * (AU_KM / 86400);
+      rp[nb.id] = {
+        body: b, posWorld, posPhysAU: nb.pos, velWorld: nb.vel,
+        velKms: vKms, distAU: rSun, dispR, spinRad,
+        trail: nb.trail, state: { a: b.jpl?.a || rSun, e: b.jpl?.e || 0, inc: b.jpl?.I || 0, nu: 0 }
+      };
+    }
+  }
+
+  // Compute Moons relative to their parents
+  for (const m of MOONS) {
+    const pData = rp[m.parent];
+    if (!pData) continue;
+    const localOff = getMoonLocalOffset(m, pData.body, pData.dispR, pData.posPhysAU, state.jd);
+    const posWorld = add3(pData.posWorld, localOff);
+    const dispR = getDisplayedRadiusById(m.id);
+    // Tidally locked moons orient X axis toward parent
+    const toParent = norm3(sub3(pData.posWorld, posWorld));
+    const pole = m.eclipticOrbit ? norm3([0, 0.996, -0.089]) : pData.body.poleWorld;
+    const basis = m.tidallyLocked
+      ? (() => {
+          const Y = pole;
+          const Z = norm3(cross3(toParent, Y));
+          const X = cross3(Y, Z);
+          return { X, Y, Z };
+        })()
+      : buildSpinBasis(pole, (dJ2000 / m.periodDays) * Math.PI * 2);
+
+    rp[m.id] = {
+      body: m, posWorld, posPhysAU: add3(pData.posPhysAU, localOff),
+      velKms: (2 * Math.PI * m.aRp * pData.body.radiusKm) / (m.periodDays * 86400),
+      distAU: pData.distAU, dispR, spinRad: 0, customBasis: basis,
+      parentPosWorld: pData.posWorld,
+      state: { a: m.aRp * pData.body.trueRadiusAU, e: m.e, inc: m.incDeg, nu: 0 }
+    };
+  }
+
+  // Sun-Earth Lagrange Points L1..L5
+  if (rp.sun && rp.earth) {
+    const S = rp.sun.posWorld, E = rp.earth.posWorld;
+    const rVec = sub3(E, S);
+    const rLen = len3(rVec);
+    const dir = norm3(rVec);
+    const perp = norm3(cross3([0, 1, 0], dir)); // prograde tangent
+    const hill = Math.pow(BODY_MAP.earth.massSolar / 3, 1 / 3); // ~0.01003
+    rp._lagrange = {
+      L1: add3(E, mul3(dir, -rLen * hill)),
+      L2: add3(E, mul3(dir,  rLen * hill)),
+      L3: add3(S, mul3(dir, -rLen * (1 - 5/12 * BODY_MAP.earth.massSolar))),
+      L4: add3(S, add3(mul3(dir, 0.5 * rLen), mul3(perp, 0.8660254 * rLen))),
+      L5: add3(S, add3(mul3(dir, 0.5 * rLen), mul3(perp, -0.8660254 * rLen)))
+    };
+  }
+
+  state.runtimePositions = rp;
+
+  // Record Kepler 2nd Law equal-area wedges
+  if (state.layers.kepler2) {
+    let kId = state.focusedId;
+    if (kId === 'sun' || !rp[kId] || rp[kId].body.parent) kId = 'mercury';
+    if (state.keplerSweep.bodyId !== kId) {
+      state.keplerSweep = { bodyId: kId, sectors: [], lastSampleJD: state.jd };
+    }
+    const targetData = rp[kId];
+    const period = targetData.body.periodDays || 365;
+    const interval = Math.max(0.5, period / 28);
+    if (Math.abs(state.jd - state.keplerSweep.lastSampleJD) >= interval) {
+      const secs = state.keplerSweep.sectors;
+      const sunW = rp.sun.posWorld;
+      const prevPt = secs.length ? secs[secs.length - 1].p1 : targetData.posWorld;
+      secs.push({ s: sunW, p0: prevPt, p1: [...targetData.posWorld] });
+      if (secs.length > 24) secs.shift();
+      state.keplerSweep.lastSampleJD = state.jd;
+    }
+  }
+
+  // Smooth spring camera follow
+  const focData = rp[state.focusedId] || rp.sun;
+  const targetFoc = focData.posWorld;
+  const lerpK = 1 - Math.exp(-dt * 10.5);
+  for (let i = 0; i < 3; i++) {
+    state.camera.focusWorld[i] = targetFoc[i];
+    state.camera.smoothFocus[i] += (targetFoc[i] - state.camera.smoothFocus[i]) * lerpK;
+  }
+  state.camera.yaw += (state.camera.targetYaw - state.camera.yaw) * lerpK;
+  state.camera.pitch += (state.camera.targetPitch - state.camera.pitch) * lerpK;
+  state.camera.dist += (state.camera.targetDist - state.camera.dist) * lerpK;
+}
+
+// ============================================================================
+// 11. RENDER FRAME (WEBGL2 + 2D HUD)
+// ============================================================================
+function drawLines(posArr, progArr, count, viewProj, camWorld, r, g, b, a, headProg = 0, isTrail = 0, mode = gl.LINES) {
+  if (!count) return;
+  gl.useProgram(lineProg.prog);
+  gl.uniformMatrix4fv(lineProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(lineProg.u.uCamWorldPos, camWorld);
+  gl.uniform1f(lineProg.u.uLogC, LOG_C);
+  gl.uniform1f(lineProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.uniform4f(lineProg.u.uColor, r, g, b, a);
+  gl.uniform1f(lineProg.u.uHeadProg, headProg);
+  gl.uniform1f(lineProg.u.uIsTrail, isTrail);
+
+  gl.bindVertexArray(dynLineVAO);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynLinePosVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, posArr, gl.DYNAMIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynLineProgVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, progArr, gl.DYNAMIC_DRAW);
+  gl.drawArrays(mode, 0, count);
+  gl.bindVertexArray(null);
+}
+
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+let skyCubeTex = null;
+function bakeSkyCubemap() {
+  const size = 512;
+  skyCubeTex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyCubeTex);
+  for (let face = 0; face < 6; face++) {
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, hdrInternalFmt, size, size, 0, gl.RGBA, hdrType, null);
+  }
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+
+  const bakeFbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bakeFbo);
+  gl.viewport(0, 0, size, size);
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.BLEND);
+  gl.useProgram(skyBakeProg.prog);
+  gl.uniform3fv(skyBakeProg.u.uGalU, GAL_U);
+  gl.uniform3fv(skyBakeProg.u.uGalV, GAL_V);
+  gl.uniform3fv(skyBakeProg.u.uGalN, GAL_N);
+  gl.bindVertexArray(quadVAO);
+
+  for (let face = 0; face < 6; face++) {
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + face, skyCubeTex, 0);
+    gl.uniform1i(skyBakeProg.u.uFace, face);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  gl.bindVertexArray(null);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.deleteFramebuffer(bakeFbo);
+}
+
+function renderFrame() {
+  if (!skyCubeTex) bakeSkyCubemap();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const cssW = glCanvas.clientWidth || window.innerWidth;
+  const cssH = glCanvas.clientHeight || window.innerHeight;
+  const w = Math.max(1, Math.floor(cssW * dpr));
+  const h = Math.max(1, Math.floor(cssH * dpr));
+  if (glCanvas.width !== w || glCanvas.height !== h) {
+    glCanvas.width = w; glCanvas.height = h;
+    hudCanvas.width = w; hudCanvas.height = h;
+    rebuildRenderTargets(w, h);
+  }
+  if (!rt) rebuildRenderTargets(w, h);
+
+  const cam = state.camera;
+  const focus = cam.smoothFocus;
+  const minR = getDisplayedRadiusById(state.focusedId) * 1.42;
+  const dist = Math.max(minR, cam.dist);
+  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+  const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+  const eyeRel = [dist * cp * cy, dist * sp, dist * cp * sy];
+  const camWorld = add3(focus, eyeRel);
+
+  const aspect = w / h;
+  const tanHalfFov = Math.tan(cam.fovDeg * DEG * 0.5);
+  const proj = mat4Perspective(cam.fovDeg * DEG, aspect, 0.01, FAR_PLANE);
+  const viewDir = norm3(mul3(eyeRel, -1));
+  const camRight = norm3(cross3(viewDir, [0, 1, 0]));
+  const camUp = cross3(camRight, viewDir);
+  const viewRelCam = new Float32Array([
+    camRight[0], camUp[0], -viewDir[0], 0,
+    camRight[1], camUp[1], -viewDir[1], 0,
+    camRight[2], camUp[2], -viewDir[2], 0,
+    0, 0, 0, 1
+  ]);
+  const viewProj = mat4Mul(proj, viewRelCam);
+
+  const rp = state.runtimePositions;
+  const sunData = rp.sun;
+  const sunPosRel = sub3(sunData.posWorld, camWorld);
+  const sunDispR = sunData.dispR;
+  const sunShadowR = BODIES[0].trueRadiusAU;
+
+  // Bind HDR Offscreen FBO (MSAA if supported)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, rt.useMsaa ? rt.msaaFbo : rt.sceneFbo);
+  gl.viewport(0, 0, w, h);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // 1. SKYBOX (Pre-baked 60.2 deg Galactic Cubemap)
+  gl.disable(gl.DEPTH_TEST);
+  gl.depthMask(false);
+  gl.useProgram(skyProg.prog);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyCubeTex);
+  gl.uniform1i(skyProg.u.uSkyCube, 0);
+  gl.uniform3fv(skyProg.u.uCamRight, camRight);
+  gl.uniform3fv(skyProg.u.uCamUp, camUp);
+  gl.uniform3fv(skyProg.u.uViewDir, viewDir);
+  gl.uniform1f(skyProg.u.uTanHalfFov, tanHalfFov);
+  gl.uniform1f(skyProg.u.uAspect, aspect);
+  gl.bindVertexArray(quadVAO);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+  gl.enable(gl.BLEND);
+
+  // 2. CONSTELLATIONS & ECLIPTIC REFERENCE GRID
+  if (state.layers.constellations) {
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    drawLines(CONSTELLATION_SEGMENTS.pos, CONSTELLATION_SEGMENTS.prog, CONSTELLATION_SEGMENTS.count,
+      viewProj, camWorld, 0.28, 0.48, 0.85, 0.24);
+  }
+  if (state.layers.eclipticGrid) {
+    const eg = state.scaleMode === 'log' ? ECLIPTIC_GRID_LOG : ECLIPTIC_GRID;
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    drawLines(eg.pos, eg.prog, eg.count,
+      viewProj, camWorld, 0.35, 0.55, 0.85, 0.14);
+  }
+
+  // 3. HABITABLE ZONE & FROST LINE
+  if (state.layers.hz) {
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    gl.disable(gl.CULL_FACE);
+    gl.useProgram(zoneProg.prog);
+    gl.uniformMatrix4fv(zoneProg.u.uViewProj, false, viewProj);
+    gl.uniform3fv(zoneProg.u.uCamWorldPos, camWorld);
+    gl.uniform1f(zoneProg.u.uLogC, LOG_C);
+    gl.uniform1f(zoneProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+    gl.uniform1i(zoneProg.u.uMode, 0);
+    const hzIn = state.scaleMode === 'log' ? Math.pow(0.95, 0.56) * 1.18 : 0.95;
+    const hzOut = state.scaleMode === 'log' ? Math.pow(1.67, 0.56) * 1.18 : 1.67;
+    const fr = state.scaleMode === 'log' ? Math.pow(2.7, 0.56) * 1.18 : 2.7;
+    gl.uniform1f(zoneProg.u.uInnerR, hzIn);
+    gl.uniform1f(zoneProg.u.uOuterR, hzOut);
+    gl.uniform1f(zoneProg.u.uFrostR, fr);
+    gl.bindVertexArray(dynZoneVAO);
+    gl.bindBuffer(gl.ARRAY_BUFFER, dynZonePosVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, HZ_DISC.pos, gl.DYNAMIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, dynZoneUvVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, HZ_DISC.uv, gl.DYNAMIC_DRAW);
+    gl.drawArrays(gl.TRIANGLES, 0, HZ_DISC.count);
+  }
+
+  // 4. 3D SPACETIME GRAVITY WELL GRID
+  if (state.layers.gravity) {
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    gl.useProgram(gravityProg.prog);
+    gl.uniformMatrix4fv(gravityProg.u.uViewProj, false, viewProj);
+    gl.uniform3fv(gravityProg.u.uCamWorldPos, camWorld);
+    gl.uniform1f(gravityProg.u.uLogC, LOG_C);
+    gl.uniform1f(gravityProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+    gl.uniform1f(gravityProg.u.uWellDepth, 0.55);
+    const gArr = new Float32Array(40);
+    const gBodies = Object.values(rp).filter(x => x && x.body && !x.body.parent && x.body.massSolar > 1e-6);
+    gBodies.sort((a, b) => b.body.massSolar - a.body.massSolar);
+    for (let i = 0; i < Math.min(10, gBodies.length); i++) {
+      const gb = gBodies[i];
+      const wMass = gb.body.isSun ? state.solarMassMul : Math.sqrt(gb.body.massSolar) * 2.5;
+      gArr.set([gb.posWorld[0], gb.posWorld[1], gb.posWorld[2], wMass], i * 4);
+    }
+    gl.uniform4fv(gravityProg.u.uSources, gArr);
+    gl.bindVertexArray(gravityGridGeo.vao);
+    gl.drawElements(gl.LINES, gravityGridGeo.count, gl.UNSIGNED_INT, 0);
+  }
+
+  // 5. KEPLER 2ND LAW EQUAL-AREA WEDGES
+  if (state.layers.kepler2 && state.keplerSweep.sectors.length) {
+    const secs = state.keplerSweep.sectors;
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    gl.disable(gl.CULL_FACE);
+    gl.useProgram(zoneProg.prog);
+    gl.uniformMatrix4fv(zoneProg.u.uViewProj, false, viewProj);
+    gl.uniform3fv(zoneProg.u.uCamWorldPos, camWorld);
+    gl.uniform1f(zoneProg.u.uLogC, LOG_C);
+    gl.uniform1f(zoneProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+    gl.uniform1i(zoneProg.u.uMode, 1);
+    gl.bindVertexArray(dynZoneVAO);
+    for (let i = 0; i < secs.length; i++) {
+      const sc = secs[i];
+      const tri = new Float32Array([...sc.s, ...sc.p0, ...sc.p1]);
+      const uv = new Float32Array([0,0, 1,0, 1,1]);
+      const col = i % 2 === 0 ? [0.22, 0.78, 1.0, 0.28] : [1.0, 0.74, 0.25, 0.28];
+      gl.uniform4fv(zoneProg.u.uColor, col);
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynZonePosVBO);
+      gl.bufferData(gl.ARRAY_BUFFER, tri, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynZoneUvVBO);
+      gl.bufferData(gl.ARRAY_BUFFER, uv, gl.DYNAMIC_DRAW);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+  }
+
+  // 6. ORBIT TRAILS (Kepler ellipses or N-Body live ribbons)
+  if (state.layers.orbits) {
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    for (const b of BODIES) {
+      if (b.isSun || (b.isComet && !state.layers.comet)) continue;
+      const d = rp[b.id];
+      if (!d) continue;
+      const [cr, cg, cb] = hexToRgb(b.color);
+      const isFoc = state.focusedId === b.id;
+      const alpha = isFoc ? 0.85 : 0.36;
+
+      if (state.physicsMode === 'kepler') {
+        const orb = getKeplerOrbitVertices(b, state.jd);
+        const headProg = ((d.state.M * RAD % 360) + 360) % 360 / 360;
+        drawLines(orb.pos, orb.prog, orb.count, viewProj, camWorld, cr, cg, cb, alpha, headProg, 1, gl.LINE_STRIP);
+      } else if (d.trail && d.trail.length > 1) {
+        const tLen = d.trail.length;
+        const pos = new Float32Array(tLen * 3);
+        const prog = new Float32Array(tLen);
+        for (let i = 0; i < tLen; i++) {
+          const wp = mapDistanceScale(d.trail[i]);
+          pos[i*3] = wp[0]; pos[i*3+1] = wp[1]; pos[i*3+2] = wp[2];
+          prog[i] = i / Math.max(1, tLen - 1);
+        }
+        drawLines(pos, prog, tLen, viewProj, camWorld, cr, cg, cb, alpha, 1.0, 1, gl.LINE_STRIP);
+      }
+    }
+
+    // Also render rogue N-Body trails + velocity vectors
+    if (state.physicsMode === 'nbody') {
+      for (const nb of state.nbodyBodies) {
+        if (nb.body.isRogue && nb.trail.length > 1) {
+          const pos = new Float32Array(nb.trail.length * 3);
+          const prog = new Float32Array(nb.trail.length);
+          for (let i = 0; i < nb.trail.length; i++) {
+            const wp = mapDistanceScale(nb.trail[i]);
+            pos[i*3] = wp[0]; pos[i*3+1] = wp[1]; pos[i*3+2] = wp[2];
+            prog[i] = i / Math.max(1, nb.trail.length - 1);
+          }
+          const [cr, cg, cb] = hexToRgb(nb.body.color);
+          drawLines(pos, prog, nb.trail.length, viewProj, camWorld, cr, cg, cb, 0.9, 1.0, 1, gl.LINE_STRIP);
+        }
+        if (state.layers.velVec && !nb.body.isSun) {
+          const p0 = mapDistanceScale(nb.pos);
+          const p1 = add3(p0, mul3(nb.vel, 18.0));
+          drawLines(new Float32Array([...p0, ...p1]), new Float32Array([0, 0]), 2, viewProj, camWorld, 0.3, 0.95, 0.72, 0.75);
+        }
+      }
+    }
+
+    // Moon orbit circles when zoomed close to parent or moon
+    for (const m of MOONS) {
+      const md = rp[m.id];
+      const pd = rp[m.parent];
+      if (!md || !pd) continue;
+      if (state.focusedId !== m.parent && state.focusedId !== m.id && dist > pd.dispR * 70) continue;
+      const segs = 96;
+      const pos = new Float32Array((segs + 1) * 3);
+      const prog = new Float32Array(segs + 1);
+      for (let i = 0; i <= segs; i++) {
+        const fakeJD = state.jd + (i / segs) * m.periodDays;
+        const off = getMoonLocalOffset(m, pd.body, pd.dispR, pd.posPhysAU, fakeJD);
+        const wp = add3(pd.posWorld, off);
+        pos[i*3] = wp[0]; pos[i*3+1] = wp[1]; pos[i*3+2] = wp[2];
+        prog[i] = i / segs;
+      }
+      const [cr, cg, cb] = hexToRgb(m.color);
+      drawLines(pos, prog, segs + 1, viewProj, camWorld, cr, cg, cb, 0.38, 0, 0, gl.LINE_STRIP);
+    }
+  }
+
+  // 7. INSTANCED ASTEROID & KUIPER BELTS (OPAQUE)
+  gl.disable(gl.BLEND);
+  gl.depthMask(true);
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  if (state.layers.belts) {
+    gl.useProgram(asteroidProg.prog);
+    gl.uniformMatrix4fv(asteroidProg.u.uViewProj, false, viewProj);
+    gl.uniform3fv(asteroidProg.u.uCamWorldPos, camWorld);
+    gl.uniform1f(asteroidProg.u.uLogC, LOG_C);
+    gl.uniform1f(asteroidProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+    gl.uniform1f(asteroidProg.u.uDaysSinceJ2000, state.jd - J2000_JD);
+    gl.uniform1f(asteroidProg.u.uMassScale, state.physicsMode === 'nbody' ? state.solarMassMul : 1.0);
+    gl.uniform1f(asteroidProg.u.uLogScaleMode, state.scaleMode === 'log' ? 1.0 : 0.0);
+    gl.uniform1f(asteroidProg.u.uSizeScale, state.scaleMode === 'true' ? 0.08 : state.bodyScale);
+    gl.uniform3fv(asteroidProg.u.uSunPosRelCam, sunPosRel);
+
+    gl.bindVertexArray(mainBeltGeo.vao);
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, mainBeltGeo.vertCount, mainBeltGeo.instCount);
+    gl.bindVertexArray(kuiperBeltGeo.vao);
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, kuiperBeltGeo.vertCount, kuiperBeltGeo.instCount);
+    gl.bindVertexArray(null);
+  }
+
+  // 8. OPAQUE SUN PHOTOSPHERE & ALL PLANETS / MOONS / ROGUE BODIES
+  // Sun
+  {
+    const sunBasis = buildSpinBasis(sunData.body.poleWorld, sunData.spinRad);
+    gl.useProgram(sunProg.prog);
+    gl.uniformMatrix4fv(sunProg.u.uViewProj, false, viewProj);
+    gl.uniform3fv(sunProg.u.uPosRelCam, sunPosRel);
+    gl.uniform1f(sunProg.u.uRadius, sunDispR);
+    gl.uniform3fv(sunProg.u.uAxisX, sunBasis.X);
+    gl.uniform3fv(sunProg.u.uAxisY, sunBasis.Y);
+    gl.uniform3fv(sunProg.u.uAxisZ, sunBasis.Z);
+    gl.uniform1f(sunProg.u.uLogC, LOG_C);
+    gl.uniform1f(sunProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+    gl.uniform1f(sunProg.u.uTime, simTimeSec);
+    const mScale = state.physicsMode === 'nbody' ? state.solarMassMul : 1.0;
+    gl.uniform3fv(sunProg.u.uTint, mScale > 1.25 ? [0.85, 0.94, 1.1] : (mScale < 0.75 ? [1.1, 0.72, 0.45] : [1.0, 1.0, 1.0]));
+    gl.uniform1f(sunProg.u.uRadiance, 1.05 * Math.pow(mScale, 0.6));
+    gl.bindVertexArray(sphereGeo.vao);
+    gl.drawElements(gl.TRIANGLES, sphereGeo.count, gl.UNSIGNED_INT, 0);
+  }
+
+  // Planets & Moons
+  const allBodiesToDraw = Object.values(rp).filter(d => d && d.body && !d.body.isSun && !(d.body.isComet && !state.layers.comet));
+  gl.useProgram(planetProg.prog);
+  gl.uniformMatrix4fv(planetProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(planetProg.u.uSunPosRelCam, sunPosRel);
+  gl.uniform1f(planetProg.u.uSunDispRadius, sunShadowR);
+  gl.uniform1f(planetProg.u.uTrueLight, state.layers.trueLight ? 1.0 : 0.0);
+  gl.uniform1f(planetProg.u.uLogC, LOG_C);
+  gl.uniform1f(planetProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.uniform1f(planetProg.u.uTime, simTimeSec);
+  gl.uniform1f(planetProg.u.uSeasonTime, state.jd - J2000_JD);
+
+  gl.bindVertexArray(sphereGeo.vao);
+  for (const d of allBodiesToDraw) {
+    const b = d.body;
+    const posRel = sub3(d.posWorld, camWorld);
+    const basis = d.customBasis || buildSpinBasis(b.poleWorld, d.spinRad);
+    const irr = 1.0 / Math.max(0.08, d.distAU * d.distAU);
+
+    // Shadow casters for real eclipses
+    const casters = new Float32Array(20);
+    let nCast = 0, redUmbra = 0;
+    if (b.id === 'earth' && rp.moon) {
+      const mp = sub3(rp.moon.posWorld, camWorld);
+      casters.set([mp[0], mp[1], mp[2], rp.moon.dispR], 0);
+      nCast = 1;
+    } else if (b.id === 'moon' && rp.earth) {
+      const ep = sub3(rp.earth.posWorld, camWorld);
+      casters.set([ep[0], ep[1], ep[2], rp.earth.dispR], 0);
+      nCast = 1; redUmbra = 1;
+    } else if (b.id === 'jupiter') {
+      for (const gm of ['io', 'europa', 'ganymede', 'callisto']) {
+        if (rp[gm]) {
+          const gp = sub3(rp[gm].posWorld, camWorld);
+          casters.set([gp[0], gp[1], gp[2], rp[gm].dispR], nCast * 4);
+          nCast++;
+        }
+      }
+    } else if (['io', 'europa', 'ganymede', 'callisto'].includes(b.id) && rp.jupiter) {
+      const jp = sub3(rp.jupiter.posWorld, camWorld);
+      casters.set([jp[0], jp[1], jp[2], rp.jupiter.dispR], 0);
+      nCast = 1;
+    }
+
+    gl.uniform1i(planetProg.u.uBodyType, b.shaderType ?? 12);
+    gl.uniform3fv(planetProg.u.uPosRelCam, posRel);
+    gl.uniform3fv(planetProg.u.uBodyPosRelCam, posRel);
+    gl.uniform1f(planetProg.u.uRadius, d.dispR);
+    gl.uniform1f(planetProg.u.uOblateness, b.oblateness || 0.0);
+    gl.uniform3fv(planetProg.u.uAxisX, basis.X);
+    gl.uniform3fv(planetProg.u.uAxisY, basis.Y);
+    gl.uniform3fv(planetProg.u.uAxisZ, basis.Z);
+    gl.uniform1f(planetProg.u.uSunIrradiance, irr);
+    gl.uniform1i(planetProg.u.uHasRings, b.hasRings === 'saturn' ? 1 : 0);
+    gl.uniform1f(planetProg.u.uRingInner, b.ringInner || 1.2);
+    gl.uniform1f(planetProg.u.uRingOuter, b.ringOuter || 2.3);
+    gl.uniform1i(planetProg.u.uNumCasters, nCast);
+    gl.uniform4fv(planetProg.u.uShadowCasters, casters);
+    gl.uniform1i(planetProg.u.uRedUmbra, redUmbra);
+
+    gl.drawElements(gl.TRIANGLES, sphereGeo.count, gl.UNSIGNED_INT, 0);
+  }
+
+  // 9. TRANSLUCENT RINGS (Saturn & Uranus)
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.depthMask(false);
+  gl.disable(gl.CULL_FACE);
+  gl.useProgram(ringProg.prog);
+  gl.uniformMatrix4fv(ringProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(ringProg.u.uSunPosRelCam, sunPosRel);
+  gl.uniform1f(ringProg.u.uSunDispRadius, sunShadowR);
+  gl.uniform1f(ringProg.u.uLogC, LOG_C);
+  gl.uniform1f(ringProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.bindVertexArray(ringGeo.vao);
+
+  for (const id of ['saturn', 'uranus']) {
+    const d = rp[id];
+    if (!d) continue;
+    const b = d.body;
+    const basis = buildSpinBasis(b.poleWorld, d.spinRad);
+    const posRel = sub3(d.posWorld, camWorld);
+    const irr = state.layers.trueLight ? clamp(1 / (d.distAU * d.distAU), 0.001, 4) : 1.0;
+    gl.uniform3fv(ringProg.u.uPosRelCam, posRel);
+    gl.uniform1f(ringProg.u.uRadius, d.dispR);
+    gl.uniform1f(ringProg.u.uOblateness, b.oblateness);
+    gl.uniform3fv(ringProg.u.uAxisX, basis.X);
+    gl.uniform3fv(ringProg.u.uAxisY, basis.Y);
+    gl.uniform3fv(ringProg.u.uAxisZ, basis.Z);
+    gl.uniform1i(ringProg.u.uIsUranus, id === 'uranus' ? 1 : 0);
+    gl.uniform1f(ringProg.u.uIrradiance, irr);
+    gl.drawElements(gl.TRIANGLES, ringGeo.count, gl.UNSIGNED_SHORT, 0);
+  }
+
+  // 10. RAY-MARCHED ATMOSPHERE SHELLS (Front faces with analytical sphere-ray integral)
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  gl.useProgram(atmProg.prog);
+  gl.uniformMatrix4fv(atmProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(atmProg.u.uSunPosRelCam, sunPosRel);
+  gl.uniform1f(atmProg.u.uLogC, LOG_C);
+  gl.uniform1f(atmProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.bindVertexArray(sphereGeo.vao);
+
+  for (const d of allBodiesToDraw) {
+    const b = d.body;
+    if (!b.atmColor) continue;
+    const posRel = sub3(d.posWorld, camWorld);
+    const basis = d.customBasis || buildSpinBasis(b.poleWorld || [0, 1, 0], d.spinRad);
+    const irr = state.layers.trueLight ? clamp(1 / (d.distAU * d.distAU), 0.002, 5) : 1.05;
+    gl.uniform3fv(atmProg.u.uPosRelCam, posRel);
+    gl.uniform1f(atmProg.u.uPlanetRadius, d.dispR);
+    gl.uniform1f(atmProg.u.uAtmRadius, d.dispR * b.atmScale);
+    gl.uniform1f(atmProg.u.uOblateness, b.oblateness || 0);
+    gl.uniform3fv(atmProg.u.uAxisX, basis.X);
+    gl.uniform3fv(atmProg.u.uAxisY, basis.Y);
+    gl.uniform3fv(atmProg.u.uAxisZ, basis.Z);
+    gl.uniform3fv(atmProg.u.uAtmColor, b.atmColor);
+    gl.uniform1f(atmProg.u.uAtmDensity, b.atmDensity || 1.0);
+    gl.uniform1f(atmProg.u.uIrradiance, irr);
+    gl.drawElements(gl.TRIANGLES, sphereGeo.count, gl.UNSIGNED_INT, 0);
+  }
+  gl.cullFace(gl.BACK);
+
+  // 11. VOLUMETRIC SOLAR CORONA & HALLEY COMET DUAL TAILS
+  gl.disable(gl.CULL_FACE);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  gl.useProgram(coronaProg.prog);
+  gl.uniformMatrix4fv(coronaProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(coronaProg.u.uCamRight, camRight);
+  gl.uniform3fv(coronaProg.u.uCamUp, camUp);
+  gl.uniform1f(coronaProg.u.uLogC, LOG_C);
+  gl.uniform1f(coronaProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.uniform1f(coronaProg.u.uTime, simTimeSec);
+  gl.uniform3fv(coronaProg.u.uPosRelCam, sunPosRel);
+  gl.uniform1f(coronaProg.u.uSize, sunDispR * 7.2);
+  gl.uniform3fv(coronaProg.u.uColor, [1.0, 0.70, 0.32]);
+  gl.uniform1f(coronaProg.u.uIntensity, 1.45);
+  gl.uniform1f(coronaProg.u.uIsComa, 0.0);
+  gl.bindVertexArray(quadVAO);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // Comet Coma & Dual Ion/Dust Tails
+  if (state.layers.comet && rp.halley) {
+    const hd = rp.halley;
+    const activity = clamp(Math.pow(1.6 / Math.max(0.4, hd.distAU), 2.3), 0.04, 2.2);
+    const comaPosRel = sub3(hd.posWorld, camWorld);
+    gl.uniform3fv(coronaProg.u.uPosRelCam, comaPosRel);
+    gl.uniform1f(coronaProg.u.uSize, hd.dispR * (10 + 18 * activity));
+    gl.uniform3fv(coronaProg.u.uColor, [0.45, 0.90, 1.0]);
+    gl.uniform1f(coronaProg.u.uIntensity, 1.8 * activity);
+    gl.uniform1f(coronaProg.u.uIsComa, 1.0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    if (activity > 0.12) {
+      drawCometTail(hd, rp.sun.posWorld, activity, viewProj, camWorld, false); // Blue Ion tail (anti-solar)
+      drawCometTail(hd, rp.sun.posWorld, activity, viewProj, camWorld, true);  // Curved Golden Dust tail
+    }
+  }
+
+  // 12. EXPANDING SPEED-OF-LIGHT WAVEFRONT
+  if (state.photonPulse.active) {
+    const rWave = state.scaleMode === 'log' ? Math.pow(state.photonPulse.rAU, 0.56) * 1.18 : state.photonPulse.rAU;
+    const segs = 128;
+    const pos = new Float32Array((segs + 1) * 3);
+    const prog = new Float32Array(segs + 1);
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      pos[i*3] = sunData.posWorld[0] + Math.cos(a) * rWave;
+      pos[i*3+1] = sunData.posWorld[1];
+      pos[i*3+2] = sunData.posWorld[2] + Math.sin(a) * rWave;
+    }
+    drawLines(pos, prog, segs + 1, viewProj, camWorld, 0.35, 0.92, 1.0, 0.95, 0, 0, gl.LINE_STRIP);
+  }
+
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+  gl.bindVertexArray(null);
+
+  // Resolve MSAA -> sceneTex
+  if (rt.useMsaa) {
+    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, rt.msaaFbo);
+    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, rt.sceneFbo);
+    gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+  }
+
+  // ========================================================================
+  // POST-PROCESSING: BRIGHT PASS + KAWASE PYRAMID BLOOM + ACES TONEMAP
+  // ========================================================================
+  gl.disable(gl.DEPTH_TEST);
+  gl.bindVertexArray(quadVAO);
+
+  // Bright extraction into bloom[0]
+  gl.bindFramebuffer(gl.FRAMEBUFFER, rt.bloom[0].fbo);
+  gl.viewport(0, 0, rt.bloom[0].w, rt.bloom[0].h);
+  gl.useProgram(brightProg.prog);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, rt.sceneTex);
+  gl.uniform1i(brightProg.u.uTex, 0);
+  gl.uniform1f(brightProg.u.uThreshold, 1.02);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // Downsample blur pyramid
+  gl.useProgram(blurProg.prog);
+  for (let i = 1; i < rt.bloom.length; i++) {
+    const src = rt.bloom[i - 1], dst = rt.bloom[i];
+    gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fbo);
+    gl.viewport(0, 0, dst.w, dst.h);
+    gl.bindTexture(gl.TEXTURE_2D, src.tex);
+    gl.uniform1i(blurProg.u.uTex, 0);
+    gl.uniform2f(blurProg.u.uTexelSize, 1 / src.w, 1 / src.h);
+    gl.uniform1f(blurProg.u.uRadius, 1.6);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  // Upsample additive blend
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE);
+  for (let i = rt.bloom.length - 1; i > 0; i--) {
+    const src = rt.bloom[i], dst = rt.bloom[i - 1];
+    gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fbo);
+    gl.viewport(0, 0, dst.w, dst.h);
+    gl.bindTexture(gl.TEXTURE_2D, src.tex);
+    gl.uniform1i(blurProg.u.uTex, 0);
+    gl.uniform2f(blurProg.u.uTexelSize, 1 / src.w, 1 / src.h);
+    gl.uniform1f(blurProg.u.uRadius, 2.0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  gl.disable(gl.BLEND);
+
+  // Sun optical flare screen visibility check (analytical planet occlusion)
+  const sunScreen = projectPoint(sunData.posWorld, camWorld, viewProj, w, h);
+  let sunVis = 0;
+  if (sunScreen && sunScreen.inView) {
+    sunVis = 1.0;
+    const raySun = norm3(sub3(sunData.posWorld, camWorld));
+    const distToSun = len3(sub3(sunData.posWorld, camWorld));
+    for (const d of allBodiesToDraw) {
+      const toB = sub3(d.posWorld, camWorld);
+      const t = dot3(toB, raySun);
+      if (t > 0 && t < distToSun) {
+        const perp = len3(sub3(toB, mul3(raySun, t)));
+        if (perp < d.dispR * 0.96) { sunVis = 0; break; }
+      }
+    }
+  }
+
+  // Final Composite to Default Backbuffer
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, w, h);
+  gl.useProgram(compositeProg.prog);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, rt.sceneTex);
+  gl.uniform1i(compositeProg.u.uScene, 0);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, rt.bloom[0].tex);
+  gl.uniform1i(compositeProg.u.uBloom, 1);
+  gl.uniform1f(compositeProg.u.uExposure, state.exposure);
+  gl.uniform2f(compositeProg.u.uSunScreen, sunScreen ? sunScreen.x / w : -2, sunScreen ? 1 - sunScreen.y / h : -2);
+  gl.uniform1f(compositeProg.u.uSunVis, sunVis);
+  gl.uniform1f(compositeProg.u.uAspect, aspect);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.bindVertexArray(null);
+
+  // 2D HUD Canvas Overlay (Labels, Reticles, Lagrange Points, Bright Stars)
+  renderHUD2D(w, h, dpr, camWorld, viewProj, rp);
+}
+
+function drawCometTail(hd, sunWorld, activity, viewProj, camWorld, isDust) {
+  const antiSun = norm3(sub3(hd.posWorld, sunWorld));
+  const velDir = hd.state ? norm3(getKeplerState(hd.body, state.jd).vel) : [0, 0, 1];
+  const tailLen = (isDust ? 0.55 : 0.85) * Math.min(2.2, activity);
+  const segs = 22;
+  const pos = [], uv = [];
+
+  for (let i = 0; i < segs; i++) {
+    const t0 = i / segs, t1 = (i + 1) / segs;
+    const p0 = getTailSpine(hd.posWorld, antiSun, velDir, tailLen, t0, isDust);
+    const p1 = getTailSpine(hd.posWorld, antiSun, velDir, tailLen, t1, isDust);
+    const camDir = norm3(sub3(camWorld, p0));
+    const side = norm3(cross3(sub3(p1, p0), camDir));
+    const w0 = (0.008 + t0 * (isDust ? 0.08 : 0.032)) * activity;
+    const w1 = (0.008 + t1 * (isDust ? 0.08 : 0.032)) * activity;
+
+    const a = add3(p0, mul3(side, -w0)), b = add3(p0, mul3(side, w0));
+    const c = add3(p1, mul3(side, -w1)), d = add3(p1, mul3(side, w1));
+    pos.push(...a, ...b, ...c, ...b, ...d, ...c);
+    uv.push(-1, t0, 1, t0, -1, t1, 1, t0, 1, t1, -1, t1);
+  }
+
+  gl.useProgram(zoneProg.prog);
+  gl.uniformMatrix4fv(zoneProg.u.uViewProj, false, viewProj);
+  gl.uniform3fv(zoneProg.u.uCamWorldPos, camWorld);
+  gl.uniform1f(zoneProg.u.uLogC, LOG_C);
+  gl.uniform1f(zoneProg.u.uLogDepthScale, LOG_DEPTH_SCALE);
+  gl.uniform1i(zoneProg.u.uMode, 2);
+  gl.uniform1f(zoneProg.u.uTime, simTimeSec);
+  const col = isDust ? [1.0, 0.84, 0.56, 0.55 * activity] : [0.35, 0.82, 1.0, 0.85 * activity];
+  gl.uniform4fv(zoneProg.u.uColor, col);
+  gl.bindVertexArray(dynZoneVAO);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynZonePosVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.DYNAMIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynZoneUvVBO);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv), gl.DYNAMIC_DRAW);
+  gl.drawArrays(gl.TRIANGLES, 0, pos.length / 3);
+}
+
+function getTailSpine(origin, antiSun, velDir, len, t, isDust) {
+  if (!isDust) return add3(origin, mul3(antiSun, t * len));
+  // Dust tail curves backward behind orbital velocity
+  const dir = norm3(sub3(mul3(antiSun, 1.0), mul3(velDir, 0.65 * t)));
+  return add3(origin, mul3(dir, t * len));
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ============================================================================
+// 12. 2D CANVAS OVERLAY (LABELS, PICKING CACHE, LAGRANGE, BRIGHT STARS)
+// ============================================================================
+let screenPickables = [];
+
+function renderHUD2D(w, h, dpr, camWorld, viewProj, rp) {
+  hudCtx.clearRect(0, 0, w, h);
+  screenPickables = [];
+
+  if (!state.layers.labels && !state.layers.lagrange && !state.layers.constellations) return;
+  hudCtx.save();
+  hudCtx.scale(dpr, dpr);
+  const vw = w / dpr, vh = h / dpr;
+
+  // Bright Real Navigational Stars
+  if (state.layers.constellations) {
+    hudCtx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+    for (const s of REAL_STARS) {
+      const dir = equDirToWorld(s.ra, s.dec);
+      const wp = add3(camWorld, mul3(dir, 2500));
+      const p = projectPoint(wp, camWorld, viewProj, vw, vh);
+      if (!p || !p.inView) continue;
+      const rad = clamp(2.8 - s.v * 0.65, 1.0, 3.6);
+      const [r, g, b] = s.col.map(c => Math.round(c * 255));
+      hudCtx.fillStyle = `rgba(${r},${g},${b},0.92)`;
+      hudCtx.beginPath();
+      hudCtx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+      hudCtx.fill();
+      if (s.v < 0.9 && !state.hudHidden) {
+        hudCtx.fillStyle = 'rgba(170, 200, 255, 0.42)';
+        hudCtx.fillText(s.name, p.x + 6, p.y + 3);
+      }
+    }
+  }
+
+  // Sun-Earth Lagrange Points
+  if (state.layers.lagrange && rp._lagrange) {
+    hudCtx.font = '600 10.5px "SF Mono", monospace';
+    for (const [key, pos] of Object.entries(rp._lagrange)) {
+      const p = projectPoint(pos, camWorld, viewProj, vw, vh);
+      if (!p || !p.inView) continue;
+      hudCtx.strokeStyle = key === 'L2' ? '#4de2a8' : 'rgba(86, 194, 255, 0.72)';
+      hudCtx.lineWidth = 1.2;
+      hudCtx.beginPath();
+      hudCtx.moveTo(p.x - 5, p.y); hudCtx.lineTo(p.x + 5, p.y);
+      hudCtx.moveTo(p.x, p.y - 5); hudCtx.lineTo(p.x, p.y + 5);
+      hudCtx.stroke();
+      if (!state.hudHidden) {
+        hudCtx.fillStyle = key === 'L2' ? '#7bffcb' : 'rgba(150, 215, 255, 0.85)';
+        hudCtx.fillText(key === 'L2' ? 'L2 · JWST' : (key === 'L1' ? 'L1 · SOHO' : key), p.x + 8, p.y + 3);
+      }
+    }
+  }
+
+  // Body Markers & Interactive Labels
+  const placedBoxes = [];
+  const bodiesToLabel = Object.values(rp).filter(d => d && d.body && !(d.body.isComet && !state.layers.comet));
+
+  for (const d of bodiesToLabel) {
+    const b = d.body;
+    const isMoon = !!b.parent;
+    const p = projectPoint(d.posWorld, camWorld, viewProj, vw, vh);
+    if (!p || !p.inView) continue;
+
+    // Estimate projected screen radius
+    const screenRadius = (d.dispR / Math.max(1e-6, p.w)) * (vh / (2 * Math.tan(state.camera.fovDeg * DEG * 0.5)));
+    screenPickables.push({ id: b.id, x: p.x, y: p.y, r: Math.max(16, screenRadius) });
+
+    if (state.hudHidden || !state.layers.labels) continue;
+    if (isMoon && state.focusedId !== b.parent && state.focusedId !== b.id && state.camera.dist > (rp[b.parent]?.dispR || 0.01) * 45) continue;
+
+    const isFoc = state.focusedId === b.id;
+    // Target reticle for True 1:1 Scale or Focused Body
+    if (isFoc || (state.scaleMode === 'true' && screenRadius < 4)) {
+      const rr = clamp(screenRadius + 6, 8, 42);
+      hudCtx.strokeStyle = isFoc ? 'rgba(86, 194, 255, 0.85)' : 'rgba(255, 255, 255, 0.35)';
+      hudCtx.lineWidth = isFoc ? 1.4 : 1;
+      hudCtx.beginPath();
+      hudCtx.arc(p.x, p.y, rr, 0, Math.PI * 2);
+      hudCtx.stroke();
+    }
+
+    if (screenRadius > 85 && !isFoc) continue; // skip cluttering label when planet fills view
+
+    const label = `${b.cn}`;
+    hudCtx.font = `${isFoc ? '600' : '500'} ${isMoon ? 10.5 : 11.5}px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif`;
+    const tw = hudCtx.measureText(label).width;
+    const lx = p.x + Math.max(8, Math.min(26, screenRadius + 6));
+    const ly = p.y + 4;
+
+    // Declutter overlapping labels
+    const box = { x1: lx - 3, y1: ly - 11, x2: lx + tw + 4, y2: ly + 4 };
+    const overlaps = !isFoc && placedBoxes.some(pb => !(box.x2 < pb.x1 || box.x1 > pb.x2 || box.y2 < pb.y1 || box.y1 > pb.y2));
+    if (overlaps) continue;
+    placedBoxes.push(box);
+
+    hudCtx.fillStyle = isFoc ? '#ffffff' : (isMoon ? 'rgba(180, 205, 238, 0.78)' : 'rgba(225, 238, 255, 0.90)');
+    hudCtx.fillText(label, lx, ly);
+
+    // Little swatch dot next to distant planet
+    if (screenRadius < 2.2) {
+      hudCtx.fillStyle = b.color;
+      hudCtx.beginPath();
+      hudCtx.arc(p.x, p.y, 2.3, 0, Math.PI * 2);
+      hudCtx.fill();
+    }
+  }
+  hudCtx.restore();
+}
+
+// ============================================================================
+// 13. UI BINDINGS, TELEMETRY & INTERACTION
+// ============================================================================
+const planetDock = document.getElementById('planetDock');
+const moonDock = document.getElementById('moonDock');
+
+function buildDocks() {
+  planetDock.innerHTML = '';
+  for (const b of BODIES) {
+    const btn = document.createElement('button');
+    btn.className = 'body-pill';
+    btn.dataset.id = b.id;
+    btn.innerHTML = `<span class="swatch" style="background:${b.color};box-shadow:0 0 8px ${b.color}"></span><span>${b.cn}</span>`;
+    btn.addEventListener('click', () => {
+      stopTour();
+      focusBody(b.id, true);
+    });
+    planetDock.appendChild(btn);
+  }
+}
+
+function updateDockActive() {
+  const foc = BODY_MAP[state.focusedId];
+  const rootId = foc?.parent || state.focusedId;
+  for (const el of planetDock.children) {
+    el.classList.toggle('active', el.dataset.id === rootId);
+  }
+  const childMoons = MOONS.filter(m => m.parent === rootId);
+  if (childMoons.length) {
+    moonDock.innerHTML = `<span style="font-size:10px;color:var(--muted);padding:0 6px">${BODY_MAP[rootId].cn}卫星:</span>`;
+    for (const m of childMoons) {
+      const btn = document.createElement('button');
+      btn.className = 'body-pill' + (state.focusedId === m.id ? ' active' : '');
+      btn.innerHTML = `<span class="swatch" style="background:${m.color}"></span><span>${m.cn}</span>`;
+      btn.addEventListener('click', () => { stopTour(); focusBody(m.id, true); });
+      moonDock.appendChild(btn);
+    }
+    moonDock.classList.add('visible');
+  } else {
+    moonDock.classList.remove('visible');
+  }
+}
+
+function updateInspectorStatic() {
+  const b = BODY_MAP[state.focusedId];
+  if (!b) return;
+  document.getElementById('inspName').textContent = `${b.name} · ${b.cn}`;
+  document.getElementById('inspClass').textContent = b.typeLabel;
+  document.getElementById('inspDesc').textContent = b.desc;
+  document.getElementById('statRad').textContent = `${b.radiusKm.toLocaleString()} km`;
+  document.getElementById('statGrav').textContent = `g = ${b.gravity} m/s²`;
+  document.getElementById('statMass').textContent = b.isSun ? '332,946 M⊕' : (b.massEarth >= 1 ? `${b.massEarth.toFixed(2)} M⊕` : `${b.massEarth.toExponential(2)} M⊕`);
+  document.getElementById('statEsc').textContent = `v_esc = ${b.escVel} km/s`;
+
+  const rotH = Math.abs(b.rotDays || b.periodDays) * 24;
+  const rotLabel = b.tidallyLocked ? '潮汐锁定' : (Math.abs(b.rotDays) < 2 ? `${(b.rotDays * 24).toFixed(2)} h` : `${b.rotDays.toFixed(2)} d`);
+  document.getElementById('statRot').textContent = rotLabel;
+  document.getElementById('statTilt').textContent = `ε = ${(b.tiltDeg ?? b.incDeg ?? 0).toFixed(2)}°`;
+
+  const per = b.periodDays;
+  document.getElementById('statPeriod').textContent = per ? (per > 800 ? `${(per / 365.25).toFixed(2)} yr` : `${per.toFixed(2)} d`) : '银河公转 2.3亿年';
+  document.getElementById('statInc').textContent = `i = ${(b.jpl?.I ?? b.keplerFixed?.I ?? b.incDeg ?? 0).toFixed(2)}°`;
+  document.getElementById('periWrap').style.display = b.isSun || b.parent ? 'none' : 'flex';
+}
+
+function updateLiveUI() {
+  document.getElementById('dateDisplay').textContent = fmtUTC(state.jd);
+  const T = (state.jd - J2000_JD) / 36525.0;
+  document.getElementById('jdDisplay').textContent = `JD ${state.jd.toFixed(4)} · T ${T >= 0 ? '+' : ''}${T.toFixed(4)} cy`;
+
+  const d = state.runtimePositions[state.focusedId];
+  if (!d) return;
+  const b = d.body;
+  const r = d.distAU;
+  document.getElementById('statDist').textContent = b.isSun ? '0.0000 AU' : `${r.toFixed(4)} AU`;
+  document.getElementById('statDistKm').textContent = b.isSun ? '日心原点' : `${(r * AU_KM / 1e6).toFixed(2)} × 10⁶ km`;
+  document.getElementById('statVel').textContent = b.isSun ? '220 km/s (银心)' : `${d.velKms.toFixed(2)} km/s`;
+
+  const lightSec = (r * AU_KM) / C_KM_S;
+  const lm = Math.floor(lightSec / 60), ls = Math.floor(lightSec % 60);
+  document.getElementById('statLight').textContent = b.isSun ? '光行时 00m 00s' : `光行时 ${String(lm).padStart(2,'0')}m ${String(ls).padStart(2,'0')}s`;
+
+  const irr = b.isSun ? 6.33e7 : (1361 * state.solarMassMul) / Math.max(1e-4, r * r);
+  document.getElementById('statIrr').textContent = irr >= 1e5 ? `${irr.toExponential(2)} W/m²` : `${irr.toFixed(irr < 10 ? 2 : 0)} W/m²`;
+
+  const alb = b.albedo ?? 0.3;
+  const tEq = b.isSun ? 5778 : Math.round(278.5 * Math.pow((1 - alb) / Math.max(0.01, r * r), 0.25));
+  document.getElementById('statTemp').textContent = b.isSun ? '有效温度 5778 K' : `均值 ${b.tempK} K · 辐射平衡 ${tEq} K`;
+
+  const nuDeg = (((d.state?.nu || 0) * RAD) % 360 + 360) % 360;
+  const ecc = d.state?.e ?? b.jpl?.e ?? b.keplerFixed?.e ?? 0;
+  document.getElementById('statNu').textContent = b.isSun ? '—' : `${nuDeg.toFixed(1)}°`;
+  document.getElementById('statEcc').textContent = `e = ${ecc.toFixed(4)}`;
+
+  if (!b.isSun && !b.parent && d.state?.a) {
+    const q = d.state.a * (1 - ecc);
+    const Q = d.state.a * (1 + ecc);
+    const frac = Q > q ? clamp((r - q) / (Q - q), 0, 1) : 0.5;
+    document.getElementById('periLabel').textContent = `近日点 ${q.toFixed(3)} AU`;
+    document.getElementById('aphLabel').textContent = `远日点 ${Q.toFixed(3)} AU`;
+    document.getElementById('periDot').style.left = `${(frac * 100).toFixed(1)}%`;
+  }
+}
+
+// Speed Slider Mapping (0..8 logarithmic scale from 1x real-time up to 1 yr/sec)
+function applySpeedSlider(val) {
+  // 0 -> 1x real time (1/86400 d/s)
+  // 1 -> 1 min/s, 2 -> 1 hr/s, 3.5 -> 1 d/s, 5 -> 7 d/s, 6.5 -> 30 d/s, 8 -> 365 d/s
+  const v = parseFloat(val);
+  let dps, label;
+  if (v < 0.25) {
+    dps = 1 / 86400; label = '1× 实时';
+  } else {
+    dps = Math.pow(10, (v - 3.5) * 0.72);
+    if (dps < 1 / 24) label = `${(dps * 1440).toFixed(1)} m/s`;
+    else if (dps < 1) label = `${(dps * 24).toFixed(1)} h/s`;
+    else if (dps < 60) label = `${dps.toFixed(1)} d/s`;
+    else label = `${(dps / 365.25).toFixed(2)} yr/s`;
+  }
+  state.daysPerSec = dps;
+  document.getElementById('warpBadge').textContent = (state.direction < 0 ? '-' : '') + label;
+}
+
+function setPhysicsMode(mode) {
+  state.physicsMode = mode;
+  document.getElementById('modeKeplerBtn').classList.toggle('active', mode === 'kepler');
+  document.getElementById('modeNbodyBtn').classList.toggle('active', mode === 'nbody');
+  document.getElementById('nbodyPanel').classList.toggle('open', mode === 'nbody');
+  if (mode === 'nbody') {
+    initNBodyFromJD(state.jd);
+  }
+}
+
+function setScaleMode(mode) {
+  state.scaleMode = mode;
+  document.getElementById('scaleObsBtn').classList.toggle('active', mode === 'obs');
+  document.getElementById('scaleTrueBtn').classList.toggle('active', mode === 'true');
+  document.getElementById('scaleLogBtn').classList.toggle('active', mode === 'log');
+  document.getElementById('bodyScaleWrap').style.opacity = mode === 'true' ? '0.35' : '1';
+  focusBody(state.focusedId, true);
+}
+
+function stopTour() {
+  if (!state.tourActive) return;
+  state.tourActive = false;
+  document.getElementById('tourBtn').classList.remove('active');
+  document.getElementById('tourBanner').classList.remove('visible');
+}
+
+function toggleTour() {
+  state.tourActive = !state.tourActive;
+  document.getElementById('tourBtn').classList.toggle('active', state.tourActive);
+  document.getElementById('tourBanner').classList.toggle('visible', state.tourActive);
+  if (state.tourActive) state.tourTime = 0;
+}
+
+// Event Listeners
+document.getElementById('playBtn').addEventListener('click', () => {
+  state.playing = !state.playing;
+  const btn = document.getElementById('playBtn');
+  btn.textContent = state.playing ? '⏸ 暂停' : '▶ 播放';
+  btn.classList.toggle('active', state.playing);
+});
+document.getElementById('revBtn').addEventListener('click', () => {
+  state.direction *= -1;
+  document.getElementById('revBtn').classList.toggle('active', state.direction < 0);
+  applySpeedSlider(document.getElementById('speedSlider').value);
+});
+document.getElementById('nowBtn').addEventListener('click', () => {
+  state.jd = dateToJD(Date.now());
+  if (state.physicsMode === 'nbody') initNBodyFromJD(state.jd);
+});
+document.getElementById('speedSlider').addEventListener('input', e => applySpeedSlider(e.target.value));
+
+document.getElementById('modeKeplerBtn').addEventListener('click', () => setPhysicsMode('kepler'));
+document.getElementById('modeNbodyBtn').addEventListener('click', () => setPhysicsMode('nbody'));
+document.getElementById('resetNbodyBtn').addEventListener('click', () => {
+  state.solarMassMul = 1.0;
+  document.getElementById('solarMassSlider').value = 1.0;
+  document.getElementById('solarMassVal').textContent = '1.00 M☉';
+  initNBodyFromJD(state.jd);
+  if (BODY_MAP[state.focusedId]?.isRogue) focusBody('sun', true);
+});
+document.getElementById('solarMassSlider').addEventListener('input', e => {
+  state.solarMassMul = parseFloat(e.target.value);
+  document.getElementById('solarMassVal').textContent = `${state.solarMassMul.toFixed(2)} M☉`;
+});
+document.getElementById('spawnRoguePlanetBtn').addEventListener('click', () => spawnRogueBody(false));
+document.getElementById('spawnRogueStarBtn').addEventListener('click', () => spawnRogueBody(true));
+
+document.getElementById('scaleObsBtn').addEventListener('click', () => setScaleMode('obs'));
+document.getElementById('scaleTrueBtn').addEventListener('click', () => setScaleMode('true'));
+document.getElementById('scaleLogBtn').addEventListener('click', () => setScaleMode('log'));
+
+document.getElementById('bodyScaleSlider').addEventListener('input', e => {
+  state.bodyScale = parseFloat(e.target.value);
+  document.getElementById('bodyScaleVal').textContent = `${state.bodyScale.toFixed(1)}×`;
+});
+document.getElementById('exposureSlider').addEventListener('input', e => {
+  state.exposure = parseFloat(e.target.value);
+  document.getElementById('exposureVal').textContent = state.exposure.toFixed(2);
+});
+
+// Layer checkboxes
+const layerMap = {
+  chkOrbits: 'orbits', chkLabels: 'labels', chkBelts: 'belts', chkComet: 'comet',
+  chkGravity: 'gravity', chkHZ: 'hz', chkKepler2: 'kepler2', chkLagrange: 'lagrange',
+  chkConstellations: 'constellations', chkEclipticGrid: 'eclipticGrid',
+  chkTrueLight: 'trueLight', chkVelVec: 'velVec'
+};
+for (const [elId, prop] of Object.entries(layerMap)) {
+  document.getElementById(elId).addEventListener('change', e => {
+    state.layers[prop] = e.target.checked;
+  });
+}
+
+// Popovers, Responsive Layout & Inspector toggle
+const midArea = document.getElementById('midArea');
+const epochPopover = document.getElementById('epochPopover');
+const layersPopover = document.getElementById('layersPopover');
+const inspectorEl = document.getElementById('inspector');
+const showInspBtn = document.getElementById('showInspectorBtn');
+let userCollapsedInsp = false;
+
+function setInspectorOpen(open, manual = false) {
+  if (manual) userCollapsedInsp = !open;
+  inspectorEl.classList.toggle('collapsed', !open);
+  midArea.classList.toggle('insp-open', open);
+  showInspBtn.classList.toggle('visible', !open);
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 920 && !userCollapsedInsp) setInspectorOpen(true);
+  else if (window.innerWidth < 920) setInspectorOpen(false);
+});
+
+document.getElementById('epochBtn').addEventListener('click', () => {
+  layersPopover.classList.remove('open');
+  epochPopover.classList.toggle('open');
+  document.getElementById('customDateInput').value = jdToDate(state.jd).toISOString().slice(0, 16);
+});
+document.getElementById('closeEpochBtn').addEventListener('click', () => epochPopover.classList.remove('open'));
+document.getElementById('layersBtn').addEventListener('click', () => {
+  epochPopover.classList.remove('open');
+  const opening = !layersPopover.classList.contains('open');
+  if (opening && window.innerWidth < 920) setInspectorOpen(false);
+  layersPopover.classList.toggle('open');
+});
+document.getElementById('closeLayersBtn').addEventListener('click', () => layersPopover.classList.remove('open'));
+
+document.getElementById('applyDateBtn').addEventListener('click', () => {
+  const val = document.getElementById('customDateInput').value;
+  if (val) {
+    const ms = Date.parse(val + 'Z');
+    if (!isNaN(ms)) {
+      state.jd = dateToJD(ms);
+      if (state.physicsMode === 'nbody') initNBodyFromJD(state.jd);
+      epochPopover.classList.remove('open');
+    }
+  }
+});
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.epoch;
+    if (PRESET_EPOCHS[key]) {
+      state.jd = dateToJD(PRESET_EPOCHS[key]());
+      if (state.physicsMode === 'nbody') initNBodyFromJD(state.jd);
+      epochPopover.classList.remove('open');
+      if (key.includes('1986') || key.includes('2061')) focusBody('halley', true);
+      else if (key.includes('2026-03-03')) focusBody('moon', true);
+      else if (key.includes('1977')) { setScaleMode('log'); focusBody('sun', false); state.camera.targetDist = 11.5; }
+    }
+  });
+});
+
+document.getElementById('collapseInspBtn').addEventListener('click', () => setInspectorOpen(false, true));
+showInspBtn.addEventListener('click', () => {
+  if (window.innerWidth < 920) {
+    layersPopover.classList.remove('open');
+    epochPopover.classList.remove('open');
+  }
+  setInspectorOpen(true, true);
+});
+
+// Photon Pulse
+document.getElementById('photonBtn').addEventListener('click', () => {
+  state.photonPulse = { active: true, rAU: 0.005, elapsedSec: 0 };
+  document.getElementById('photonBanner').classList.add('visible');
+  if (state.focusedId !== 'sun' && state.camera.dist < 1.5) {
+    focusBody('sun', false);
+    state.camera.targetDist = 3.2;
+    state.camera.targetPitch = 0.65;
+  }
+});
+
+// Tour & Hide HUD
+document.getElementById('tourBtn').addEventListener('click', toggleTour);
+function toggleHUD() {
+  state.hudHidden = !state.hudHidden;
+  document.getElementById('uiLayer').classList.toggle('hud-hidden', state.hudHidden);
+}
+document.getElementById('hideHudBtn').addEventListener('click', toggleHUD);
+document.getElementById('restoreHudBtn').addEventListener('click', toggleHUD);
+
+// Camera Quick Actions
+document.getElementById('camCloseBtn').addEventListener('click', () => {
+  stopTour();
+  const r = getDisplayedRadiusById(state.focusedId);
+  state.camera.targetDist = r * 2.5;
+  state.camera.targetPitch = 0.14;
+});
+document.getElementById('camPoleBtn').addEventListener('click', () => {
+  stopTour();
+  state.camera.targetPitch = 1.48;
+  if (state.focusedId === 'sun') state.camera.targetDist = state.scaleMode === 'log' ? 14 : 44;
+});
+document.getElementById('camCrescentBtn').addEventListener('click', () => {
+  stopTour();
+  const d = state.runtimePositions[state.focusedId];
+  if (!d || d.body.isSun) return;
+  const toSun = sub3(state.runtimePositions.sun.posWorld, d.posWorld);
+  const sunYaw = Math.atan2(toSun[2], toSun[0]);
+  state.camera.targetYaw = sunYaw + 2.55; // backlit crescent angle!
+  state.camera.targetPitch = 0.12;
+  state.camera.targetDist = d.dispR * 3.4;
+});
+document.getElementById('camSystemBtn').addEventListener('click', () => {
+  stopTour();
+  focusBody('sun', false);
+  state.camera.targetPitch = 0.58;
+  state.camera.targetDist = state.scaleMode === 'log' ? 12.5 : 32.0;
+});
+
+// Pointer & Wheel Camera Controls + Ray-Picking
+let dragging = false, dragDist = 0, lastX = 0, lastY = 0;
+let pinchDist = 0;
+
+glCanvas.addEventListener('pointerdown', e => {
+  dragging = true; dragDist = 0;
+  lastX = e.clientX; lastY = e.clientY;
+  glCanvas.setPointerCapture(e.pointerId);
+});
+
+glCanvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  lastX = e.clientX; lastY = e.clientY;
+  dragDist += Math.hypot(dx, dy);
+  if (dragDist > 4) stopTour();
+  state.camera.targetYaw += dx * 0.0055;
+  state.camera.targetPitch = clamp(state.camera.targetPitch + dy * 0.0055, -1.52, 1.52);
+});
+
+glCanvas.addEventListener('pointerup', e => {
+  if (dragging && dragDist < 5) {
+    // Pick clicked celestial body
+    let best = null, bestD = Infinity;
+    for (const p of screenPickables) {
+      const dd = Math.hypot(e.clientX - p.x, e.clientY - p.y);
+      if (dd <= p.r && dd < bestD) { best = p; bestD = dd; }
+    }
+    if (best) {
+      stopTour();
+      focusBody(best.id, true);
+    }
+  }
+  dragging = false;
+});
+
+glCanvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  stopTour();
+  const factor = Math.exp(e.deltaY * 0.0012);
+  const minR = getDisplayedRadiusById(state.focusedId) * 1.45;
+  state.camera.targetDist = clamp(state.camera.targetDist * factor, minR, 420);
+}, { passive: false });
+
+// Touch pinch support
+glCanvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 2) {
+    pinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  }
+}, { passive: true });
+glCanvas.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const nd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    if (pinchDist > 0) {
+      const minR = getDisplayedRadiusById(state.focusedId) * 1.45;
+      state.camera.targetDist = clamp(state.camera.targetDist * (pinchDist / nd), minR, 420);
+    }
+    pinchDist = nd;
+  }
+}, { passive: true });
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); document.getElementById('playBtn').click(); }
+  else if (e.key === 'h' || e.key === 'H') toggleHUD();
+  else if (e.key === 'c' || e.key === 'C') toggleTour();
+  else if (e.key === 'g' || e.key === 'G') {
+    state.layers.gravity = !state.layers.gravity;
+    document.getElementById('chkGravity').checked = state.layers.gravity;
+  }
+  else if (e.key === 's' || e.key === 'S') {
+    const order = ['obs', 'true', 'log'];
+    setScaleMode(order[(order.indexOf(state.scaleMode) + 1) % 3]);
+  }
+  else if (e.key === '0') { stopTour(); focusBody('sun', true); }
+  else {
+    const match = BODIES.find(b => b.key === e.key);
+    if (match) { stopTour(); focusBody(match.id, true); }
+  }
+});
+
+// ============================================================================
+// 14. INITIALIZATION & ANIMATION LOOP
+// ============================================================================
+buildDocks();
+applySpeedSlider(document.getElementById('speedSlider').value);
+
+// Dramatic initial framing: elevated inner-to-outer overview looking toward Earth & Sun
+state.focusedId = 'sun';
+state.camera.yaw = 0.88;
+state.camera.pitch = 0.44;
+state.camera.dist = 6.2;
+state.camera.targetYaw = 0.88;
+state.camera.targetPitch = 0.44;
+state.camera.targetDist = 3.6;
+
+updateDockActive();
+updateInspectorStatic();
+setInspectorOpen(window.innerWidth >= 920);
+
+let uiFrameCounter = 0;
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  updateSimulation(dt);
+  renderFrame();
+  if ((uiFrameCounter++ & 3) === 0) updateLiveUI();
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
