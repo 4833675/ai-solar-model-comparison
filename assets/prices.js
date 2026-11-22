@@ -83,6 +83,12 @@
     ['MiMo 2.5 Pro', .435, .87, .0036, 'mimo'],
     ['MiniMax M3', 1.2, 4.8, .24, 'minimax', 'minimaxList'],
   ];
+  window.MODEL_PRICE_NOTES = Object.freeze({
+    gemini4ArgonList: Object.freeze({
+      zh: '表中为 2026 年 12 月 1 日起的标准 API 价。截至 11 月 30 日，促销读 / 写 / 缓存读为 $2 / $10 / $0.10 每百万 Token。',
+      en: 'Standard API rates take effect on December 1, 2026. Promotional input, output and cache-read rates through November 30 are $2 / $10 / $0.10 per million tokens.',
+    }),
+  });
   window.MODEL_PRICE_DATE = '2026-09-03';
   window.MODEL_PRICES = Object.fromEntries(entries.map(([model, input, output, cache, source, note, date]) =>
     [model, Object.freeze({ input, output, cache, source: sources[source] || null, note: note || null, date: date || null })]));

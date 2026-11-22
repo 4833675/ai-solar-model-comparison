@@ -1,0 +1,4410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>克尔黑洞与吸积盘实时广义相对论模型 — Kerr Geodesic Ray Tracer</title>
+<style>
+  :root {
+    --bg-glass: rgba(10, 14, 24, 0.78);
+    --bg-glass-heavy: rgba(8, 11, 19, 0.93);
+    --border-glass: rgba(120, 160, 255, 0.18);
+    --border-highlight: rgba(140, 190, 255, 0.42);
+    --text-main: #e8eefc;
+    --text-muted: #8ea0c8;
+    --accent: #4da3ff;
+    --accent-warm: #ff8b3d;
+    --accent-gold: #ffd166;
+    --ok: #3ddc97;
+    --err: #ff5c77;
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: #020307; color: var(--text-main);
+    font-family: var(--font-sans); font-size: 12px;
+  }
+  #glCanvas {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    display: block; cursor: grab;
+  }
+  #glCanvas:active { cursor: grabbing; }
+  #hudCanvas {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 2;
+  }
+
+  /* Loading Banner */
+  #compileBanner {
+    position: fixed; inset: 0; z-index: 999;
+    background: radial-gradient(circle at center, #0a1022 0%, #020307 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; transition: opacity 0.35s ease;
+  }
+  #compileBanner.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid rgba(77, 163, 255, 0.2);
+    border-top-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Floating Panels */
+  .panel {
+    position: fixed; z-index: 10;
+    background: var(--bg-glass);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.65);
+    color: var(--text-main);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-glass);
+    font-weight: 600; font-size: 12.5px; letter-spacing: 0.3px;
+    color: #fff;
+  }
+  .panel-header .badge {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(77, 163, 255, 0.16); color: var(--accent);
+    border: 1px solid rgba(77, 163, 255, 0.3);
+  }
+  .panel-body {
+    padding: 10px 12px;
+    overflow-y: auto;
+    max-height: calc(100vh - 170px);
+  }
+  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-body::-webkit-scrollbar-thumb { background: rgba(140, 170, 230, 0.25); border-radius: 2px; }
+
+  /* Top Header Bar */
+  #topBar {
+    top: 10px; left: 12px; right: 12px;
+    height: 40px; padding: 0 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 13.5px; letter-spacing: 0.4px;
+  }
+  .brand-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: radial-gradient(circle, #fff 10%, #ff8b3d 55%, #000 100%);
+    box-shadow: 0 0 10px #ff8b3d;
+  }
+  .warn-tag {
+    display: none; align-items: center; gap: 5px;
+    padding: 2px 8px; border-radius: 4px;
+    background: rgba(255, 92, 119, 0.2); border: 1px solid var(--err);
+    color: #ff99aa; font-size: 11px; font-weight: 600;
+  }
+  .warn-tag.active { display: inline-flex; }
+  .top-actions { display: flex; align-items: center; gap: 6px; }
+
+  /* Left Panel */
+  #leftPanel {
+    top: 58px; left: 12px; width: 280px;
+    max-height: calc(100vh - 140px);
+    display: flex; flex-direction: column;
+  }
+  /* Right Panel */
+  #rightPanel {
+    top: 58px; right: 12px; width: 310px;
+    max-height: calc(100vh - 140px);
+    display: flex; flex-direction: column;
+  }
+  /* Bottom Bar */
+  #bottomBar {
+    bottom: 10px; left: 12px; right: 12px;
+    padding: 8px 14px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* Buttons & Tabs */
+  button, .btn {
+    background: rgba(35, 48, 78, 0.65);
+    color: var(--text-main);
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    padding: 4px 9px;
+    font-size: 11.5px; font-family: inherit;
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  button:hover {
+    background: rgba(60, 85, 135, 0.75);
+    border-color: var(--border-highlight);
+  }
+  button.active {
+    background: rgba(77, 163, 255, 0.28);
+    border-color: var(--accent);
+    color: #fff; font-weight: 600;
+  }
+  button.warm.active {
+    background: rgba(255, 139, 61, 0.28);
+    border-color: var(--accent-warm);
+    color: #ffd8be;
+  }
+  .tab-bar {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 4px; padding: 6px 10px;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* Preset Cards */
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+  .preset-btn {
+    text-align: left; padding: 6px 8px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .preset-btn .p-title { font-weight: 600; font-size: 11.5px; color: #fff; }
+  .preset-btn .p-sub { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+
+  /* Controls & Sliders */
+  .ctrl-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 6px;
+  }
+  .ctrl-label { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+  .ctrl-val { font-family: var(--font-mono); font-size: 11px; color: var(--accent-gold); min-width: 52px; text-align: right; }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; height: 4px; border-radius: 2px;
+    background: rgba(140, 170, 230, 0.22); outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    border: 2px solid #fff; box-shadow: 0 0 6px rgba(77,163,255,0.8);
+  }
+  input[type="number"], select {
+    background: rgba(15, 22, 38, 0.85); color: #fff;
+    border: 1px solid var(--border-glass); border-radius: 4px;
+    padding: 3px 6px; font-family: var(--font-mono); font-size: 11px;
+    width: 68px;
+  }
+
+  /* Telemetry Data Rows */
+  .data-group {
+    margin-bottom: 9px; padding-bottom: 7px;
+    border-bottom: 1px dashed rgba(120, 160, 255, 0.14);
+  }
+  .data-group:last-child { border-bottom: none; margin-bottom: 0; }
+  .group-title {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .kv-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 2px 0; font-size: 11px;
+  }
+  .kv-key { color: var(--text-muted); }
+  .kv-val { font-family: var(--font-mono); color: #fff; text-align: right; }
+  .kv-sub { font-family: var(--font-mono); color: var(--accent-gold); font-size: 10.5px; margin-left: 5px; }
+
+  /* Mini Canvas Plots */
+  .plot-box {
+    background: rgba(4, 7, 14, 0.78);
+    border: 1px solid var(--border-glass);
+    border-radius: 6px; padding: 4px; margin-top: 5px;
+  }
+  .plot-box canvas { width: 100%; height: 95px; display: block; }
+
+  /* Modals */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(2, 4, 10, 0.72);
+    backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal-card {
+    background: var(--bg-glass-heavy);
+    border: 1px solid var(--border-highlight);
+    border-radius: 12px;
+    width: min(860px, 94vw);
+    max-height: 86vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  }
+  .modal-body { padding: 14px 18px; overflow-y: auto; line-height: 1.55; }
+  table.check-table {
+    width: 100%; border-collapse: collapse; font-size: 11.5px;
+  }
+  table.check-table th, table.check-table td {
+    padding: 6px 8px; border-bottom: 1px solid rgba(120, 160, 255, 0.14);
+    text-align: left;
+  }
+  table.check-table th { color: var(--accent); font-weight: 600; background: rgba(77, 163, 255, 0.07); }
+  table.check-table td.mono { font-family: var(--font-mono); }
+  .pass-pill {
+    display: inline-block; padding: 1px 7px; border-radius: 10px;
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  }
+  .pass-pill.ok { background: rgba(61, 220, 151, 0.18); color: var(--ok); border: 1px solid rgba(61, 220, 151, 0.4); }
+  .pass-pill.fail { background: rgba(255, 92, 119, 0.18); color: var(--err); border: 1px solid rgba(255, 92, 119, 0.4); }
+
+  .particle-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 6px; margin-bottom: 4px;
+    background: rgba(25, 35, 58, 0.55);
+    border: 1px solid rgba(120, 160, 255, 0.14);
+    border-radius: 5px; font-size: 11px; cursor: pointer;
+  }
+  .particle-item.selected { border-color: var(--accent); background: rgba(77, 163, 255, 0.18); }
+  .p-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+  @media (max-width: 900px) {
+    #leftPanel, #rightPanel { width: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="compileBanner">
+  <div class="spinner"></div>
+  <div style="font-size:14px;font-weight:600;letter-spacing:0.5px;">正在编译四阶龙格–库塔克尔时空测地线着色器…</div>
+  <div style="font-size:11.5px;color:var(--text-muted);">WebGL2 Kerr–Schild Geodesic Integrator &amp; Novikov–Thorne Radiative Disk</div>
+</div>
+
+<canvas id="glCanvas"></canvas>
+<canvas id="hudCanvas"></canvas>
+
+<!-- Top Header -->
+<div id="topBar" class="panel">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>克尔黑洞与吸积盘实时测地线实验室</span>
+    <span id="presetBadge" class="badge" style="font-family:var(--font-mono);font-size:10.5px;padding:2px 7px;background:rgba(77,163,255,0.15);border-radius:4px;color:var(--accent);">银河系中心 Sgr A*</span>
+    <span id="nonPhysTag" class="warn-tag">⚠ 非物理模式（已关闭透镜或多普勒频移）</span>
+  </div>
+  <div class="top-actions">
+    <span id="fpsLabel" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-right:8px;">60 FPS · 1.00×</span>
+    <button id="btnToggleUI" title="隐藏/显示面板">界面</button>
+    <button id="btnSelfCheck">自检面板 (8.2)</button>
+    <button id="btnAbout">诚实性与物理说明</button>
+  </div>
+</div>
+
+<!-- Left Panel: Presets, Orbit Lab, Creative Features -->
+<div id="leftPanel" class="panel">
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tabPresets">天体与S2</button>
+    <button class="tab-btn" data-tab="tabOrbits">轨道实验室</button>
+    <button class="tab-btn warm" data-tab="tabCreative">拓展实验(5)</button>
+  </div>
+  <div class="panel-body">
+    <!-- Tab 1: Presets & S2 -->
+    <div id="tabPresets" class="tab-section active">
+      <div class="group-title"><span>真实与经典黑洞预设 (2.3)</span></div>
+      <div class="preset-grid" id="presetGrid"></div>
+
+      <div id="s2Box" class="data-group" style="margin-top:8px;">
+        <div class="group-title">
+          <span>银心 S2 恒星与 S 星团 (GRAVITY 2020)</span>
+          <button id="btnZoomS2" style="padding:2px 6px;font-size:10px;">缩放到 S2 轨道</button>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">观测历元 (年)</span>
+          <input type="range" id="s2YearSlider" min="2002" max="2038" step="0.01" value="2026.0">
+          <span class="ctrl-val" id="s2YearVal">2026.00</span>
+        </div>
+        <div class="ctrl-row" style="gap:4px;margin-bottom:6px;">
+          <button id="btnS2Peri" style="flex:1;font-size:10.5px;">2018.379 近心点</button>
+          <button id="btnS2Now" style="flex:1;font-size:10.5px;">2026.0 历元</button>
+          <button id="btnS2Play" style="flex:1;font-size:10.5px;">演化年份</button>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:4px;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+            <input type="checkbox" id="chkSCluster" checked> 显示完整 S 星团 (S1/S8/S12/S13/S14/S38/S55)
+          </label>
+        </div>
+        <div class="kv-row"><span class="kv-key">天球位置 (ΔRA东, ΔDec北)</span><span class="kv-val" id="s2PosVal">—</span></div>
+        <div class="kv-row"><span class="kv-key">黑洞距离 r (AU / M)</span><span class="kv-val" id="s2DistVal">—</span></div>
+        <div class="kv-row"><span class="kv-key">近心距 / 远心距</span><span class="kv-val">118.96 AU / 1943.7 AU</span></div>
+        <div class="kv-row"><span class="kv-key">史瓦西每圈进动 Δω</span><span class="kv-val" id="s2PrecVal">12.17′ / 圈</span></div>
+        <div class="kv-row"><span class="kv-key">近心点速度 / 相对论红移</span><span class="kv-val" id="s2VelVal">7740 km/s (2.58%c) · 200 km/s</span></div>
+        <div class="kv-row"><span class="kv-key">下次过近心点</span><span class="kv-val">2034.42 年</span></div>
+      </div>
+
+      <div class="data-group">
+        <div class="group-title"><span>相机视角快捷控制</span></div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">距离 Rc (M)</span>
+          <input type="range" id="camRSlider" min="0.477" max="5.0" step="0.005" value="1.477">
+          <span class="ctrl-val" id="camRVal">30.0 M</span>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">倾角 i (度)</span>
+          <input type="range" id="camInclSlider" min="2" max="178" step="0.5" value="80">
+          <span class="ctrl-val" id="camInclVal">80.0°</span>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">方位角 φc (度)</span>
+          <input type="range" id="camAzSlider" min="-180" max="180" step="0.5" value="0">
+          <span class="ctrl-val" id="camAzVal">0.0°</span>
+        </div>
+        <div class="ctrl-row" style="gap:4px;">
+          <button id="btnViewDefault" style="flex:1;">经典视角</button>
+          <button id="btnViewEdge" style="flex:1;">赤道侧视(90°)</button>
+          <button id="btnViewPole" style="flex:1;">极轴俯视(5°)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Orbit Laboratory -->
+    <div id="tabOrbits" class="tab-section">
+      <div class="group-title">
+        <span>测试粒子轨道实验室 (3.7 / 6.3)</span>
+        <button id="btnClearParticles" style="padding:1px 6px;font-size:10px;">清空</button>
+      </div>
+      <div class="ctrl-row" style="margin-bottom:5px;">
+        <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+          <input type="checkbox" id="chkNewtonCompare" checked> 同初值牛顿闭合椭圆对照 (虚线)
+        </label>
+      </div>
+      <div class="ctrl-row" style="margin-bottom:5px;">
+        <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+          <input type="checkbox" id="chkLensedParticles" checked> 光线追踪内嵌引力透镜粒子像 (4.3)
+        </label>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">快捷轨道预设</span>
+        <select id="orbitPresetSel" style="flex:1;">
+          <option value="p10e05">史瓦西玫瑰进动 (p=10, e=0.5, Δφ=576.1°)</option>
+          <option value="p20e05">史瓦西进动 (p=20, e=0.5, Δφ=430.7°)</option>
+          <option value="kerrEq">克尔赤道偏心 (a=0.9, E=0.95, L=3)</option>
+          <option value="kerrTilt">克尔倾斜进动 (Lense-Thirring 节点进动 17°)</option>
+          <option value="iscoStable">ISCO 外侧稳定振荡 (r0=6.3, a=0)</option>
+          <option value="iscoPlunge">ISCO 内侧螺旋坠入 (r0=5.7, τ≈99M)</option>
+          <option value="circPro">顺行圆轨道 (r=8 M)</option>
+          <option value="circRetro">逆行圆轨道 (r=9 M)</option>
+        </select>
+        <button id="btnAddPresetOrbit">添加</button>
+      </div>
+
+      <div class="data-group" style="margin-top:6px;">
+        <div class="group-title"><span>自定义发射器</span></div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">模式</span>
+          <select id="customOrbitMode" style="flex:1;">
+            <option value="pe">半通径与偏心率 (p, e)</option>
+            <option value="circ">顺/逆行圆轨道 (r)</option>
+            <option value="EL">守恒量与倾角 (E, L, r0, pθ)</option>
+          </select>
+        </div>
+        <div id="customPEBox">
+          <div class="ctrl-row">
+            <span class="ctrl-label">半通径 p (M)</span>
+            <input type="number" id="inpOrbitP" value="10" step="0.5" min="6.1" max="200">
+            <span class="ctrl-label">偏心率 e</span>
+            <input type="number" id="inpOrbitE" value="0.5" step="0.05" min="0" max="0.95">
+          </div>
+        </div>
+        <div id="customCircBox" style="display:none;">
+          <div class="ctrl-row">
+            <span class="ctrl-label">半径 r (M)</span>
+            <input type="number" id="inpCircR" value="7.5" step="0.5" min="1.5" max="100">
+            <select id="inpCircDir"><option value="1">顺行</option><option value="-1">逆行</option></select>
+          </div>
+        </div>
+        <div id="customELBox" style="display:none;">
+          <div class="ctrl-row">
+            <span class="ctrl-label">能量 E</span>
+            <input type="number" id="inpEL_E" value="0.9528" step="0.002">
+            <span class="ctrl-label">角动量 L</span>
+            <input type="number" id="inpEL_L" value="3.4573" step="0.05">
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">初距 r0</span>
+            <input type="number" id="inpEL_r0" value="10" step="0.5">
+            <span class="ctrl-label">倾角动量 pθ</span>
+            <input type="number" id="inpEL_pth" value="0.35" step="0.05">
+          </div>
+        </div>
+        <button id="btnLaunchCustom" style="width:100%;margin-top:4px;">发射自定义测试粒子</button>
+      </div>
+
+      <div class="group-title"><span>在轨粒子列表 (点击查看有效势)</span></div>
+      <div id="particleList"></div>
+    </div>
+
+    <!-- Tab 3: 5 Free-Play Creative Lab Modules (Section 9) -->
+    <div id="tabCreative" class="tab-section">
+      <div class="group-title"><span>第 9 节：五项定量拓展实验</span></div>
+
+      <!-- Module 1: Binary Black Hole Merger & WebAudio Chirp -->
+      <div class="data-group">
+        <div class="group-title">
+          <span>① 双黑洞并合与引力波啁啾 (GW150914)</span>
+          <button id="btnGWChirp">开启并合演演与发声</button>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">m₁ / m₂ (M☉)</span>
+          <input type="number" id="gwM1" value="35.6" step="0.5" style="width:54px;">
+          <input type="number" id="gwM2" value="30.6" step="0.5" style="width:54px;">
+          <span class="ctrl-label">红移 z</span>
+          <input type="number" id="gwZ" value="0.09" step="0.01" style="width:48px;">
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">距并合时间 τ (s)</span>
+          <input type="range" id="gwTauSlider" min="0.005" max="0.25" step="0.001" value="0.100">
+          <span class="ctrl-val" id="gwTauVal">0.100 s</span>
+        </div>
+        <div class="kv-row"><span class="kv-key">源系 / 观测啁啾质量 Mc</span><span class="kv-val" id="gwMcVal">28.62 / 31.20 M☉</span></div>
+        <div class="kv-row"><span class="kv-key">当前引力波频率 f(τ) (源/地)</span><span class="kv-val" id="gwFreqVal">44.0 Hz / 41.7 Hz</span></div>
+        <div class="kv-row"><span class="kv-key">f=35Hz 对应 τ (源/观测)</span><span class="kv-val" id="gwTau35Val">0.185 s / 0.160 s</span></div>
+        <div class="plot-box"><canvas id="gwCanvas" width="250" height="75"></canvas></div>
+      </div>
+
+      <!-- Module 2: First-Person Horizon Plunge -->
+      <div class="data-group">
+        <div class="group-title">
+          <span>② 跳进视界：第一人称自由落体</span>
+          <button id="btnPlungeMode">启动坠入</button>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">当前下落半径 r</span>
+          <input type="range" id="plungeRSlider" min="2.005" max="30" step="0.01" value="10">
+          <span class="ctrl-val" id="plungeRVal">10.00 M</span>
+        </div>
+        <div class="kv-row"><span class="kv-key">r=10→2.01M 固有时 / 视界→奇点上限 π·tg</span><span class="kv-val" id="plungeTauVal">33.68 M / 66.5 s</span></div>
+        <div class="kv-row"><span class="kv-key">径向潮汐加速度梯度 2GM/r³</span><span class="kv-val" id="plungeTidalVal">—</span></div>
+      </div>
+
+      <!-- Module 3: Orbiting Hotspot & Relativistic Lightcurve + Microlensing -->
+      <div class="data-group">
+        <div class="group-title">
+          <span>③ 吸积盘热斑光变曲线与微引力透镜</span>
+          <button id="btnHotspotToggle" class="active">热斑开</button>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">热斑轨道半径 r_hs</span>
+          <input type="range" id="hotspotRSlider" min="2.5" max="15" step="0.1" value="6.0">
+          <span class="ctrl-val" id="hotspotRVal">6.0 M</span>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">微透镜冲击参数 u = θ/θE</span>
+          <input type="range" id="microUSlider" min="0.05" max="2.0" step="0.01" value="0.50">
+          <span class="ctrl-val" id="microUVal">u=0.50</span>
+        </div>
+        <div class="kv-row"><span class="kv-key">热斑开普勒周期 T / 多普勒峰谷比</span><span class="kv-val" id="hotspotPeriodVal">92.34 M</span></div>
+        <div class="kv-row"><span class="kv-key">微引力透镜放大率 A(u)=(u²+2)/(u√(u²+4))</span><span class="kv-val" id="microAmpVal">2.191×</span></div>
+      </div>
+
+      <!-- Module 4: Tidal Disruption Event (TDE) -->
+      <div class="data-group">
+        <div class="group-title">
+          <span>④ 潮汐瓦解事件 (TDE 恒星撕裂流)</span>
+          <button id="btnTDEToggle">触发 TDE</button>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">恒星质量 m* (M☉)</span>
+          <input type="number" id="tdeMstar" value="1.0" step="0.1" style="width:52px;">
+          <span class="ctrl-label">半径 R* (R☉)</span>
+          <input type="number" id="tdeRstar" value="1.0" step="0.1" style="width:52px;">
+        </div>
+        <div class="kv-row"><span class="kv-key">潮汐瓦解半径 r_t = R*(M/m*)^(1/3)</span><span class="kv-val" id="tdeRtVal">—</span></div>
+        <div class="kv-row"><span class="kv-key">10⁶M☉对照 r_t / 回落率衰减 t^(-5/3)</span><span class="kv-val" id="tdeRefVal">23.56 r_s · t⁻¹·⁶⁷</span></div>
+      </div>
+
+      <!-- Module 5: EHT 20 uas VLBI Resolution Mode -->
+      <div class="data-group">
+        <div class="group-title">
+          <span>⑤ 事件视界望远镜 (EHT 20 μas 成像)</span>
+          <button id="btnEHTMode">EHT 1.3mm 滤波</button>
+        </div>
+        <div class="kv-row"><span class="kv-key">当前天体几何阴影 / EHT 实测亮环</span><span class="kv-val" id="ehtCompareVal">53.3 / 51.8±2.3 μas</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Right Panel: Real-time Telemetry & Plots -->
+<div id="rightPanel" class="panel">
+  <div class="panel-header">
+    <span>广义相对论实时遥测与有效势</span>
+    <span class="badge" id="backendBadge">GPU RK4 · NT盘</span>
+  </div>
+  <div class="panel-body">
+    <div class="data-group">
+      <div class="group-title"><span>时空特征半径 (2.2)</span><span id="spinReadout" style="font-family:var(--font-mono);">a = 0.900</span></div>
+      <div class="kv-row"><span class="kv-key">引力半径 r_g = GM/c²</span><span class="kv-val"><span id="valRgM">1.000 M</span><span class="kv-sub" id="valRgPhys">—</span></span></div>
+      <div class="kv-row"><span class="kv-key">事件视界 r_h = 1+√(1−a²)</span><span class="kv-val"><span id="valRhM">1.436 M</span><span class="kv-sub" id="valRhPhys">—</span></span></div>
+      <div class="kv-row"><span class="kv-key">赤道能层外界 r_E</span><span class="kv-val"><span>2.000 M</span><span class="kv-sub" id="valRePhys">—</span></span></div>
+      <div class="kv-row"><span class="kv-key">光子球 r_ph (顺行 / 逆行)</span><span class="kv-val" id="valRphM">1.558 / 3.910 M</span></div>
+      <div class="kv-row"><span class="kv-key">最内稳定圆轨道 ISCO (顺/逆)</span><span class="kv-val" id="valRiscoM">2.321 / 8.717 M</span></div>
+      <div class="kv-row"><span class="kv-key">顺行 ISCO 物理半径</span><span class="kv-val" id="valRiscoPhys">—</span></div>
+    </div>
+
+    <div class="data-group">
+      <div class="group-title"><span>时间膨胀与观测特征量 (2.3)</span></div>
+      <div class="kv-row"><span class="kv-key">引力时间标度 t_g = GM/c³</span><span class="kv-val" id="valTgPhys">—</span></div>
+      <div class="kv-row"><span class="kv-key">相机处时间膨胀 dτ/dt = √(1−f)</span><span class="kv-val" id="valCamDilation">0.9661</span></div>
+      <div class="kv-row"><span class="kv-key">顺行 ISCO 钟速 1/u^t</span><span class="kv-val" id="valIscoClock">0.3709</span></div>
+      <div class="kv-row"><span class="kv-key">ISCO 公转周期 (当前a / a=0)</span><span class="kv-val" id="valIscoPeriod">—</span></div>
+      <div class="kv-row"><span class="kv-key">几何阴影角直径 (a=0) / EHT亮环</span><span class="kv-val" id="valShadowUas">—</span></div>
+      <div class="kv-row"><span class="kv-key">Novikov–Thorne 通量峰值半径</span><span class="kv-val" id="valNtPeak">3.442 M (1.483 r_isco)</span></div>
+    </div>
+
+    <div class="data-group">
+      <div class="group-title">
+        <span>粒子遥测与有效势 V_eff(r)</span>
+        <span id="pStatBadge" style="font-family:var(--font-mono);font-size:10px;color:var(--accent-gold);">选中粒子 #1</span>
+      </div>
+      <div class="kv-row"><span class="kv-key">当前半径 r / 极角 θ</span><span class="kv-val" id="pTelemetryR">—</span></div>
+      <div class="kv-row"><span class="kv-key">固有时 τ / 坐标时 t</span><span class="kv-val" id="pTelemetryTime">—</span></div>
+      <div class="kv-row"><span class="kv-key">径向圈数 / 累计近心点进动</span><span class="kv-val" id="pTelemetryPrec">—</span></div>
+      <div class="plot-box">
+        <canvas id="veffCanvas" width="280" height="95"></canvas>
+      </div>
+    </div>
+
+    <div class="data-group">
+      <div class="group-title"><span>热斑光变曲线 &amp; 微引力透镜放大率</span></div>
+      <div class="plot-box">
+        <canvas id="lcCanvas" width="280" height="82"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Control Bar -->
+<div id="bottomBar" class="panel">
+  <!-- Transport & Time -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button id="btnPlayPause" class="active" style="min-width:56px;">⏸ 暂停</button>
+    <button id="btnAutoRot" class="active" title="相机缓慢环绕">环绕</button>
+    <div style="display:flex;flex-direction:column;min-width:155px;">
+      <div style="font-family:var(--font-mono);font-size:11.5px;color:#fff;">t = <span id="timeMVal">0.0</span> M</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent-gold);" id="timePhysVal">物理时间: 0.00 s</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:140px;">
+      <span class="ctrl-label">速度</span>
+      <input type="range" id="timeSpeedSlider" min="-20" max="40" step="0.5" value="8">
+      <span class="ctrl-val" id="timeSpeedVal" style="min-width:42px;">8 M/s</span>
+    </div>
+  </div>
+
+  <!-- Physical Parameters -->
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:5px;width:155px;">
+      <span class="ctrl-label">自转 a</span>
+      <input type="range" id="spinSlider" min="0" max="0.998" step="0.001" value="0.900">
+      <span class="ctrl-val" id="spinVal" style="min-width:38px;">0.900</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:135px;">
+      <span class="ctrl-label">外缘 r_out</span>
+      <input type="range" id="rOutSlider" min="8" max="40" step="0.5" value="20">
+      <span class="ctrl-val" id="rOutVal" style="min-width:34px;">20 M</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:150px;">
+      <span class="ctrl-label">T_max</span>
+      <input type="range" id="tmaxSlider" min="3000" max="20000" step="100" value="7000">
+      <span class="ctrl-val" id="tmaxVal" style="min-width:46px;">7000 K</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:145px;">
+      <span class="ctrl-label">曝光 EV</span>
+      <input type="range" id="expSlider" min="-2.5" max="2.5" step="0.05" value="0.0">
+      <span class="ctrl-val" id="expVal" style="min-width:38px;">+0.00</span>
+    </div>
+    <button id="btnAutoExp" class="active" title="自动分位数曝光">自动曝光</button>
+  </div>
+
+  <!-- Toggles & Views -->
+  <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+    <button id="togDisk" class="active">吸积盘</button>
+    <button id="togDoppler" class="active">多普勒与红移</button>
+    <button id="togLensing" class="active">引力透镜</button>
+    <button id="togStars" class="active">星空</button>
+    <button id="togBloom" class="active">泛光</button>
+    <span style="color:var(--border-highlight);margin:0 3px;">|</span>
+    <button class="view-btn active" data-view="physical">物理视图</button>
+    <button class="view-btn" data-view="grid">经纬网格(grid)</button>
+    <button class="view-btn" data-view="checker">棋盘盘面(checker)</button>
+    <button class="view-btn" data-view="gmap">红移分布(gmap)</button>
+    <button class="view-btn" data-view="steps">积分步数(steps)</button>
+  </div>
+</div>
+
+<!-- Self-Check Modal (Section 6.4 & 8.2) -->
+<div id="modalSelfCheck" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="panel-header">
+      <span>广义相对论物理基准自检面板 (Section 8.2 A–G 实时计算核对)</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="selfCheckSummary" class="badge">正在计算...</span>
+        <button id="btnRerunCheck">重新现场计算</button>
+        <button id="btnCloseCheck">关闭 ✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text-muted);margin-bottom:10px;font-size:11.5px;">
+        以下全部“实测值”均由当前页面的测地线积分器（<code>BH.trace</code>）、Boyer–Lindquist 粒子积分器（<code>BH.orbit</code>）与天体物理模块现场实时计算得出，绝无硬编码期望值。涵盖 8.2 节 A–G 全部七组基准。
+      </p>
+      <table class="check-table">
+        <thead>
+          <tr>
+            <th>组别与检验项</th>
+            <th>解析/论文期望值</th>
+            <th>本模型现场实测值</th>
+            <th>相对/绝对误差</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="selfCheckTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- About & Honesty Modal (Section 6.5) -->
+<div id="modalAbout" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="panel-header">
+      <span>物理模型架构与近似诚实性声明 (Section 6.5)</span>
+      <button id="btnCloseAbout">关闭 ✕</button>
+    </div>
+    <div class="modal-body" style="font-size:12.5px;">
+      <h3 style="color:var(--accent);margin-bottom:6px;font-size:13.5px;">1. 精确实现的相对论物理</h3>
+      <ul style="padding-left:18px;margin-bottom:12px;color:var(--text-main);">
+        <li><b>零测地线光线追踪</b>：每个像素在出射型 Kerr–Schild 笛卡尔坐标（A = −a 正向追踪，彻底消除视界动量发散）下用四阶龙格–库塔（RK4）积分哈密顿方程；a = 0 时启用二阶常微分方程 u″ + u = 3u² 快速精确路径。</li>
+        <li><b>当地静止观察者标架 (Local Tetrad)</b>：相机起步严格计入弯曲时空度规因子 s = √(1 − f)，相机远离时采用零精度损失的解析包围球交点（R_b = 500 M），完美复现 √27 M 阴影与克尔阴影偏移。</li>
+        <li><b>Novikov–Thorne 相对论吸积盘</b>：盘内缘随自转 a 动态收缩至顺行 ISCO，温度剖面严格采用 Page &amp; Thorne (1974) 零力矩相对论辐射通量解析式 T(r) = T_max · (F(r)/F_max)^(1/4)。</li>
+        <li><b>引力红移与相对论多普勒集束</b>：g = ν_obs / ν_emit = √(1 − 3/r + 2a·r⁻¹·⁵) / (1 + (a − ξ)·r⁻¹·⁵)，观测色温 T_obs = g · T(r)，查 CIE 1931 线性 sRGB 黑体辐射表，不重复乘 g⁴。</li>
+      </ul>
+      <h3 style="color:var(--accent-warm);margin-bottom:6px;font-size:13.5px;">2. 必须说明的物理近似与诚实性声明 (Section 6.5)</h3>
+      <ul style="padding-left:18px;color:var(--text-main);">
+        <li><b>盘色温标度 T_max 是人为显示参数</b>：默认 7000 K（可调 3000–20000 K）是为了落在可见光波段呈现黑体色彩对比。真实的超大质量黑洞薄盘峰值温度在远紫外，而银河系中心 Sgr A* 和 M87* 周围实际是光学薄的辐射低效吸积流（RIAF/ADAF），EHT 观测的是 1.3 mm 同步辐射而非几何薄盘黑体辐射。</li>
+        <li><b>亮环直径 ≠ 几何阴影直径</b>：信息面板中 Sgr A* (53.3 μas) 与 M87* (39.7 μas) 的几何阴影角直径与 EHT 实测亮环直径 (51.8±2.3 μas, 42±3 μas) 数值接近，但二者不是同一物理观测量。</li>
+        <li><b>冻结时间近似 (Frozen-Time Approximation)</b>：渲染单帧画面时假设光线穿过黑洞附近的传播时间内吸积盘湍流与测试粒子保持静止，忽略了不同路径间的光行时差（Light-Travel-Time Delay）。</li>
+        <li><b>相机参考系与相对无穷远红移</b>：相机是固定在坐标距离 Rc 处的当地静止观察者（未模拟相机自身轨道运动的光行差）。红移因子 g 统一相对无穷远处静止观察者定义；位于有限距离 Rc 处的静止观察者实际测得的频率还相差一个全局常数因子 1/√(1 − f_cam)（Rc=30 时约 1.035），其效果等价于整体平移 T_max。</li>
+        <li><b>程序化星空与坐标映射</b>：背景星空与银河带由三维方向哈希与分形噪声（FBM）程序化生成，并非真实天文星表。测试粒子三维叠加层将 Boyer–Lindquist 方位角 φ 直接映射到 Kerr–Schild 坐标，忽略了视界附近仅依赖 r 的方位角偏移（光线追踪内嵌的粒子透镜光斑则直接作用在测地线上）。</li>
+        <li><b>非物理开关提示</b>：当关闭“多普勒与红移”（令 g ≡ 1，类似电影《星际穿越》的对称视觉妥协）或关闭“引力透镜”（平直时空直线光线）时，画面为非物理教学对照视图。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ============================================================================
+// PART 1: CONSTANTS, DATA TABLES, RELATIVISTIC PHYSICS & ORBIT INTEGRATORS
+// ============================================================================
+
+const CONSTANTS = {
+  GM_SUN: 1.32712440018e20,       // m^3/s^2
+  C: 299792458,                   // m/s
+  PC: 3.0856775814913673e16,      // m
+  AU: 1.495978707e11,             // m
+  YEAR: 31557600,                 // s (365.25 d)
+  UAS_RAD: 4.848136811e-12,       // rad
+  R_SUN: 6.957e8,                 // m
+  RG_SUN_KM: 1.476625,            // km per M_sun
+  TG_SUN_S: 4.925491e-6           // s per M_sun
+};
+
+// 2.3 Real Black Hole Presets
+const PRESETS = {
+  sgra: {
+    key: 'sgra',
+    name: '银河系中心 Sgr A*',
+    shortName: 'Sgr A*',
+    massSun: 4.297e6,
+    distPc: 8277,
+    distLabel: '8277 pc',
+    ehtRing: '51.8 ± 2.3 μas (EHT 2022)',
+    defaultSpin: 0.9,
+    note: 'GRAVITY 2022；选此预设可观测 S2 恒星轨道与进动'
+  },
+  m87: {
+    key: 'm87',
+    name: '室女座 A 星系核心 M87*',
+    shortName: 'M87*',
+    massSun: 6.5e9,
+    distPc: 16.8e6,
+    distLabel: '16.8 Mpc',
+    ehtRing: '42 ± 3 μas (EHT 2019)',
+    defaultSpin: 0.9,
+    note: 'EHT 2019 人类首张黑洞照片；喷流与视线夹角约 17°'
+  },
+  cygx1: {
+    key: 'cygx1',
+    name: '天鹅座 X-1 (Cygnus X-1)',
+    shortName: '天鹅座 X-1',
+    massSun: 21.2,
+    distPc: 2220,
+    distLabel: '2.22 kpc',
+    ehtRing: '恒星级X射线双星',
+    defaultSpin: 0.99,
+    note: 'Miller-Jones 等 2021；极端高自转恒星级黑洞'
+  },
+  gw150914: {
+    key: 'gw150914',
+    name: 'GW150914 双黑洞并合产物',
+    shortName: 'GW150914',
+    massSun: 63.1,
+    distPc: 370e6, // Angular diameter distance 440 / (1+0.09)^2 ≈ 370 Mpc
+    distLabel: '440 Mpc (D_A≈370 Mpc)',
+    ehtRing: 'LIGO 首次引力波事件',
+    defaultSpin: 0.69,
+    note: '35.6 + 30.6 M☉ 并合产物，终态自转 a ≈ 0.69，红移 z ≈ 0.09'
+  },
+  ton618: {
+    key: 'ton618',
+    name: '类星体 TON 618',
+    shortName: 'TON 618',
+    massSun: 6.6e10,
+    distPc: null,
+    distLabel: '极遥远类星体',
+    ehtRing: '无直接角直径测量',
+    defaultSpin: 0.9,
+    note: '已知质量最大的超巨黑洞之一（单次谱线估计 6.6×10¹⁰ M☉）'
+  },
+  gargantua: {
+    key: 'gargantua',
+    name: '卡冈图雅 Gargantua (虚构)',
+    shortName: '卡冈图雅',
+    massSun: 1.0e8,
+    distPc: null,
+    distLabel: '《星际穿越》设定',
+    ehtRing: '电影渲染自转 a=0.6',
+    defaultSpin: 0.6,
+    note: 'Kip Thorne 指导电影《星际穿越》，电影成像采用 a = 0.6 并关闭多普勒不对称'
+  }
+};
+
+// 2.5 Blackbody Color Table (1000 K to 40000 K)
+const BB_TABLE = [
+  { T: 1000,  R: 1.0000, G: 0.0286, B: 0.0000, logY: -9.054 },
+  { T: 1500,  R: 1.0000, G: 0.1451, B: 0.0000, logY: -5.597 },
+  { T: 2000,  R: 1.0000, G: 0.2663, B: 0.0077, logY: -3.820 },
+  { T: 2500,  R: 1.0000, G: 0.3803, B: 0.0677, logY: -2.737 },
+  { T: 3000,  R: 1.0000, G: 0.4839, B: 0.1545, logY: -2.007 },
+  { T: 3500,  R: 1.0000, G: 0.5767, B: 0.2606, logY: -1.481 },
+  { T: 4000,  R: 1.0000, G: 0.6590, B: 0.3789, logY: -1.084 },
+  { T: 4500,  R: 1.0000, G: 0.7315, B: 0.5035, logY: -0.774 },
+  { T: 5000,  R: 1.0000, G: 0.7954, B: 0.6300, logY: -0.524 },
+  { T: 5500,  R: 1.0000, G: 0.8516, B: 0.7551, logY: -0.319 },
+  { T: 6000,  R: 1.0000, G: 0.9010, B: 0.8766, logY: -0.147 },
+  { T: 6500,  R: 1.0000, G: 0.9445, B: 0.9931, logY:  0.000 },
+  { T: 7000,  R: 0.9061, G: 0.8905, B: 1.0000, logY:  0.127 },
+  { T: 8000,  R: 0.7656, G: 0.8016, B: 1.0000, logY:  0.335 },
+  { T: 9000,  R: 0.6739, G: 0.7399, B: 1.0000, logY:  0.500 },
+  { T: 10000, R: 0.6102, G: 0.6950, B: 1.0000, logY:  0.635 },
+  { T: 12000, R: 0.5286, G: 0.6344, B: 1.0000, logY:  0.844 },
+  { T: 15000, R: 0.4616, G: 0.5815, B: 1.0000, logY:  1.065 },
+  { T: 20000, R: 0.4069, G: 0.5358, B: 1.0000, logY:  1.308 },
+  { T: 30000, R: 0.3627, G: 0.4969, B: 1.0000, logY:  1.597 },
+  { T: 40000, R: 0.3440, G: 0.4798, B: 1.0000, logY:  1.776 }
+];
+
+// 2.4 & Section 9 S-Cluster Stars around Sgr A*
+const S_CLUSTER_STARS = [
+  { name: 'S2',  a_mas: 125.058, e: 0.884649, i: 134.567, Omega: 228.171, omega: 66.263,  tP: 2018.379, P: 16.0455, color: [1.0, 0.84, 0.38] },
+  { name: 'S1',  a_mas: 595.0,   e: 0.556,    i: 119.14,  Omega: 342.04,  omega: 122.3,   tP: 2001.80,  P: 166.0,   color: [0.55, 0.78, 1.0] },
+  { name: 'S8',  a_mas: 404.7,   e: 0.8031,   i: 74.37,   Omega: 315.43,  omega: 346.70,  tP: 1983.64,  P: 92.9,    color: [0.65, 0.85, 1.0] },
+  { name: 'S12', a_mas: 298.7,   e: 0.8883,   i: 33.56,   Omega: 230.1,   omega: 317.9,   tP: 1995.59,  P: 58.9,    color: [0.80, 0.70, 1.0] },
+  { name: 'S13', a_mas: 264.1,   e: 0.4250,   i: 24.70,   Omega: 74.5,    omega: 245.2,   tP: 2004.86,  P: 49.00,   color: [0.55, 0.95, 0.80] },
+  { name: 'S14', a_mas: 286.3,   e: 0.9761,   i: 100.59,  Omega: 226.38,  omega: 334.59,  tP: 2000.12,  P: 55.3,    color: [1.0, 0.60, 0.65] },
+  { name: 'S38', a_mas: 141.6,   e: 0.8201,   i: 171.1,   Omega: 101.06,  omega: 17.99,   tP: 2003.19,  P: 19.2,    color: [0.95, 0.75, 0.55] },
+  { name: 'S55', a_mas: 107.8,   e: 0.7209,   i: 150.1,   Omega: 325.5,   omega: 331.5,   tP: 2009.34,  P: 12.80,   color: [0.65, 1.0, 0.65] }
+];
+
+// 2.2 Kerr Characteristic Radii
+function computeRadii(spin) {
+  const a = Math.max(0, Math.min(0.998, Number(spin) || 0));
+  const horizon = 1 + Math.sqrt(Math.max(0, 1 - a * a));
+  const photonPro = 2 * (1 + Math.cos((2 / 3) * Math.acos(-a)));
+  const photonRetro = 2 * (1 + Math.cos((2 / 3) * Math.acos(a)));
+  const cbrt1ma2 = Math.cbrt(Math.max(0, 1 - a * a));
+  const Z1 = 1 + cbrt1ma2 * (Math.cbrt(1 + a) + Math.cbrt(Math.max(0, 1 - a)));
+  const Z2 = Math.sqrt(3 * a * a + Z1 * Z1);
+  const root = Math.sqrt(Math.max(0, (3 - Z1) * (3 + Z1 + 2 * Z2)));
+  const iscoPro = 3 + Z2 - root;
+  const iscoRetro = 3 + Z2 + root;
+  return { horizon, photonPro, photonRetro, iscoPro, iscoRetro };
+}
+
+// 2.6 Novikov-Thorne Relativistic Flux Shape Function F(r)
+function computeNTFluxRaw(r, a, rIsco) {
+  if (r <= rIsco + 1e-9) return 0;
+  const x = Math.sqrt(r);
+  const x0 = Math.sqrt(rIsco);
+  const acosA3 = Math.acos(Math.max(-1, Math.min(1, a))) / 3;
+  const x1 = 2 * Math.cos(acosA3 - Math.PI / 3);
+  const x2 = 2 * Math.cos(acosA3 + Math.PI / 3);
+  const x3 = -2 * Math.cos(acosA3);
+
+  let bracket = x - x0 - 1.5 * a * Math.log(x / x0);
+  const t1 = (3 * (x1 - a) * (x1 - a)) / (x1 * (x1 - x2) * (x1 - x3)) * Math.log((x - x1) / (x0 - x1));
+  bracket -= t1;
+  if (Math.abs(a) > 1e-8) {
+    const t2 = (3 * (x2 - a) * (x2 - a)) / (x2 * (x2 - x1) * (x2 - x3)) * Math.log((x - x2) / (x0 - x2));
+    bracket -= t2;
+  }
+  const t3 = (3 * (x3 - a) * (x3 - a)) / (x3 * (x3 - x1) * (x3 - x2)) * Math.log((x - x3) / (x0 - x3));
+  bracket -= t3;
+
+  const denom = Math.pow(x, 4) * (x * x * x - 3 * x + 2 * a);
+  if (denom <= 1e-12) return 0;
+  return Math.max(0, bracket / denom);
+}
+
+// Cache Novikov-Thorne F_max and r_peak for current spin
+let cachedNTSpin = -1;
+let cachedNTFmax = 1;
+let cachedNTRpeak = 9.551;
+let cachedNTIsco = 6.0;
+
+function updateNTCache(spin) {
+  const a = Math.max(0, Math.min(0.998, Number(spin) || 0));
+  if (Math.abs(a - cachedNTSpin) < 1e-7) return;
+  cachedNTSpin = a;
+  const rad = computeRadii(a);
+  cachedNTIsco = rad.iscoPro;
+  let maxF = 0;
+  let rPeak = cachedNTIsco * 1.5;
+  // Coarse + fine scan for exact F_max and r_peak
+  for (let i = 1; i <= 2500; i++) {
+    const r = cachedNTIsco + i * 0.005;
+    const f = computeNTFluxRaw(r, a, cachedNTIsco);
+    if (f > maxF) { maxF = f; rPeak = r; }
+  }
+  const rStart = Math.max(cachedNTIsco + 1e-4, rPeak - 0.02);
+  const rEnd = rPeak + 0.02;
+  for (let r = rStart; r <= rEnd; r += 0.0002) {
+    const f = computeNTFluxRaw(r, a, cachedNTIsco);
+    if (f > maxF) { maxF = f; rPeak = r; }
+  }
+  cachedNTFmax = Math.max(1e-12, maxF);
+  cachedNTRpeak = rPeak;
+}
+
+function computeDiskQuantities(r, spin, Tmax) {
+  const a = Math.max(0, Math.min(0.998, Number(spin) || 0));
+  updateNTCache(a);
+  const r15 = Math.pow(r, 1.5);
+  const rm15 = 1 / r15;
+  const omega = 1 / (r15 + a);
+  const denomUt = 1 - 3 / r + 2 * a * rm15;
+  const ut = denomUt > 0 ? (1 + a * rm15) / Math.sqrt(denomUt) : NaN;
+  let T = 0;
+  if (r > cachedNTIsco) {
+    const F = computeNTFluxRaw(r, a, cachedNTIsco);
+    T = Tmax * Math.pow(Math.max(0, F / cachedNTFmax), 0.25);
+  }
+  return { omega, ut, T, Tmax };
+}
+
+// 2.3 & 6.6 Physical Units Calculation
+function computeUnits(key) {
+  const p = PRESETS[key];
+  if (!p) return null;
+  const rg_km = CONSTANTS.RG_SUN_KM * p.massSun;
+  const rs_km = 2 * rg_km;
+  const rs_AU = (rs_km * 1000) / CONSTANTS.AU;
+  const tg_s = CONSTANTS.TG_SUN_S * p.massSun;
+  let shadow_uas = null;
+  if (p.distPc !== null) {
+    const D_km = (p.distPc * CONSTANTS.PC) / 1000;
+    const shadow_rad = (2 * Math.sqrt(27) * rg_km) / D_km;
+    shadow_uas = shadow_rad / CONSTANTS.UAS_RAD;
+  }
+  const iscoPeriod_s = 2 * Math.PI * Math.pow(6, 1.5) * tg_s;
+  return {
+    massSun: p.massSun,
+    rg_km,
+    rs_km,
+    rs_AU,
+    tg_s,
+    shadow_uas,
+    iscoPeriod_s
+  };
+}
+
+// 2.4 & 3.8 S2 Star and S-Cluster Kepler Solver
+function solveStarKepler(star, year, R0_pc = 8246.7) {
+  const a_mas = star.a_mas;
+  const e = star.e;
+  const i = star.i * Math.PI / 180;
+  const Omega = star.Omega * Math.PI / 180;
+  const omega = star.omega * Math.PI / 180;
+  const P = star.P;
+  const tP = star.tP;
+
+  let M = (2 * Math.PI * (year - tP)) / P;
+  M = ((M + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+  let E = e > 0.8 ? Math.PI : M;
+  for (let iter = 0; iter < 35; iter++) {
+    const f = E - e * Math.sin(E) - M;
+    const fp = 1 - e * Math.cos(E);
+    const dE = f / fp;
+    E -= dE;
+    if (Math.abs(dE) < 1e-13) break;
+  }
+
+  const xp = a_mas * (Math.cos(E) - e);
+  const yp = a_mas * Math.sqrt(1 - e * e) * Math.sin(E);
+
+  const cosw = Math.cos(omega), sinw = Math.sin(omega);
+  const cosO = Math.cos(Omega), sinO = Math.sin(Omega);
+  const cosi = Math.cos(i), sini = Math.sin(i);
+
+  const north_mas = (cosw * cosO - sinw * sinO * cosi) * xp + (-sinw * cosO - cosw * sinO * cosi) * yp;
+  const east_mas  = (cosw * sinO + sinw * cosO * cosi) * xp + (-sinw * sinO + cosw * cosO * cosi) * yp;
+  const los_mas   = (sinw * sini) * xp + (cosw * sini) * yp;
+
+  const r_mas = a_mas * (1 - e * Math.cos(E));
+  const masToAU = R0_pc / 1000; // 8.2467 AU per mas
+  const r_AU = r_mas * masToAU;
+
+  // Convert to Black Hole geometric units M (using S2 self-consistent M = 4.261e6 M_sun)
+  const rg_AU = (CONSTANTS.RG_SUN_KM * 4.261e6 * 1000) / CONSTANTS.AU;
+  const masToM = masToAU / rg_AU;
+  // Section 3.8 convention: North = +Z, East = -Y, LOS (away from Earth) = -X
+  const worldPos = [
+    -los_mas * masToM,
+    -east_mas * masToM,
+     north_mas * masToM
+  ];
+
+  return { east_mas, north_mas, los_mas, r_AU, r_M: r_AU / rg_AU, worldPos };
+}
+
+function computeS2(year) {
+  const res = solveStarKepler(S_CLUSTER_STARS[0], year, 8246.7);
+  return {
+    east_mas: res.east_mas,
+    north_mas: res.north_mas,
+    los_mas: res.los_mas,
+    r_AU: res.r_AU
+  };
+}
+
+// Complete Elliptic Integral of the First Kind K(m) via AGM (Section 3.7)
+function ellipticK(m) {
+  if (m >= 1) return Infinity;
+  let a = 1.0;
+  let b = Math.sqrt(Math.max(0, 1.0 - m));
+  for (let i = 0; i < 25; i++) {
+    const an = 0.5 * (a + b);
+    const bn = Math.sqrt(a * b);
+    if (Math.abs(a - b) < 1e-15) { a = an; break; }
+    a = an; b = bn;
+  }
+  return Math.PI / (2 * a);
+}
+
+// 3.7 Boyer-Lindquist Massive Particle Geodesic RHS
+function orbitGeodesicRHS(r, th, phi, t, pr, pth, a, E, L) {
+  const r2 = r * r;
+  const a2 = a * a;
+  const costh = Math.cos(th);
+  const sinth = Math.sin(th);
+  const sin2 = Math.max(1e-12, sinth * sinth);
+  const cos2 = costh * costh;
+
+  const Sigma = r2 + a2 * cos2;
+  const Delta = r2 - 2 * r + a2;
+  const P = (r2 + a2) * E - a * L;
+  const W = L - a * E * sin2;
+  const N = Delta * pr * pr + pth * pth + (W * W) / sin2 - (P * P) / Delta;
+
+  const dr = (Delta * pr) / Sigma;
+  const dth = pth / Sigma;
+  const dphi = (a * P / Delta + W / sin2) / Sigma;
+  const dt = ((r2 + a2) * P / Delta + a * W) / Sigma;
+
+  const dNdr = 2 * (r - 1) * pr * pr - (4 * r * E * P * Delta - 2 * (r - 1) * P * P) / (Delta * Delta);
+  const dNdth = Math.abs(sinth) > 1e-6
+    ? (-4 * a * E * W * (costh / sinth) - 2 * W * W * costh / (sin2 * sinth))
+    : 0;
+
+  const dpr = -(dNdr - (2 * r * N) / Sigma) / (2 * Sigma);
+  const dpth = -(dNdth + (2 * a2 * sinth * costh * N) / Sigma) / (2 * Sigma);
+
+  return [dr, dth, dphi, dt, dpr, dpth];
+}
+
+// Single RK4 Step for Massive Particle
+function stepParticleRK4(st, dtau, a, E, L) {
+  const { r, th, phi, t, pr, pth } = st;
+  const k1 = orbitGeodesicRHS(r, th, phi, t, pr, pth, a, E, L);
+  const k2 = orbitGeodesicRHS(
+    r + 0.5 * dtau * k1[0], th + 0.5 * dtau * k1[1], phi + 0.5 * dtau * k1[2],
+    t + 0.5 * dtau * k1[3], pr + 0.5 * dtau * k1[4], pth + 0.5 * dtau * k1[5], a, E, L
+  );
+  const k3 = orbitGeodesicRHS(
+    r + 0.5 * dtau * k2[0], th + 0.5 * dtau * k2[1], phi + 0.5 * dtau * k2[2],
+    t + 0.5 * dtau * k2[3], pr + 0.5 * dtau * k2[4], pth + 0.5 * dtau * k2[5], a, E, L
+  );
+  const k4 = orbitGeodesicRHS(
+    r + dtau * k3[0], th + dtau * k3[1], phi + dtau * k3[2],
+    t + dtau * k3[3], pr + dtau * k3[4], pth + dtau * k3[5], a, E, L
+  );
+
+  return {
+    r:   r   + (dtau / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
+    th:  th  + (dtau / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]),
+    phi: phi + (dtau / 6) * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2]),
+    t:   t   + (dtau / 6) * (k1[3] + 2 * k2[3] + 2 * k3[3] + k4[3]),
+    pr:  pr  + (dtau / 6) * (k1[4] + 2 * k2[4] + 2 * k3[4] + k4[4]),
+    pth: pth + (dtau / 6) * (k1[5] + 2 * k2[5] + 2 * k3[5] + k4[5]),
+    dr0: k1[0]
+  };
+}
+
+// 6.6 BH.orbit(opts) implementation using the exact same RK4 integrator as the visual Orbit Lab
+function integrateOrbitAPI(opts) {
+  if (!opts || typeof opts !== 'object') return { ok: false };
+  const spin = Number(opts.spin ?? state.spin ?? 0);
+  const E = Number(opts.E);
+  const L = Number(opts.L);
+  const r0 = Number(opts.r0);
+  const theta0Deg = Number(opts.theta0 ?? 90);
+  const pTheta0 = Number(opts.pTheta ?? 0);
+  const prSign = (opts.prSign ?? 1) >= 0 ? 1 : -1;
+
+  if (!Number.isFinite(E) || !Number.isFinite(L) || !Number.isFinite(r0)) return { ok: false };
+
+  const a = Math.max(0, Math.min(0.998, spin));
+  const r_h = 1 + Math.sqrt(Math.max(0, 1 - a * a));
+  if (r0 <= r_h) return { ok: false };
+
+  const th0 = theta0Deg * Math.PI / 180;
+  const sinth0 = Math.sin(th0);
+  const costh0 = Math.cos(th0);
+  const sin2_0 = sinth0 * sinth0;
+  if (sin2_0 < 1e-10) return { ok: false };
+
+  const Sigma0 = r0 * r0 + a * a * costh0 * costh0;
+  const Delta0 = r0 * r0 - 2 * r0 + a * a;
+  if (Delta0 <= 0) return { ok: false };
+
+  const P0 = (r0 * r0 + a * a) * E - a * L;
+  const W0 = L - a * E * sin2_0;
+  const pr2 = -(Sigma0 + pTheta0 * pTheta0 + (W0 * W0) / sin2_0 - (P0 * P0) / Delta0) / Delta0;
+
+  if (pr2 < -1e-9) {
+    return {
+      ok: false, plunge: false, tauPlunge: null,
+      rMin: null, rMax: null, dphiDeg: null, tCoord: null, tau: null, nodalDeg: null
+    };
+  }
+  const pr0 = prSign * Math.sqrt(Math.max(0, pr2));
+
+  let st = { r: r0, th: th0, phi: 0, t: 0, pr: pr0, pth: pTheta0 };
+  let tau = 0;
+  let rMin = r0, rMax = r0;
+
+  const apoPassings = [];
+  const periPassings = [];
+  const ascNodes = [];
+
+  const needNodes = Math.abs(pTheta0) > 1e-9 || Math.abs(theta0Deg - 90) > 1e-6;
+  const rStop = r_h + 0.01;
+  const maxSteps = 120000;
+
+  for (let step = 0; step < maxSteps; step++) {
+    const distH = Math.max(0.002, st.r - r_h);
+    const dtau = Math.min(0.0075 * Math.pow(st.r, 1.5), 0.14 * distH);
+
+    const nst = stepParticleRK4(st, dtau, a, E, L);
+    const ntau = tau + dtau;
+
+    if (nst.r <= rStop) {
+      const frac = Math.max(0, Math.min(1, (st.r - rStop) / Math.max(1e-12, st.r - nst.r)));
+      const tauPlunge = tau + frac * dtau;
+      return {
+        ok: true,
+        plunge: true,
+        tauPlunge,
+        rMin: rStop,
+        rMax,
+        dphiDeg: null,
+        tCoord: null,
+        tau: tauPlunge,
+        nodalDeg: null
+      };
+    }
+
+    if (nst.r < rMin) rMin = nst.r;
+    if (nst.r > rMax) rMax = nst.r;
+
+    // Apocenter turning point (pr: + -> -)
+    if (st.pr > 0 && nst.pr <= 0) {
+      const frac = st.pr / (st.pr - nst.pr);
+      const rTurn = st.r + 0.5 * frac * dtau * nst.dr0;
+      if (rTurn > rMax) rMax = rTurn;
+      apoPassings.push({
+        tau: tau + frac * dtau,
+        t: st.t + frac * (nst.t - st.t),
+        phi: st.phi + frac * (nst.phi - st.phi),
+        r: rTurn
+      });
+    }
+
+    // Pericenter turning point (pr: - -> +)
+    if (st.pr < 0 && nst.pr >= 0) {
+      const frac = -st.pr / (nst.pr - st.pr);
+      const rTurn = st.r + 0.5 * frac * dtau * nst.dr0;
+      if (rTurn < rMin) rMin = rTurn;
+      periPassings.push({
+        tau: tau + frac * dtau,
+        t: st.t + frac * (nst.t - st.t),
+        phi: st.phi + frac * (nst.phi - st.phi),
+        r: rTurn
+      });
+    }
+
+    // Ascending node: South-to-North equatorial crossing (theta decreases through pi/2)
+    const halfPi = 0.5 * Math.PI;
+    if (step > 0 && st.th > halfPi && nst.th <= halfPi) {
+      const frac = (st.th - halfPi) / (st.th - nst.th);
+      ascNodes.push({
+        tau: tau + frac * dtau,
+        phi: st.phi + frac * (nst.phi - st.phi)
+      });
+    }
+
+    st = nst;
+    tau = ntau;
+
+    // Unbound escape check
+    if (st.r > Math.max(250, 12 * r0) && st.pr > 0 && E >= 1) {
+      return {
+        ok: true, plunge: false, tauPlunge: null,
+        rMin, rMax: st.r, dphiDeg: null, tCoord: null, tau, nodalDeg: null
+      };
+    }
+
+    if (apoPassings.length >= 2 && periPassings.length >= 1 && (!needNodes || ascNodes.length >= 2)) {
+      break;
+    }
+    // Circular orbit fallback termination
+    if (Math.abs(st.phi) > 6 * Math.PI && apoPassings.length === 0) {
+      break;
+    }
+  }
+
+  let dphiDeg = null, tCoord = null, tauPeriod = null, nodalDeg = null;
+  if (apoPassings.length >= 2) {
+    const a0 = apoPassings[0], a1 = apoPassings[1];
+    dphiDeg = (a1.phi - a0.phi) * 180 / Math.PI;
+    tCoord = a1.t - a0.t;
+    tauPeriod = a1.tau - a0.tau;
+  } else if (periPassings.length >= 2) {
+    const p0 = periPassings[0], p1 = periPassings[1];
+    dphiDeg = (p1.phi - p0.phi) * 180 / Math.PI;
+    tCoord = p1.t - p0.t;
+    tauPeriod = p1.tau - p0.tau;
+  }
+  if (ascNodes.length >= 2) {
+    nodalDeg = (ascNodes[1].phi - ascNodes[0].phi) * 180 / Math.PI;
+  }
+
+  return {
+    ok: true,
+    plunge: false,
+    tauPlunge: null,
+    rMin,
+    rMax,
+    dphiDeg,
+    tCoord,
+    tau: tauPeriod,
+    nodalDeg
+  };
+}
+
+// ============================================================================
+// PART 2: STATE, CAMERA, GLSL SHADERS (SCHWARZSCHILD + KERR + MRT TRACE + HDR)
+// ============================================================================
+
+const state = {
+  spin: 0.9,
+  camR: 30.0,
+  camIncl: 80.0,
+  camAz: 0.0,
+  fovY: 45.0,
+  preset: 'sgra',
+  time: 0.0,
+  view: 'physical',       // 'physical' | 'grid' | 'checker' | 'gmap' | 'steps'
+  disk: true,
+  rOut: 20.0,
+  doppler: true,
+  lensing: true,
+  paused: false,
+  autoRotate: true,
+  // Extended UI & Visual parameters
+  Tmax: 7000.0,
+  exposureEV: 0.0,
+  autoExposure: true,
+  computedAutoEV: 0.0,
+  stars: true,
+  bloom: true,
+  timeSpeed: 8.0,
+  s2Year: 2026.0,
+  s2Playing: false,
+  showSCluster: true,
+  newtonCompare: true,
+  particlesLensed: true,
+  // Section 9 Creative Modules State
+  hotspotActive: true,
+  hotspotR: 6.0,
+  microU: 0.50,
+  tdeActive: false,
+  tdeTime: 0.0,
+  tdeMstar: 1.0,
+  tdeRstar: 1.0,
+  ehtMode: false,
+  plungeActive: false,
+  plungeR: 10.0,
+  plungeTau: 0.0,
+  gwActive: false,
+  gwM1: 35.6,
+  gwM2: 30.6,
+  gwZ: 0.09,
+  gwTau: 0.100
+};
+
+// 3.1 Standard Camera Basis
+function getCameraBasis(camR = state.camR, camIncl = state.camIncl, camAz = state.camAz) {
+  const Rc = Math.max(2.005, Number(camR));
+  const i = (Number(camIncl) * Math.PI) / 180;
+  const phi = (Number(camAz) * Math.PI) / 180;
+  const sini = Math.sin(i), cosi = Math.cos(i);
+  const cosp = Math.cos(phi), sinp = Math.sin(phi);
+
+  const pos = [Rc * sini * cosp, Rc * sini * sinp, Rc * cosi];
+  const F = [-sini * cosp, -sini * sinp, -cosi];
+
+  // U = normalize(z_hat - (z_hat . F) F)
+  const zDotF = F[2];
+  let Ux = -zDotF * F[0];
+  let Uy = -zDotF * F[1];
+  let Uz = 1 - zDotF * F[2];
+  const Unorm = Math.hypot(Ux, Uy, Uz);
+  let U;
+  if (Unorm < 1e-9) {
+    U = [-cosp, -sinp, 0];
+  } else {
+    U = [Ux / Unorm, Uy / Unorm, Uz / Unorm];
+  }
+  // R = F x U
+  const R = [
+    F[1] * U[2] - F[2] * U[1],
+    F[2] * U[0] - F[0] * U[2],
+    F[0] * U[1] - F[1] * U[0]
+  ];
+  return { pos, F, U, R, Rc };
+}
+
+// Shared GLSL Vertex Shader (Fullscreen Triangle)
+const VERT_QUAD = `#version 300 es
+precision highp float;
+out vec2 vUV;
+void main() {
+  vec2 pos = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+  vUV = pos;
+  gl_Position = vec4(pos * 2.0 - 1.0, 0.0, 1.0);
+}
+`;
+
+// Shared Geodesic Core GLSL (Parameterized by FAST_SCHW macro: 1 for 3.2 fast path, 0 for 3.3 Kerr path)
+function buildGeodesicCoreGLSL(fastSchw) {
+  return `
+#define FAST_SCHW ${fastSchw ? 1 : 0}
+#define MAX_STEPS 340
+
+uniform float uSpin;
+uniform float uRHorizon;
+uniform float uRIsco;
+uniform float uROut;
+uniform float uCamR;
+uniform vec3 uCamPos;
+uniform vec3 uCamF;
+uniform vec3 uCamR_vec;
+uniform vec3 uCamU_vec;
+uniform int uDiskOn;
+uniform int uLensingOn;
+uniform float uKStep;
+uniform int uMaxSteps;
+
+// NT Flux profile uniforms
+uniform float uNT_x0;
+uniform float uNT_x1;
+uniform float uNT_x2;
+uniform float uNT_x3;
+uniform float uNT_c1;
+uniform float uNT_c2;
+uniform float uNT_c3;
+uniform float uNT_Fmax;
+
+// In-ray Lensed Particles (Section 4.3)
+uniform int uNumParticles;
+uniform vec4 uParticlePos[8];   // xyz = world pos, w = radius
+uniform vec3 uParticleCol[8];
+
+struct TraceResult {
+  int fate;       // 0 = horizon, 1 = disk, 2 = escape, 3 = budget
+  float rHit;
+  float phiHit;   // radians
+  float g;
+  int nCross;
+  vec3 outDir;
+  float xi;
+  int steps;
+  vec3 particleGlow;
+  float minR;
+};
+
+void kerrGeom(in vec3 pos, in float A, out float r, out float r2, out float den, out float f, out float q, out vec3 l) {
+  float R2 = dot(pos, pos);
+  float A2 = A * A;
+  float w = R2 - A2;
+  r2 = 0.5 * (w + sqrt(max(0.0, w * w + 4.0 * A2 * pos.z * pos.z)));
+  r = sqrt(max(1e-10, r2));
+  float r3 = r * r2;
+  float r4 = r2 * r2;
+  den = max(1e-10, r4 + A2 * pos.z * pos.z);
+  f = (2.0 * r3) / den;
+  q = r2 + A2;
+  l = vec3((r * pos.x + A * pos.y) / q, (r * pos.y - A * pos.x) / q, pos.z / r);
+}
+
+void kerrRHS(in vec3 pos, in vec3 p, in float A, out vec3 dxdl, out vec3 dpdl) {
+  float A2 = A * A;
+  float R2 = dot(pos, pos);
+  float w = R2 - A2;
+  float r2 = 0.5 * (w + sqrt(max(0.0, w * w + 4.0 * A2 * pos.z * pos.z)));
+  float r = sqrt(max(1e-10, r2));
+  float r3 = r * r2;
+  float den = max(1e-10, r2 * r2 + A2 * pos.z * pos.z);
+  float f = (2.0 * r3) / den;
+  float q = r2 + A2;
+  vec3 l = vec3((r * pos.x + A * pos.y) / q, (r * pos.y - A * pos.x) / q, pos.z / r);
+  float Phi = 1.0 + dot(l, p);
+
+  dxdl = p - f * Phi * l;
+
+  vec3 gr = vec3(pos.x * r3, pos.y * r3, pos.z * r * q) / den;
+  float invDen2 = 1.0 / (den * den);
+  float dfdr = (6.0 * r2 * den - 8.0 * r3 * r3) * invDen2;
+  float dfdz_r = (-4.0 * r3 * A2 * pos.z) * invDen2;
+  vec3 gf = dfdr * gr + vec3(0.0, 0.0, dfdz_r);
+
+  float N = (r * pos.x + A * pos.y) * p.x + (r * pos.y - A * pos.x) * p.y;
+  float xpx_ypy = pos.x * p.x + pos.y * p.y;
+  vec3 gN = gr * xpx_ypy + vec3(r * p.x - A * p.y, r * p.y + A * p.x, 0.0);
+
+  vec3 glp = gN / q - (2.0 * r * N / (q * q)) * gr + vec3(0.0, 0.0, p.z / r) - (pos.z * p.z / r2) * gr;
+  dpdl = (0.5 * Phi * Phi) * gf + (f * Phi) * glp;
+}
+
+vec3 schwAcc(in vec3 pos, in float h2) {
+  float r2 = max(1e-8, dot(pos, pos));
+  float r = sqrt(r2);
+  return (-3.0 * h2 / (r2 * r2 * r)) * pos;
+}
+
+void accumulateParticleGlow(in vec3 p0, in vec3 p1, inout vec3 glow) {
+  if (uNumParticles <= 0) return;
+  vec3 seg = p1 - p0;
+  float segLen2 = max(1e-8, dot(seg, seg));
+  for (int i = 0; i < 8; i++) {
+    if (i >= uNumParticles) break;
+    vec3 center = uParticlePos[i].xyz;
+    float rad = uParticlePos[i].w;
+    float t = clamp(dot(center - p0, seg) / segLen2, 0.0, 1.0);
+    vec3 closest = p0 + t * seg;
+    float d2 = dot(center - closest, center - closest);
+    float sigma2 = rad * rad;
+    if (d2 < 12.0 * sigma2) {
+      glow += uParticleCol[i] * exp(-d2 / sigma2) * 0.85;
+    }
+  }
+}
+
+TraceResult traceRayGeodesic(vec2 tanXY) {
+  TraceResult res;
+  res.fate = 3;
+  res.rHit = 0.0;
+  res.phiHit = 0.0;
+  res.g = 1.0;
+  res.nCross = 0;
+  res.outDir = vec3(0.0, 0.0, 1.0);
+  res.xi = 0.0;
+  res.steps = 0;
+  res.particleGlow = vec3(0.0);
+  res.minR = 1e9;
+
+  float a = uSpin;
+  float A = -a;
+  float r_h = uRHorizon;
+  float r_isco = uRIsco;
+
+  vec3 d = normalize(uCamF + tanXY.x * uCamR_vec + tanXY.y * uCamU_vec);
+  vec3 x = uCamPos;
+
+  // Flat spacetime straight-line path when gravitational lensing is toggled off (Section 5.2)
+  if (uLensingOn == 0) {
+    float bDot = dot(x, d);
+    float cHor = dot(x, x) - r_h * r_h;
+    float discHor = bDot * bDot - cHor;
+    float tHor = 1e30;
+    if (discHor >= 0.0 && bDot < 0.0) {
+      float t1 = -bDot - sqrt(discHor);
+      if (t1 > 0.0) tHor = t1;
+    }
+    float xi0 = -(x.x * d.y - x.y * d.x);
+    res.xi = xi0;
+    res.steps = 1;
+    if (abs(d.z) > 1e-8) {
+      float tDisk = -x.z / d.z;
+      if (tDisk > 0.0 && tDisk < tHor) {
+        res.nCross = 1;
+        if (uDiskOn == 1) {
+          vec3 xh = x + tDisk * d;
+          float rHit2 = xh.x * xh.x + xh.y * xh.y - a * a;
+          if (rHit2 > 0.0) {
+            float rHit = sqrt(rHit2);
+            if (rHit >= r_isco && rHit <= uROut) {
+              accumulateParticleGlow(x, xh, res.particleGlow);
+              res.fate = 1;
+              res.rHit = rHit;
+              res.phiHit = atan(xh.y, xh.x);
+              float rm15 = pow(rHit, -1.5);
+              res.g = sqrt(max(1e-8, 1.0 - 3.0 / rHit + 2.0 * a * rm15)) / (1.0 + (a - xi0) * rm15);
+              return res;
+            }
+          }
+        }
+      }
+    }
+    if (tHor < 1e20) {
+      accumulateParticleGlow(x, x + tHor * d, res.particleGlow);
+      res.fate = 0;
+      res.minR = r_h;
+      return res;
+    }
+    accumulateParticleGlow(x, x + 2.0 * uCamR * d, res.particleGlow);
+    res.fate = 2;
+    res.outDir = d;
+    return res;
+  }
+
+  float R_b = 500.0;
+
+#if FAST_SCHW
+  // Section 3.2 Fast Schwarzschild Geodesic Path
+  float sCam = sqrt(max(1e-6, 1.0 - 2.0 / uCamR));
+  vec3 v;
+  if (uCamR > R_b) {
+    float tan2 = dot(tanXY, tanXY);
+    float denom = sCam * sCam + tan2;
+    vec2 bTan = uCamR * tanXY;
+    float b2 = dot(bTan, bTan) / denom;
+    vec3 d_c = normalize(sCam * uCamF + tanXY.x * uCamR_vec + tanXY.y * uCamU_vec);
+    if (b2 >= R_b * R_b) {
+      if (abs(d_c.z) > 1e-8 && (-x.z / d_c.z) > 0.0) res.nCross = 1;
+      res.fate = 2;
+      res.outDir = d_c;
+      res.steps = 1;
+      return res;
+    }
+    vec3 x_pca = (-tan2 * uCamR / denom) * uCamF + (sCam / denom) * (bTan.x * uCamR_vec + bTan.y * uCamU_vec);
+    vec3 nx0 = x_pca - sqrt(max(0.0, R_b * R_b - b2)) * d_c;
+    if (x.z * nx0.z < 0.0) res.nCross++;
+    x = nx0;
+    v = d_c;
+  } else {
+    vec3 rHat = x / uCamR;
+    v = d + (sCam - 1.0) * dot(d, rHat) * rHat;
+  }
+
+  vec3 hVec = cross(x, v);
+  float h2 = dot(hVec, hVec);
+  float rInit = length(x);
+  float vInf = sqrt(max(1e-10, dot(v, v) - 2.0 * h2 / (rInit * rInit * rInit)));
+  res.xi = -hVec.z / vInf;
+  float R_esc = max(1.05 * min(uCamR, R_b), 100.0);
+
+  for (int step = 1; step <= MAX_STEPS; step++) {
+    if (step > uMaxSteps) break;
+    float r = length(x);
+    res.minR = min(res.minR, r);
+    if (r < 2.0) {
+      res.fate = 0;
+      res.steps = step;
+      return res;
+    }
+    if (r > R_esc && dot(x, v) > 0.0) {
+      res.fate = 2;
+      res.outDir = normalize(v);
+      res.steps = step;
+      return res;
+    }
+
+    float vLen = max(1e-6, length(v));
+    float h = min(uKStep * r, 0.5 * max(r - 2.0, 0.008)) / vLen;
+
+    vec3 a1 = schwAcc(x, h2);
+    vec3 k1x = v, k1v = a1;
+
+    vec3 a2 = schwAcc(x + 0.5 * h * k1x, h2);
+    vec3 k2x = v + 0.5 * h * k1v, k2v = a2;
+
+    vec3 a3 = schwAcc(x + 0.5 * h * k2x, h2);
+    vec3 k3x = v + 0.5 * h * k2v, k3v = a3;
+
+    vec3 a4 = schwAcc(x + h * k3x, h2);
+    vec3 k4x = v + h * k3v, k4v = a4;
+
+    vec3 nx = x + (h / 6.0) * (k1x + 2.0 * k2x + 2.0 * k3x + k4x);
+    vec3 nv = v + (h / 6.0) * (k1v + 2.0 * k2v + 2.0 * k3v + k4v);
+
+    accumulateParticleGlow(x, nx, res.particleGlow);
+
+    if (x.z * nx.z < 0.0) {
+      res.nCross++;
+      if (uDiskOn == 1) {
+        float frac = abs(x.z) / (abs(x.z) + abs(nx.z));
+        vec2 xh = x.xy + frac * (nx.xy - x.xy);
+        float rHit = length(xh);
+        if (rHit >= r_isco && rHit <= uROut) {
+          res.fate = 1;
+          res.rHit = rHit;
+          res.phiHit = atan(xh.y, xh.x);
+          float rm15 = pow(rHit, -1.5);
+          res.g = sqrt(max(1e-8, 1.0 - 3.0 / rHit)) / (1.0 - res.xi * rm15);
+          res.steps = step;
+          return res;
+        }
+      }
+    }
+    x = nx;
+    v = nv;
+  }
+  res.fate = 3;
+  res.steps = uMaxSteps;
+  return res;
+
+#else
+  // Section 3.3 Outgoing Kerr-Schild Geodesic Path (A = -a)
+  vec3 p;
+  if (uCamR > R_b) {
+    float rCam, r2Cam, denCam, fCam, qCam;
+    vec3 lCam;
+    kerrGeom(x, A, rCam, r2Cam, denCam, fCam, qCam, lCam);
+    float sCam = sqrt(max(1e-6, 1.0 - fCam));
+    float tan2 = dot(tanXY, tanXY);
+    float denom = sCam * sCam + tan2;
+    vec2 bTan = uCamR * tanXY;
+    float b2 = dot(bTan, bTan) / denom;
+    vec3 d_c = normalize(sCam * uCamF + tanXY.x * uCamR_vec + tanXY.y * uCamU_vec);
+    if (b2 >= R_b * R_b) {
+      if (abs(d_c.z) > 1e-8 && (-x.z / d_c.z) > 0.0) res.nCross = 1;
+      res.fate = 2;
+      res.outDir = d_c;
+      res.steps = 1;
+      return res;
+    }
+    vec3 x_pca = (-tan2 * uCamR / denom) * uCamF + (sCam / denom) * (bTan.x * uCamR_vec + bTan.y * uCamU_vec);
+    vec3 nx0 = x_pca - sqrt(max(0.0, R_b * R_b - b2)) * d_c;
+    if (x.z * nx0.z < 0.0) res.nCross++;
+    x = nx0;
+
+    float r0, r2_0, den0, f0, q0;
+    vec3 l0;
+    kerrGeom(x, A, r0, r2_0, den0, f0, q0, l0);
+    vec3 rHat0 = normalize(x);
+    float dDotR = dot(d_c, rHat0);
+    float s0 = sqrt(max(1e-6, 1.0 - f0));
+    vec3 d1 = normalize(dDotR * rHat0 + s0 * (d_c - dDotR * rHat0));
+    float c = dot(l0, d1);
+    float factor = ((s0 - 1.0) * c + f0 * (1.0 + c) / s0);
+    p = (d1 + l0 * factor) / s0;
+  } else {
+    float r0, r2_0, den0, f0, q0;
+    vec3 l0;
+    kerrGeom(x, A, r0, r2_0, den0, f0, q0, l0);
+    float s = sqrt(max(1e-6, 1.0 - f0));
+    float c = dot(l0, d);
+    float factor = ((s - 1.0) * c + f0 * (1.0 + c) / s);
+    p = (d + l0 * factor) / s;
+  }
+
+  res.xi = -(x.x * p.y - x.y * p.x);
+  float R_esc = max(1.05 * min(uCamR, R_b), 100.0);
+
+  for (int step = 1; step <= MAX_STEPS; step++) {
+    if (step > uMaxSteps) break;
+    float r, r2, den, f, q;
+    vec3 l;
+    kerrGeom(x, A, r, r2, den, f, q, l);
+    res.minR = min(res.minR, r);
+    if (r < r_h) {
+      res.fate = 0;
+      res.steps = step;
+      return res;
+    }
+    if (r > R_esc && dot(x, p) > 0.0) {
+      vec3 dxdl, dpdl;
+      kerrRHS(x, p, A, dxdl, dpdl);
+      res.fate = 2;
+      res.outDir = normalize(dxdl);
+      res.steps = step;
+      return res;
+    }
+
+    float h = min(uKStep * r, 0.5 * max(r - r_h, 0.008));
+
+    vec3 k1x, k1p, k2x, k2p, k3x, k3p, k4x, k4p;
+    kerrRHS(x, p, A, k1x, k1p);
+    kerrRHS(x + 0.5 * h * k1x, p + 0.5 * h * k1p, A, k2x, k2p);
+    kerrRHS(x + 0.5 * h * k2x, p + 0.5 * h * k2p, A, k3x, k3p);
+    kerrRHS(x + h * k3x, p + h * k3p, A, k4x, k4p);
+
+    vec3 nx = x + (h / 6.0) * (k1x + 2.0 * k2x + 2.0 * k3x + k4x);
+    vec3 np = p + (h / 6.0) * (k1p + 2.0 * k2p + 2.0 * k3p + k4p);
+
+    accumulateParticleGlow(x, nx, res.particleGlow);
+
+    if (x.z * nx.z < 0.0) {
+      res.nCross++;
+      if (uDiskOn == 1) {
+        float frac = abs(x.z) / (abs(x.z) + abs(nx.z));
+        vec2 xh = x.xy + frac * (nx.xy - x.xy);
+        float rHit2 = dot(xh, xh) - a * a;
+        if (rHit2 > 0.0) {
+          float rHit = sqrt(rHit2);
+          if (rHit >= r_isco && rHit <= uROut) {
+            res.fate = 1;
+            res.rHit = rHit;
+            res.phiHit = atan(xh.y, xh.x);
+            float rm15 = pow(rHit, -1.5);
+            res.g = sqrt(max(1e-8, 1.0 - 3.0 / rHit + 2.0 * a * rm15)) / (1.0 + (a - res.xi) * rm15);
+            res.steps = step;
+            return res;
+          }
+        }
+      }
+    }
+    x = nx;
+    p = np;
+  }
+  res.fate = 3;
+  res.steps = uMaxSteps;
+  return res;
+#endif
+}
+`;
+}
+
+// Main Screen Rendering Fragment Shader
+function buildMainRenderFragGLSL(fastSchw) {
+  return `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+
+uniform vec2 uResolution;
+uniform float uTanHalfFovY;
+uniform float uTime;
+uniform float uTmax;
+uniform int uViewMode;      // 0=physical, 1=grid, 2=checker, 3=gmap, 4=steps
+uniform int uDopplerOn;
+uniform int uStarsOn;
+uniform int uHotspotOn;
+uniform float uHotspotR;
+uniform int uTDEOn;
+uniform float uTDERt;
+uniform float uTDETime;
+
+` + buildGeodesicCoreGLSL(fastSchw) + `
+
+// 2.5 Exact 21-Row Blackbody Lookup Table
+const float BB_T[21] = float[21](
+  1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0,
+  4500.0, 5000.0, 5500.0, 6000.0, 6500.0, 7000.0, 8000.0,
+  9000.0, 10000.0, 12000.0, 15000.0, 20000.0, 30000.0, 40000.0
+);
+const vec4 BB_DATA[21] = vec4[21](
+  vec4(1.0000, 0.0286, 0.0000, -9.054),
+  vec4(1.0000, 0.1451, 0.0000, -5.597),
+  vec4(1.0000, 0.2663, 0.0077, -3.820),
+  vec4(1.0000, 0.3803, 0.0677, -2.737),
+  vec4(1.0000, 0.4839, 0.1545, -2.007),
+  vec4(1.0000, 0.5767, 0.2606, -1.481),
+  vec4(1.0000, 0.6590, 0.3789, -1.084),
+  vec4(1.0000, 0.7315, 0.5035, -0.774),
+  vec4(1.0000, 0.7954, 0.6300, -0.524),
+  vec4(1.0000, 0.8516, 0.7551, -0.319),
+  vec4(1.0000, 0.9010, 0.8766, -0.147),
+  vec4(1.0000, 0.9445, 0.9931,  0.000),
+  vec4(0.9061, 0.8905, 1.0000,  0.127),
+  vec4(0.7656, 0.8016, 1.0000,  0.335),
+  vec4(0.6739, 0.7399, 1.0000,  0.500),
+  vec4(0.6102, 0.6950, 1.0000,  0.635),
+  vec4(0.5286, 0.6344, 1.0000,  0.844),
+  vec4(0.4616, 0.5815, 1.0000,  1.065),
+  vec4(0.4069, 0.5358, 1.0000,  1.308),
+  vec4(0.3627, 0.4969, 1.0000,  1.597),
+  vec4(0.3440, 0.4798, 1.0000,  1.776)
+);
+
+vec3 blackbodyRadiance(float T) {
+  if (T <= 50.0) return vec3(0.0);
+  vec3 rgb;
+  float logY;
+  if (T <= 1000.0) {
+    rgb = BB_DATA[0].rgb;
+    logY = 1.32 - 10370.0 / max(T, 50.0);
+  } else if (T >= 40000.0) {
+    rgb = BB_DATA[20].rgb;
+    logY = BB_DATA[20].w;
+  } else {
+    for (int i = 0; i < 20; i++) {
+      if (T >= BB_T[i] && T <= BB_T[i + 1]) {
+        float t = (T - BB_T[i]) / (BB_T[i + 1] - BB_T[i]);
+        vec4 d = mix(BB_DATA[i], BB_DATA[i + 1], t);
+        rgb = d.rgb;
+        logY = d.w;
+        break;
+      }
+    }
+  }
+  float lum = max(1e-6, dot(rgb, vec3(0.2126, 0.7152, 0.0722)));
+  float Y = pow(10.0, clamp(logY, -12.0, 4.0));
+  return (rgb / lum) * Y;
+}
+
+// 2.6 Novikov-Thorne Temperature Profile T(r)
+float computeDiskTemperature(float r) {
+  if (r <= uRIsco + 1e-5) return 0.0;
+  float x = sqrt(r);
+  float x0 = uNT_x0;
+  float sum = x - x0 - 1.5 * uSpin * log(x / x0);
+  sum -= uNT_c1 * log(max(1e-8, (x - uNT_x1) / (x0 - uNT_x1)));
+  if (uSpin > 1e-6) {
+    sum -= uNT_c2 * log(max(1e-8, (x - uNT_x2) / (x0 - uNT_x2)));
+  }
+  sum -= uNT_c3 * log(max(1e-8, (x - uNT_x3) / (x0 - uNT_x3)));
+  float x2 = x * x;
+  float denom = max(1e-8, x2 * x2 * (x2 * x - 3.0 * x + 2.0 * uSpin));
+  float F = max(0.0, sum / denom);
+  return uTmax * pow(F / max(1e-10, uNT_Fmax), 0.25);
+}
+
+// 3D Hash & Value Noise for Turbulence and Starfield
+vec3 hash33(vec3 p) {
+  p = fract(p * vec3(0.1031, 0.1030, 0.0973));
+  p += dot(p, p.yxz + 33.33);
+  return fract((p.xxy + p.yxx) * p.zyx);
+}
+
+float noise3D(vec3 p) {
+  vec3 i = floor(p);
+  vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float n000 = hash33(i + vec3(0,0,0)).x;
+  float n100 = hash33(i + vec3(1,0,0)).x;
+  float n010 = hash33(i + vec3(0,1,0)).x;
+  float n110 = hash33(i + vec3(1,1,0)).x;
+  float n001 = hash33(i + vec3(0,0,1)).x;
+  float n101 = hash33(i + vec3(1,0,1)).x;
+  float n011 = hash33(i + vec3(0,1,1)).x;
+  float n111 = hash33(i + vec3(1,1,1)).x;
+  return mix(
+    mix(mix(n000, n100, f.x), mix(n010, n110, f.x), f.y),
+    mix(mix(n001, n101, f.x), mix(n011, n111, f.x), f.y),
+    f.z
+  );
+}
+
+float fbm3D(vec3 p) {
+  float v = 0.0, amp = 0.5;
+  for (int i = 0; i < 4; i++) {
+    v += amp * noise3D(p);
+    p = p * 2.07 + vec3(13.1, 7.7, 5.3);
+    amp *= 0.5;
+  }
+  return v;
+}
+
+// 7.11 Seam-free Dual-Phase Cross-Fading Differential Rotation Disk Texture
+float diskTurbulence(float r, float phi, float timeM) {
+  float omega = 1.0 / (pow(r, 1.5) + uSpin);
+  float logR = log(max(1.0, r));
+  float period = 72.0;
+
+  // Phase A
+  float cycA = floor(timeM / period);
+  float tA = timeM - cycA * period;
+  float wA = 1.0 - abs(2.0 * (tA / period) - 1.0);
+  float angA = phi - omega * (tA - 0.5 * period) + 1.8 * logR;
+  vec3 coordA = vec3(logR * 5.2, cos(angA) * 2.4, sin(angA) * 2.4) + cycA * vec3(17.3, 9.1, 13.7);
+  float nA = fbm3D(coordA) * 0.65 + 0.35 * noise3D(coordA * 2.8);
+
+  // Phase B (offset by 0.5 * period)
+  float timeB = timeM + 0.5 * period;
+  float cycB = floor(timeB / period);
+  float tB = timeB - cycB * period;
+  float wB = 1.0 - wA;
+  float angB = phi - omega * (tB - 0.5 * period) + 1.8 * logR;
+  vec3 coordB = vec3(logR * 5.2, cos(angB) * 2.4, sin(angB) * 2.4) + (cycB + 31.0) * vec3(11.7, 23.1, 7.9);
+  float nB = fbm3D(coordB) * 0.65 + 0.35 * noise3D(coordB * 2.8);
+
+  float raw = wA * nA + wB * nB;
+  // Fine azimuthal spiral filaments (seam-free via cos/sin)
+  float spiral = 0.5 + 0.5 * sin(6.0 * logR - 2.0 * (cos(angA) * wA + cos(angB) * wB));
+  float tex = clamp((raw - 0.16) * 1.45, 0.15, 1.75) * (0.82 + 0.28 * spiral);
+  return tex;
+}
+
+// 3.6 & 5.3 Procedural Directional Starfield & Galactic Band
+vec3 sampleStarfield(vec3 dir) {
+  if (uStarsOn == 0) return vec3(0.0015);
+  // Deep space baseline (Section 5.3: ~0.002 linear)
+  vec3 sky = vec3(0.0014, 0.0017, 0.0024);
+
+  // Tilted Galactic Band
+  vec3 gAxis1 = normalize(vec3(0.28, -0.45, 0.85));
+  vec3 gAxis2 = normalize(cross(gAxis1, vec3(1.0, 0.2, 0.0)));
+  vec3 gAxis3 = cross(gAxis1, gAxis2);
+  float gLat = dot(dir, gAxis1);
+  float gLon = atan(dot(dir, gAxis2), dot(dir, gAxis3));
+
+  float bandProfile = exp(-gLat * gLat / (0.042));
+  float dustFbm = fbm3D(dir * 5.5 + vec3(2.3, 1.1, 4.7));
+  float darkLane = smoothstep(0.36, 0.64, fbm3D(dir * 11.0 + vec3(8.2))) * exp(-gLat * gLat / 0.008);
+  vec3 milkyWay = mix(vec3(0.025, 0.038, 0.072), vec3(0.095, 0.070, 0.052), dustFbm) * bandProfile * (1.0 - 0.68 * darkLane);
+  sky += milkyWay * 0.55;
+
+  // Multi-tier sharp directional stars (quantized 3D direction grid)
+  for (int layer = 0; layer < 2; layer++) {
+    float gridScale = (layer == 0) ? 115.0 : 210.0;
+    vec3 p = dir * gridScale;
+    vec3 cell = floor(p);
+    vec3 h = hash33(cell + float(layer) * 71.7);
+    float prob = (layer == 0) ? 0.915 : 0.945;
+    if (h.x > prob) {
+      vec3 starCenter = normalize((cell + 0.2 + 0.6 * hash33(cell + 19.3)) / gridScale);
+      float angDist = length(dir - starCenter) * gridScale;
+      float core = exp(-angDist * angDist * 26.0);
+      float halo = 0.15 * exp(-angDist * angDist * 4.5);
+      float starTemp = mix(3200.0, 18000.0, h.y * h.y);
+      vec3 starCol = blackbodyRadiance(starTemp);
+      float starLum = max(1e-4, dot(starCol, vec3(0.2126, 0.7152, 0.0722)));
+      starCol = (starCol / starLum) * pow((h.x - prob) / (1.0 - prob), 2.1) * ((layer == 0) ? 2.4 : 1.1);
+      sky += starCol * (core + halo);
+    }
+  }
+  return sky;
+}
+
+// 4.4 Diagnostic Views
+vec3 renderDiagnosticGrid(vec3 outDir) {
+  float lonDeg = degrees(atan(outDir.y, outDir.x));
+  float latDeg = degrees(asin(clamp(outDir.z, -1.0, 1.0)));
+
+  // 4 distinct quadrant colors with sRGB sum >= 60 (i.e. normalized linear/sRGB well above 0.25)
+  vec3 baseCol;
+  if (outDir.z >= 0.0) {
+    baseCol = (outDir.y >= 0.0) ? vec3(0.24, 0.42, 0.68) : vec3(0.26, 0.56, 0.48);
+  } else {
+    baseCol = (outDir.y >= 0.0) ? vec3(0.62, 0.36, 0.48) : vec3(0.58, 0.46, 0.26);
+  }
+
+  float dLon = abs(mod(lonDeg + 7.5, 15.0) - 7.5);
+  float dLat = abs(mod(latDeg + 7.5, 15.0) - 7.5);
+  float line = 1.0 - smoothstep(0.35, 0.85, min(dLon, dLat));
+  return mix(baseCol, vec3(0.95, 0.97, 1.0), line * 0.82);
+}
+
+vec3 renderDiagnosticChecker(float r, float phiRad) {
+  float phiDeg = mod(degrees(phiRad) + 360.0, 360.0);
+  int rIdx = int(floor(r));
+  int pIdx = int(floor(phiDeg / 30.0));
+  int parity = (rIdx + pIdx) & 1;
+  return (parity == 0) ? vec3(0.88, 0.90, 0.94) : vec3(0.24, 0.28, 0.36);
+}
+
+vec3 renderDiagnosticGmap(float g) {
+  float t = min(1.0, abs(g - 1.0) / 0.5);
+  if (g >= 1.0) {
+    return mix(vec3(1.0), vec3(0.1, 0.3, 1.0), t);
+  } else {
+    return mix(vec3(1.0), vec3(1.0, 0.15, 0.05), t);
+  }
+}
+
+void main() {
+  float aspect = uResolution.x / max(1.0, uResolution.y);
+  vec2 tanXY = vec2(
+    (2.0 * vUV.x - 1.0) * uTanHalfFovY * aspect,
+    (2.0 * vUV.y - 1.0) * uTanHalfFovY
+  );
+
+  TraceResult tr = traceRayGeodesic(tanXY);
+
+  // Diagnostic View 4: Steps heatmap
+  if (uViewMode == 4) {
+    float s = clamp(float(tr.steps) / float(uMaxSteps), 0.0, 1.0);
+    fragColor = vec4(vec3(s), 1.0);
+    return;
+  }
+
+  // Horizon hit
+  if (tr.fate == 0 || tr.fate == 3) {
+    vec3 col = (uViewMode == 0) ? tr.particleGlow : vec3(0.0);
+    fragColor = vec4(col, 1.0);
+    return;
+  }
+
+  // Disk hit
+  if (tr.fate == 1) {
+    if (uViewMode == 1) {
+      // In 'grid' view, if disk is on, show a clean grid on the disk too
+      fragColor = vec4(renderDiagnosticChecker(tr.rHit, tr.phiHit) * 0.85, 1.0);
+      return;
+    }
+    if (uViewMode == 2) {
+      fragColor = vec4(renderDiagnosticChecker(tr.rHit, tr.phiHit), 1.0);
+      return;
+    }
+    if (uViewMode == 3) {
+      fragColor = vec4(renderDiagnosticGmap(tr.g), 1.0);
+      return;
+    }
+
+    // Physical View (uViewMode == 0)
+    float T_emit = computeDiskTemperature(tr.rHit);
+    float gEff = (uDopplerOn == 1) ? tr.g : 1.0;
+    float T_obs = clamp(gEff * T_emit, 50.0, 40000.0);
+
+    float tex = diskTurbulence(tr.rHit, tr.phiHit, uTime);
+    // Soft inner and outer edges (Section 4.2 & 7.15)
+    float innerSoft = smoothstep(uRIsco, uRIsco + 0.18, tr.rHit);
+    float outerSoft = 1.0 - smoothstep(uROut - 1.8, uROut, tr.rHit);
+    float edgeMask = innerSoft * outerSoft;
+
+    // Optional Section 9 Orbiting Hotspot on disk
+    float hotspotBoost = 0.0;
+    if (uHotspotOn == 1) {
+      float omegaHS = 1.0 / (pow(uHotspotR, 1.5) + uSpin);
+      float phiHS = omegaHS * uTime;
+      float dPhi = atan(sin(tr.phiHit - phiHS), cos(tr.phiHit - phiHS));
+      float dr = (tr.rHit - uHotspotR) / max(0.5, 0.14 * uHotspotR);
+      float dp = (dPhi * tr.rHit) / max(0.8, 0.25 * uHotspotR);
+      hotspotBoost = 2.6 * exp(-0.5 * (dr * dr + dp * dp));
+    }
+
+    // Optional Section 9 TDE Tidal Stream spiral
+    float tdeBoost = 0.0;
+    if (uTDEOn == 1) {
+      float spiralPhi = 2.4 * log(max(1.0, tr.rHit / uRIsco)) - 0.08 * uTDETime;
+      float dSpiral = atan(sin(tr.phiHit - spiralPhi), cos(tr.phiHit - spiralPhi));
+      float streamWidth = 0.18 + 0.015 * tr.rHit;
+      float decay = pow(max(1.0, 1.0 + 0.05 * uTDETime), -1.6667);
+      tdeBoost = 3.5 * decay * exp(-(dSpiral * dSpiral) / (streamWidth * streamWidth));
+    }
+
+    vec3 rad = blackbodyRadiance(T_obs * (1.0 + 0.22 * hotspotBoost + 0.18 * tdeBoost));
+    vec3 diskColor = rad * (tex + hotspotBoost + tdeBoost) * edgeMask + tr.particleGlow;
+    // Sanitize against NaN/Inf (Section 7.14)
+    if (any(isnan(diskColor)) || any(isinf(diskColor))) diskColor = vec3(0.0);
+    fragColor = vec4(max(vec3(0.0), diskColor), 1.0);
+    return;
+  }
+
+  // Escaped to sky (tr.fate == 2)
+  if (uViewMode == 1) {
+    fragColor = vec4(renderDiagnosticGrid(tr.outDir), 1.0);
+    return;
+  }
+  if (uViewMode == 2 || uViewMode == 3) {
+    fragColor = vec4(clamp(sampleStarfield(tr.outDir), 0.0, 1.0), 1.0);
+    return;
+  }
+
+  vec3 skyColor = sampleStarfield(tr.outDir) + tr.particleGlow;
+  if (any(isnan(skyColor)) || any(isinf(skyColor))) skyColor = vec3(0.0);
+  fragColor = vec4(max(vec3(0.0), skyColor), 1.0);
+}
+`;
+}
+
+// GPU BH.trace MRT Fragment Shader Builder (Matches Main Render FastSchw / Kerr programs 1:1)
+function buildTraceMRTFragGLSL(fastSchw) {
+  return `#version 300 es
+precision highp float;
+in vec2 vUV;
+layout(location = 0) out vec4 out0;
+layout(location = 1) out vec4 out1;
+
+uniform sampler2D uRayTex;
+uniform ivec2 uRayTexSize;
+
+` + buildGeodesicCoreGLSL(fastSchw) + `
+
+void main() {
+  ivec2 coord = ivec2(gl_FragCoord.xy);
+  vec4 rayData = texelFetch(uRayTex, coord, 0);
+  vec2 tanXY = rayData.xy;
+
+  TraceResult tr = traceRayGeodesic(tanXY);
+
+  if (tr.fate == 1) {
+    out0 = vec4(1.0, tr.rHit, degrees(tr.phiHit), tr.g);
+  } else if (tr.fate == 2) {
+    out0 = vec4(2.0, tr.outDir.x, tr.outDir.y, tr.outDir.z);
+  } else {
+    out0 = vec4(float(tr.fate), 0.0, 0.0, 0.0);
+  }
+  out1 = vec4(tr.xi, float(tr.steps), float(tr.nCross), 0.0);
+}
+`;
+}
+
+// Bloom Threshold & Downsample Shader
+const FRAG_BLOOM_PRE = `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+uniform sampler2D uHdrTex;
+uniform float uExposureScale;
+
+void main() {
+  vec3 c = texture(uHdrTex, vUV).rgb;
+  if (any(isnan(c)) || any(isinf(c))) c = vec3(0.0);
+  vec3 scaled = c * uExposureScale;
+  float lum = dot(scaled, vec3(0.2126, 0.7152, 0.0722));
+  float knee = smoothstep(0.75, 2.2, lum);
+  fragColor = vec4(min(scaled * knee, vec3(25.0)), 1.0);
+}
+`;
+
+// Separable Gaussian Blur Shader for Bloom & EHT VLBI Beam
+const FRAG_BLUR = `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+uniform sampler2D uTex;
+uniform vec2 uStep;
+
+void main() {
+  const float w[5] = float[5](0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+  vec3 sum = texture(uTex, vUV).rgb * w[0];
+  for (int i = 1; i < 5; i++) {
+    vec2 off = uStep * float(i) * 1.45;
+    sum += texture(uTex, vUV + off).rgb * w[i];
+    sum += texture(uTex, vUV - off).rgb * w[i];
+  }
+  if (any(isnan(sum)) || any(isinf(sum))) sum = vec3(0.0);
+  fragColor = vec4(sum, 1.0);
+}
+`;
+
+// Final Composite Fragment Shader (Bloom + Exposure + ACES + Gamma + Vignette + EHT Mode)
+const FRAG_COMPOSITE = `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+
+uniform sampler2D uHdrTex;
+uniform sampler2D uBloomTex;
+uniform float uExposureScale;
+uniform int uViewMode;
+uniform int uBloomOn;
+uniform int uEHTMode;
+uniform vec2 uResolution;
+
+vec3 acesToneMap(vec3 x) {
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
+
+vec3 ehtColormap(float v) {
+  // EHT Hot-Iron / Red-Orange-Yellow-White palette
+  v = clamp(v, 0.0, 1.0);
+  return vec3(
+    smoothstep(0.0, 0.42, v),
+    smoothstep(0.28, 0.78, v),
+    smoothstep(0.65, 1.0, v)
+  );
+}
+
+void main() {
+  vec3 hdr = texture(uHdrTex, vUV).rgb;
+  if (any(isnan(hdr)) || any(isinf(hdr))) hdr = vec3(0.0);
+
+  // Diagnostic views bypass bloom, tone-mapping, vignette & grain (Section 4.4)
+  if (uViewMode != 0) {
+    fragColor = vec4(clamp(hdr, 0.0, 1.0), 1.0);
+    return;
+  }
+
+  vec3 bloom = (uBloomOn == 1) ? texture(uBloomTex, vUV).rgb : vec3(0.0);
+
+  // Optional Section 9 EHT 20 uas VLBI Resolution Mode
+  if (uEHTMode == 1) {
+    vec3 ehtSrc = mix(hdr * uExposureScale, bloom * 2.2, 0.72);
+    float flux = dot(ehtSrc, vec3(0.35, 0.50, 0.15));
+    float mapped = 1.0 - exp(-flux * 1.45);
+    fragColor = vec4(ehtColormap(mapped), 1.0);
+    return;
+  }
+
+  vec3 col = hdr * uExposureScale + bloom * 0.24;
+  vec3 ldr = acesToneMap(col);
+  // sRGB Gamma
+  ldr = pow(ldr, vec3(1.0 / 2.2));
+
+  // Subtle Vignette
+  vec2 centered = vUV - 0.5;
+  float vig = 1.0 - 0.18 * dot(centered, centered);
+  ldr *= vig;
+
+  fragColor = vec4(clamp(ldr, 0.0, 1.0), 1.0);
+}
+`;
+
+// ============================================================================
+// PART 3: WEBGL2 PIPELINE, GPU BH.TRACE, ORBIT LAB & SCIENTIFIC PLOTS
+// ============================================================================
+
+const glCanvas = document.getElementById('glCanvas');
+const hudCanvas = document.getElementById('hudCanvas');
+const hudCtx = hudCanvas.getContext('2d');
+
+const gl = glCanvas.getContext('webgl2', {
+  alpha: false,
+  depth: false,
+  stencil: false,
+  antialias: false,
+  preserveDrawingBuffer: true,
+  powerPreference: 'high-performance'
+});
+
+if (!gl) {
+  alert('您的浏览器不支持 WebGL2，无法运行本广义相对论黑洞实时模型。');
+}
+
+const extFloat = gl.getExtension('EXT_color_buffer_float');
+const extFloatLinear = gl.getExtension('OES_texture_float_linear');
+const hasFloatFBO = Boolean(extFloat);
+
+function compileShader(type, src) {
+  const sh = gl.createShader(type);
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    const info = gl.getShaderInfoLog(sh);
+    console.error('Shader compile error:', info, src);
+    throw new Error('Shader compile failed: ' + info);
+  }
+  return sh;
+}
+
+function createProgram(vsSrc, fsSrc) {
+  const vs = compileShader(gl.VERTEX_SHADER, vsSrc);
+  const fs = compileShader(gl.FRAGMENT_SHADER, fsSrc);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    const info = gl.getProgramInfoLog(prog);
+    console.error('Program link error:', info);
+    throw new Error('Program link failed: ' + info);
+  }
+  gl.deleteShader(vs);
+  gl.deleteShader(fs);
+  return prog;
+}
+
+// Compile Dual Ray-Tracing Programs (Fast Schwarzschild a=0 & Full Kerr a>0) + Post-processing + GPU Trace
+const progMainSchw  = createProgram(VERT_QUAD, buildMainRenderFragGLSL(true));
+const progMainKerr  = createProgram(VERT_QUAD, buildMainRenderFragGLSL(false));
+const progTraceSchw = hasFloatFBO ? createProgram(VERT_QUAD, buildTraceMRTFragGLSL(true)) : null;
+const progTraceKerr = hasFloatFBO ? createProgram(VERT_QUAD, buildTraceMRTFragGLSL(false)) : null;
+const progBloomPre  = createProgram(VERT_QUAD, FRAG_BLOOM_PRE);
+const progBlur      = createProgram(VERT_QUAD, FRAG_BLUR);
+const progComp      = createProgram(VERT_QUAD, FRAG_COMPOSITE);
+
+const emptyVAO = gl.createVertexArray();
+
+// Cache Uniform Locations
+function getUniforms(prog, names) {
+  const map = {};
+  for (const n of names) map[n] = gl.getUniformLocation(prog, n);
+  return map;
+}
+
+const COMMON_UNIFORMS = [
+  'uSpin', 'uRHorizon', 'uRIsco', 'uROut', 'uCamR', 'uCamPos', 'uCamF', 'uCamR_vec', 'uCamU_vec',
+  'uDiskOn', 'uLensingOn', 'uKStep', 'uMaxSteps',
+  'uNT_x0', 'uNT_x1', 'uNT_x2', 'uNT_x3', 'uNT_c1', 'uNT_c2', 'uNT_c3', 'uNT_Fmax',
+  'uNumParticles', 'uParticlePos[0]', 'uParticleCol[0]',
+  'uResolution', 'uTanHalfFovY', 'uTime', 'uTmax', 'uViewMode', 'uDopplerOn', 'uStarsOn',
+  'uHotspotOn', 'uHotspotR', 'uTDEOn', 'uTDERt', 'uTDETime'
+];
+
+const uMainSchw  = getUniforms(progMainSchw, COMMON_UNIFORMS);
+const uMainKerr  = getUniforms(progMainKerr, COMMON_UNIFORMS);
+const uTraceSchw = progTraceSchw ? getUniforms(progTraceSchw, [...COMMON_UNIFORMS, 'uRayTex', 'uRayTexSize']) : null;
+const uTraceKerr = progTraceKerr ? getUniforms(progTraceKerr, [...COMMON_UNIFORMS, 'uRayTex', 'uRayTexSize']) : null;
+const uBloomPre  = getUniforms(progBloomPre, ['uHdrTex', 'uExposureScale']);
+const uBlur      = getUniforms(progBlur, ['uTex', 'uStep']);
+const uComp      = getUniforms(progComp, ['uHdrTex', 'uBloomTex', 'uExposureScale', 'uViewMode', 'uBloomOn', 'uEHTMode', 'uResolution']);
+
+// Render Targets & Adaptive Resolution State
+let cssW = window.innerWidth;
+let cssH = window.innerHeight;
+let renderScale = 1.0;
+let renderW = Math.max(320, Math.floor(cssW * renderScale));
+let renderH = Math.max(180, Math.floor(cssH * renderScale));
+
+let hdrFBO = null, hdrTex = null;
+let bloomFBO1 = null, bloomTex1 = null;
+let bloomFBO2 = null, bloomTex2 = null;
+
+function createRenderTex(w, h, internalFormat, format, type, filter) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return tex;
+}
+
+function rebuildFramebuffers() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cssW = Math.max(1, window.innerWidth);
+  cssH = Math.max(1, window.innerHeight);
+
+  glCanvas.width = Math.floor(cssW * dpr);
+  glCanvas.height = Math.floor(cssH * dpr);
+  hudCanvas.width = Math.floor(cssW * dpr);
+  hudCanvas.height = Math.floor(cssH * dpr);
+  hudCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  renderW = Math.max(240, Math.floor(cssW * renderScale));
+  renderH = Math.max(135, Math.floor(cssH * renderScale));
+
+  const internalFmt = hasFloatFBO ? gl.RGBA16F : gl.RGBA8;
+  const type = hasFloatFBO ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE;
+  const filter = (hasFloatFBO && !extFloatLinear) ? gl.NEAREST : gl.LINEAR;
+
+  if (hdrFBO) { gl.deleteFramebuffer(hdrFBO); gl.deleteTexture(hdrTex); }
+  if (bloomFBO1) { gl.deleteFramebuffer(bloomFBO1); gl.deleteTexture(bloomTex1); }
+  if (bloomFBO2) { gl.deleteFramebuffer(bloomFBO2); gl.deleteTexture(bloomTex2); }
+
+  hdrTex = createRenderTex(renderW, renderH, internalFmt, gl.RGBA, type, filter);
+  hdrFBO = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, hdrFBO);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, hdrTex, 0);
+
+  const bw = Math.max(64, Math.floor(renderW * 0.5));
+  const bh = Math.max(36, Math.floor(renderH * 0.5));
+  bloomTex1 = createRenderTex(bw, bh, internalFmt, gl.RGBA, type, filter);
+  bloomFBO1 = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, bloomTex1, 0);
+
+  bloomTex2 = createRenderTex(bw, bh, internalFmt, gl.RGBA, type, filter);
+  bloomFBO2 = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO2);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, bloomTex2, 0);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
+// Dedicated MRT Framebuffer for GPU BH.trace(rays) (Section 6.6 & 7.17)
+const TRACE_TEX_W = 256;
+const TRACE_TEX_H = 16; // Up to 4096 rays per batch
+let traceFBO = null, traceOutTex0 = null, traceOutTex1 = null, traceInTex = null;
+const traceInBuf = new Float32Array(TRACE_TEX_W * TRACE_TEX_H * 4);
+
+if (hasFloatFBO) {
+  traceInTex = createRenderTex(TRACE_TEX_W, TRACE_TEX_H, gl.RGBA32F, gl.RGBA, gl.FLOAT, gl.NEAREST);
+  traceOutTex0 = createRenderTex(TRACE_TEX_W, TRACE_TEX_H, gl.RGBA32F, gl.RGBA, gl.FLOAT, gl.NEAREST);
+  traceOutTex1 = createRenderTex(TRACE_TEX_W, TRACE_TEX_H, gl.RGBA32F, gl.RGBA, gl.FLOAT, gl.NEAREST);
+  traceFBO = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, traceFBO);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, traceOutTex0, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, traceOutTex1, 0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
+// Upload Shared Geodesic & Physics Uniforms to any Geodesic Program
+function bindGeodesicUniforms(u, kStepVal, maxStepsVal) {
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const rad = computeRadii(a);
+  updateNTCache(a);
+  const cam = getCameraBasis(state.camR, state.camIncl, state.camAz);
+
+  gl.uniform1f(u.uSpin, a);
+  gl.uniform1f(u.uRHorizon, rad.horizon);
+  gl.uniform1f(u.uRIsco, rad.iscoPro);
+  gl.uniform1f(u.uROut, state.rOut);
+  gl.uniform1f(u.uCamR, cam.Rc);
+  gl.uniform3fv(u.uCamPos, cam.pos);
+  gl.uniform3fv(u.uCamF, cam.F);
+  gl.uniform3fv(u.uCamR_vec, cam.R);
+  gl.uniform3fv(u.uCamU_vec, cam.U);
+  gl.uniform1i(u.uDiskOn, state.disk ? 1 : 0);
+  gl.uniform1i(u.uLensingOn, state.lensing ? 1 : 0);
+  gl.uniform1f(u.uKStep, kStepVal);
+  gl.uniform1i(u.uMaxSteps, maxStepsVal);
+
+  // Novikov-Thorne precomputed coefficients
+  const x0 = Math.sqrt(rad.iscoPro);
+  const acosA3 = Math.acos(a) / 3;
+  const x1 = 2 * Math.cos(acosA3 - Math.PI / 3);
+  const x2 = 2 * Math.cos(acosA3 + Math.PI / 3);
+  const x3 = -2 * Math.cos(acosA3);
+  const c1 = (3 * (x1 - a) * (x1 - a)) / (x1 * (x1 - x2) * (x1 - x3));
+  const c2 = a > 1e-6 ? (3 * (x2 - a) * (x2 - a)) / (x2 * (x2 - x1) * (x2 - x3)) : 0;
+  const c3 = (3 * (x3 - a) * (x3 - a)) / (x3 * (x3 - x1) * (x3 - x2));
+
+  gl.uniform1f(u.uNT_x0, x0);
+  gl.uniform1f(u.uNT_x1, x1);
+  gl.uniform1f(u.uNT_x2, x2);
+  gl.uniform1f(u.uNT_x3, x3);
+  gl.uniform1f(u.uNT_c1, c1);
+  gl.uniform1f(u.uNT_c2, c2);
+  gl.uniform1f(u.uNT_c3, c3);
+  gl.uniform1f(u.uNT_Fmax, cachedNTFmax);
+}
+
+// CPU Mirror of Geodesic Tracer (used for stats estimation and fallback if float FBO unavailable)
+function traceRayCPU(tanX, tanY, kStep = 0.05, maxSteps = 320) {
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const A = -a;
+  const rad = computeRadii(a);
+  const r_h = rad.horizon;
+  const r_isco = rad.iscoPro;
+  const cam = getCameraBasis(state.camR, state.camIncl, state.camAz);
+
+  let dx = cam.F[0] + tanX * cam.R[0] + tanY * cam.U[0];
+  let dy = cam.F[1] + tanX * cam.R[1] + tanY * cam.U[1];
+  let dz = cam.F[2] + tanX * cam.R[2] + tanY * cam.U[2];
+  const dn = Math.hypot(dx, dy, dz);
+  dx /= dn; dy /= dn; dz /= dn;
+
+  let x = cam.pos[0], y = cam.pos[1], z = cam.pos[2];
+
+  if (!state.lensing) {
+    const bDot = x * dx + y * dy + z * dz;
+    const cHor = x * x + y * y + z * z - r_h * r_h;
+    const discHor = bDot * bDot - cHor;
+    let tHor = Infinity;
+    if (discHor >= 0 && bDot < 0) {
+      const t1 = -bDot - Math.sqrt(discHor);
+      if (t1 > 0) tHor = t1;
+    }
+    const xi0 = -(x * dy - y * dx);
+    let nCross = 0;
+    if (Math.abs(dz) > 1e-12) {
+      const tDisk = -z / dz;
+      if (tDisk > 0 && tDisk < tHor) {
+        nCross = 1;
+        if (state.disk) {
+          const xh = x + tDisk * dx, yh = y + tDisk * dy;
+          const rHit2 = xh * xh + yh * yh - a * a;
+          if (rHit2 > 0) {
+            const rHit = Math.sqrt(rHit2);
+            if (rHit >= r_isco && rHit <= state.rOut) {
+              const phiHit = Math.atan2(yh, xh) * 180 / Math.PI;
+              const rm15 = Math.pow(rHit, -1.5);
+              const g = Math.sqrt(Math.max(0, 1 - 3 / rHit + 2 * a * rm15)) / (1 + (a - xi0) * rm15);
+              return { fate: 'disk', rHit, phiHit, g, nCross, xi: xi0, steps: 1 };
+            }
+          }
+        }
+      }
+    }
+    if (tHor < Infinity) return { fate: 'horizon', nCross, xi: xi0, steps: 1 };
+    return { fate: 'escape', out: [dx, dy, dz], nCross, xi: xi0, steps: 1 };
+  }
+
+  const R_b = 500.0;
+
+  // Section 3.2 Fast Schwarzschild path when a == 0 (matches FAST_SCHW == 1 in GLSL)
+  if (a < 1e-6) {
+    const sCam = Math.sqrt(Math.max(1e-6, 1 - 2 / cam.Rc));
+    let vx, vy, vz;
+    let nCross = 0;
+    if (cam.Rc > R_b) {
+      const tan2 = tanX * tanX + tanY * tanY;
+      const denom = sCam * sCam + tan2;
+      const bTanX = cam.Rc * tanX, bTanY = cam.Rc * tanY;
+      const b2 = (bTanX * bTanX + bTanY * bTanY) / denom;
+      let dcx = sCam * cam.F[0] + tanX * cam.R[0] + tanY * cam.U[0];
+      let dcy = sCam * cam.F[1] + tanX * cam.R[1] + tanY * cam.U[1];
+      let dcz = sCam * cam.F[2] + tanX * cam.R[2] + tanY * cam.U[2];
+      const dcn = Math.hypot(dcx, dcy, dcz);
+      dcx /= dcn; dcy /= dcn; dcz /= dcn;
+      if (b2 >= R_b * R_b) {
+        if (Math.abs(dcz) > 1e-12 && (-z / dcz) > 0) nCross = 1;
+        return { fate: 'escape', out: [dcx, dcy, dcz], nCross, xi: 0, steps: 1 };
+      }
+      const cF = (-tan2 * cam.Rc) / denom, cRU = sCam / denom;
+      const xPca = cF * cam.F[0] + cRU * (bTanX * cam.R[0] + bTanY * cam.U[0]);
+      const yPca = cF * cam.F[1] + cRU * (bTanX * cam.R[1] + bTanY * cam.U[1]);
+      const zPca = cF * cam.F[2] + cRU * (bTanX * cam.R[2] + bTanY * cam.U[2]);
+      const halfChord = Math.sqrt(Math.max(0, R_b * R_b - b2));
+      const nx0 = xPca - halfChord * dcx, ny0 = yPca - halfChord * dcy, nz0 = zPca - halfChord * dcz;
+      if (z * nz0 < 0) nCross++;
+      x = nx0; y = ny0; z = nz0;
+      vx = dcx; vy = dcy; vz = dcz;
+    } else {
+      const rx0 = x / cam.Rc, ry0 = y / cam.Rc, rz0 = z / cam.Rc;
+      const dDotR = dx * rx0 + dy * ry0 + dz * rz0;
+      vx = dx + (sCam - 1) * dDotR * rx0;
+      vy = dy + (sCam - 1) * dDotR * ry0;
+      vz = dz + (sCam - 1) * dDotR * rz0;
+    }
+
+    const hx = y * vz - z * vy, hy = z * vx - x * vz, hz = x * vy - y * vx;
+    const h2 = hx * hx + hy * hy + hz * hz;
+    const rInit = Math.hypot(x, y, z);
+    const vInf = Math.sqrt(Math.max(1e-10, (vx * vx + vy * vy + vz * vz) - 2 * h2 / (rInit * rInit * rInit)));
+    const xi = -hz / vInf;
+    const R_esc = Math.max(1.05 * Math.min(cam.Rc, R_b), 100);
+
+    function sAcc(px, py, pz) {
+      const r2 = Math.max(1e-8, px * px + py * py + pz * pz);
+      const r = Math.sqrt(r2);
+      const f = -3 * h2 / (r2 * r2 * r);
+      return [px * f, py * f, pz * f];
+    }
+
+    for (let step = 1; step <= maxSteps; step++) {
+      const r = Math.hypot(x, y, z);
+      if (r < 2.0) return { fate: 'horizon', nCross, xi, steps: step };
+      if (r > R_esc && (x * vx + y * vy + z * vz) > 0) {
+        const vn = Math.hypot(vx, vy, vz);
+        return { fate: 'escape', out: [vx / vn, vy / vn, vz / vn], nCross, xi, steps: step };
+      }
+      const vLen = Math.max(1e-6, Math.hypot(vx, vy, vz));
+      const h = Math.min(kStep * r, 0.5 * Math.max(r - 2.0, 0.008)) / vLen;
+
+      const a1 = sAcc(x, y, z);
+      const k1x = vx, k1y = vy, k1z = vz, k1vx = a1[0], k1vy = a1[1], k1vz = a1[2];
+      const a2 = sAcc(x + 0.5*h*k1x, y + 0.5*h*k1y, z + 0.5*h*k1z);
+      const k2x = vx + 0.5*h*k1vx, k2y = vy + 0.5*h*k1vy, k2z = vz + 0.5*h*k1vz, k2vx = a2[0], k2vy = a2[1], k2vz = a2[2];
+      const a3 = sAcc(x + 0.5*h*k2x, y + 0.5*h*k2y, z + 0.5*h*k2z);
+      const k3x = vx + 0.5*h*k2vx, k3y = vy + 0.5*h*k2vy, k3z = vz + 0.5*h*k2vz, k3vx = a3[0], k3vy = a3[1], k3vz = a3[2];
+      const a4 = sAcc(x + h*k3x, y + h*k3y, z + h*k3z);
+      const k4x = vx + h*k3vx, k4y = vy + h*k3vy, k4z = vz + h*k3vz, k4vx = a4[0], k4vy = a4[1], k4vz = a4[2];
+
+      const nx = x + (h / 6) * (k1x + 2*k2x + 2*k3x + k4x);
+      const ny = y + (h / 6) * (k1y + 2*k2y + 2*k3y + k4y);
+      const nz = z + (h / 6) * (k1z + 2*k2z + 2*k3z + k4z);
+      const nvx = vx + (h / 6) * (k1vx + 2*k2vx + 2*k3vx + k4vx);
+      const nvy = vy + (h / 6) * (k1vy + 2*k2vy + 2*k3vy + k4vy);
+      const nvz = vz + (h / 6) * (k1vz + 2*k2vz + 2*k3vz + k4vz);
+
+      if (z * nz < 0) {
+        nCross++;
+        if (state.disk) {
+          const frac = Math.abs(z) / (Math.abs(z) + Math.abs(nz));
+          const xh = x + frac * (nx - x), yh = y + frac * (ny - y);
+          const rHit = Math.hypot(xh, yh);
+          if (rHit >= r_isco && rHit <= state.rOut) {
+            const phiHit = Math.atan2(yh, xh) * 180 / Math.PI;
+            const rm15 = Math.pow(rHit, -1.5);
+            const g = Math.sqrt(Math.max(0, 1 - 3 / rHit)) / (1 - xi * rm15);
+            return { fate: 'disk', rHit, phiHit, g, nCross, xi, steps: step };
+          }
+        }
+      }
+      x = nx; y = ny; z = nz; vx = nvx; vy = nvy; vz = nvz;
+    }
+    return { fate: 'budget', nCross, xi, steps: maxSteps };
+  }
+
+  function kGeom(px, py, pz) {
+    const R2 = px * px + py * py + pz * pz;
+    const A2 = A * A;
+    const w = R2 - A2;
+    const r2 = 0.5 * (w + Math.sqrt(Math.max(0, w * w + 4 * A2 * pz * pz)));
+    const r = Math.sqrt(Math.max(1e-12, r2));
+    const r3 = r * r2;
+    const den = r2 * r2 + A2 * pz * pz;
+    const f = (2 * r3) / den;
+    const q = r2 + A2;
+    const lx = (r * px + A * py) / q;
+    const ly = (r * py - A * px) / q;
+    const lz = pz / r;
+    return { r, r2, r3, den, f, q, lx, ly, lz };
+  }
+
+  function kRHS(px, py, pz, mx, my, mz) {
+    const A2 = A * A;
+    const R2 = px * px + py * py + pz * pz;
+    const w = R2 - A2;
+    const r2 = 0.5 * (w + Math.sqrt(Math.max(0, w * w + 4 * A2 * pz * pz)));
+    const r = Math.sqrt(Math.max(1e-12, r2));
+    const r3 = r * r2;
+    const den = r2 * r2 + A2 * pz * pz;
+    const f = (2 * r3) / den;
+    const q = r2 + A2;
+    const lx = (r * px + A * py) / q;
+    const ly = (r * py - A * px) / q;
+    const lz = pz / r;
+    const Phi = 1 + lx * mx + ly * my + lz * mz;
+
+    const dxdl = mx - f * Phi * lx;
+    const dydl = my - f * Phi * ly;
+    const dzdl = mz - f * Phi * lz;
+
+    const grx = (px * r3) / den, gry = (py * r3) / den, grz = (pz * r * q) / den;
+    const invDen2 = 1 / (den * den);
+    const dfdr = (6 * r2 * den - 8 * r3 * r3) * invDen2;
+    const dfdz_r = (-4 * r3 * A2 * pz) * invDen2;
+    const gfx = dfdr * grx, gfy = dfdr * gry, gfz = dfdr * grz + dfdz_r;
+
+    const N = (r * px + A * py) * mx + (r * py - A * px) * my;
+    const xmx = px * mx + py * my;
+    const gNx = grx * xmx + (r * mx - A * my);
+    const gNy = gry * xmx + (r * my + A * mx);
+    const gNz = grz * xmx;
+
+    const invQ = 1 / q, twoRN = (2 * r * N) / (q * q), zMz = (pz * mz) / r2;
+    const glpx = gNx * invQ - twoRN * grx - zMz * grx;
+    const glpy = gNy * invQ - twoRN * gry - zMz * gry;
+    const glpz = gNz * invQ - twoRN * grz + mz / r - zMz * grz;
+
+    const hP2 = 0.5 * Phi * Phi, fP = f * Phi;
+    return [dxdl, dydl, dzdl, hP2 * gfx + fP * glpx, hP2 * gfy + fP * glpy, hP2 * gfz + fP * glpz];
+  }
+
+  let px, py, pz;
+  let nCross = 0;
+
+  if (cam.Rc > R_b) {
+    const gCam = kGeom(x, y, z);
+    const sCam = Math.sqrt(Math.max(1e-6, 1 - gCam.f));
+    const tan2 = tanX * tanX + tanY * tanY;
+    const denom = sCam * sCam + tan2;
+    const bTanX = cam.Rc * tanX, bTanY = cam.Rc * tanY;
+    const b2 = (bTanX * bTanX + bTanY * bTanY) / denom;
+    let dcx = sCam * cam.F[0] + tanX * cam.R[0] + tanY * cam.U[0];
+    let dcy = sCam * cam.F[1] + tanX * cam.R[1] + tanY * cam.U[1];
+    let dcz = sCam * cam.F[2] + tanX * cam.R[2] + tanY * cam.U[2];
+    const dcn = Math.hypot(dcx, dcy, dcz);
+    dcx /= dcn; dcy /= dcn; dcz /= dcn;
+    if (b2 >= R_b * R_b) {
+      if (Math.abs(dcz) > 1e-12 && (-z / dcz) > 0) nCross = 1;
+      return { fate: 'escape', out: [dcx, dcy, dcz], nCross, xi: 0, steps: 1 };
+    }
+    const cF = (-tan2 * cam.Rc) / denom, cRU = sCam / denom;
+    const xPca = cF * cam.F[0] + cRU * (bTanX * cam.R[0] + bTanY * cam.U[0]);
+    const yPca = cF * cam.F[1] + cRU * (bTanX * cam.R[1] + bTanY * cam.U[1]);
+    const zPca = cF * cam.F[2] + cRU * (bTanX * cam.R[2] + bTanY * cam.U[2]);
+    const halfChord = Math.sqrt(Math.max(0, R_b * R_b - b2));
+    const nx0 = xPca - halfChord * dcx, ny0 = yPca - halfChord * dcy, nz0 = zPca - halfChord * dcz;
+    if (z * nz0 < 0) nCross++;
+    x = nx0; y = ny0; z = nz0;
+
+    const g0 = kGeom(x, y, z);
+    const rLen = Math.hypot(x, y, z);
+    const rx = x / rLen, ry = y / rLen, rz = z / rLen;
+    const dDotR = dcx * rx + dcy * ry + dcz * rz;
+    const s0 = Math.sqrt(Math.max(1e-6, 1 - g0.f));
+    let dx1 = dDotR * rx + s0 * (dcx - dDotR * rx);
+    let dy1 = dDotR * ry + s0 * (dcy - dDotR * ry);
+    let dz1 = dDotR * rz + s0 * (dcz - dDotR * rz);
+    const dn1 = Math.hypot(dx1, dy1, dz1);
+    dx1 /= dn1; dy1 /= dn1; dz1 /= dn1;
+    const c = g0.lx * dx1 + g0.ly * dy1 + g0.lz * dz1;
+    const factor = ((s0 - 1) * c + g0.f * (1 + c) / s0);
+    px = (dx1 + g0.lx * factor) / s0;
+    py = (dy1 + g0.ly * factor) / s0;
+    pz = (dz1 + g0.lz * factor) / s0;
+  } else {
+    const g0 = kGeom(x, y, z);
+    const s = Math.sqrt(Math.max(1e-6, 1 - g0.f));
+    const c = g0.lx * dx + g0.ly * dy + g0.lz * dz;
+    const factor = ((s - 1) * c + g0.f * (1 + c) / s);
+    px = (dx + g0.lx * factor) / s;
+    py = (dy + g0.ly * factor) / s;
+    pz = (dz + g0.lz * factor) / s;
+  }
+
+  const xi = -(x * py - y * px);
+  const R_esc = Math.max(1.05 * Math.min(cam.Rc, R_b), 100);
+
+  for (let step = 1; step <= maxSteps; step++) {
+    const gCur = kGeom(x, y, z);
+    const r = gCur.r;
+    if (r < r_h) return { fate: 'horizon', nCross, xi, steps: step };
+    if (r > R_esc && (x * px + y * py + z * pz) > 0) {
+      const rhs = kRHS(x, y, z, px, py, pz);
+      const vn = Math.hypot(rhs[0], rhs[1], rhs[2]);
+      return { fate: 'escape', out: [rhs[0] / vn, rhs[1] / vn, rhs[2] / vn], nCross, xi, steps: step };
+    }
+    const h = Math.min(kStep * r, 0.5 * Math.max(r - r_h, 0.008));
+    const k1 = kRHS(x, y, z, px, py, pz);
+    const k2 = kRHS(x+0.5*h*k1[0], y+0.5*h*k1[1], z+0.5*h*k1[2], px+0.5*h*k1[3], py+0.5*h*k1[4], pz+0.5*h*k1[5]);
+    const k3 = kRHS(x+0.5*h*k2[0], y+0.5*h*k2[1], z+0.5*h*k2[2], px+0.5*h*k2[3], py+0.5*h*k2[4], pz+0.5*h*k2[5]);
+    const k4 = kRHS(x+h*k3[0], y+h*k3[1], z+h*k3[2], px+h*k3[3], py+h*k3[4], pz+h*k3[5]);
+
+    const nx = x + (h / 6) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
+    const ny = y + (h / 6) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
+    const nz = z + (h / 6) * (k1[2] + 2*k2[2] + 2*k3[2] + k4[2]);
+    const npx = px + (h / 6) * (k1[3] + 2*k2[3] + 2*k3[3] + k4[3]);
+    const npy = py + (h / 6) * (k1[4] + 2*k2[4] + 2*k3[4] + k4[4]);
+    const npz = pz + (h / 6) * (k1[5] + 2*k2[5] + 2*k3[5] + k4[5]);
+
+    if (z * nz < 0) {
+      nCross++;
+      if (state.disk) {
+        const frac = Math.abs(z) / (Math.abs(z) + Math.abs(nz));
+        const xh = x + frac * (nx - x), yh = y + frac * (ny - y);
+        const rHit2 = xh * xh + yh * yh - a * a;
+        if (rHit2 > 0) {
+          const rHit = Math.sqrt(rHit2);
+          if (rHit >= r_isco && rHit <= state.rOut) {
+            const phiHit = Math.atan2(yh, xh) * 180 / Math.PI;
+            const rm15 = Math.pow(rHit, -1.5);
+            const g = Math.sqrt(Math.max(0, 1 - 3 / rHit + 2 * a * rm15)) / (1 + (a - xi) * rm15);
+            return { fate: 'disk', rHit, phiHit, g, nCross, xi, steps: step };
+          }
+        }
+      }
+    }
+    x = nx; y = ny; z = nz; px = npx; py = npy; pz = npz;
+  }
+  return { fate: 'budget', nCross, xi, steps: maxSteps };
+}
+
+// 6.6 GPU BH.trace(rays) Execution via MRT RGBA32F Framebuffer Readback
+function traceRaysAPI(rays) {
+  if (!Array.isArray(rays)) return [];
+  const total = rays.length;
+  if (total === 0) return [];
+
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const useFastSchw = (a < 1e-6);
+  const progTrace = useFastSchw ? progTraceSchw : progTraceKerr;
+  const uTrace = useFastSchw ? uTraceSchw : uTraceKerr;
+
+  if (!hasFloatFBO || !progTrace) {
+    return rays.map(pair => traceRayCPU(Number(pair[0]) || 0, Number(pair[1]) || 0, 0.05, 320));
+  }
+
+  const results = [];
+  const maxBatch = TRACE_TEX_W * TRACE_TEX_H;
+  const FATE_NAMES = ['horizon', 'disk', 'escape', 'budget'];
+
+  for (let offset = 0; offset < total; offset += maxBatch) {
+    const count = Math.min(maxBatch, total - offset);
+    const rows = Math.min(TRACE_TEX_H, Math.ceil(count / TRACE_TEX_W));
+    const cols = rows === 1 ? count : TRACE_TEX_W;
+
+    for (let i = 0; i < count; i++) {
+      const r = rays[offset + i];
+      traceInBuf[i * 4 + 0] = Number(r[0]) || 0;
+      traceInBuf[i * 4 + 1] = Number(r[1]) || 0;
+      traceInBuf[i * 4 + 2] = 0;
+      traceInBuf[i * 4 + 3] = 0;
+    }
+
+    gl.bindTexture(gl.TEXTURE_2D, traceInTex);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, TRACE_TEX_W, rows, gl.RGBA, gl.FLOAT, traceInBuf.subarray(0, TRACE_TEX_W * rows * 4));
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, traceFBO);
+    gl.viewport(0, 0, cols, rows);
+    gl.disable(gl.BLEND);
+    gl.useProgram(progTrace);
+
+    bindGeodesicUniforms(uTrace, 0.05, 320);
+    gl.uniform1i(uTrace.uNumParticles, 0);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, traceInTex);
+    gl.uniform1i(uTrace.uRayTex, 0);
+    gl.uniform2i(uTrace.uRayTexSize, TRACE_TEX_W, TRACE_TEX_H);
+
+    gl.bindVertexArray(emptyVAO);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    const outBuf0 = new Float32Array(cols * rows * 4);
+    const outBuf1 = new Float32Array(cols * rows * 4);
+    gl.readBuffer(gl.COLOR_ATTACHMENT0);
+    gl.readPixels(0, 0, cols, rows, gl.RGBA, gl.FLOAT, outBuf0);
+    gl.readBuffer(gl.COLOR_ATTACHMENT1);
+    gl.readPixels(0, 0, cols, rows, gl.RGBA, gl.FLOAT, outBuf1);
+
+    for (let i = 0; i < count; i++) {
+      const col = i % TRACE_TEX_W;
+      const row = Math.floor(i / TRACE_TEX_W);
+      const idx = (row * cols + col) * 4;
+
+      const fateCode = Math.round(outBuf0[idx + 0]);
+      const fate = FATE_NAMES[fateCode] || 'budget';
+      const xi = outBuf1[idx + 0];
+      const steps = Math.round(outBuf1[idx + 1]);
+      const nCross = Math.round(outBuf1[idx + 2]);
+
+      if (fate === 'disk') {
+        let phiHit = outBuf0[idx + 2];
+        if (phiHit <= -180) phiHit += 360;
+        if (phiHit > 180) phiHit -= 360;
+        results.push({
+          fate,
+          rHit: outBuf0[idx + 1],
+          phiHit,
+          g: outBuf0[idx + 3],
+          nCross,
+          xi,
+          steps
+        });
+      } else if (fate === 'escape') {
+        const ox = outBuf0[idx + 1], oy = outBuf0[idx + 2], oz = outBuf0[idx + 3];
+        const on = Math.hypot(ox, oy, oz) || 1;
+        results.push({
+          fate,
+          out: [ox / on, oy / on, oz / on],
+          nCross,
+          xi,
+          steps
+        });
+      } else {
+        results.push({
+          fate,
+          nCross,
+          xi,
+          steps
+        });
+      }
+    }
+  }
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return results;
+}
+
+// ============================================================================
+// ORBIT LABORATORY PARTICLE SYSTEM (3.7 & 6.3)
+// ============================================================================
+
+const PARTICLE_COLORS = [
+  [0.30, 0.85, 1.00],
+  [1.00, 0.62, 0.25],
+  [0.45, 0.95, 0.55],
+  [0.95, 0.45, 0.85],
+  [1.00, 0.88, 0.32],
+  [0.65, 0.55, 1.00]
+];
+
+let particles = [];
+let selectedParticleId = null;
+let particleIdCounter = 1;
+
+function blToCartesian(r, th, phi, a) {
+  const rho = Math.sqrt(r * r + a * a);
+  const sinth = Math.sin(th);
+  return [
+    rho * sinth * Math.cos(phi),
+    rho * sinth * Math.sin(phi),
+    r * Math.cos(th)
+  ];
+}
+
+function createParticle(config) {
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const r_h = 1 + Math.sqrt(Math.max(0, 1 - a * a));
+  const r0 = Number(config.r0);
+  const th0 = (Number(config.theta0 ?? 90) * Math.PI) / 180;
+  const E = Number(config.E);
+  const L = Number(config.L);
+  const pth0 = Number(config.pTheta ?? 0);
+  const prSign = (config.prSign ?? 1) >= 0 ? 1 : -1;
+
+  const sinth0 = Math.sin(th0), costh0 = Math.cos(th0);
+  const Sigma0 = r0 * r0 + a * a * costh0 * costh0;
+  const Delta0 = r0 * r0 - 2 * r0 + a * a;
+  if (Delta0 <= 0 || r0 <= r_h) return null;
+
+  const P0 = (r0 * r0 + a * a) * E - a * L;
+  const W0 = L - a * E * sinth0 * sinth0;
+  const pr2 = -(Sigma0 + pth0 * pth0 + (W0 * W0) / (sinth0 * sinth0) - (P0 * P0) / Delta0) / Delta0;
+  if (pr2 < -1e-7) return null;
+
+  const pr0 = prSign * Math.sqrt(Math.max(0, pr2));
+  const col = PARTICLE_COLORS[(particleIdCounter - 1) % PARTICLE_COLORS.length];
+
+  // Carter constant Q for effective potential display (Section 6.3)
+  const Q = pth0 * pth0 + costh0 * costh0 * (a * a * (1 - E * E) + (L * L) / (sinth0 * sinth0));
+
+  // Precompute Newtonian closed-ellipse comparison points if bound
+  const newtonTrail = [];
+  const pNewt = L * L;
+  const eNewt = Math.max(0, Math.min(0.96, Number(config.eHint ?? Math.abs(1 - pNewt / r0))));
+  if (pNewt > 1.5 && eNewt < 0.98) {
+    for (let k = 0; k <= 120; k++) {
+      const ang = (2 * Math.PI * k) / 120;
+      const rn = pNewt / (1 + eNewt * Math.cos(ang));
+      newtonTrail.push([rn * Math.cos(ang), rn * Math.sin(ang), 0]);
+    }
+  }
+
+  const p = {
+    id: particleIdCounter++,
+    label: config.label || `粒子 #${particleIdCounter - 1}`,
+    E, L, Q,
+    r0,
+    st: { r: r0, th: th0, phi: 0, t: 0, pr: pr0, pth: pth0 },
+    tau: 0,
+    plunged: false,
+    radialCycles: 0,
+    apoPhis: [],
+    cumPrecessionDeg: 0,
+    color: col,
+    trail: [blToCartesian(r0, th0, 0, a)],
+    newtonTrail
+  };
+
+  particles.push(p);
+  selectedParticleId = p.id;
+  if (typeof refreshParticleListUI === 'function') refreshParticleListUI();
+  return p;
+}
+
+function addPresetParticle(presetKey) {
+  const a = state.spin;
+  if (presetKey === 'p10e05') {
+    const p = 10, e = 0.5;
+    const E = Math.sqrt(((p - 2) ** 2 - 4 * e * e) / (p * (p - 3 - e * e)));
+    const L = Math.sqrt((p * p) / (p - 3 - e * e));
+    createParticle({ label: '玫瑰进动 (p=10,e=0.5)', E, L, r0: 10, prSign: 1, eHint: 0.5 });
+  } else if (presetKey === 'p20e05') {
+    const p = 20, e = 0.5;
+    const E = Math.sqrt(((p - 2) ** 2 - 4 * e * e) / (p * (p - 3 - e * e)));
+    const L = Math.sqrt((p * p) / (p - 3 - e * e));
+    createParticle({ label: '史瓦西 (p=20,e=0.5)', E, L, r0: 20, prSign: 1, eHint: 0.5 });
+  } else if (presetKey === 'kerrEq') {
+    createParticle({ label: '克尔偏心 (E=0.95,L=3)', E: 0.95, L: 3.0, r0: 10, prSign: 1, eHint: 0.52 });
+  } else if (presetKey === 'kerrTilt') {
+    createParticle({ label: '倾斜进动 (pθ=0.35)', E: 0.952758226, L: 3.457299, r0: 10, theta0: 90, pTheta: 0.35, prSign: 1, eHint: 0.02 });
+  } else if (presetKey === 'iscoStable') {
+    createParticle({ label: '1.05 r_isco 稳定振荡', E: 0.943074, L: 3.468036, r0: 6.3, prSign: -1, eHint: 0.04 });
+  } else if (presetKey === 'iscoPlunge') {
+    createParticle({ label: '0.95 r_isco 螺旋坠入', E: 0.943164, L: 3.468910, r0: 5.7, prSign: -1, eHint: 0.05 });
+  } else if (presetKey === 'circPro') {
+    const r = 8.0, rm15 = Math.pow(r, -1.5);
+    const den = Math.sqrt(Math.max(1e-6, 1 - 3 / r + 2 * a * rm15));
+    const E = (1 - 2 / r + a * rm15) / den;
+    const L = (Math.sqrt(r) * (1 - 2 * a * rm15 + (a * a) / (r * r))) / den;
+    createParticle({ label: '顺行圆轨道 (r=8M)', E, L, r0: r, prSign: 1, eHint: 0 });
+  } else if (presetKey === 'circRetro') {
+    const r = 9.0, rm15 = Math.pow(r, -1.5);
+    const den = Math.sqrt(Math.max(1e-6, 1 - 3 / r - 2 * a * rm15));
+    const E = (1 - 2 / r - a * rm15) / den;
+    const L = -(Math.sqrt(r) * (1 + 2 * a * rm15 + (a * a) / (r * r))) / den;
+    createParticle({ label: '逆行圆轨道 (r=9M)', E, L, r0: r, prSign: 1, eHint: 0 });
+  }
+}
+
+function updateParticles(dtCoord) {
+  if (particles.length === 0 || Math.abs(dtCoord) < 1e-6) return;
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const r_h = 1 + Math.sqrt(Math.max(0, 1 - a * a));
+  const rStop = r_h + 0.01;
+
+  for (const p of particles) {
+    if (p.plunged) continue;
+    let remainingTau = Math.min(4.0, Math.abs(dtCoord) * 0.75);
+    const subSteps = Math.min(40, Math.max(4, Math.ceil(remainingTau / 0.08)));
+    const hTau = remainingTau / subSteps;
+
+    for (let s = 0; s < subSteps; s++) {
+      const distH = Math.max(0.002, p.st.r - r_h);
+      const dtau = Math.min(hTau, 0.008 * Math.pow(p.st.r, 1.5), 0.14 * distH);
+      const nst = stepParticleRK4(p.st, dtau, a, p.E, p.L);
+      p.tau += dtau;
+
+      if (nst.r <= rStop) {
+        p.st = nst;
+        p.st.r = rStop;
+        p.plunged = true;
+        break;
+      }
+
+      if (p.st.pr > 0 && nst.pr <= 0) {
+        const frac = p.st.pr / (p.st.pr - nst.pr);
+        const apoPhi = p.st.phi + frac * (nst.phi - p.st.phi);
+        p.apoPhis.push(apoPhi);
+        if (p.apoPhis.length >= 2) {
+          p.radialCycles = p.apoPhis.length - 1;
+          const totalDphi = (p.apoPhis[p.apoPhis.length - 1] - p.apoPhis[0]) * 180 / Math.PI;
+          p.cumPrecessionDeg = totalDphi - 360 * p.radialCycles;
+        }
+      }
+      p.st = nst;
+    }
+
+    const pos3D = blToCartesian(p.st.r, p.st.th, p.st.phi, a);
+    p.trail.push(pos3D);
+    if (p.trail.length > 360) p.trail.shift();
+  }
+}
+
+// ============================================================================
+// 2D HUD OVERLAY & SCIENTIFIC CHARTS (V_eff, Lightcurve, GW150914 Chirp)
+// ============================================================================
+
+function projectWorldToScreen(pt, cam, tanHalfFovY, W, H) {
+  const dx = pt[0] - cam.pos[0];
+  const dy = pt[1] - cam.pos[1];
+  const dz = pt[2] - cam.pos[2];
+  const zF = dx * cam.F[0] + dy * cam.F[1] + dz * cam.F[2];
+  if (zF <= 0.1) return null;
+  const xR = dx * cam.R[0] + dy * cam.R[1] + dz * cam.R[2];
+  const yU = dx * cam.U[0] + dy * cam.U[1] + dz * cam.U[2];
+
+  const tanX = xR / zF;
+  const tanY = yU / zF;
+  const aspect = W / Math.max(1, H);
+  const sx = ((tanX / (tanHalfFovY * aspect)) + 1) * 0.5 * W;
+  const sy = (1 - (tanY / tanHalfFovY)) * 0.5 * H;
+  return [sx, sy, zF];
+}
+
+function drawHUDOverlay() {
+  hudCtx.clearRect(0, 0, cssW, cssH);
+  // Section 4.4: Diagnostic views MUST NOT draw overlays (particles, trajectories, S2)
+  if (state.view !== 'physical') return;
+
+  const cam = getCameraBasis(state.camR, state.camIncl, state.camAz);
+  const tanHalfFovY = Math.tan((state.fovY * 0.5 * Math.PI) / 180);
+
+  // 1. Draw Test Particle Trajectories & Newtonian Comparison Ellipses
+  for (const p of particles) {
+    const rgb = p.color.map(c => Math.round(c * 255));
+    const colStr = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+
+    if (state.newtonCompare && p.newtonTrail.length > 2) {
+      hudCtx.save();
+      hudCtx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.32)`;
+      hudCtx.setLineDash([4, 4]);
+      hudCtx.lineWidth = 1.2;
+      hudCtx.beginPath();
+      let started = false;
+      for (const pt of p.newtonTrail) {
+        const sp = projectWorldToScreen(pt, cam, tanHalfFovY, cssW, cssH);
+        if (!sp) continue;
+        if (!started) { hudCtx.moveTo(sp[0], sp[1]); started = true; }
+        else hudCtx.lineTo(sp[0], sp[1]);
+      }
+      hudCtx.stroke();
+      hudCtx.restore();
+    }
+
+    if (p.trail.length > 1) {
+      hudCtx.save();
+      hudCtx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.78)`;
+      hudCtx.lineWidth = (p.id === selectedParticleId) ? 2.0 : 1.3;
+      hudCtx.beginPath();
+      let started = false;
+      for (const pt of p.trail) {
+        const sp = projectWorldToScreen(pt, cam, tanHalfFovY, cssW, cssH);
+        if (!sp) continue;
+        if (!started) { hudCtx.moveTo(sp[0], sp[1]); started = true; }
+        else hudCtx.lineTo(sp[0], sp[1]);
+      }
+      hudCtx.stroke();
+
+      const head = p.trail[p.trail.length - 1];
+      const spHead = projectWorldToScreen(head, cam, tanHalfFovY, cssW, cssH);
+      if (spHead) {
+        hudCtx.fillStyle = colStr;
+        hudCtx.beginPath();
+        hudCtx.arc(spHead[0], spHead[1], p.id === selectedParticleId ? 4.5 : 3.2, 0, Math.PI * 2);
+        hudCtx.fill();
+        hudCtx.fillStyle = '#fff';
+        hudCtx.font = '11px -apple-system, sans-serif';
+        hudCtx.fillText(`${p.label} (r=${p.st.r.toFixed(1)}M)`, spHead[0] + 7, spHead[1] - 5);
+      }
+      hudCtx.restore();
+    }
+  }
+
+  // 2. Draw S2 Star and S-Cluster Orbits when preset === 'sgra' (Section 3.8 & 6.2 & 9)
+  if (state.preset === 'sgra') {
+    const starsToDraw = state.showSCluster ? S_CLUSTER_STARS : [S_CLUSTER_STARS[0]];
+    for (let idx = 0; idx < starsToDraw.length; idx++) {
+      const st = starsToDraw[idx];
+      const isS2 = idx === 0;
+      const rgb = st.color.map(c => Math.round(c * 255));
+
+      hudCtx.save();
+      hudCtx.strokeStyle = isS2 ? `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.88)` : `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.36)`;
+      hudCtx.lineWidth = isS2 ? 2.0 : 1.1;
+      hudCtx.beginPath();
+      let started = false;
+      const steps = isS2 ? 180 : 90;
+      for (let k = 0; k <= steps; k++) {
+        const yr = st.tP + (st.P * k) / steps;
+        const pos = solveStarKepler(st, yr).worldPos;
+        const sp = projectWorldToScreen(pos, cam, tanHalfFovY, cssW, cssH);
+        if (!sp) continue;
+        if (!started) { hudCtx.moveTo(sp[0], sp[1]); started = true; }
+        else hudCtx.lineTo(sp[0], sp[1]);
+      }
+      hudCtx.stroke();
+
+      const cur = solveStarKepler(st, state.s2Year);
+      const spCur = projectWorldToScreen(cur.worldPos, cam, tanHalfFovY, cssW, cssH);
+      if (spCur) {
+        hudCtx.fillStyle = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+        hudCtx.beginPath();
+        hudCtx.arc(spCur[0], spCur[1], isS2 ? 5.0 : 3.0, 0, Math.PI * 2);
+        hudCtx.fill();
+        if (isS2 || cam.Rc > 3000) {
+          hudCtx.fillStyle = isS2 ? '#ffd166' : 'rgba(220,235,255,0.8)';
+          hudCtx.font = isS2 ? 'bold 11.5px -apple-system, sans-serif' : '10px -apple-system, sans-serif';
+          hudCtx.fillText(
+            isS2 ? `S2 (${state.s2Year.toFixed(2)}年 · ${cur.r_AU.toFixed(1)} AU)` : st.name,
+            spCur[0] + 8, spCur[1] + 4
+          );
+        }
+      }
+      hudCtx.restore();
+    }
+  }
+}
+
+// Effective Potential Chart V_eff^2(r) (Section 6.3)
+const veffCanvas = document.getElementById('veffCanvas');
+const veffCtx = veffCanvas.getContext('2d');
+
+function drawEffectivePotentialChart() {
+  const W = veffCanvas.width, H = veffCanvas.height;
+  veffCtx.clearRect(0, 0, W, H);
+  veffCtx.fillStyle = '#060a14';
+  veffCtx.fillRect(0, 0, W, H);
+
+  const p = particles.find(item => item.id === selectedParticleId) || particles[0];
+  const L2_tot = p ? (p.L * p.L + Math.max(0, p.Q)) : (3.849 * 3.849);
+  const E2 = p ? (p.E * p.E) : (0.9661 * 0.9661);
+
+  const rMinPlot = 2.0, rMaxPlot = 35.0;
+  const vMin = 0.72, vMax = 1.06;
+
+  // Grid & axes
+  veffCtx.strokeStyle = 'rgba(120,160,255,0.15)';
+  veffCtx.lineWidth = 1;
+  const y1 = H - ((1.0 - vMin) / (vMax - vMin)) * (H - 16) - 8;
+  veffCtx.beginPath();
+  veffCtx.moveTo(0, y1); veffCtx.lineTo(W, y1);
+  veffCtx.stroke();
+
+  // V^2(r) = (1 - 2/r)(1 + L_tot^2 / r^2)
+  veffCtx.strokeStyle = '#4da3ff';
+  veffCtx.lineWidth = 1.8;
+  veffCtx.beginPath();
+  for (let i = 0; i <= W; i++) {
+    const r = rMinPlot + (i / W) * (rMaxPlot - rMinPlot);
+    const V2 = (1 - 2 / r) * (1 + L2_tot / (r * r));
+    const y = H - ((V2 - vMin) / (vMax - vMin)) * (H - 16) - 8;
+    if (i === 0) veffCtx.moveTo(i, y);
+    else veffCtx.lineTo(i, y);
+  }
+  veffCtx.stroke();
+
+  // Particle E^2 line & current r dot
+  const yE = H - ((E2 - vMin) / (vMax - vMin)) * (H - 16) - 8;
+  veffCtx.strokeStyle = 'rgba(255, 209, 102, 0.65)';
+  veffCtx.setLineDash([3, 3]);
+  veffCtx.beginPath();
+  veffCtx.moveTo(0, yE); veffCtx.lineTo(W, yE);
+  veffCtx.stroke();
+  veffCtx.setLineDash([]);
+
+  if (p) {
+    const xP = ((Math.min(rMaxPlot, Math.max(rMinPlot, p.st.r)) - rMinPlot) / (rMaxPlot - rMinPlot)) * W;
+    veffCtx.fillStyle = '#ffd166';
+    veffCtx.beginPath();
+    veffCtx.arc(xP, yE, 4.0, 0, Math.PI * 2);
+    veffCtx.fill();
+  }
+
+  veffCtx.fillStyle = '#8ea0c8';
+  veffCtx.font = '10px monospace';
+  veffCtx.fillText(`V²(r)=(1-2/r)(1+L²/r²)  E²=${E2.toFixed(4)}`, 6, 12);
+}
+
+// Hotspot Relativistic Lightcurve & Microlensing Amplification Chart (Section 9)
+const lcCanvas = document.getElementById('lcCanvas');
+const lcCtx = lcCanvas.getContext('2d');
+
+function drawLightcurveChart() {
+  const W = lcCanvas.width, H = lcCanvas.height;
+  lcCtx.clearRect(0, 0, W, H);
+  lcCtx.fillStyle = '#060a14';
+  lcCtx.fillRect(0, 0, W, H);
+
+  const a = state.spin;
+  const rHS = Math.max(computeRadii(a).iscoPro + 0.1, state.hotspotR);
+  const omega = 1 / (Math.pow(rHS, 1.5) + a);
+  const sinI = Math.sin((state.camIncl * Math.PI) / 180);
+  const rm15 = Math.pow(rHS, -1.5);
+  const gravFactor = Math.sqrt(Math.max(0.01, 1 - 3 / rHS + 2 * a * rm15));
+
+  // Plot one full orbital period of hotspot flux ~ g^4
+  let minF = 1e9, maxF = 0;
+  const samples = [];
+  for (let i = 0; i <= W; i++) {
+    const phase = (i / W) * 2 * Math.PI;
+    const xiApprox = -rHS * sinI * Math.sin(phase);
+    const g = gravFactor / (1 + (a - xiApprox) * rm15);
+    const flux = Math.pow(Math.max(0.1, g), 4);
+    samples.push(flux);
+    if (flux < minF) minF = flux;
+    if (flux > maxF) maxF = flux;
+  }
+
+  lcCtx.strokeStyle = '#ff8b3d';
+  lcCtx.lineWidth = 1.7;
+  lcCtx.beginPath();
+  for (let i = 0; i <= W; i++) {
+    const norm = (samples[i] - minF) / Math.max(1e-4, maxF - minF);
+    const y = H - 10 - norm * (H - 24);
+    if (i === 0) lcCtx.moveTo(i, y);
+    else lcCtx.lineTo(i, y);
+  }
+  lcCtx.stroke();
+
+  // Current phase marker
+  const curPhase = ((omega * state.time) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  const xCur = (curPhase / (2 * Math.PI)) * W;
+  const idxCur = Math.min(W, Math.max(0, Math.round(xCur)));
+  const normCur = (samples[idxCur] - minF) / Math.max(1e-4, maxF - minF);
+  const yCur = H - 10 - normCur * (H - 24);
+
+  lcCtx.fillStyle = '#fff';
+  lcCtx.beginPath();
+  lcCtx.arc(xCur, yCur, 3.5, 0, Math.PI * 2);
+  lcCtx.fill();
+
+  const u = state.microU;
+  const amp = (u * u + 2) / (u * Math.sqrt(u * u + 4));
+  lcCtx.fillStyle = '#8ea0c8';
+  lcCtx.font = '10px monospace';
+  lcCtx.fillText(`热斑多普勒峰谷比 ${(maxF / Math.max(1e-4, minF)).toFixed(1)}× | 微透镜 A(u)=${amp.toFixed(3)}`, 6, 12);
+}
+
+// GW150914 Binary Merger Chirp Calculator, Waveform Plot & WebAudio Synth (Section 9)
+const gwCanvas = document.getElementById('gwCanvas');
+const gwCtx = gwCanvas.getContext('2d');
+
+function computeGWChirpMetrics(m1, m2, z, tauSec) {
+  // Chirp mass M_c = (m1 * m2)^(3/5) / (m1 + m2)^(1/5)
+  const Mc_src = Math.pow(m1 * m2, 0.6) / Math.pow(m1 + m2, 0.2);
+  const Mc_obs = Mc_src * (1 + z);
+  const tg_src = CONSTANTS.TG_SUN_S * Mc_src;
+  const tg_obs = CONSTANTS.TG_SUN_S * Mc_obs;
+
+  // f(tau) = (1/pi) * (5 / (256 * tau))^(3/8) * (G M_c / c^3)^(-5/8)
+  const f_src = (1 / Math.PI) * Math.pow(5 / (256 * Math.max(1e-4, tauSec)), 3 / 8) * Math.pow(tg_src, -5 / 8);
+  const f_obs = (1 / Math.PI) * Math.pow(5 / (256 * Math.max(1e-4, tauSec)), 3 / 8) * Math.pow(tg_obs, -5 / 8);
+
+  // Inverse: tau(f=35 Hz) = (5 / 256) * (pi * f)^(-8/3) * (G M_c / c^3)^(-5/3)
+  const tau35_src = (5 / 256) * Math.pow(Math.PI * 35, -8 / 3) * Math.pow(tg_src, -5 / 3);
+  const tau35_obs = (5 / 256) * Math.pow(Math.PI * 35, -8 / 3) * Math.pow(tg_obs, -5 / 3);
+
+  return { Mc_src, Mc_obs, f_src, f_obs, tau35_src, tau35_obs };
+}
+
+function drawGWChart() {
+  const W = gwCanvas.width, H = gwCanvas.height;
+  gwCtx.clearRect(0, 0, W, H);
+  gwCtx.fillStyle = '#060a14';
+  gwCtx.fillRect(0, 0, W, H);
+
+  const m = computeGWChirpMetrics(state.gwM1, state.gwM2, state.gwZ, state.gwTau);
+  const tg_obs = CONSTANTS.TG_SUN_S * m.Mc_obs;
+
+  gwCtx.strokeStyle = '#3ddc97';
+  gwCtx.lineWidth = 1.5;
+  gwCtx.beginPath();
+  for (let i = 0; i <= W; i++) {
+    const tRem = Math.max(0.002, 0.22 * (1 - i / W));
+    const phase = -2 * Math.pow(tRem / (5 * tg_obs), 5 / 8);
+    const amp = Math.min(1.0, 0.14 * Math.pow(tRem, -0.25));
+    const hPlus = amp * Math.cos(phase * 0.15);
+    const y = H * 0.54 - hPlus * (H * 0.36);
+    if (i === 0) gwCtx.moveTo(i, y);
+    else gwCtx.lineTo(i, y);
+  }
+  gwCtx.stroke();
+
+  const xMarker = W * (1 - Math.min(0.22, state.gwTau) / 0.22);
+  gwCtx.strokeStyle = '#ffd166';
+  gwCtx.beginPath();
+  gwCtx.moveTo(xMarker, 0); gwCtx.lineTo(xMarker, H);
+  gwCtx.stroke();
+
+  gwCtx.fillStyle = '#8ea0c8';
+  gwCtx.font = '10px monospace';
+  gwCtx.fillText(`h+(τ) 啁啾波形 | τ=${state.gwTau.toFixed(3)}s f_src=${m.f_src.toFixed(1)}Hz`, 6, 11);
+}
+
+function playGWChirpSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    const now = ctx.currentTime;
+    const dur = 1.2;
+    const m = computeGWChirpMetrics(state.gwM1, state.gwM2, state.gwZ, 0.2);
+    const tg = CONSTANTS.TG_SUN_S * m.Mc_obs;
+    const steps = 60;
+    for (let i = 0; i <= steps; i++) {
+      const frac = i / steps;
+      const tau = Math.max(0.004, 0.22 * (1 - frac));
+      const f = Math.min(260, (1 / Math.PI) * Math.pow(5 / (256 * tau), 3 / 8) * Math.pow(tg, -5 / 8));
+      osc.frequency.setValueAtTime(f, now + frac * dur);
+    }
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.exponentialRampToValueAtTime(0.35, now + dur * 0.92);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur + 0.16);
+  } catch (e) { /* Ignore audio block if no user gesture */ }
+}
+
+// ============================================================================
+// PART 4: RENDER LOOP, AUTO-EXPOSURE, SELF-CHECK (8.2 A-G), UI & WINDOW.BH API
+// ============================================================================
+
+let currentFps = 60.0;
+let frameCount = 0;
+let fpsAccumTime = 0;
+let lastFrameTime = performance.now();
+let lastGlError = 0;
+let statsStepsAvg = 28;
+let statsStepsMax = 165;
+
+// Auto-exposure quantile estimator based on current Tmax, spin, inclination & Doppler
+function computeExposureScale() {
+  // Reference luminance at T_obs ~ Tmax
+  const refLogY = state.Tmax <= 6500
+    ? -2.007 + ((state.Tmax - 3000) / 3500) * 2.007
+    : ((state.Tmax - 6500) / 13500) * 1.308;
+  const refY = Math.pow(10, refLogY);
+  const dopplerBoost = state.doppler ? (1.0 + 0.85 * Math.sin((state.camIncl * Math.PI) / 180)) : 1.0;
+  const baseScale = 0.52 / Math.max(1e-4, refY * dopplerBoost);
+  state.computedAutoEV = Math.log2(Math.max(1e-4, baseScale));
+  const userMult = Math.pow(2.0, state.exposureEV);
+  return state.autoExposure ? (baseScale * userMult) : (0.45 * userMult);
+}
+
+const VIEW_MAP = { physical: 0, grid: 1, checker: 2, gmap: 3, steps: 4 };
+
+function renderSceneNow() {
+  const a = Math.max(0, Math.min(0.998, state.spin));
+  const useFastSchw = (a < 1e-6);
+  const progMain = useFastSchw ? progMainSchw : progMainKerr;
+  const uMain = useFastSchw ? uMainSchw : uMainKerr;
+
+  const viewIdx = VIEW_MAP[state.view] ?? 0;
+  const expScale = computeExposureScale();
+  const tanHalfFovY = Math.tan((state.fovY * 0.5 * Math.PI) / 180);
+
+  // In diagnostic views (viewIdx != 0), render directly to the default framebuffer at 1:1 pixel accuracy
+  const directToScreen = (viewIdx !== 0);
+  const passW = directToScreen ? glCanvas.width : renderW;
+  const passH = directToScreen ? glCanvas.height : renderH;
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, directToScreen ? null : hdrFBO);
+  gl.viewport(0, 0, passW, passH);
+  gl.disable(gl.BLEND);
+  gl.useProgram(progMain);
+
+  // Identical step size k=0.05 and maxSteps=320 as BH.trace
+  bindGeodesicUniforms(uMain, 0.05, 320);
+
+  gl.uniform2f(uMain.uResolution, passW, passH);
+  gl.uniform1f(uMain.uTanHalfFovY, tanHalfFovY);
+  gl.uniform1f(uMain.uTime, state.time);
+  gl.uniform1f(uMain.uTmax, state.Tmax);
+  gl.uniform1i(uMain.uViewMode, viewIdx);
+  gl.uniform1i(uMain.uDopplerOn, state.doppler ? 1 : 0);
+  gl.uniform1i(uMain.uStarsOn, state.stars ? 1 : 0);
+  gl.uniform1i(uMain.uHotspotOn, state.hotspotActive ? 1 : 0);
+  gl.uniform1f(uMain.uHotspotR, Math.max(computeRadii(a).iscoPro + 0.2, state.hotspotR));
+  gl.uniform1i(uMain.uTDEOn, state.tdeActive ? 1 : 0);
+  gl.uniform1f(uMain.uTDERt, 23.56);
+  gl.uniform1f(uMain.uTDETime, state.tdeTime);
+
+  // Upload Lensed Particles (Section 4.3) + Binary BH Companion if active
+  const pPosArr = new Float32Array(8 * 4);
+  const pColArr = new Float32Array(8 * 3);
+  let pCount = 0;
+
+  if (state.particlesLensed && viewIdx === 0) {
+    for (let i = 0; i < particles.length && pCount < 6; i++) {
+      const pt = particles[i];
+      if (pt.plunged) continue;
+      const pos3D = blToCartesian(pt.st.r, pt.st.th, pt.st.phi, a);
+      pPosArr[pCount * 4 + 0] = pos3D[0];
+      pPosArr[pCount * 4 + 1] = pos3D[1];
+      pPosArr[pCount * 4 + 2] = pos3D[2];
+      pPosArr[pCount * 4 + 3] = Math.max(0.28, 0.015 * pt.st.r);
+      pColArr[pCount * 3 + 0] = pt.color[0] * 3.2;
+      pColArr[pCount * 3 + 1] = pt.color[1] * 3.2;
+      pColArr[pCount * 3 + 2] = pt.color[2] * 3.2;
+      pCount++;
+    }
+  }
+
+  // If GW150914 Binary Merger mode is active, add glowing orbiting companion at inspiral radius
+  if (state.gwActive && viewIdx === 0 && pCount < 8) {
+    const rSep = 2.2 + 18.0 * Math.pow(state.gwTau / 0.25, 0.25);
+    const phiGW = state.time * 0.35;
+    pPosArr[pCount * 4 + 0] = rSep * Math.cos(phiGW);
+    pPosArr[pCount * 4 + 1] = rSep * Math.sin(phiGW);
+    pPosArr[pCount * 4 + 2] = 0.0;
+    pPosArr[pCount * 4 + 3] = 0.75;
+    pColArr[pCount * 3 + 0] = 1.6;
+    pColArr[pCount * 3 + 1] = 2.8;
+    pColArr[pCount * 3 + 2] = 4.5;
+    pCount++;
+  }
+
+  gl.uniform1i(uMain.uNumParticles, pCount);
+  if (pCount > 0) {
+    gl.uniform4fv(uMain['uParticlePos[0]'], pPosArr);
+    gl.uniform3fv(uMain['uParticleCol[0]'], pColArr);
+  }
+
+  gl.bindVertexArray(emptyVAO);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  if (!directToScreen) {
+    // 2. Bloom Pass (only in physical view when bloom or EHT mode is enabled)
+    const bw = Math.max(64, Math.floor(renderW * 0.5));
+    const bh = Math.max(36, Math.floor(renderH * 0.5));
+    if (state.bloom || state.ehtMode) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1);
+      gl.viewport(0, 0, bw, bh);
+      gl.useProgram(progBloomPre);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, hdrTex);
+      gl.uniform1i(uBloomPre.uHdrTex, 0);
+      gl.uniform1f(uBloomPre.uExposureScale, expScale);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      const blurPasses = state.ehtMode ? 3 : 2;
+      for (let i = 0; i < blurPasses; i++) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO2);
+        gl.useProgram(progBlur);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, bloomTex1);
+        gl.uniform1i(uBlur.uTex, 0);
+        gl.uniform2f(uBlur.uStep, (state.ehtMode ? 2.2 : 1.2) / bw, 0.0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1);
+        gl.bindTexture(gl.TEXTURE_2D, bloomTex2);
+        gl.uniform2f(uBlur.uStep, 0.0, (state.ehtMode ? 2.2 : 1.2) / bh);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+    }
+
+    // 3. Final Composite Pass -> Default Framebuffer
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    gl.useProgram(progComp);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, hdrTex);
+    gl.uniform1i(uComp.uHdrTex, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, bloomTex1);
+    gl.uniform1i(uComp.uBloomTex, 1);
+    gl.uniform1f(uComp.uExposureScale, expScale);
+    gl.uniform1i(uComp.uViewMode, viewIdx);
+    gl.uniform1i(uComp.uBloomOn, state.bloom ? 1 : 0);
+    gl.uniform1i(uComp.uEHTMode, state.ehtMode ? 1 : 0);
+    gl.uniform2f(uComp.uResolution, glCanvas.width, glCanvas.height);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  // 4. 2D HUD Overlay (Particles, S2, S-Cluster)
+  drawHUDOverlay();
+}
+
+// Estimate average & max integration steps on a coarse 6x4 grid for BH.stats()
+function updateStepStatsSample() {
+  const aspect = cssW / Math.max(1, cssH);
+  const tanHalf = Math.tan((state.fovY * 0.5 * Math.PI) / 180);
+  let sum = 0, maxS = 0, count = 0;
+  for (let iy = 0; iy < 4; iy++) {
+    for (let ix = 0; ix < 6; ix++) {
+      const tx = ((ix + 0.5) / 3 - 1) * tanHalf * aspect;
+      const ty = ((iy + 0.5) / 2 - 1) * tanHalf;
+      const r = traceRayCPU(tx, ty, 0.05, 320);
+      sum += r.steps;
+      if (r.steps > maxS) maxS = r.steps;
+      count++;
+    }
+  }
+  statsStepsAvg = Math.round(sum / count);
+  statsStepsMax = maxS;
+}
+
+// ============================================================================
+// SECTION 6.4 & 8.2: LIVE SELF-CHECK SUITE (GROUPS A - G, 14 LIVE BENCHMARKS)
+// ============================================================================
+
+function runSelfCheckSuite() {
+  // Save current state so running selfCheck never disrupts the user's scene
+  const saved = { ...state };
+  const checks = [];
+
+  try {
+    // Group A1: Schwarzschild Shadow at Rc = 30 (Expected tanX = 0.16973)
+    state.spin = 0; state.camR = 30; state.camIncl = 90; state.camAz = 0;
+    state.disk = false; state.lensing = true;
+    let lo = 0.14, hi = 0.20;
+    for (let i = 0; i < 20; i++) {
+      const mid = 0.5 * (lo + hi);
+      const r = traceRaysAPI([[mid, 0]])[0];
+      if (r.fate === 'horizon') lo = mid; else hi = mid;
+    }
+    const measA1 = 0.5 * (lo + hi);
+    checks.push({
+      name: 'A1. 史瓦西阴影边界 tanX (Rc=30, a=0)',
+      expected: 0.16973,
+      measured: Number(measA1.toFixed(5)),
+      pass: Math.abs(measA1 - 0.16973) < 0.0015
+    });
+
+    // Group A2: Schwarzschild Shadow at Rc = 6 (Expected angle = 45.000°, tanX = 1.00000)
+    state.camR = 6;
+    lo = 0.90; hi = 1.10;
+    for (let i = 0; i < 20; i++) {
+      const mid = 0.5 * (lo + hi);
+      const r = traceRaysAPI([[mid, 0]])[0];
+      if (r.fate === 'horizon') lo = mid; else hi = mid;
+    }
+    const measA2 = (Math.atan(0.5 * (lo + hi)) * 180) / Math.PI;
+    checks.push({
+      name: 'A2. 史瓦西近距阴影角半径 (Rc=6, a=0) [°]',
+      expected: 45.000,
+      measured: Number(measA2.toFixed(3)),
+      pass: Math.abs(measA2 - 45.0) < 0.25
+    });
+
+    // Group B1: Schwarzschild Deflection Angle at b = 6 M (Expected 98.51°)
+    state.camR = 100000; state.camIncl = 90; state.camAz = 0;
+    const b6 = 6.0;
+    const sinTh6 = (b6 * Math.sqrt(1 - 2 / state.camR)) / state.camR;
+    const tanX6 = sinTh6 / Math.sqrt(1 - sinTh6 * sinTh6);
+    const resB1 = traceRaysAPI([[tanX6, 0]])[0];
+    const th0_6 = (Math.atan(tanX6) * 180) / Math.PI;
+    const thOut6 = (Math.atan2(resB1.out[1], -resB1.out[0]) * 180) / Math.PI;
+    const defl6 = th0_6 - thOut6;
+    checks.push({
+      name: 'B1. 史瓦西光线偏折角 (b=6 M) [°]',
+      expected: 98.51,
+      measured: Number(defl6.toFixed(2)),
+      pass: Math.abs(defl6 - 98.51) < 0.35
+    });
+
+    // Group B2: Schwarzschild Deflection Angle at b = 10 M (Expected 33.83°)
+    const b10 = 10.0;
+    const sinTh10 = (b10 * Math.sqrt(1 - 2 / state.camR)) / state.camR;
+    const tanX10 = sinTh10 / Math.sqrt(1 - sinTh10 * sinTh10);
+    const resB2 = traceRaysAPI([[tanX10, 0]])[0];
+    const th0_10 = (Math.atan(tanX10) * 180) / Math.PI;
+    const thOut10 = (Math.atan2(resB2.out[1], -resB2.out[0]) * 180) / Math.PI;
+    const defl10 = th0_10 - thOut10;
+    checks.push({
+      name: 'B2. 史瓦西光线偏折角 (b=10 M) [°]',
+      expected: 33.83,
+      measured: Number(defl10.toFixed(2)),
+      pass: Math.abs(defl10 - 33.83) < 0.25
+    });
+
+    // Group C1: Kerr Shadow Left & Right Boundaries (a=0.9, i=90°, Rc=1000) -> [-2.842, +6.825]
+    state.spin = 0.9; state.camR = 1000; state.camIncl = 90; state.camAz = 0; state.disk = false;
+    let loL = -0.004, hiL = -0.001;
+    for (let i = 0; i < 20; i++) {
+      const mid = 0.5 * (loL + hiL);
+      const r = traceRaysAPI([[mid, 0]])[0];
+      if (r.fate === 'horizon') hiL = mid; else loL = mid;
+    }
+    let loR = 0.004, hiR = 0.009;
+    for (let i = 0; i < 20; i++) {
+      const mid = 0.5 * (loR + hiR);
+      const r = traceRaysAPI([[mid, 0]])[0];
+      if (r.fate === 'horizon') loR = mid; else hiR = mid;
+    }
+    const kerrLeft = 1000 * 0.5 * (loL + hiL);
+    const kerrRight = 1000 * 0.5 * (loR + hiR);
+    checks.push({
+      name: 'C1. 克尔阴影左边界 Rc·tanX (a=0.9, i=90°) [M]',
+      expected: -2.842,
+      measured: Number(kerrLeft.toFixed(3)),
+      pass: Math.abs(kerrLeft - (-2.842)) < 0.08
+    });
+    checks.push({
+      name: 'C2. 克尔阴影右边界 Rc·tanX (a=0.9, i=90°) [M]',
+      expected: 6.825,
+      measured: Number(kerrRight.toFixed(3)),
+      pass: Math.abs(kerrRight - 6.825) < 0.08
+    });
+
+    // Group D1: K2 Standard Ray Check (a=0.9, Rc=30, i=75°, tanX=-0.22, tanY=0.08 -> rHit=7.381, g=1.1387)
+    state.spin = 0.9; state.camR = 30; state.camIncl = 75; state.camAz = 0;
+    state.disk = true; state.rOut = 20;
+    const resD1 = traceRaysAPI([[-0.22, 0.08], [0.22, 0.08]]);
+    checks.push({
+      name: 'D1. K2机位蓝移侧命中半径与红移因子 (-0.22, 0.08)',
+      expected: 1.1387,
+      measured: Number((resD1[0].g || 0).toFixed(4)),
+      pass: resD1[0].fate === 'disk' && Math.abs(resD1[0].rHit - 7.381) < 0.04 && Math.abs(resD1[0].g - 1.1387) < 0.008
+    });
+
+    // Group D2: K4 Secondary Image Check (a=0, Rc=30, i=85°, rOut=12, tanX=0, tanY=-0.22 -> nCross=2, rHit=7.929)
+    state.spin = 0; state.camR = 30; state.camIncl = 85; state.camAz = 0;
+    state.disk = true; state.rOut = 12;
+    const resD2 = traceRaysAPI([[0.0, -0.22]])[0];
+    checks.push({
+      name: 'D2. K4机位次级像穿盘2次半径 (0.00, -0.22) [M]',
+      expected: 7.929,
+      measured: Number((resD2.rHit || 0).toFixed(3)),
+      pass: resD2.fate === 'disk' && resD2.nCross === 2 && Math.abs(resD2.rHit - 7.929) < 0.04
+    });
+
+    // Group E1: Einstein Ring Angular Radius at Rc = 30 (Expected 23.71°)
+    state.spin = 0; state.camR = 30; state.camIncl = 90; state.camAz = 0; state.disk = false;
+    let loE = 0.25, hiE = 0.60;
+    for (let i = 0; i < 20; i++) {
+      const mid = 0.5 * (loE + hiE);
+      const r = traceRaysAPI([[mid, 0]])[0];
+      if (r.fate === 'horizon' || (r.out && r.out[1] < 0)) loE = mid; else hiE = mid;
+    }
+    const einsteinDeg = (Math.atan(0.5 * (loE + hiE)) * 180) / Math.PI;
+    checks.push({
+      name: 'E1. 爱因斯坦环角半径 (Rc=30, a=0) [°]',
+      expected: 23.71,
+      measured: Number(einsteinDeg.toFixed(2)),
+      pass: Math.abs(einsteinDeg - 23.71) < 0.15
+    });
+
+    // Group F1: Massive Particle Precession (Schwarzschild p=10, e=0.5 -> dphiDeg = 576.12°)
+    const orbF1 = integrateOrbitAPI({ spin: 0, E: 0.966092, L: 3.849002, r0: 10, prSign: 1 });
+    checks.push({
+      name: 'F1. 史瓦西有质量粒子近心点角 Δφ (p=10, e=0.5) [°]',
+      expected: 576.12,
+      measured: Number((orbF1.dphiDeg || 0).toFixed(2)),
+      pass: orbF1.ok && Math.abs(orbF1.dphiDeg - 576.12) < 0.25
+    });
+
+    // Group F2: Kerr Tilted Orbit Lense-Thirring Nodal Precession (a=0.9 -> nodalDeg = 377.05°)
+    const orbF2 = integrateOrbitAPI({ spin: 0.9, r0: 10, theta0: 90, L: 3.457299, pTheta: 0.35, E: 0.952758226, prSign: 1 });
+    checks.push({
+      name: 'F2. 克尔倾斜轨道升交点进动角 Δφ_nodal (a=0.9) [°]',
+      expected: 377.05,
+      measured: Number((orbF2.nodalDeg || 0).toFixed(2)),
+      pass: orbF2.ok && Math.abs(orbF2.nodalDeg - 377.05) < 0.25
+    });
+
+    // Group F3: Radial Plunge Proper Time from r0=10 to r=2.01 (Expected 33.68 M)
+    const orbF3 = integrateOrbitAPI({ spin: 0, r0: 10, E: 0.8944272, L: 0, prSign: -1 });
+    checks.push({
+      name: 'F3. 史瓦西径向坠入视界固有时 τ (r0=10→2.01) [M]',
+      expected: 33.68,
+      measured: Number((orbF3.tauPlunge || 0).toFixed(2)),
+      pass: orbF3.plunge && Math.abs(orbF3.tauPlunge - 33.68) < 0.15
+    });
+
+    // Group G1: Sgr A* Shadow Angular Diameter (Expected 53.3 uas)
+    const uSgrA = computeUnits('sgra');
+    checks.push({
+      name: 'G1. 银心 Sgr A* 几何阴影角直径 (a=0) [μas]',
+      expected: 53.3,
+      measured: Number(uSgrA.shadow_uas.toFixed(1)),
+      pass: Math.abs(uSgrA.shadow_uas - 53.3) < 0.2
+    });
+
+    // Group G2: S2 Star Schwarzschild Precession per Orbit (Expected 12.17 arcmin)
+    const pS2 = 5330.736037, eS2 = 0.884649;
+    const ES2 = Math.sqrt(((pS2 - 2) ** 2 - 4 * eS2 * eS2) / (pS2 * (pS2 - 3 - eS2 * eS2)));
+    const LS2 = Math.sqrt((pS2 * pS2) / (pS2 - 3 - eS2 * eS2));
+    const orbS2 = integrateOrbitAPI({ spin: 0, E: ES2, L: LS2, r0: pS2, prSign: 1 });
+    const precS2Arcmin = ((orbS2.dphiDeg || 360) - 360) * 60;
+    checks.push({
+      name: 'G2. 银心 S2 恒星每圈史瓦西进动角 Δω [角分 ′]',
+      expected: 12.17,
+      measured: Number(precS2Arcmin.toFixed(2)),
+      pass: Math.abs(precS2Arcmin - 12.17) < 0.08
+    });
+
+  } finally {
+    Object.assign(state, saved);
+    renderSceneNow();
+  }
+
+  return checks;
+}
+
+// ============================================================================
+// SECTION 6.6: ACCEPTANCE INTERFACE window.BH
+// ============================================================================
+
+function getPublicState() {
+  return {
+    spin: state.spin,
+    camR: state.camR,
+    camIncl: state.camIncl,
+    camAz: state.camAz,
+    fovY: state.fovY,
+    preset: state.preset,
+    time: state.time,
+    view: state.view,
+    disk: state.disk,
+    rOut: state.rOut,
+    doppler: state.doppler,
+    lensing: state.lensing,
+    paused: state.paused,
+    autoRotate: state.autoRotate
+  };
+}
+
+function setPublicState(obj) {
+  if (!obj || typeof obj !== 'object') return getPublicState();
+  if (obj.preset !== undefined && PRESETS[obj.preset]) {
+    state.preset = obj.preset;
+  }
+  if (obj.spin !== undefined) state.spin = Math.max(0, Math.min(0.998, Number(obj.spin)));
+  if (obj.camR !== undefined) state.camR = Math.max(2.05, Number(obj.camR));
+  if (obj.camIncl !== undefined) state.camIncl = Math.max(0.1, Math.min(179.9, Number(obj.camIncl)));
+  if (obj.camAz !== undefined) state.camAz = Number(obj.camAz);
+  if (obj.fovY !== undefined) state.fovY = Math.max(1, Math.min(150, Number(obj.fovY)));
+  if (obj.time !== undefined) state.time = Number(obj.time);
+  if (obj.view !== undefined && VIEW_MAP[obj.view] !== undefined) state.view = obj.view;
+  if (obj.disk !== undefined) state.disk = Boolean(obj.disk);
+  if (obj.rOut !== undefined) state.rOut = Math.max(4, Number(obj.rOut));
+  if (obj.doppler !== undefined) state.doppler = Boolean(obj.doppler);
+  if (obj.lensing !== undefined) state.lensing = Boolean(obj.lensing);
+  if (obj.paused !== undefined) state.paused = Boolean(obj.paused);
+  if (obj.autoRotate !== undefined) state.autoRotate = Boolean(obj.autoRotate);
+
+  syncUIFromState();
+  renderSceneNow();
+  return getPublicState();
+}
+
+window.BH = {
+  version: '1.0.0',
+  info: {
+    traceBackend: (hasFloatFBO && progTraceKerr) ? 'gpu' : 'js',
+    diskModel: 'NT',
+    particlesLensed: true
+  },
+  set: setPublicState,
+  get: getPublicState,
+  trace: traceRaysAPI,
+  radii: computeRadii,
+  disk: function(r) {
+    return computeDiskQuantities(Number(r), state.spin, state.Tmax);
+  },
+  orbit: integrateOrbitAPI,
+  units: computeUnits,
+  s2: computeS2,
+  stats: function() {
+    updateStepStatsSample();
+    const err = gl.getError();
+    if (err !== 0) lastGlError = err;
+    return {
+      fps: Number(currentFps.toFixed(1)),
+      cssW,
+      cssH,
+      renderW,
+      renderH,
+      stepsAvg: statsStepsAvg,
+      stepsMax: statsStepsMax,
+      glError: lastGlError
+    };
+  },
+  selfCheck: runSelfCheckSuite
+};
+
+// ============================================================================
+// UI BINDING, INTERACTIVE CAMERA & TELEMETRY REFRESH
+// ============================================================================
+
+function formatLengthPhys(rg_km, valM) {
+  const km = rg_km * valM;
+  const au = (km * 1000) / CONSTANTS.AU;
+  if (au >= 0.1) return `${au.toFixed(2)} AU`;
+  if (km >= 1e6) return `${(km / 1e6).toFixed(2)}×10⁶ km`;
+  return `${km.toFixed(1)} km`;
+}
+
+function formatTimePhys(sec) {
+  const abs = Math.abs(sec);
+  if (abs < 1e-3) return `${(sec * 1e6).toFixed(1)} μs`;
+  if (abs < 1) return `${(sec * 1e3).toFixed(2)} ms`;
+  if (abs < 120) return `${sec.toFixed(2)} s`;
+  if (abs < 7200) return `${(sec / 60).toFixed(2)} 分钟`;
+  if (abs < 86400 * 2) return `${(sec / 3600).toFixed(2)} 小时`;
+  if (abs < 31557600 * 2) return `${(sec / 86400).toFixed(2)} 天`;
+  return `${(sec / 31557600).toFixed(2)} 年`;
+}
+
+function refreshTelemetryUI() {
+  const a = state.spin;
+  const rad = computeRadii(a);
+  updateNTCache(a);
+  const u = computeUnits(state.preset);
+  const pInfo = PRESETS[state.preset];
+
+  document.getElementById('presetBadge').textContent = pInfo.name;
+  document.getElementById('spinReadout').textContent = `a = ${a.toFixed(3)}`;
+  document.getElementById('valRgPhys').textContent = `(${formatLengthPhys(u.rg_km, 1)})`;
+  document.getElementById('valRhM').textContent = `${rad.horizon.toFixed(4)} M`;
+  document.getElementById('valRhPhys').textContent = `(${formatLengthPhys(u.rg_km, rad.horizon)})`;
+  document.getElementById('valRePhys').textContent = `(${formatLengthPhys(u.rg_km, 2.0)})`;
+  document.getElementById('valRphM').textContent = `${rad.photonPro.toFixed(3)} / ${rad.photonRetro.toFixed(3)} M`;
+  document.getElementById('valRiscoM').textContent = `${rad.iscoPro.toFixed(3)} / ${rad.iscoRetro.toFixed(3)} M`;
+  document.getElementById('valRiscoPhys').textContent = formatLengthPhys(u.rg_km, rad.iscoPro);
+
+  document.getElementById('valTgPhys').textContent = formatTimePhys(u.tg_s);
+
+  // Camera gravitational time dilation sqrt(1 - f)
+  const cam = getCameraBasis(state.camR, state.camIncl, state.camAz);
+  const r2c = cam.Rc * cam.Rc;
+  const fCam = (2 * cam.Rc * r2c) / (r2c * r2c + a * a * cam.pos[2] * cam.pos[2]);
+  const camDil = Math.sqrt(Math.max(0, 1 - fCam));
+  document.getElementById('valCamDilation').textContent = `${camDil.toFixed(4)} (a=0: ${Math.sqrt(Math.max(0, 1 - 2 / cam.Rc)).toFixed(4)})`;
+
+  const dIsco = computeDiskQuantities(rad.iscoPro, a, state.Tmax);
+  document.getElementById('valIscoClock').textContent = (1 / dIsco.ut).toFixed(4);
+
+  const periodCurM = 2 * Math.PI * (Math.pow(rad.iscoPro, 1.5) + a);
+  const periodCurPhys = formatTimePhys(periodCurM * u.tg_s);
+  const periodA0Phys = formatTimePhys(u.iscoPeriod_s);
+  document.getElementById('valIscoPeriod').textContent = `${periodCurM.toFixed(1)}M (${periodCurPhys}) | a=0: ${periodA0Phys}`;
+
+  const shStr = u.shadow_uas !== null ? `${u.shadow_uas.toFixed(1)} μas` : '无距离测量';
+  document.getElementById('valShadowUas').textContent = `${shStr} / ${pInfo.ehtRing}`;
+  document.getElementById('valNtPeak').textContent = `${cachedNTRpeak.toFixed(3)} M (${(cachedNTRpeak / rad.iscoPro).toFixed(3)} r_isco)`;
+
+  // Non-physical mode warning badge
+  const nonPhys = !state.doppler || !state.lensing;
+  document.getElementById('nonPhysTag').classList.toggle('active', nonPhys);
+
+  // Time display
+  document.getElementById('timeMVal').textContent = state.time.toFixed(1);
+  document.getElementById('timePhysVal').textContent = `物理时间: ${formatTimePhys(state.time * u.tg_s)}`;
+
+  // S2 Box update
+  const s2Res = computeS2(state.s2Year);
+  const rg_AU = (u.rg_km * 1000) / CONSTANTS.AU;
+  document.getElementById('s2PosVal').textContent = `东 ${s2Res.east_mas >= 0 ? '+' : ''}${s2Res.east_mas.toFixed(2)} mas, 北 ${s2Res.north_mas >= 0 ? '+' : ''}${s2Res.north_mas.toFixed(2)} mas`;
+  document.getElementById('s2DistVal').textContent = `${s2Res.r_AU.toFixed(2)} AU (${(s2Res.r_AU / rg_AU).toFixed(0)} M)`;
+
+  // Selected Particle Telemetry
+  const selP = particles.find(item => item.id === selectedParticleId) || particles[0];
+  if (selP) {
+    document.getElementById('pStatBadge').textContent = `${selP.label}${selP.plunged ? ' [已落入视界]' : ''}`;
+    document.getElementById('pTelemetryR').textContent = `r = ${selP.st.r.toFixed(3)} M, θ = ${((selP.st.th * 180) / Math.PI).toFixed(1)}°`;
+    document.getElementById('pTelemetryTime').textContent = `τ = ${selP.tau.toFixed(1)} M | t = ${selP.st.t.toFixed(1)} M`;
+    document.getElementById('pTelemetryPrec').textContent = `${selP.radialCycles} 圈 | Δω = ${selP.cumPrecessionDeg.toFixed(1)}°`;
+  }
+
+  // Section 9 Creative Modules Live Readouts
+  const gwM = computeGWChirpMetrics(state.gwM1, state.gwM2, state.gwZ, state.gwTau);
+  document.getElementById('gwMcVal').textContent = `${gwM.Mc_src.toFixed(2)} / ${gwM.Mc_obs.toFixed(2)} M☉`;
+  document.getElementById('gwFreqVal').textContent = `${gwM.f_src.toFixed(1)} Hz / ${gwM.f_obs.toFixed(1)} Hz`;
+  document.getElementById('gwTau35Val').textContent = `${gwM.tau35_src.toFixed(3)} s / ${gwM.tau35_obs.toFixed(3)} s`;
+
+  const maxSingularityTau = Math.PI * u.tg_s;
+  const rMeter = state.plungeR * u.rg_km * 1000;
+  const tidalGrad = (2 * CONSTANTS.GM_SUN * u.massSun) / Math.pow(rMeter, 3);
+  document.getElementById('plungeTauVal').textContent = `33.68 M / π·tg = ${formatTimePhys(maxSingularityTau)}`;
+  document.getElementById('plungeTidalVal').textContent = `${tidalGrad.toExponential(2)} s⁻² (r=${state.plungeR.toFixed(2)}M)`;
+
+  const hsPeriod = 2 * Math.PI * (Math.pow(state.hotspotR, 1.5) + a);
+  document.getElementById('hotspotPeriodVal').textContent = `${hsPeriod.toFixed(2)} M (${formatTimePhys(hsPeriod * u.tg_s)})`;
+  const uMicro = state.microU;
+  const ampMicro = (uMicro * uMicro + 2) / (uMicro * Math.sqrt(uMicro * uMicro + 4));
+  document.getElementById('microAmpVal').textContent = `${ampMicro.toFixed(3)}×`;
+
+  const rt_meters = state.tdeRstar * CONSTANTS.R_SUN * Math.cbrt(u.massSun / Math.max(0.05, state.tdeMstar));
+  const rt_rs = rt_meters / (u.rs_km * 1000);
+  const rt_ref_1e6 = (CONSTANTS.R_SUN * Math.cbrt(1e6)) / (2 * CONSTANTS.RG_SUN_KM * 1000 * 1e6);
+  document.getElementById('tdeRtVal').textContent = `${(rt_meters / CONSTANTS.AU).toFixed(3)} AU (${rt_rs.toFixed(2)} r_s)`;
+  document.getElementById('tdeRefVal').textContent = `${rt_ref_1e6.toFixed(2)} r_s · t⁻⁵/³`;
+  document.getElementById('ehtCompareVal').textContent = `${shStr} / ${pInfo.ehtRing}`;
+}
+
+function syncUIFromState() {
+  document.getElementById('spinSlider').value = state.spin;
+  document.getElementById('spinVal').textContent = state.spin.toFixed(3);
+  document.getElementById('rOutSlider').value = state.rOut;
+  document.getElementById('rOutVal').textContent = `${state.rOut.toFixed(0)} M`;
+  document.getElementById('tmaxSlider').value = state.Tmax;
+  document.getElementById('tmaxVal').textContent = `${state.Tmax.toFixed(0)} K`;
+  document.getElementById('expSlider').value = state.exposureEV;
+  document.getElementById('expVal').textContent = `${state.exposureEV >= 0 ? '+' : ''}${state.exposureEV.toFixed(2)}`;
+
+  document.getElementById('camRSlider').value = Math.log10(Math.max(3, state.camR));
+  document.getElementById('camRVal').textContent = state.camR >= 1000 ? `${(state.camR / 1000).toFixed(1)}k M` : `${state.camR.toFixed(1)} M`;
+  document.getElementById('camInclSlider').value = state.camIncl;
+  document.getElementById('camInclVal').textContent = `${state.camIncl.toFixed(1)}°`;
+  document.getElementById('camAzSlider').value = state.camAz;
+  document.getElementById('camAzVal').textContent = `${state.camAz.toFixed(1)}°`;
+
+  document.getElementById('btnPlayPause').textContent = state.paused ? '▶ 播放' : '⏸ 暂停';
+  document.getElementById('btnPlayPause').classList.toggle('active', !state.paused);
+  document.getElementById('btnAutoRot').classList.toggle('active', state.autoRotate);
+  document.getElementById('btnAutoExp').classList.toggle('active', state.autoExposure);
+
+  document.getElementById('togDisk').classList.toggle('active', state.disk);
+  document.getElementById('togDoppler').classList.toggle('active', state.doppler);
+  document.getElementById('togLensing').classList.toggle('active', state.lensing);
+  document.getElementById('togStars').classList.toggle('active', state.stars);
+  document.getElementById('togBloom').classList.toggle('active', state.bloom);
+
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === state.view);
+  });
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.preset === state.preset);
+  });
+
+  refreshTelemetryUI();
+}
+
+function refreshParticleListUI() {
+  const container = document.getElementById('particleList');
+  container.innerHTML = '';
+  for (const p of particles) {
+    const rgb = p.color.map(c => Math.round(c * 255));
+    const div = document.createElement('div');
+    div.className = 'particle-item' + (p.id === selectedParticleId ? ' selected' : '');
+    div.innerHTML = `
+      <span><span class="p-dot" style="background:rgb(${rgb[0]},${rgb[1]},${rgb[2]})"></span>${p.label}</span>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">E=${p.E.toFixed(3)} L=${p.L.toFixed(2)}</span>
+    `;
+    div.addEventListener('click', () => {
+      selectedParticleId = p.id;
+      refreshParticleListUI();
+      drawEffectivePotentialChart();
+    });
+    container.appendChild(div);
+  }
+}
+
+function populateSelfCheckModal() {
+  const tbody = document.getElementById('selfCheckTbody');
+  const summary = document.getElementById('selfCheckSummary');
+  tbody.innerHTML = '';
+  const results = runSelfCheckSuite();
+  let passCount = 0;
+  for (const item of results) {
+    if (item.pass) passCount++;
+    const err = Math.abs(item.measured - item.expected);
+    const relErr = item.expected !== 0 ? ((err / Math.abs(item.expected)) * 100).toFixed(2) + '%' : err.toFixed(4);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.name}</td>
+      <td class="mono">${item.expected}</td>
+      <td class="mono" style="color:var(--accent-gold);">${item.measured}</td>
+      <td class="mono">${err.toFixed(4)} (${relErr})</td>
+      <td><span class="pass-pill ${item.pass ? 'ok' : 'fail'}">${item.pass ? 'PASS ✓' : 'FAIL ✕'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  summary.textContent = `通过 ${passCount} / ${results.length} 项 (全部七组 A–G)`;
+}
+
+function initUIEvents() {
+  // Build Preset Grid
+  const presetGrid = document.getElementById('presetGrid');
+  for (const key of Object.keys(PRESETS)) {
+    const p = PRESETS[key];
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn' + (key === state.preset ? ' active' : '');
+    btn.dataset.preset = key;
+    btn.innerHTML = `<span class="p-title">${p.shortName}</span><span class="p-sub">${p.massSun.toExponential(2)} M☉ · ${p.distLabel}</span>`;
+    btn.addEventListener('click', () => {
+      state.preset = key;
+      state.spin = p.defaultSpin;
+      syncUIFromState();
+    });
+    presetGrid.appendChild(btn);
+  }
+
+  // Left Panel Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Camera Sliders & Quick Views
+  document.getElementById('camRSlider').addEventListener('input', e => {
+    state.camR = Math.pow(10, Number(e.target.value));
+    syncUIFromState();
+  });
+  document.getElementById('camInclSlider').addEventListener('input', e => {
+    state.camIncl = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('camAzSlider').addEventListener('input', e => {
+    state.camAz = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('btnViewDefault').addEventListener('click', () => {
+    state.camR = 30; state.camIncl = 80; state.camAz = 0; state.spin = 0.9;
+    syncUIFromState();
+  });
+  document.getElementById('btnViewEdge').addEventListener('click', () => {
+    state.camR = 30; state.camIncl = 90; state.camAz = 0;
+    syncUIFromState();
+  });
+  document.getElementById('btnViewPole').addEventListener('click', () => {
+    state.camR = 35; state.camIncl = 5; state.camAz = 0;
+    syncUIFromState();
+  });
+
+  // S2 Star Controls
+  document.getElementById('btnZoomS2').addEventListener('click', () => {
+    state.preset = 'sgra';
+    state.camR = 65000;
+    state.camIncl = 90;
+    state.camAz = 0;
+    syncUIFromState();
+  });
+  document.getElementById('s2YearSlider').addEventListener('input', e => {
+    state.s2Year = Number(e.target.value);
+    document.getElementById('s2YearVal').textContent = state.s2Year.toFixed(2);
+    refreshTelemetryUI();
+  });
+  document.getElementById('btnS2Peri').addEventListener('click', () => {
+    state.s2Year = 2018.379;
+    document.getElementById('s2YearSlider').value = 2018.379;
+    document.getElementById('s2YearVal').textContent = '2018.38';
+    refreshTelemetryUI();
+  });
+  document.getElementById('btnS2Now').addEventListener('click', () => {
+    state.s2Year = 2026.0;
+    document.getElementById('s2YearSlider').value = 2026.0;
+    document.getElementById('s2YearVal').textContent = '2026.00';
+    refreshTelemetryUI();
+  });
+  document.getElementById('btnS2Play').addEventListener('click', e => {
+    state.s2Playing = !state.s2Playing;
+    e.target.classList.toggle('active', state.s2Playing);
+  });
+  document.getElementById('chkSCluster').addEventListener('change', e => {
+    state.showSCluster = e.target.checked;
+  });
+
+  // Orbit Lab Controls
+  document.getElementById('btnAddPresetOrbit').addEventListener('click', () => {
+    addPresetParticle(document.getElementById('orbitPresetSel').value);
+  });
+  document.getElementById('btnClearParticles').addEventListener('click', () => {
+    particles = [];
+    selectedParticleId = null;
+    refreshParticleListUI();
+  });
+  document.getElementById('chkNewtonCompare').addEventListener('change', e => {
+    state.newtonCompare = e.target.checked;
+  });
+  document.getElementById('chkLensedParticles').addEventListener('change', e => {
+    state.particlesLensed = e.target.checked;
+    window.BH.info.particlesLensed = state.particlesLensed;
+  });
+  document.getElementById('customOrbitMode').addEventListener('change', e => {
+    const m = e.target.value;
+    document.getElementById('customPEBox').style.display = m === 'pe' ? 'block' : 'none';
+    document.getElementById('customCircBox').style.display = m === 'circ' ? 'block' : 'none';
+    document.getElementById('customELBox').style.display = m === 'EL' ? 'block' : 'none';
+  });
+  document.getElementById('btnLaunchCustom').addEventListener('click', () => {
+    const mode = document.getElementById('customOrbitMode').value;
+    if (mode === 'pe') {
+      const p = Math.max(6.05, Number(document.getElementById('inpOrbitP').value) || 10);
+      const e = Math.max(0, Math.min(0.95, Number(document.getElementById('inpOrbitE').value) || 0.5));
+      if (p <= 6 + 2 * e) {
+        alert(`史瓦西稳定束缚轨道需满足 p > 6 + 2e (${(6 + 2 * e).toFixed(2)})`);
+        return;
+      }
+      const E = Math.sqrt(((p - 2) ** 2 - 4 * e * e) / (p * (p - 3 - e * e)));
+      const L = Math.sqrt((p * p) / (p - 3 - e * e));
+      createParticle({ label: `自定义(p=${p},e=${e})`, E, L, r0: p, prSign: 1, eHint: e });
+    } else if (mode === 'circ') {
+      const r = Math.max(1.5, Number(document.getElementById('inpCircR').value) || 7.5);
+      const dir = Number(document.getElementById('inpCircDir').value) || 1;
+      const aEff = dir * state.spin;
+      const rm15 = Math.pow(r, -1.5);
+      const den = Math.sqrt(Math.max(1e-6, 1 - 3 / r + 2 * aEff * rm15));
+      const E = (1 - 2 / r + aEff * rm15) / den;
+      const L = dir * (Math.sqrt(r) * (1 - 2 * aEff * rm15 + (aEff * aEff) / (r * r))) / den;
+      createParticle({ label: `${dir > 0 ? '顺' : '逆'}行圆轨(r=${r})`, E, L, r0: r, prSign: 1, eHint: 0 });
+    } else {
+      const E = Number(document.getElementById('inpEL_E').value) || 0.9528;
+      const L = Number(document.getElementById('inpEL_L').value) || 3.4573;
+      const r0 = Number(document.getElementById('inpEL_r0').value) || 10;
+      const pTheta = Number(document.getElementById('inpEL_pth').value) || 0;
+      const p = createParticle({ label: `自定义(E=${E.toFixed(3)})`, E, L, r0, pTheta, prSign: 1 });
+      if (!p) alert('该 (E, L, r0, pθ) 组合在当前半径违反质量壳条件 (p_r² < 0)，请调大 E 或调整 r0。');
+    }
+  });
+
+  // Section 9 Creative Modules Controls
+  document.getElementById('btnGWChirp').addEventListener('click', e => {
+    state.gwActive = !state.gwActive;
+    e.target.classList.toggle('active', state.gwActive);
+    if (state.gwActive) {
+      state.preset = 'gw150914';
+      state.spin = 0.69;
+      syncUIFromState();
+      playGWChirpSound();
+    }
+  });
+  for (const id of ['gwM1', 'gwM2', 'gwZ']) {
+    document.getElementById(id).addEventListener('input', () => {
+      state.gwM1 = Math.max(1, Number(document.getElementById('gwM1').value) || 35.6);
+      state.gwM2 = Math.max(1, Number(document.getElementById('gwM2').value) || 30.6);
+      state.gwZ  = Math.max(0, Number(document.getElementById('gwZ').value) || 0.09);
+      refreshTelemetryUI();
+      drawGWChart();
+    });
+  }
+  document.getElementById('gwTauSlider').addEventListener('input', e => {
+    state.gwTau = Number(e.target.value);
+    document.getElementById('gwTauVal').textContent = `${state.gwTau.toFixed(3)} s`;
+    refreshTelemetryUI();
+    drawGWChart();
+  });
+
+  document.getElementById('btnPlungeMode').addEventListener('click', e => {
+    state.plungeActive = !state.plungeActive;
+    e.target.classList.toggle('active', state.plungeActive);
+    if (state.plungeActive) {
+      state.plungeR = Math.min(25, Math.max(6, state.camR));
+      state.camR = state.plungeR;
+    }
+  });
+  document.getElementById('plungeRSlider').addEventListener('input', e => {
+    state.plungeR = Number(e.target.value);
+    state.camR = state.plungeR;
+    document.getElementById('plungeRVal').textContent = `${state.plungeR.toFixed(2)} M`;
+    syncUIFromState();
+  });
+
+  document.getElementById('btnHotspotToggle').addEventListener('click', e => {
+    state.hotspotActive = !state.hotspotActive;
+    e.target.classList.toggle('active', state.hotspotActive);
+    e.target.textContent = state.hotspotActive ? '热斑开' : '热斑关';
+  });
+  document.getElementById('hotspotRSlider').addEventListener('input', e => {
+    state.hotspotR = Number(e.target.value);
+    document.getElementById('hotspotRVal').textContent = `${state.hotspotR.toFixed(1)} M`;
+    refreshTelemetryUI();
+  });
+  document.getElementById('microUSlider').addEventListener('input', e => {
+    state.microU = Number(e.target.value);
+    document.getElementById('microUVal').textContent = `u=${state.microU.toFixed(2)}`;
+    refreshTelemetryUI();
+  });
+
+  document.getElementById('btnTDEToggle').addEventListener('click', e => {
+    state.tdeActive = !state.tdeActive;
+    state.tdeTime = 0;
+    e.target.classList.toggle('active', state.tdeActive);
+  });
+  for (const id of ['tdeMstar', 'tdeRstar']) {
+    document.getElementById(id).addEventListener('input', () => {
+      state.tdeMstar = Math.max(0.08, Number(document.getElementById('tdeMstar').value) || 1.0);
+      state.tdeRstar = Math.max(0.08, Number(document.getElementById('tdeRstar').value) || 1.0);
+      refreshTelemetryUI();
+    });
+  }
+
+  document.getElementById('btnEHTMode').addEventListener('click', e => {
+    state.ehtMode = !state.ehtMode;
+    e.target.classList.toggle('active', state.ehtMode);
+  });
+
+  // Bottom Bar Controls
+  document.getElementById('btnPlayPause').addEventListener('click', () => {
+    state.paused = !state.paused;
+    syncUIFromState();
+  });
+  document.getElementById('btnAutoRot').addEventListener('click', () => {
+    state.autoRotate = !state.autoRotate;
+    syncUIFromState();
+  });
+  document.getElementById('timeSpeedSlider').addEventListener('input', e => {
+    state.timeSpeed = Number(e.target.value);
+    document.getElementById('timeSpeedVal').textContent = `${state.timeSpeed.toFixed(1)} M/s`;
+  });
+  document.getElementById('spinSlider').addEventListener('input', e => {
+    state.spin = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('rOutSlider').addEventListener('input', e => {
+    state.rOut = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('tmaxSlider').addEventListener('input', e => {
+    state.Tmax = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('expSlider').addEventListener('input', e => {
+    state.exposureEV = Number(e.target.value);
+    syncUIFromState();
+  });
+  document.getElementById('btnAutoExp').addEventListener('click', () => {
+    state.autoExposure = !state.autoExposure;
+    syncUIFromState();
+  });
+
+  document.getElementById('togDisk').addEventListener('click', () => { state.disk = !state.disk; syncUIFromState(); });
+  document.getElementById('togDoppler').addEventListener('click', () => { state.doppler = !state.doppler; syncUIFromState(); });
+  document.getElementById('togLensing').addEventListener('click', () => { state.lensing = !state.lensing; syncUIFromState(); });
+  document.getElementById('togStars').addEventListener('click', () => { state.stars = !state.stars; syncUIFromState(); });
+  document.getElementById('togBloom').addEventListener('click', () => { state.bloom = !state.bloom; syncUIFromState(); });
+
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.view = btn.dataset.view;
+      syncUIFromState();
+    });
+  });
+
+  // Top Bar & Modals
+  let uiVisible = true;
+  document.getElementById('btnToggleUI').addEventListener('click', () => {
+    uiVisible = !uiVisible;
+    document.getElementById('leftPanel').style.display = uiVisible ? 'flex' : 'none';
+    document.getElementById('rightPanel').style.display = uiVisible ? 'flex' : 'none';
+    document.getElementById('bottomBar').style.display = uiVisible ? 'flex' : 'none';
+  });
+
+  const modalCheck = document.getElementById('modalSelfCheck');
+  document.getElementById('btnSelfCheck').addEventListener('click', () => {
+    modalCheck.classList.add('active');
+    populateSelfCheckModal();
+  });
+  document.getElementById('btnRerunCheck').addEventListener('click', populateSelfCheckModal);
+  document.getElementById('btnCloseCheck').addEventListener('click', () => modalCheck.classList.remove('active'));
+
+  const modalAbout = document.getElementById('modalAbout');
+  document.getElementById('btnAbout').addEventListener('click', () => modalAbout.classList.add('active'));
+  document.getElementById('btnCloseAbout').addEventListener('click', () => modalAbout.classList.remove('active'));
+
+  // Mouse & Touch Orbit / Zoom Camera Interaction on glCanvas (Section 6.1)
+  let isDragging = false;
+  let lastX = 0, lastY = 0;
+  let pinchDist0 = 0, pinchCamR0 = 30;
+
+  glCanvas.addEventListener('mousedown', e => {
+    isDragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    state.camAz = ((state.camAz - dx * 0.35 + 540) % 360) - 180;
+    state.camIncl = Math.max(1.0, Math.min(179.0, state.camIncl - dy * 0.28));
+    syncUIFromState();
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  glCanvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = Math.exp(e.deltaY * 0.0012);
+    state.camR = Math.max(3.0, Math.min(200000, state.camR * factor));
+    syncUIFromState();
+  }, { passive: false });
+
+  glCanvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      isDragging = false;
+      pinchDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchCamR0 = state.camR;
+    }
+  }, { passive: true });
+
+  glCanvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && isDragging) {
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+      state.camAz = ((state.camAz - dx * 0.35 + 540) % 360) - 180;
+      state.camIncl = Math.max(1.0, Math.min(179.0, state.camIncl - dy * 0.28));
+      syncUIFromState();
+    } else if (e.touches.length === 2 && pinchDist0 > 10) {
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      state.camR = Math.max(3.0, Math.min(200000, pinchCamR0 * (pinchDist0 / Math.max(10, d))));
+      syncUIFromState();
+    }
+  }, { passive: true });
+
+  glCanvas.addEventListener('touchend', () => { isDragging = false; });
+
+  window.addEventListener('resize', () => {
+    rebuildFramebuffers();
+    renderSceneNow();
+  });
+}
+
+// ============================================================================
+// MAIN ANIMATION LOOP (With Section 3.9 Background-Tab Delta Clamping & Adaptive Scale)
+// ============================================================================
+
+function animate(now) {
+  requestAnimationFrame(animate);
+
+  const rawDt = (now - lastFrameTime) * 0.001;
+  lastFrameTime = now;
+  // Section 3.9: Clamp elapsed real time per frame to 0.1 s max so background tab switches never jump
+  const dt = Math.max(0.0, Math.min(0.1, rawDt));
+
+  // FPS & Adaptive Resolution (Section 1 & 4.1: scale in [0.5, 1.0])
+  frameCount++;
+  fpsAccumTime += rawDt;
+  if (fpsAccumTime >= 0.5) {
+    currentFps = Math.min(120, frameCount / fpsAccumTime);
+    frameCount = 0;
+    fpsAccumTime = 0;
+
+    let newScale = renderScale;
+    if (currentFps < 48 && renderScale > 0.54) {
+      newScale = Math.max(0.5, renderScale - 0.08);
+    } else if (currentFps > 57 && renderScale < 0.95) {
+      newScale = Math.min(1.0, renderScale + 0.05);
+    }
+    if (Math.abs(newScale - renderScale) >= 0.04) {
+      renderScale = newScale;
+      rebuildFramebuffers();
+    }
+    document.getElementById('fpsLabel').textContent = `${Math.round(currentFps)} FPS · ${renderScale.toFixed(2)}×`;
+  }
+
+  // Advance Coordinate Time & Dynamic Subsystems
+  if (!state.paused) {
+    const dtM = dt * state.timeSpeed;
+    state.time += dtM;
+    updateParticles(dtM);
+
+    if (state.autoRotate && !isDraggingActive()) {
+      state.camAz = ((state.camAz + dt * 4.5 + 540) % 360) - 180;
+      document.getElementById('camAzSlider').value = state.camAz;
+      document.getElementById('camAzVal').textContent = `${state.camAz.toFixed(1)}°`;
+    }
+
+    if (state.tdeActive) {
+      state.tdeTime += Math.abs(dtM);
+    }
+
+    if (state.plungeActive) {
+      const r_h = computeRadii(state.spin).horizon;
+      const drdtau = -Math.sqrt(Math.max(0.001, 2 / state.plungeR));
+      state.plungeR = Math.max(r_h + 0.02, state.plungeR + drdtau * dt * 2.5);
+      state.camR = state.plungeR;
+      if (state.plungeR <= r_h + 0.025) state.plungeR = 12.0;
+      document.getElementById('plungeRSlider').value = state.plungeR;
+      document.getElementById('plungeRVal').textContent = `${state.plungeR.toFixed(2)} M`;
+    }
+  }
+
+  if (state.s2Playing) {
+    state.s2Year += dt * 1.8;
+    if (state.s2Year > 2038) state.s2Year = 2002;
+    document.getElementById('s2YearSlider').value = state.s2Year;
+    document.getElementById('s2YearVal').textContent = state.s2Year.toFixed(2);
+  }
+
+  renderSceneNow();
+  refreshTelemetryUI();
+  drawEffectivePotentialChart();
+  drawLightcurveChart();
+  if (state.gwActive) drawGWChart();
+}
+
+function isDraggingActive() {
+  return document.activeElement && document.activeElement.tagName === 'INPUT';
+}
+
+// Initialize Application
+rebuildFramebuffers();
+initUIEvents();
+addPresetParticle('p10e05');
+syncUIFromState();
+drawEffectivePotentialChart();
+drawLightcurveChart();
+drawGWChart();
+renderSceneNow();
+
+// Hide Compile Banner
+setTimeout(() => {
+  const banner = document.getElementById('compileBanner');
+  if (banner) banner.classList.add('hidden');
+}, 120);
+
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

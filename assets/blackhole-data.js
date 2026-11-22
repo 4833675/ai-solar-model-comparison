@@ -304,6 +304,41 @@ export const BLACKHOLE_WORKS = [{
     note: "自动项 68.5/68.5，六项画布一致性与 19 项自检均通过。五项自由发挥各得 4 分。S2 的「看全轨」预设会裁切轨道，滚轮拉远到 120000 M 后可见全轨。默认场景离线运行 10 分钟并通过尺寸变化测试。后台恢复采用 90 秒等效停帧测试。",
     noteEn: "All 68.5 automated points, six canvas consistency checks, and 19 self-checks pass. Five extensions earn four points each. The S2 framing preset crops the orbit. Scrolling out to 120000 M brings it fully into view. The default scene ran offline for 10 minutes and passed resize testing. Background recovery was checked with an equivalent 90-second animation-frame pause."
   }
+}, {
+  id: "Gemini4Argon(high)(Antigravity)V1", model: "Gemini 4 Argon (high)",
+  file: "blackhole/Gemini4Argon(high)(Antigravity)V1.html",
+  shot: "assets/shots/blackhole/Gemini4Argon(high)(Antigravity)V1.jpg",
+  date: "261122", tier: 2, environment: "Antigravity", logo: "gemini",
+  recommendation: "△△", reason: "Antigravity太他妈烂了",
+  reasonEn: "Antigravity is fucking awful",
+  tech: "WebGL2", lines: 4410, bytes: 175327, priceModel: "Gemini 4 Argon",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-22",
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:.4,aces:1},F2a:1.5,F2b:1.5,F3:{fps:12.4,renderScale:998/1920,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:8,score:16/9},G3:3,G4a:2,G4b:.5 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,
+      J1:3,J2:21/8,J3:2,J4:2,J5:1,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:"吸积盘热斑与光变曲线",usable:1,number:1,computed:1,integrated:1},
+      {name:"GW150914 啁啾与波形",usable:1,number:1,computed:1,integrated:1},
+      {name:"潮汐瓦解与回落衰减",usable:1,number:1,computed:1,integrated:1},
+      {name:"微引力透镜放大率",usable:1,number:1,computed:1,integrated:0},
+      {name:"S 星团叠加与 S2 近心读数",usable:1,number:1,computed:0,integrated:1}
+    ], rootCauses: [], fatal: null,
+    performanceDeduction: {source:"author",points:2,reason:"作者指定性能项扣 2 分（4→2）。"},
+    deductions: [
+      {points:.6,zh:"泛光有亮度阈值和半分辨率双向模糊，同一层反复处理，没有多级降采样和升采样。",en:"Bloom applies a brightness threshold and separable blur at half resolution. It uses one resolution level throughout."},
+      {points:2/9,zh:"倒放时主时钟 0→−11.80 M，粒子坐标时却 0→+10.55 M。九项控件中八项有效。",en:"In reverse playback, the main clock moves from 0 to −11.80 M while the particle’s coordinate time advances to 10.55 M. Eight of nine controls work."},
+      {points:.5,zh:"六个预设正常切换。光子轨道半径和逆行 ISCO 半径缺少物理单位。",en:"All six presets switch correctly. The photon orbit radii and retrograde ISCO radius omit physical-unit conversions."},
+      {points:.375,zh:"a=0.9、r₀=2.20484 M 的 ISCO 内侧轨道应坠入视界。原积分超过 6π 时提前退出，只走到 1.88931 M，并返回未坠入。",en:"The a=0.9, r₀=2.20484 M orbit should cross the horizon. The integrator stops at 1.88931 M after passing 6π and reports that it did not plunge."},
+      {points:.5,zh:"a=0.998、r₀=1.6 M 的圆轨道能发射，势图却把半径夹到 2 M，能量点落在 95 像素高画布的 y≈131 像素处。",en:"A circular orbit at a=0.998 and r₀=1.6 M launches, but the potential plot clamps the radius to 2 M and places the marker at y≈131 px on a 95 px canvas."},
+      {points:.5,zh:"p=20、e=0.5 的初始方位下，牛顿椭圆从 15.92 M 起步，相对论粒子从 20 M 起步。",en:"For p=20 and e=0.5, the Newtonian ellipse starts at 15.92 M at the initial azimuth while the relativistic particle starts at 20 M."},
+      {points:2,zh:"作者指定性能项扣 2 分（4→2）。",en:"The site author specified a two-point performance deduction (4 to 2)."}
+    ],
+    note: "自动项 68.125/68.5，六项画布一致性与 14 项自检通过。热斑、引力波、潮汐瓦解各 4 分，微透镜放大率与 S 星团各 3 分。视界坠落演示到视界外即重置，EHT 滤波使用固定模糊。实际运行超过 10 分钟，场景通过尺寸变化和 62.5 秒标签页切换检查。",
+    noteEn: "The automated checks earn 68.125/68.5. All six canvas consistency checks and 14 self-checks pass. The hotspot, gravitational-wave chirp, and tidal disruption earn four points each. Microlensing magnification and the S-star cluster earn three each. The plunge demo resets outside the horizon, and the EHT filter uses a fixed blur. The main scene passed over ten minutes of offline operation, resizing, and a 62.5-second background tab switch."
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

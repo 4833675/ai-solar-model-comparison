@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,12,'One pinned example and eleven published submissions');
+assert.equal(BLACKHOLE_WORKS.length,13,'One pinned example and twelve published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -130,8 +130,36 @@ assert.equal(hash(await readFile(neon.file)), 'a6f0d85c52203ebbc347f9cad296c371a
 assert.equal(hash(await readFile(neon.shot)), 'd255813c5d7decaf22c8f646786132f9e0feac2a4ee945a8329102afb4038419');
 assert.equal((await readFile(neon.file)).length, neon.bytes);
 assert.equal((await readFile(neon.file, 'utf8')).split('\n').length - 1, neon.lines);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,neon.id,haiku.id,astraId,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,astraId,neon.id,haiku.id,sonnet.id,o.id]);
+const argon = BLACKHOLE_WORKS.find(work => work.id === 'Gemini4Argon(high)(Antigravity)V1');
+assert.ok(argon);
+assert.equal(argon.model, 'Gemini 4 Argon (high)');
+assert.equal(argon.tier, 2);
+assert.equal(argon.environment, neon.environment);
+assert.equal(argon.recommendation, '△△');
+assert.equal(argon.reason, neon.reason);
+assert.equal(argon.reasonEn, neon.reasonEn);
+assert.equal(argon.date, '261122');
+assert.equal(argon.logo, 'gemini');
+assert.equal(argon.tech, 'WebGL2');
+assert.equal(argon.priceModel, 'Gemini 4 Argon');
+assert.equal(argon.score.reviewedAt, '2026-11-22');
+assert.equal(argon.score.fatal, null);
+assert.equal(argon.score.base.F3.score, 4);
+assert.deepEqual(argon.score.performanceDeduction, {source:'author',points:2,reason:'作者指定性能项扣 2 分（4→2）。'});
+const argonScore = blackholeScore(argon);
+close(argonScore.base, 5101/90);
+close(argonScore.advanced, 309/8);
+close(argonScore.exact, 39709/360);
+assert.equal(argonScore.free, 18);
+assert.equal(argonScore.adjustment, -3);
+assert.equal(argonScore.performanceDeduction, 2);
+assert.equal(argonScore.total, 110);
+assert.equal(hash(await readFile(argon.file)), 'b0b38dc0109de04bb0cc1d14ad577ea4bbe8a9a1f42468269fdc54fb9486306d');
+assert.equal(hash(await readFile(argon.shot)), '296580f30a3fdac2766964e90fb5665d41f45bbf2d10e370b637e0a0194a2a72');
+assert.equal((await readFile(argon.file)).length, argon.bytes);
+assert.equal((await readFile(argon.file, 'utf8')).split('\n').length - 1, argon.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,neon.id,haiku.id,astraId,argon.id,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,argon.id,astraId,neon.id,haiku.id,sonnet.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
