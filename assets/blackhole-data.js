@@ -274,6 +274,36 @@ export const BLACKHOLE_WORKS = [{
     note: "自动项68.5/68.5，六项画面一致性与15项自检通过。滚轮拉远后可通过环绕看全S2轨道。默认场景运行超过10分钟，HDR采样、尺寸变化和实际切换标签页62.9秒均通过。",
     noteEn: "All 68.5 automated points, six image consistency checks and 15 self-checks pass. Zooming out and rotating the camera reveals the complete S2 orbit. The default scene passed over 10 minutes of stability testing, HDR sampling, resizing and a 62.9-second tab switch."
   }
+}, {
+  id: "Gemini4Neon(xhigh)(Antigravity)V1", model: "Gemini 4 Neon (xhigh)",
+  file: "blackhole/Gemini4Neon(xhigh)(Antigravity)V1.html",
+  shot: "assets/shots/blackhole/Gemini4Neon(xhigh)(Antigravity)V1.jpg",
+  date: "261122", tier: 1, environment: "Antigravity", logo: "gemini",
+  recommendation: "△△△", reason: "Antigravity太他妈烂了",
+  reasonEn: "Antigravity is fucking awful",
+  tech: "WebGL2", lines: 5287, bytes: 220943, priceModel: "Gemini 4 Neon",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-22",
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:48.3,renderScale:.5,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:8,score:16/9},G3:3,G4a:2,G4b:.5 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,
+      J1:3,J2:3,J3:2,J4:2,J5:1.5,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:"引力透镜与微透镜",usable:1,number:1,computed:1,integrated:1},
+      {name:"吸积盘热斑与光变曲线",usable:1,number:1,computed:1,integrated:1},
+      {name:"第一人称跳进视界",usable:1,number:1,computed:1,integrated:1},
+      {name:"双黑洞旋近与引力波",usable:1,number:1,computed:1,integrated:1},
+      {name:"完整 S 星团及相对论红移",usable:1,number:1,computed:1,integrated:1}
+    ], rootCauses: [], fatal: null,
+    deductions: [
+      {points:2/9,zh:"倒放时主时钟从 0 回到 −30.28 M，粒子坐标时却从 0 前进到 34.73 M。九个控件中八个有效。",en:"During reverse playback, the main clock moves from 0 to −30.28 M while the particle’s coordinate time advances to 34.73 M. Eight of nine controls work."},
+      {points:.5,zh:"信息卡只给顺行光子轨道与 ISCO 半径换算物理单位，逆行半径只有 M。",en:"The information card gives physical-unit conversions for the prograde photon orbit and ISCO radii. The retrograde radii are given only in M."},
+      {points:.5,zh:"自转 a=0.998 时，r₀=1.6 M 的顺行圆轨道在 ISCO 之外，浮点舍入却让 pᵣ² 略小于零，导致发射被拒绝。",en:"At spin a=0.998, the prograde circular orbit at r₀=1.6 M lies outside the ISCO. A floating-point rounding error makes pᵣ² slightly negative, causing the launch to be rejected."}
+    ],
+    note: "自动项 68.5/68.5，六项画布一致性与 19 项自检均通过。五项自由发挥各得 4 分。S2 的「看全轨」预设会裁切轨道，滚轮拉远到 120000 M 后可见全轨。默认场景离线运行 10 分钟并通过尺寸变化测试。后台恢复采用 90 秒等效停帧测试。",
+    noteEn: "All 68.5 automated points, six canvas consistency checks, and 19 self-checks pass. Five extensions earn four points each. The S2 framing preset crops the orbit. Scrolling out to 120000 M brings it fully into view. The default scene ran offline for 10 minutes and passed resize testing. Background recovery was checked with an equivalent 90-second animation-frame pause."
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

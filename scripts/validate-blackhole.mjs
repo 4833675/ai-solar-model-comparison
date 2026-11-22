@@ -5,7 +5,7 @@ import {BLACKHOLE_WORKS,BLACKHOLE_GROUPS,blackholeScore,blackholeRows} from '../
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
-assert.equal(BLACKHOLE_WORKS.length,11,'One pinned example and ten published submissions');
+assert.equal(BLACKHOLE_WORKS.length,12,'One pinned example and eleven published submissions');
 const w=BLACKHOLE_WORKS[0];
 assert.equal(w.id,'Fable5.2(Max)(Claude Code)');assert.equal(w.example,true);assert.ok(!w.reference);
 assert.equal(w.tier,1);assert.equal(w.recommendation,'△△△△△');assert.equal(w.reason,'示例、未按任务文档执行、任务发布者');assert.equal(w.environment,'Claude Code');
@@ -104,8 +104,34 @@ for (const expected of latest) {
   assert.equal((await readFile(work.file,'utf8')).split('\n').length-1, work.lines);
 }
 const [astraId,sol62Id,kimiId] = latest.map(e => e.id);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,haiku.id,astraId,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
-assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,astraId,haiku.id,sonnet.id,o.id]);
+const neon = BLACKHOLE_WORKS.find(work => work.id === 'Gemini4Neon(xhigh)(Antigravity)V1');
+assert.ok(neon);
+assert.equal(neon.model, 'Gemini 4 Neon (xhigh)');
+assert.equal(neon.tier, 1);
+assert.equal(neon.environment, 'Antigravity');
+assert.equal(neon.recommendation, '△△△');
+assert.equal(neon.reason, 'Antigravity太他妈烂了');
+assert.equal(neon.reasonEn, 'Antigravity is fucking awful');
+assert.equal(neon.date, '261122');
+assert.equal(neon.logo, 'gemini');
+assert.equal(neon.tech, 'WebGL2');
+assert.equal(neon.priceModel, 'Gemini 4 Neon');
+assert.equal(neon.score.reviewedAt, '2026-11-22');
+assert.equal(neon.score.fatal, null);
+const neonScore = blackholeScore(neon);
+close(neonScore.base, 1067/18);
+close(neonScore.advanced, 39.5);
+close(neonScore.exact, 1069/9);
+assert.equal(neonScore.free, 20);
+assert.equal(neonScore.adjustment, 0);
+assert.equal(neonScore.performanceDeduction, 0);
+assert.equal(neonScore.total, 119);
+assert.equal(hash(await readFile(neon.file)), 'a6f0d85c52203ebbc347f9cad296c371af4fb8f816b9dfa3dbd05ed223ea0705');
+assert.equal(hash(await readFile(neon.shot)), 'd255813c5d7decaf22c8f646786132f9e0feac2a4ee945a8329102afb4038419');
+assert.equal((await readFile(neon.file)).length, neon.bytes);
+assert.equal((await readFile(neon.file, 'utf8')).split('\n').length - 1, neon.lines);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS).map(w=>w.id),[w.id,o.id,sonnet.id,neon.id,haiku.id,astraId,sol.id,sol62Id,hy.id,d.id,kimiId,m.id]);
+assert.deepEqual(blackholeRows(BLACKHOLE_WORKS,'score',1).map(w=>w.id),[w.id,m.id,kimiId,d.id,hy.id,sol.id,sol62Id,astraId,neon.id,haiku.id,sonnet.id,o.id]);
 for(const key of ['score','tier','model','date','recommendation','lines','environment','tech'])for(const direction of [-1,1]){
  const other=structuredClone(d);other.id='sort-fixture';other.model='A';other.date='250101';other.tier=3;
  assert.equal(blackholeRows([other,d,w],key,direction)[0].id,w.id,'Example stays pinned outside every sort');
