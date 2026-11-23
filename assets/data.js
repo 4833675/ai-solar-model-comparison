@@ -9,6 +9,7 @@ window.WORK_CREATION_DATES={
  "Gemini4Neon(xhigh)V1":"261122",
  "Gemini4Hydrogen(xhigh)V1":"261122",
  "Gemini4Argon(high)V1":"261122",
+ "Gemini4Argon(high)V2":"261123",
  "GPT6.2Astra(light)V1-TasksAssignedByOpus5":"261119",
  "GPT6.2Sol(Max)V1-TasksAssignedByOpus5":"261119",
  "GPT6.2Astra(Max)V1":"261118",
@@ -188,6 +189,44 @@ window.WORK_CREATION_DATES={
 };
 window.WORKS=[
 {
+  "id": "Gemini4Argon(high)V2",
+  "file": "models/Gemini4Argon(high)V2.html",
+  "model": "Gemini 4 Argon (high) #2",
+  "group": "A",
+  "pair": null,
+  "featured": false,
+  "tech": "Three.js",
+  "bytes": 148221,
+  "lines": 3826,
+  "title": "SOLARIS J2000 // 高精度太阳系天体力学与视觉仿真系统",
+  "needsFloat": true,
+  "msaa": false,
+  "feats": [
+    "kepler",
+    "rings",
+    "belt",
+    "bloom",
+    "aces",
+    "atmo",
+    "moons"
+  ],
+  "weight": "medium",
+  "shot": "assets/shots/Gemini4Argon(high)V2.jpg",
+  "jsErrors": 0,
+  "note": "八大行星采用 JPL 短期根数，切换真实距离后轨道线重新生成，行星仍贴合轨道。泛光合成后走完整 ACES，土星环只有单向环影，大气为边缘散射近似。11 颗卫星中 9 颗有效。月球额外继承地球倾斜，实际相对黄道为 18.299°，海卫一因负周期叠加高倾角成为顺行。哈雷的近日点幅角和逆行方向正确，非收敛的求解器仍可令它在一天内跳过 35.58 AU，因此哈雷项计 0 分。金星、天王星、冥王星叠加负自转周期与逆向倾角后均成顺行。滚轮可进入地球内部，最快时间档跟随会丢失目标，实时同步时按暂停仍继续走时。",
+  "issue": null,
+  "net": [
+    "cdn.jsdelivr.net"
+  ],
+  "fix": null,
+  "tags": [
+    "in Antigravity"
+  ],
+  "tier": 3,
+  "rank": 0
+},
+
+{
   "id": "Gemini4Neon(xhigh)V1",
   "file": "models/Gemini4Neon(xhigh)V1.html",
   "model": "Gemini 4 Neon (xhigh)",
@@ -264,7 +303,7 @@ window.WORKS=[
 {
   "id": "Gemini4Argon(high)V1",
   "file": "models/Gemini4Argon(high)V1.html",
-  "model": "Gemini 4 Argon (high)",
+  "model": "Gemini 4 Argon (high) #1",
   "group": "A",
   "pair": null,
   "featured": false,

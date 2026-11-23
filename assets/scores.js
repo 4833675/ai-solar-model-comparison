@@ -3,6 +3,139 @@
   'use strict';
 
   window.SCORES = {
+"Gemini4Argon(high)V2":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 1,
+    "stability": 1
+  },
+  "moons": 11,
+  "hasEarthMoon": true,
+  "earthMoonValid": false,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 0,
+      "actualInclinationDeg": 18.299,
+      "expectedInclinationDeg": 5.145,
+      "reason": "将月球的黄道倾角叠加到地球赤道倾斜，实际黄道倾角 18.299°，参考值为 5.145°。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.1,
+      "expectedInclinationDeg": 1.08,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.8,
+      "expectedInclinationDeg": 1.79,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.19,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.01,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.3,
+      "expectedInclinationDeg": 0.34,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.1,
+      "expectedInclinationDeg": 0.34,
+      "reason": "母星、周期量级及随母星倾斜的有向轨道成立，采用圆轨道和近似母星极轴。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 23.2,
+      "expectedInclinationDeg": 156.885,
+      "reason": "156.8° 轨道倾角又使用负公转周期，净角动量相对海王星母轴仅为 23.2°，变成顺行。"
+    }
+  ],
+  "halley": false,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 0.5,
+    "pauseReset": 0.5
+  },
+  "fatal": null,
+  "note": "八大行星采用 JPL 短期根数，切换真实距离后轨道线重新生成，行星仍贴合轨道。泛光合成后走完整 ACES，土星环只有单向环影，大气为边缘散射近似。11 颗卫星中 9 颗有效。月球额外继承地球倾斜，实际相对黄道为 18.299°，海卫一因负周期叠加高倾角成为顺行。哈雷的近日点幅角和逆行方向正确，非收敛的求解器仍可令它在一天内跳过 35.58 AU，因此哈雷项计 0 分。金星、天王星、冥王星叠加负自转周期与逆向倾角后均成顺行。滚轮可进入地球内部，最快时间档跟随会丢失目标，实时同步时按暂停仍继续走时。",
+  "reviewedAt": "2026-11-23",
+  "reviewVersion": "V3-20261123"
+},
 "Gemini4Neon(xhigh)V1":{
   "reference": false,
   "featureMap": {
