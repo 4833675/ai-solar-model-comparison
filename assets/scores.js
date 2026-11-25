@@ -3,6 +3,163 @@
   'use strict';
 
   window.SCORES = {
+"Gemini4Carbon(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 0.4,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 14,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.145,
+      "expectedInclinationDeg": 5.145,
+      "reason": "实际轨道相对黄道倾斜 5.145°，绕地球顺行。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.09,
+      "expectedInclinationDeg": 1.09,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.79,
+      "expectedInclinationDeg": 1.79,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.05,
+      "expectedInclinationDeg": 0.05,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.47,
+      "expectedInclinationDeg": 0.47,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.2,
+      "expectedInclinationDeg": 0.2,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.19,
+      "expectedInclinationDeg": 0.19,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.02,
+      "expectedInclinationDeg": 0.02,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "rhea",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.35,
+      "expectedInclinationDeg": 0.35,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.34,
+      "expectedInclinationDeg": 0.34,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "oberon",
+      "parent": "uranus",
+      "quality": 1,
+      "actualInclinationDeg": 0.07,
+      "expectedInclinationDeg": 0.07,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 156.885,
+      "expectedInclinationDeg": 156.885,
+      "reason": "相对海王星母轴实际为 156.885°，单次取反产生正确逆行。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.08,
+      "expectedInclinationDeg": 0.08,
+      "reason": "母星、周期量级及相对母星的有向赤道轨道成立。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 1,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 1,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "note": "八大行星采用 JPL 短期根数，正常及全景比例下轨道贴合。硬核 1:1 模式的离散轨道线会错开小天体，哈雷实测中心到线约为可见彗核半径的 1.57 万倍。14 颗卫星的有向轨道成立，地月倾角 5.145°，海卫一相对母星逆行。哈雷求解器稳定，1986 预设日心距 0.586 AU。恩克彗星独立运行，另加 1 分。两带实际移动，HDR 泛光后走完整 ACES。土星只有行星投向环的阴影，大气为边缘散射。天王星自转方向反了，多颗卫星的面板质量复用地球月球的近似值，椭圆卫星的遥测距离固定为半长轴。常规及实时暂停、正反转、聚焦、追踪和缩放测试通过。1440×900 默认侧栏会遮挡真实比例按钮，1920×1080 可正常操作。",
+  "reviewedAt": "2026-11-24",
+  "reviewVersion": "V3-20261124"
+},
 "Gemini4Argon(high)V2":{
   "reference": false,
   "featureMap": {

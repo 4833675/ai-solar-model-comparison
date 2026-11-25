@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   const sources = {
+    gemini4carbon: "https://aistudio.google.com/docs/pricing#gemini-4-carbon",
     gemini4neon: "https://aistudio.google.com/docs/pricing#gemini-4-neon",
     gemini4hydrogen: "https://aistudio.google.com/docs/pricing#gemini-4-hydrogen",
     gemini4argon: "https://aistudio.google.com/docs/pricing#gemini-4-argon",
@@ -29,6 +30,7 @@
     openrouter: 'https://openrouter.ai/meta/muse-spark-1.3-contributor',
   };
   const entries = [
+    ["Gemini 4 Carbon",4,20,0.2,"gemini4carbon","gemini4ArgonList","2026-11-25"],
     ["Gemini 4 Neon",3,15,0.15,"gemini4neon",null,"2026-11-22"],
     ["Gemini 4 Hydrogen",1.5,7.5,0.075,"gemini4hydrogen",null,"2026-11-22"],
     ["Gemini 4 Argon",4,20,0.2,"gemini4argon","gemini4ArgonList","2026-11-22"],

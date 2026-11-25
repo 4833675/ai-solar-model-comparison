@@ -370,6 +370,37 @@ export const BLACKHOLE_WORKS = [{
     note: "自动项 68.5/68.5，六项画布一致性与 17 项自检均通过。自由落体、热斑、引力波和 S 星团各 4 分。EHT 成像得 2 分，Sgr A* 与 M87* 实测亮环直径超出参考值约 18% 和 21%。默认画面通过超过 10 分钟离线运行、尺寸变化和实际隐藏标签页 63 秒检查。",
     noteEn: "All 68.5 automated points, six canvas consistency checks, and 17 self-checks pass. Free fall, the hotspot, gravitational waves, and the S-star cluster earn four points each. EHT imaging earns two points. Its measured ring diameters for Sgr A* and M87* exceed the reference by about 18% and 21%. The default scene passed over ten minutes of offline operation, resizing, and 63 seconds in a hidden tab."
   }
+}, {
+  id: "Gemini4Carbon(high)(Antigravity)V1", model: "Gemini 4 Carbon (high)",
+  file: "blackhole/Gemini4Carbon(high)(Antigravity)V1.html",
+  shot: "assets/shots/blackhole/Gemini4Carbon(high)(Antigravity)V1.jpg",
+  date: "261124", tier: 1, environment: "Antigravity", logo: "gemini",
+  recommendation: "△△△", reason: "Antigravity太他妈烂了",
+  reasonEn: "Antigravity is fucking awful",
+  tech: "WebGL2", lines: 4966, bytes: 208200, priceModel: "Gemini 4 Carbon",
+  score: {
+    task: "blackhole-v1", reviewedAt: "2026-11-24",
+    base: { A1:4,A2:4,A3:4,B1:6,B2:6,C1:4,C2:5,C3a:1,C3b:1,C3c:1,C4:2,
+      F1:{hdr:1,bloom:1,aces:1},F2a:1.5,F2b:1.5,F3:{fps:21.1,renderScale:.5,adaptive:true,score:4},F4:2,
+      G1:2,G2:{working:9,score:2},G3:3,G4a:2,G4b:.5 },
+    advanced: { H1:6,H2:3,H3a:1,H3b:1,H3c:1,I1:2,I2:4,I3:2,
+      J1:3,J2:3,J3:2,J4:2,J5:.5,R1a:1,R1b:1,R2a:2,R2b:1,R3:1,V1:1,V2:1 },
+    free: [
+      {name:"第一人称自由坠落",usable:1,number:1,computed:1,integrated:1},
+      {name:"GW150914 啁啾与并合演示",usable:1,number:1,computed:1,integrated:1},
+      {name:"热斑光变",usable:1,number:1,computed:1,integrated:1},
+      {name:"EHT 成像",usable:1,number:1,computed:1,integrated:1},
+      {name:"银心 S 星团红移",usable:1,number:1,computed:1,integrated:1}
+    ], rootCauses: [], fatal: null,
+    deductions: [
+      {points:0.5,zh:"六个预设都能切换。光子轨道和 ISCO 的顺行、逆行半径只列 M，缺少物理单位换算。",en:"All six presets switch correctly. The prograde and retrograde photon-orbit and ISCO radii are shown only in M."},
+      {points:0.5,zh:"克尔势图把 (L_z−aE)² 简化成 L_z²。a=0.998、r=1.6 M 的合法顺行圆轨道 E²≈0.53136，图中同一点的 V²_eff≈0.63995。",en:"The Kerr potential plot drops the energy dependence in (L_z−aE)². For the valid a=0.998 circular orbit at r=1.6 M, E²≈0.53136 but the plotted V²_eff≈0.63995."},
+      {points:0.5,zh:"把相对论粒子倒放回发射前，界面仍保留已完成一圈和累计进动 216.1°。高自转圆轨道还显示约 19,064.62° 的单圈近心点进动。",en:"Rewinding past the launch leaves the radial-cycle count at one and the accumulated precession at 216.1°. A high-spin circular orbit also reports about 19,064.62° of periapsis precession per orbit."},
+      {points:0.5,zh:"p=10、e=0.5 的花结轨道从 10 M 起步，同方位的牛顿对照从近心点 6.667 M 起步。",en:"For the p=10, e=0.5 orbit, the relativistic particle starts at 10 M and the Newtonian path starts at the 6.667 M pericenter at the same azimuth."}
+    ],
+    note: "自动项 68.5/68.5、六项画布一致性和 20 项自检全部通过。五项自由发挥各得 4 分。第一人称镜头能穿过视界，面板的一项 RK4 实测误报 0.00 M。默认场景通过 616 秒离线运行、窗口尺寸变化和约 63 秒的标签页隐藏检查。",
+    noteEn: "All 68.5 automated points, six canvas consistency checks and 20 self-checks pass. Five extensions earn four points each. The first-person camera crosses the horizon and one separate RK4 measurement incorrectly reports 0.00 M. The default scene passed 616 seconds of offline operation, window resizing and about 63 seconds in a hidden tab."
+  }
 }];
 
 export const BLACKHOLE_GROUPS = [

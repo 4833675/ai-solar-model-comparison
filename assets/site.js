@@ -37,6 +37,12 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"Gemini4Carbon(high)V1":{
+  "direction": "up",
+  "count": 3,
+  "zh": "Antigravity太他妈烂了",
+  "en": "Antigravity is fucking awful"
+},
 "Gemini4Argon(high)V2":{
   "direction": "up",
   "count": 2,
