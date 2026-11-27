@@ -3760,9 +3760,11 @@ for (const lang of ['zh', 'en']) {
     one('#tableOriginFilter').listeners.change();
   };
   selectDomestic(true);
-  check(one('#tAll').textContent === '81 / 167', lang + ': domestic filter count across the entire table');
+  check(one('#tAll').textContent === '82 / 167', lang + ': filtered count includes the one-line benchmark');
+  check(body().includes('class="score-trigger score-benchmark" data-score-id="Opus5Ultra-WebGL2"'),
+    lang + ': the one-line benchmark remains visible with its gold badge when filtering by origin');
   const domesticTabs = [
-    ['A', 12, 32, 'DeepSeekV4.1Flash1017(Max)V1', 'ClaudeOpus5.5(high)V1'],
+    ['A', 13, 32, 'DeepSeekV4.1Flash1017(Max)V1', 'ClaudeOpus5.5(high)V1'],
     ['B', 11, 22, 'Hy4(high)V1-TasksAssignedByOpus5', 'GPT6.2Astra(light)V1-TasksAssignedByOpus5'],
     ['OfflineA', 18, 33, 'DeepSeek_V4_Pro_high-2', 'OmenAlpha(Max)V1'],
     ['OfflineB', 15, 30, 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5', 'Opus5Ultra-TasksAssignedByOpus5'],
@@ -3781,7 +3783,13 @@ for (const lang of ['zh', 'en']) {
   search.value = 'Claude';
   search.listeners.input();
   selectDomestic(true);
-  check(countRows() === 0 && one('#tAll').textContent === '0 / 167', lang + ': model-name search and origin filter intersect');
+  check(countRows() === 1 && body().includes('Opus5Ultra-WebGL2') && one('#tAll').textContent === '1 / 167',
+    lang + ': the benchmark is the only Claude match in the domestic filter');
+  search.value = 'Gemini';
+  search.listeners.input();
+  check(countRows() === 0 && one('#tAll').textContent === '0 / 167', lang + ': the benchmark still follows the name query');
+  search.value = 'Claude';
+  search.listeners.input();
   selectDomestic(false);
   check(countRows() > 0 && body().includes('ClaudeOpus5.5(high)V1') && search.value === 'Claude'
     && buttons[0].attributes['aria-pressed'] === 'true' && buttons[0].dataset.direction === priceDirection,
