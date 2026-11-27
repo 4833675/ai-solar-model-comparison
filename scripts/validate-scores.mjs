@@ -3754,6 +3754,38 @@ for (const lang of ['zh', 'en']) {
   const work = localSite.byId('Opus5(Max)V1');
   const tooltip = localSite.scoreTipHtml(work,localSite.scoreFor(work));
   check(tooltip.includes('105') && !/97\.98|†|作者修订|Author revision/.test(tooltip), lang + ': new Opus must show only its current score with two other-comet points');
+
+  const selectDomestic = checked => {
+    one('#tableOriginDomestic').checked = checked;
+    one('#tableOriginFilter').listeners.change();
+  };
+  selectDomestic(true);
+  check(one('#tAll').textContent === '81 / 167', lang + ': domestic filter count across the entire table');
+  const domesticTabs = [
+    ['A', 12, 32, 'DeepSeekV4.1Flash1017(Max)V1', 'ClaudeOpus5.5(high)V1'],
+    ['B', 11, 22, 'Hy4(high)V1-TasksAssignedByOpus5', 'GPT6.2Astra(light)V1-TasksAssignedByOpus5'],
+    ['OfflineA', 18, 33, 'DeepSeek_V4_Pro_high-2', 'OmenAlpha(Max)V1'],
+    ['OfflineB', 15, 30, 'DoubaoSeedEvolving0827(Max)V1-TasksAssignedByOpus5', 'Opus5Ultra-TasksAssignedByOpus5'],
+  ];
+  for (const [i, [key, shown, total, domestic, excluded]] of domesticTabs.entries()) {
+    tabs[i].listeners.click();
+    check(countRows() === shown && one('#tableCount'+key).textContent === shown+' / '+total
+      && body().includes(domestic) && !body().includes(excluded), lang + ': correct domestic rows in ' + key);
+  }
+  selectDomestic(false);
+  check(countRows() === 30 && tabs[3].attributes['aria-selected'] === 'true', lang + ': restoring all models keeps the selected tab');
+  tabs[0].listeners.click();
+  buttons[0].onclick();
+  const priceDirection = buttons[0].dataset.direction;
+  const search = one('#modelSearchInput');
+  search.value = 'Claude';
+  search.listeners.input();
+  selectDomestic(true);
+  check(countRows() === 0 && one('#tAll').textContent === '0 / 167', lang + ': model-name search and origin filter intersect');
+  selectDomestic(false);
+  check(countRows() > 0 && body().includes('ClaudeOpus5.5(high)V1') && search.value === 'Claude'
+    && buttons[0].attributes['aria-pressed'] === 'true' && buttons[0].dataset.direction === priceDirection,
+    lang + ': switching origin retains the name query and sorts the results');
 }
 const compareIframeStyle = cssSource.match(/(?:^|\n)[^{}]*\.split>div>iframe[^{}]*\{([^}]*)\}/)?.[1] || '';
 for (const [property, value] of [['position', 'absolute'], ['inset', '0'], ['width', '100%'], ['height', '100%']]) {
@@ -4232,7 +4264,7 @@ check(enHome.includes('<th data-k="model">Model</th><th data-k="testDate">Test D
 for (const page of [zhHome, enHome]) {
   check(!page.includes('data-k="nfeat"') && !page.includes('data-k="weight"'), 'Total table must remove Feature Count and Weight columns');
   check(!page.includes('w.nfeat') && !page.includes("w.weight==='heavy'"), 'Table row renderer must not emit removed Feature Count or Weight cells');
-  check(page.includes('S.tableDisplayRows(tableScope(works,tableGroup,tableStatus),sk,sd,') && page.includes('S.recommendationSymbols(w.personal)'), 'Table rows must collapse numbered reruns while rendering colored family-level personal recommendations');
+  check(page.includes('S.tableDisplayRows(tableScope(') && page.includes('S.recommendationSymbols(w.personal)'), 'Table rows must collapse numbered reruns while rendering colored family-level personal recommendations');
   check(page.includes('S.modelCell(w)') && page.includes('S.codeSizeCell(w)') && !page.includes('>运行 →</a>') && !page.includes('>Run →</a>'), 'Model names must open entries and replace the old Action column');
   check(page.includes('S.recommendationSymbols(w.personal)') && !page.includes("w.personal.direction==='up'?'👍':'👎'"), 'Recommendation cells must use the normalized colored triangle renderer instead of thumb emoji');
 }

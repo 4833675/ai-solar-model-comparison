@@ -262,27 +262,31 @@
     if (personal.direction === 'legacy') return `<span class="recommend-symbol-legacy" title="${esc(personal.tooltip)}" aria-label="${esc(personal.tooltip)}" tabindex="0">-</span>`;
     return esc(personal.symbols).replace(/△/g, '<span class="recommend-symbol-up">△</span>').replace(/▽/g, '<span class="recommend-symbol-down">▽</span>');
   };
-  const MODEL_LOGOS = [
-    [/^(?:Claude\b|Claude Fable\b)/, 'anthropic'],
-    [/^GPT-/, 'openai'],
-    [/^Gemini\b/, 'gemini'],
-    [/^Kimi\b/, 'kimi'],
-    [/^DeepSeek\b/, 'deepseek'],
-    [/^Qwen\b/, 'qwen'],
-    [/^GLM\b/, 'glm'],
-    [/^Hy\b/, 'hy'],
-    [/^Grok\b/, 'grok'],
-    [/^Doubao\b/, 'doubao'],
-    [/^LongCat\b/, 'longcat'],
-    [/^MiniMax\b/, 'minimax'],
-    [/^MiMo\b/, 'mi'],
-    [/^Step\b/, 'stepfun'],
-    [/^MuseSpark\b/, 'meta'],
+  const MODEL_PROVIDERS = [
+    { pattern: /^(?:Claude\b|Claude Fable\b)/, logo: 'anthropic' },
+    { pattern: /^GPT-/, logo: 'openai' },
+    { pattern: /^Gemini\b/, logo: 'gemini' },
+    { pattern: /^Kimi\b/, logo: 'kimi', country: 'CN' },
+    { pattern: /^DeepSeek\b/, logo: 'deepseek', country: 'CN' },
+    { pattern: /^Qwen\b/, logo: 'qwen', country: 'CN' },
+    { pattern: /^GLM\b/, logo: 'glm', country: 'CN' },
+    { pattern: /^Hy\b/, logo: 'hy', country: 'CN' },
+    { pattern: /^Grok\b/, logo: 'grok' },
+    { pattern: /^Doubao\b/, logo: 'doubao', country: 'CN' },
+    { pattern: /^LongCat\b/, logo: 'longcat', country: 'CN' },
+    { pattern: /^MiniMax\b/, logo: 'minimax', country: 'CN' },
+    { pattern: /^MiMo\b/, logo: 'mi', country: 'CN' },
+    { pattern: /^Step\b/, logo: 'stepfun', country: 'CN' },
+    { pattern: /^MuseSpark\b/, logo: 'meta' },
   ];
-  const modelLogoFor = work => {
+  const modelProviderFor = work => {
     const model = String(work && work.model || '');
-    const match = MODEL_LOGOS.find(([pattern]) => pattern.test(model));
-    return match ? `assets/logos/${match[1]}.png` : null;
+    return MODEL_PROVIDERS.find(provider => provider.pattern.test(model));
+  };
+  const isDomesticModel = work => modelProviderFor(work)?.country === 'CN';
+  const modelLogoFor = work => {
+    const provider = modelProviderFor(work);
+    return provider ? `assets/logos/${provider.logo}.png` : null;
   };
   const compactTierLabel = work => [0, 1, 2, 3].includes(workTier(work)) ? `T${workTier(work)}` : tierLabel(workTier(work));
   const tableModelName = work => String(work && work.model || '').replace(/\s+\(\d{6}\)$/, '');
@@ -1222,7 +1226,7 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
   window.SITE = {
     tieredGallery, pairCollection,
     $, $$, kb, esc, t, page, workText, scoreNote, tierLabel, CAP, detect, renderProbe, workRisk, card, pairBlock, pairTitle, chips, techChip, link,
-    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, workTier, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches,
+    environmentTag, environmentName, personalRecommendationFor, recommendationSymbols, modelLogoFor, modelCell, codeSizeCell, priceFor, priceCell, tableRows, tableDisplayRows, tableDisplayRowCount, installTableVariantPopovers, scoreFor, scoreOrder, scoreCell, scoreTipHtml, installScoreTooltip, scoreStats, workTier, visibleWorks, isVisibleWork, archivedWorks, isArchivedWork, modelMatches, isDomesticModel,
     modelGapComparisons, modelGapMatches, modelGapBlock,
     lunaHaikuComparisons, lunaHaikuMatches, lunaHaikuBlock, lunaHaikuPriceBlock, contextPriceFor,
     effortComparisonWorks, effortDocumentWorks, effortComparisonMatches, effortComparisonBlock,
