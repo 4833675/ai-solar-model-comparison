@@ -3,6 +3,328 @@
   'use strict';
 
   window.SCORES = {
+"ClaudeOpus5.5(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 21,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 4.937317,
+      "expectedInclinationDeg": 5.145,
+      "reason": "地月相对坐标来自独立黄道历表，实测低倾角顺行。"
+    },
+    {
+      "id": "phobos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.564697,
+      "expectedInclinationDeg": 1.08,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "deimos",
+      "parent": "mars",
+      "quality": 1,
+      "actualInclinationDeg": 1.564697,
+      "expectedInclinationDeg": 1.79,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00035,
+      "expectedInclinationDeg": 0.04,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00035,
+      "expectedInclinationDeg": 0.47,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00035,
+      "expectedInclinationDeg": 0.21,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00035,
+      "expectedInclinationDeg": 0.28,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "mimas",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 1.57,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "enceladus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.02,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "tethys",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 1.09,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "dione",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.03,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "rhea",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.35,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0.3,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "iapetus",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 15.47,
+      "expectedInclinationDeg": 15.47,
+      "reason": "使用土星赤道近似倾角 15.47°，正确母星、周期与顺行方向达到基础门槛。"
+    },
+    {
+      "id": "miranda",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 175.7,
+      "expectedInclinationDeg": 4.4,
+      "reason": "取天王星 IAU 北极作正向轨道法线，实际与负自转对应的物理轴反向。"
+    },
+    {
+      "id": "ariel",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 0,
+      "reason": "取天王星 IAU 北极作正向轨道法线，实际与负自转对应的物理轴反向。"
+    },
+    {
+      "id": "umbriel",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 0.1,
+      "reason": "取天王星 IAU 北极作正向轨道法线，实际与负自转对应的物理轴反向。"
+    },
+    {
+      "id": "titania",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 0.1,
+      "reason": "取天王星 IAU 北极作正向轨道法线，实际与负自转对应的物理轴反向。"
+    },
+    {
+      "id": "oberon",
+      "parent": "uranus",
+      "quality": 0,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 0.1,
+      "reason": "取天王星 IAU 北极作正向轨道法线，实际与负自转对应的物理轴反向。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 1,
+      "actualInclinationDeg": 157,
+      "expectedInclinationDeg": 157.3,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0.000001,
+      "expectedInclinationDeg": 0,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 2,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-27",
+  "reviewVersion": "V3-20261127",
+  "note": "八大行星的 JPL 近似轨道成立，双向土星环影、动态小天体带、HDR 泛光及末端 ACES 均有效。大气用边缘散射近似。21 颗卫星中 16 颗有效，天王星的五颗卫星绕物理自转轴反向公转。海卫一实测 157°，月球相对黄道约 4.94°。哈雷正常逆行，恩克和海尔–波普独立运行，各加 1 分。真实比例下，分段轨道线会偏离小天体，抽测哈雷的 1,024 段轨道线离核约 1,641 个彗核半径。继续滚轮拉近，真实比例下哈雷彗核会被近平面裁切。2061 回归预设日模型算出约 1.23 AU，固定根数给出的近日点在 6 月 4 日。海王星交点的世纪变化率也与 JPL 短期表有小幅差异。拖拽、聚焦、快进/倒放跟随、暂停与回到此刻通过。"
+},
+"ClaudeSonnet5.5(high)V1":{
+  "reference": false,
+  "featureMap": {
+    "rings": 1,
+    "belt": 1,
+    "bloom": 1,
+    "aces": 1,
+    "atmo": 0.4
+  },
+  "orbitModel": {
+    "geometry": 1,
+    "kepler": 1,
+    "elements": 1,
+    "orientation": 1,
+    "epoch": 1
+  },
+  "orbitRuntime": {
+    "pathFit": 0.5,
+    "stability": 1
+  },
+  "moons": 8,
+  "hasEarthMoon": true,
+  "earthMoonValid": true,
+  "moonEvidence": [
+    {
+      "id": "moon",
+      "parent": "earth",
+      "quality": 1,
+      "actualInclinationDeg": 5.115378,
+      "expectedInclinationDeg": 5.145,
+      "reason": "地月相对坐标来自独立黄道历表，实测低倾角顺行。"
+    },
+    {
+      "id": "io",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00492,
+      "expectedInclinationDeg": 0.04,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "europa",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00492,
+      "expectedInclinationDeg": 0.47,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "ganymede",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00492,
+      "expectedInclinationDeg": 0.21,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "callisto",
+      "parent": "jupiter",
+      "quality": 1,
+      "actualInclinationDeg": 0.00492,
+      "expectedInclinationDeg": 0.28,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "titan",
+      "parent": "saturn",
+      "quality": 1,
+      "actualInclinationDeg": 0.003002,
+      "expectedInclinationDeg": 0.3,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    },
+    {
+      "id": "triton",
+      "parent": "neptune",
+      "quality": 0,
+      "actualInclinationDeg": 180,
+      "expectedInclinationDeg": 157.3,
+      "reason": "采用负周期使轨道逆行，但轨道与母星赤道共面，实测接近 180°。"
+    },
+    {
+      "id": "charon",
+      "parent": "pluto",
+      "quality": 1,
+      "actualInclinationDeg": 0,
+      "expectedInclinationDeg": 0,
+      "reason": "实际绕对应母星运动，周期、尺度和有向轨道面达到基础门槛。"
+    }
+  ],
+  "halley": true,
+  "otherComets": 0,
+  "correctness": {
+    "runtime": 5,
+    "data": 4,
+    "integrity": 5
+  },
+  "visualBase": null,
+  "interaction": {
+    "drag": 1,
+    "zoom": 0.5,
+    "focus": 1,
+    "follow": 1,
+    "pauseReset": 1
+  },
+  "fatal": null,
+  "reviewedAt": "2026-11-27",
+  "reviewVersion": "V3-20261127",
+  "note": "八大行星的 JPL 近似轨道成立，双向土星环影、动态小天体带、HDR 泛光及末端 ACES 均有效。大气用边缘散射近似。8 颗卫星中 7 颗有效，月球相对黄道约 5.12°，海卫一方向为逆行但轨道与海王星赤道共面，实际有向倾角 180°，相比参考值约 157° 缺少正确倾角。哈雷正常逆行，近日点 0.586 AU。真实比例下，720 段轨道线会偏离小天体，抽测哈雷线离核约 3,233 个彗核半径。默认放大模式滚轮可进哈雷彗核，最小距离约为 0.36 个彗核半径。2061 回归预设日模型算出约 1.22 AU，固定根数给出的近日点在 6 月 4 日。冥卫一面板显示 0.211 km/s，实际模型轨道速度约 0.223 km/s。拖拽、聚焦、快进/倒放跟随、暂停与回到现在通过。"
+},
 "Gemini4Carbon(high)V1":{
   "reference": false,
   "featureMap": {

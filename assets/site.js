@@ -37,6 +37,18 @@
     return !key || modelSearchKey(work && work.model).includes(key);
   };
   const PERSONAL_RECOMMENDATIONS = {
+"ClaudeOpus5.5(high)V1":{
+  "direction": "up",
+  "count": 5,
+  "zh": "虽然不如在Claude Code中表现好，但是好用的脑子在哪里都好用",
+  "en": "It performs better in Claude Code. A good brain is useful anywhere."
+},
+"ClaudeSonnet5.5(high)V1":{
+  "direction": "up",
+  "count": 5,
+  "zh": "虽然不如在Claude Code中表现好，但是好用的脑子在哪里都好用",
+  "en": "It performs better in Claude Code. A good brain is useful anywhere."
+},
 "Gemini4Carbon(high)V1":{
   "direction": "up",
   "count": 3,
